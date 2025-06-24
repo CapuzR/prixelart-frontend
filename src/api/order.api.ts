@@ -548,3 +548,80 @@ export const fetchGlobalTopPerformingItems = async (
         throw error;
     }
 };
+
+export interface PerformanceData {
+    id: string; // sellerId, prixerUsername, or productId
+    name: string; // sellerName, prixer's name, or productName
+    imageUrl?: string;
+    totalSales: number;
+    totalUnits: number;
+    orderCount: number;
+}
+
+const formatDateForQuery = (date: Date): string => date.toISOString();
+
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+const apiClient = axios.create({
+    baseURL: API_BASE_URL,
+    withCredentials: true, // Important for authentication using cookies/sessions
+});
+
+export const fetchSellerPerformance = async (
+  filters: DashboardFilters
+): Promise<PerformanceData[]> => {
+  // we know the backend returns PrixResponse<PerformanceData[]>
+  const { data } = await apiClient.get<PrixResponse>(
+    '/stats/performance/sellers',
+    {
+      params: {
+        startDate: formatDateForQuery(filters.startDate),
+        endDate:   formatDateForQuery(filters.endDate),
+      },
+    }
+  );
+
+  if (data.success && Array.isArray(data.result)) {
+    return data.result as unknown as PerformanceData[];
+  } else {
+    throw new Error(data.message || 'Failed to fetch seller performance');
+  }
+};
+
+export const fetchPrixerPerformance = async (
+  filters: DashboardFilters
+): Promise<PerformanceData[]> => {
+  const { data } = await apiClient.get<PrixResponse>(
+    '/stats/performance/prixers',
+    { params: {
+        startDate: formatDateForQuery(filters.startDate),
+        endDate:   formatDateForQuery(filters.endDate),
+      }
+    }
+  );
+
+  if (data.success && Array.isArray(data.result)) {
+    return data.result as unknown as PerformanceData[];
+  } else {
+    throw new Error(data.message || 'Failed to fetch prixer performance');
+  }
+};
+
+export const fetchProductPerformance = async (
+  filters: DashboardFilters
+): Promise<PerformanceData[]> => {
+  const { data } = await apiClient.get<PrixResponse>(
+    '/stats/performance/products',
+    { params: {
+        startDate: formatDateForQuery(filters.startDate),
+        endDate:   formatDateForQuery(filters.endDate),
+      }
+    }
+  );
+
+  if (data.success && Array.isArray(data.result)) {
+    return data.result as unknown as PerformanceData[];
+  } else {
+    throw new Error(data.message || 'Failed to fetch product performance');
+  }
+};

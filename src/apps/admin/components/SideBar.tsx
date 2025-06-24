@@ -161,12 +161,15 @@ const Sidebar: React.FC<SidebarProps> = ({
     >
       <List component="nav" aria-labelledby="admin-sidebar-nav">
         {/* Dashboard */}
-        <ListItemButton component={RouterLink} to="/admin/dashboard" sx={sectionHeaderStyle('/admin/dashboard')}>
-          <ListItemIcon><DashboardIcon /></ListItemIcon>
-          {isOpen && <ListItemText primary="Dashboard" />}
-        </ListItemButton>
-        <Divider sx={{ my: 1 }} />
-
+        {permissions.area === 'Master' && (
+          <>
+            <ListItemButton component={RouterLink} to="/admin/dashboard" sx={sectionHeaderStyle('/admin/dashboard')}>
+              <ListItemIcon><DashboardIcon /></ListItemIcon>
+              {isOpen && <ListItemText primary="Dashboard" />}
+            </ListItemButton>
+            <Divider sx={{ my: 1 }} />
+          </>
+        )}
         {/* Admins Section */}
         {canViewAdmins && (
           <>

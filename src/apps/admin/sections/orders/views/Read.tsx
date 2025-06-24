@@ -1,4 +1,3 @@
-// src/apps/admin/sections/orders/views/ReadOrders.tsx
 import React, {
   useRef,
   useState,
@@ -24,7 +23,6 @@ import {
   CircularProgress,
   Alert,
   Tooltip,
-  Stack,
   Chip,
   Link,
   TablePagination,
@@ -32,7 +30,6 @@ import {
   InputAdornment,
   Fab,
   InputLabel,
-  ToggleButton,
   FormControl,
   Select,
   MenuItem,
@@ -42,10 +39,8 @@ import Grid2 from "@mui/material/Grid" // Assuming this is Material UI's Unstabl
 import EditIcon from "@mui/icons-material/Edit"
 import DeleteIcon from "@mui/icons-material/Delete"
 import AddIcon from "@mui/icons-material/Add"
-import InfoIcon from "@mui/icons-material/Info"
 import CheckCircleIcon from "@mui/icons-material/CheckCircle"
 import CancelIcon from "@mui/icons-material/Cancel"
-import SearchIcon from "@mui/icons-material/Search"
 import FilterListOffIcon from "@mui/icons-material/FilterListOff"
 import {
   LocalShippingOutlined,
@@ -64,7 +59,6 @@ import Title from "@apps/admin/components/Title"
 import ConfirmationDialog from "@components/ConfirmationDialog/ConfirmationDialog"
 import { deleteOrder, getOrders } from "@api/order.api"
 import excelJS from "exceljs"
-import moment from "moment"
 import "moment/locale/es"
 import { format, parseISO, isValid } from "date-fns"
 import { Permissions } from "types/permissions.types"
@@ -605,6 +599,9 @@ const ReadOrders: React.FC = () => {
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
           labelRowsPerPage="Órdenes por página:"
+          labelDisplayedRows={({ from, to, count }) =>
+            `${from}–${to} de ${count !== -1 ? count : `más de ${to}`}`
+          }
         />
       </Paper>
     )

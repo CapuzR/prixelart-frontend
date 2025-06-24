@@ -1,166 +1,219 @@
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Container,
   Typography,
-  CircularProgress,
   Alert,
   Box,
   Paper,
-  Button,
-} from "@mui/material"
-import Grid2 from "@mui/material/Grid"
-import AssessmentIcon from "@mui/icons-material/Assessment"
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart"
-import MonetizationOnIcon from "@mui/icons-material/MonetizationOn"
-import InventoryIcon from "@mui/icons-material/Inventory"
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline"
-import SettingsIcon from "@mui/icons-material/Settings"
-import BarChartIcon from "@mui/icons-material/BarChart"
+  Tabs,
+  Tab,
+  ToggleButtonGroup,
+  ToggleButton,
+  Skeleton,
+} from "@mui/material";
+import Grid2 from "@mui/material/Grid";
 
-// Import Child Components
-import { KPICard } from "./components/KPICard"
-import { SalesTrendChart } from "./components/SalesTrendChart"
-import { OrderStatusDistributionChart } from "./components/OrderStatusDistributionChart"
-import { RecentOrdersList } from "./components/RecentOrdersList"
-import { TopPerformingItemsList } from "./components/TopPerformingItemsList"
-import { DashboardFiltersComponent } from "./components/DashboardFiltersComponent"
-import { Order, OrderLine, OrderStatus } from "types/order.types"
+// Icons
+import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import AssessmentIcon from "@mui/icons-material/Assessment";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import GroupIcon from "@mui/icons-material/Group";
+import PaletteIcon from "@mui/icons-material/Palette";
+import CategoryIcon from "@mui/icons-material/Category";
+import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
+import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
+import PublicIcon from "@mui/icons-material/Public";
+import PaidIcon from "@mui/icons-material/Paid";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+
+// Child components
+import { KPICard } from "./components/KPICard";
+import { DashboardFiltersComponent } from "./components/DashboardFiltersComponent";
+import PerformanceTable, { PerformanceData } from "./components/PerformanceTable";
+import FilteredOrdersList from "./components/FilteredOrdersList";
+import SalesTrendChart from "./components/SalesTrendChart";
+import PerformanceBarChart from "./components/PerformanceBarChart";
+import { OrderStatusPieChart } from "./components/OrderStatusPieChart";
+import GeoChart from "./components/GeoChart";
+import { PaymentMethodChart } from "./components/PaymentMethodChart";
+import DashboardSkeleton from "./components/DashboardSkeleton";
+import EmptyState from "./components/EmptyState";
+
+// Types & API
+import { Order, OrderStatus, GlobalPaymentStatus } from "types/order.types";
 import {
   DashboardFilters,
-  fetchGlobalDashboardStats,
   fetchGlobalOrdersList,
-  fetchGlobalTopPerformingItems,
+  fetchGlobalDashboardStats,
+  fetchSellerPerformance,
+  fetchPrixerPerformance,
+  fetchProductPerformance,
   GlobalDashboardStatsData,
-} from "@api/order.api"
-import { useNavigate } from "react-router-dom"
-import { getPermissions } from "@api/admin.api"
-import { Permissions } from "types/permissions.types"
+} from "@api/order.api";
+import { getPermissions } from "@api/admin.api";
+import { Permissions } from "types/permissions.types";
 
-interface TopItemLocal {
-  id: string
-  name: string
-  quantity: number
-  revenue: number
-  imageUrl?: string
+const getStartOfMonth = (): Date => {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), 1);
+};
+
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
 }
 
+const CustomTabPanel: React.FC<TabPanelProps> = ({ children, value, index, ...other }) => (
+  <div
+    role="tabpanel"
+    hidden={value !== index}
+    id={`dashboard-tabpanel-${index}`}
+    aria-labelledby={`dashboard-tab-${index}`}
+    {...other}
+  >
+    {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+  </div>
+);
+
+const a11yProps = (index: number) => ({
+  id: `dashboard-tab-${index}`,
+  "aria-controls": `dashboard-tabpanel-${index}`,
+});
+
 const SellerDashboard: React.FC = () => {
-  const [permissions, setPermissions] = useState<Permissions | null>(null)
-  const [orders, setOrders] = useState<Order[]>([])
-  const [stats, setStats] = useState<GlobalDashboardStatsData | null>(null)
-  const [topItems, setTopItems] = useState<TopItemLocal[]>([])
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const [permissions, setPermissions] = useState<Permissions | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [filters, setFilters] = useState<DashboardFilters>({
-    startDate: new Date(new Date().setDate(new Date().getDate() - 29)),
+    startDate: getStartOfMonth(),
     endDate: new Date(),
-  })
+  });
+  const [activeTab, setActiveTab] = useState(0);
+  const [metric, setMetric] = useState<"sales" | "units">("sales");
 
-  const [loading, setLoading] = useState<boolean>(true)
-  const [error, setError] = useState<string | null>(null)
+  const [allOrders, setAllOrders] = useState<Order[]>([]);
+  const [stats, setStats] = useState<GlobalDashboardStatsData | null>(null);
+  const [sellerPerformance, setSellerPerformance] = useState<PerformanceData[]>([]);
+  const [prixerPerformance, setPrixerPerformance] = useState<PerformanceData[]>([]);
+  const [productPerformance, setProductPerformance] = useState<PerformanceData[]>([]);
 
-  const sellerName = "Admin"
+    const loadDashboardData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
 
-  const loadDashboardData = useCallback(async () => {
-    setLoading(true)
-    setError(null)
     try {
-      // Parallel fetching using global API functions
-      const [ordersData, statsData, topItemsData] = await Promise.all([
+      // --- REVERTED to Promise.all for parallel fetching ---
+      const [
+        ordersData,
+        statsData,
+        sellersData,
+        prixersData,
+        productsData,
+        userPermissions,
+      ] = await Promise.all([
         fetchGlobalOrdersList(filters),
         fetchGlobalDashboardStats(filters),
-        fetchGlobalTopPerformingItems(filters, 5),
-      ])
+        fetchSellerPerformance(filters),
+        fetchPrixerPerformance(filters),
+        fetchProductPerformance(filters),
+        getPermissions(),
+      ]);
 
-      setOrders(ordersData)
-      setStats(statsData)
-      // The backend now returns GlobalTopPerformingItemData which matches TopItemLocal
-      setTopItems(topItemsData)
+      setAllOrders(ordersData);
+      setStats(statsData);
+      setSellerPerformance(sellersData);
+      setPrixerPerformance(prixersData);
+      setProductPerformance(productsData);
+      setPermissions(userPermissions);
     } catch (err) {
-      console.error("Failed to load global dashboard data:", err)
-      setError(
-        err instanceof Error
-          ? err.message
-          : "An unknown error occurred while loading dashboard data."
-      )
+      console.error("Failed to load dashboard data:", err);
+      setError(err instanceof Error ? err.message : "An unknown error occurred.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [filters])
-
-  const readPermissions = async () => {
-    const response = await getPermissions()
-    setPermissions(response)
-  }
+  }, [filters]);
 
   useEffect(() => {
-    readPermissions()
-    loadDashboardData()
-  }, [loadDashboardData]) // Re-run when loadDashboardData (and thus filters) changes
+    loadDashboardData();
+  }, [loadDashboardData]);
 
-  const handleFilterChange = (newFilters: DashboardFilters) => {
-    setFilters(newFilters)
-  }
+  const handleFilterChange = (newFilters: DashboardFilters) =>
+    setFilters(newFilters);
+
+  const handleTabChange = (_: React.SyntheticEvent, newValue: number) =>
+    setActiveTab(newValue);
+
+  const handleMetricChange = (
+    _: React.MouseEvent<HTMLElement>,
+    newMetric: "sales" | "units" | null
+  ) => {
+    if (newMetric) setMetric(newMetric);
+  };
 
   const handleViewOrder = (orderId: string) => {
-    navigate(`/admin/orders/update/${orderId}`) //
-  }
+    navigate(`/admin/orders/update/${orderId}`);
+  };
 
-  // Derived data for charts (can be memoized with useMemo if complex)
-  const salesTrendChartData = orders
-    .reduce(
-      (acc, order) => {
-        const date = new Date(order.createdOn).toLocaleDateString()
-        const existingEntry = acc.find((entry) => entry.name === date)
-        if (existingEntry) {
-          existingEntry.sales += order.total
-          existingEntry.orders += 1
-        } else {
-          acc.push({ name: date, sales: order.total, orders: 1 })
-        }
-        return acc
-      },
-      [] as { name: string; sales: number; orders: number }[]
-    )
-    .sort((a, b) => new Date(a.name).getTime() - new Date(b.name).getTime())
+  const pendingPaymentOrders = useMemo(
+    () =>
+      allOrders.filter(
+        (o) =>
+          o.payment?.status?.[o.payment.status.length - 1]?.[0] ===
+          GlobalPaymentStatus.Pending
+      ),
+    [allOrders]
+  );
 
-  const orderStatusChartData = React.useMemo(() => {
-    if (!orders) return []
-    const counts: Record<number, number> = {}
-    orders.forEach((order) => {
-      order.lines.forEach((line: OrderLine) => {
-        const currentStatusEnum = line.status[line.status.length - 1][0]
-        counts[currentStatusEnum] = (counts[currentStatusEnum] || 0) + 1
-      })
-    })
-    return Object.entries(counts).map(([statusKey, value]) => ({
-      name: OrderStatus[Number(statusKey) as OrderStatus],
-      value,
-    }))
-  }, [orders])
+  const activeOrders = useMemo(
+    () =>
+      allOrders.filter((o) => {
+        const latestStatus = o.status?.[o.status.length - 1]?.[0];
+        return (
+          latestStatus !== OrderStatus.Finished &&
+          latestStatus !== OrderStatus.Canceled
+        );
+      }),
+    [allOrders]
+  );
+
+  const isRefetching = loading && !!stats;
 
   if (error) {
     return (
       <Container sx={{ py: 4 }}>
         <Alert severity="error">Error: {error}</Alert>
       </Container>
-    )
+    );
+  }
+
+  if (loading && !stats) {
+    return (
+      <Container maxWidth={false} sx={{ py: 3 }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+          <Typography variant="h4">Dashboard</Typography>
+          <Skeleton variant="text" width={150} height={24} />
+        </Box>
+        <DashboardFiltersComponent
+          filters={filters}
+          onFiltersChange={handleFilterChange}
+        />
+        <DashboardSkeleton />
+      </Container>
+    );
   }
 
   return (
-    <Container maxWidth="lg" sx={{ py: 3 }}>
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={3}
-      >
-        <Typography variant="h4" component="h1">
-          Dashboard
+    <Container maxWidth={false} sx={{ py: 3 }}>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+        <Typography variant="h4">Dashboard</Typography>
+        <Typography variant="subtitle1">
+          Bienvenido, {permissions?.area || "Admin"}!
         </Typography>
-        <Box>
-          {/* Placeholder for Avatar/Seller Name */}
-          <Typography variant="subtitle1">Bienvenido, {sellerName}!</Typography>
-        </Box>
       </Box>
 
       <DashboardFiltersComponent
@@ -168,100 +221,298 @@ const SellerDashboard: React.FC = () => {
         onFiltersChange={handleFilterChange}
       />
 
-      {loading &&
-        !stats && ( // Show main loader only if no data is present yet
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            sx={{ minHeight: "60vh" }}
-          >
-            <CircularProgress size={60} />
-            <Typography variant="h6" sx={{ ml: 2 }}>
-              Cargando...
-            </Typography>
-          </Box>
-        )}
-
-      {!loading && !stats && !error && (
-        <Paper sx={{ p: 3, textAlign: "center" }}>
-          <Typography variant="h6">
-            No hay información disponible para ese periodo.
-          </Typography>
-          <Typography>Intenta seleccionando otro rango de fechas.</Typography>
+      {!isRefetching && !stats && !error && (
+        <Paper sx={{ mt: 3, borderRadius: 2 }}>
+          <EmptyState
+            icon={InfoOutlinedIcon}
+            title="No hay datos para mostrar"
+            message="Intenta seleccionar un rango de fechas diferente o espera a que se generen nuevas órdenes."
+          />
         </Paper>
       )}
 
-      {stats && ( // Render dashboard sections only if stats are loaded
+      {stats && (
         <>
-          {permissions?.area === "Master" && (
-            <Grid2 container spacing={3} mb={3}>
-              <Grid2 size={{ xs: 12, sm: 6, md: 3 }}>
-                <KPICard
-                  title="Ingresos"
-                  value={`$${stats.totalSales.toFixed(2)}`}
-                  icon={MonetizationOnIcon}
-                  loading={loading}
-                />
-              </Grid2>
-              <Grid2 size={{ xs: 12, sm: 6, md: 3 }}>
-                <KPICard
-                  title="# de Órdenes"
-                  value={stats.totalOrders.toString()}
-                  icon={ShoppingCartIcon}
-                  loading={loading}
-                />
-              </Grid2>
-              <Grid2 size={{ xs: 12, sm: 6, md: 3 }}>
-                <KPICard
-                  title="Promedio de $ por órden"
-                  value={`$${stats.averageOrderValue.toFixed(2)}`}
-                  icon={AssessmentIcon}
-                  loading={loading}
-                />
-              </Grid2>
-              <Grid2 size={{ xs: 12, sm: 6, md: 3 }}>
-                <KPICard
-                  title="Productos Vendidos"
-                  value={stats.unitsSold.toString()}
-                  icon={InventoryIcon}
-                  loading={loading}
-                />
-              </Grid2>
+          <Grid2 container spacing={3} mt={0} mb={3}>
+            <Grid2 size={{ xs: 12, sm: 6, md: 3 }}>
+              <KPICard
+                title="Ingresos Totales"
+                value={stats.totalSales || 0}
+                prefix="$"
+                icon={MonetizationOnIcon}
+                loading={isRefetching}
+              />
             </Grid2>
-          )}
-
-          <Grid2 container spacing={3} mb={3}>
-            {permissions?.area === "Master" && (
-              <Grid2 size={{ xs: 12, md: 7 }}>
-                <SalesTrendChart data={salesTrendChartData} loading={loading} />
-              </Grid2>
-            )}
-            <Grid2 size={{ xs: 12, md: permissions?.area === "Master" ? 5 : 12 }}>
-              <OrderStatusDistributionChart
-                data={orderStatusChartData}
-                loading={loading}
+            <Grid2 size={{ xs: 12, sm: 6, md: 3 }}>
+              <KPICard
+                title="# de Órdenes"
+                value={stats.totalOrders || 0}
+                icon={ShoppingCartIcon}
+                loading={isRefetching}
+              />
+            </Grid2>
+            <Grid2 size={{ xs: 12, sm: 6, md: 3 }}>
+              <KPICard
+                title="Promedio por Órden"
+                value={stats.averageOrderValue || 0}
+                prefix="$"
+                icon={AssessmentIcon}
+                loading={isRefetching}
+              />
+            </Grid2>
+            <Grid2 size={{ xs: 12, sm: 6, md: 3 }}>
+              <KPICard
+                title="Unidades Vendidas"
+                value={stats.unitsSold || 0}
+                icon={InventoryIcon}
+                loading={isRefetching}
               />
             </Grid2>
           </Grid2>
 
-          {/* Section 3: Pending Actions & Recent Orders */}
-          <Grid2 container spacing={3} mb={3}>
-            <Grid2 size={{ xs: 12, md: 6 }}>
-              <RecentOrdersList
-                orders={orders}
-                loading={loading}
+          <Box mb={3}>
+            <SalesTrendChart
+              orders={allOrders}
+              loading={isRefetching}
+              metric={metric}
+              startDate={filters.startDate}
+              endDate={filters.endDate}
+            />
+          </Box>
+
+          <Paper variant="outlined" sx={{ borderRadius: 2 }}>
+            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+              <Tabs
+                value={activeTab}
+                onChange={handleTabChange}
+                aria-label="dashboard tabs"
+                variant="scrollable"
+                scrollButtons="auto"
+              >
+                <Tab
+                  label="Por Vendedor"
+                  icon={<GroupIcon />}
+                  iconPosition="start"
+                  {...a11yProps(0)}
+                />
+                <Tab
+                  label="Por Prixer"
+                  icon={<PaletteIcon />}
+                  iconPosition="start"
+                  {...a11yProps(1)}
+                />
+                <Tab
+                  label="Por Producto"
+                  icon={<CategoryIcon />}
+                  iconPosition="start"
+                  {...a11yProps(2)}
+                />
+                <Tab
+                  label="Geográfico"
+                  icon={<PublicIcon />}
+                  iconPosition="start"
+                  {...a11yProps(3)}
+                />
+                <Tab
+                  label="Financiero"
+                  icon={<PaidIcon />}
+                  iconPosition="start"
+                  {...a11yProps(4)}
+                />
+                <Tab
+                  label="Pendientes de Pago"
+                  icon={<HourglassEmptyIcon />}
+                  iconPosition="start"
+                  {...a11yProps(5)}
+                />
+                <Tab
+                  label="Órdenes Activas"
+                  icon={<PlayCircleOutlineIcon />}
+                  iconPosition="start"
+                  {...a11yProps(6)}
+                />
+              </Tabs>
+            </Box>
+
+            <CustomTabPanel value={activeTab} index={0}>
+              <Grid2 container spacing={3}>
+                <Grid2 size={{ xs: 12, lg: 5 }}>
+                  <PerformanceBarChart
+                    data={sellerPerformance}
+                    metric={metric}
+                    loading={isRefetching}
+                    title={`Top 10 Vendedores por ${
+                      metric === "sales" ? "Ingresos" : "Unidades"
+                    }`}
+                  />
+                </Grid2>
+                <Grid2 size={{ xs: 12, lg: 7 }}>
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    mb={2}
+                  >
+                    <Typography variant="h6">
+                      Rendimiento por Vendedor
+                    </Typography>
+                    <ToggleButtonGroup
+                      value={metric}
+                      exclusive
+                      onChange={handleMetricChange}
+                      size="small"
+                    >
+                      <ToggleButton value="sales">Ventas ($)</ToggleButton>
+                      <ToggleButton value="units">Unidades</ToggleButton>
+                    </ToggleButtonGroup>
+                  </Box>
+                  <PerformanceTable
+                    data={sellerPerformance}
+                    metric={metric}
+                    loading={isRefetching}
+                  />
+                </Grid2>
+              </Grid2>
+            </CustomTabPanel>
+
+            <CustomTabPanel value={activeTab} index={1}>
+              <Grid2 container spacing={3}>
+                <Grid2 size={{ xs: 12, lg: 5 }}>
+                  <PerformanceBarChart
+                    data={prixerPerformance}
+                    metric={metric}
+                    loading={isRefetching}
+                    title={`Top 10 Prixers por ${
+                      metric === "sales" ? "Ingresos" : "Unidades"
+                    }`}
+                  />
+                </Grid2>
+                <Grid2 size={{ xs: 12, lg: 7 }}>
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    mb={2}
+                  >
+                    <Typography variant="h6">
+                      Rendimiento por Prixer
+                    </Typography>
+                    <ToggleButtonGroup
+                      value={metric}
+                      exclusive
+                      onChange={handleMetricChange}
+                      size="small"
+                    >
+                      <ToggleButton value="sales">Ventas ($)</ToggleButton>
+                      <ToggleButton value="units">Unidades</ToggleButton>
+                    </ToggleButtonGroup>
+                  </Box>
+                  <PerformanceTable
+                    data={prixerPerformance}
+                    metric={metric}
+                    loading={isRefetching}
+                  />
+                </Grid2>
+              </Grid2>
+            </CustomTabPanel>
+
+            <CustomTabPanel value={activeTab} index={2}>
+              <Grid2 container spacing={3}>
+                <Grid2 size={{ xs: 12, lg: 5 }}>
+                  <PerformanceBarChart
+                    data={productPerformance}
+                    metric={metric}
+                    loading={isRefetching}
+                    title={`Top 10 Productos por ${
+                      metric === "sales" ? "Ingresos" : "Unidades"
+                    }`}
+                  />
+                </Grid2>
+                <Grid2 size={{ xs: 12, lg: 7 }}>
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    mb={2}
+                  >
+                    <Typography variant="h6">
+                      Rendimiento por Producto
+                    </Typography>
+                    <ToggleButtonGroup
+                      value={metric}
+                      exclusive
+                      onChange={handleMetricChange}
+                      size="small"
+                    >
+                      <ToggleButton value="sales">Ventas ($)</ToggleButton>
+                      <ToggleButton value="units">Unidades</ToggleButton>
+                    </ToggleButtonGroup>
+                  </Box>
+                  <PerformanceTable
+                    data={productPerformance}
+                    metric={metric}
+                    loading={isRefetching}
+                    isProduct
+                  />
+                </Grid2>
+              </Grid2>
+            </CustomTabPanel>
+
+            <CustomTabPanel value={activeTab} index={3}>
+              <Grid2 container spacing={3}>
+                <Grid2 size={{ xs: 12 }}>
+                  <GeoChart orders={allOrders} loading={isRefetching} />
+                </Grid2>
+              </Grid2>
+            </CustomTabPanel>
+
+            <CustomTabPanel value={activeTab} index={4}>
+              <Grid2 container spacing={3}>
+                <Grid2 size={{ xs: 12 }}>
+                  <PaymentMethodChart orders={allOrders} loading={isRefetching} />
+                </Grid2>
+              </Grid2>
+            </CustomTabPanel>
+
+            <CustomTabPanel value={activeTab} index={5}>
+              <Typography variant="h6" mb={2}>
+                Órdenes Pendientes de Pago
+              </Typography>
+              <FilteredOrdersList
+                orders={pendingPaymentOrders}
+                loading={isRefetching}
                 onViewOrder={handleViewOrder}
+                emptyMessage="No hay órdenes pendientes de pago."
               />
-            </Grid2>
-            <Grid2 size={{ xs: 12, md: 6 }}>
-              <TopPerformingItemsList items={topItems} loading={loading} />
-            </Grid2>
-          </Grid2>
+            </CustomTabPanel>
+
+            <CustomTabPanel value={activeTab} index={6}>
+              <Grid2 container spacing={3}>
+                <Grid2 size={{ xs: 12, lg: 5 }}>
+                  <OrderStatusPieChart
+                    orders={activeOrders}
+                    loading={isRefetching}
+                    title="Distribución de Órdenes Activas"
+                  />
+                </Grid2>
+                <Grid2 size={{ xs: 12, lg: 7 }}>
+                  <Typography variant="h6" mb={2}>
+                    Lista de Órdenes Activas
+                  </Typography>
+                  <FilteredOrdersList
+                    orders={activeOrders}
+                    loading={isRefetching}
+                    onViewOrder={handleViewOrder}
+                    emptyMessage="No hay órdenes activas en este momento."
+                  />
+                </Grid2>
+              </Grid2>
+            </CustomTabPanel>
+          </Paper>
         </>
       )}
     </Container>
-  )
-}
+  );
+};
 
-export default SellerDashboard
+export default SellerDashboard;

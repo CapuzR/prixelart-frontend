@@ -80,7 +80,11 @@ import {
 } from "types/order.types"
 import { Product, Variant } from "types/product.types"
 import { Art, PickedArt } from "types/art.types"
-
+import dayjs, { Dayjs } from "dayjs"
+import 'dayjs/locale/es'; 
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
+import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 // --- Helper Interfaces ---
 interface MethodOption {
   id: string
@@ -125,6 +129,8 @@ interface EditablePriceFieldsProps {
   line: OrderLineFormState
   updateLine: (tempId: string, values: Partial<OrderLineFormState>) => void
 }
+
+dayjs.locale('es'); 
 
 const initialLine: Omit<OrderLineFormState, "tempId"> = {
   selectedPrixer: null,
@@ -198,11 +204,16 @@ const CreateOrder: React.FC = () => {
   const [orderLines, setOrderLines] = useState<OrderLineFormState[]>([
     { ...initialLine, tempId: uuidv4() },
   ])
+  const [prefDate, setPrefDate] = useState<Dayjs>(dayjs())
 
   const [editableShippingAddress, setEditableShippingAddress] =
     useState<Address | null>(null)
   const [editableBillingAddress, setEditableBillingAddress] =
     useState<Address | null>(null)
+
+  // const handlePrefDate = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   setPrefDate(event.target.value)
+  // }
 
   const [displayTotals, setDisplayTotals] = useState<{
     subTotal: number
@@ -293,23 +304,26 @@ const CreateOrder: React.FC = () => {
       const allArtist = arts.map((art) => art.prixerUsername)
       const onlyPrixers = [...new Set(allArtist)]
 
-      const customImageOptions: ArtOption[] = onlyPrixers.map((prixerUsername) => {
-        const customArtPlaceholder: CustomImage = {
-          artId: `custom-image-${prixerUsername}`,
-          title: `Personalizado de ${prixerUsername}`,
-          prixerUsername: prixerUsername,
-          url: "",
-        };
+      const customImageOptions: ArtOption[] = onlyPrixers.map(
+        (prixerUsername) => {
+          const customArtPlaceholder: CustomImage = {
+            artId: `custom-image-${prixerUsername}`,
+            title: `Personalizado de ${prixerUsername}`,
+            prixerUsername: prixerUsername,
+            url: "",
+          }
 
-        return {
-          id: customArtPlaceholder.artId, // <-- CHANGE 'artId' to 'id' here
-          label: customArtPlaceholder.title,
-          thumb: favicon,
-          fullArt: customArtPlaceholder,
-        };
-      });
+          return {
+            id: customArtPlaceholder.artId, // <-- CHANGE 'artId' to 'id' here
+            label: customArtPlaceholder.title,
+            thumb: favicon,
+            fullArt: customArtPlaceholder,
+          }
+        }
+      )
 
-    const genericCustom: ArtOption = { // Explicitly type it for clarity
+      const genericCustom: ArtOption = {
+        // Explicitly type it for clarity
         id: "custom-image-without-prixer", // Use the artId from fullArt here
         label: `Personalizado`,
         thumb: favicon,
@@ -372,9 +386,43 @@ const CreateOrder: React.FC = () => {
       total: sub - disc + ship + totalTax,
       totalUnits: orderLines.reduce((u, l) => u + (l.quantity || 0), 0),
     })
+
+    const newPrefDate = calculatePreferredDate(orderLines);
+    setPrefDate(newPrefDate);
   }, [orderLines, shippingMethod])
 
-  // after your other hooks:
+  const calculatePreferredDate = (lines: OrderLineFormState[]): Dayjs => {
+    const today = dayjs();
+    if (!lines || lines.length === 0) {
+      return today;
+    }
+  
+    const productionTimesInDays = lines.map(line => {
+      const timeString = line.selectedProduct?.fullProduct?.productionTime;
+      
+      return parseInt(timeString || '0', 10);
+    });
+  
+    const maxProductionTime = Math.max(...productionTimesInDays);
+  
+    // return today.add(maxProductionTime, 'day');
+
+    let deliveryDate = dayjs();
+    let daysAdded = 0;
+  
+    while (daysAdded < maxProductionTime) {
+      deliveryDate = deliveryDate.add(1, 'day');
+  
+      const dayOfWeek = deliveryDate.day();
+      
+      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+        daysAdded++;
+      }
+    }
+
+   return deliveryDate;
+  };
+
   useEffect(() => {
     const sub = orderLines.reduce(
       (sum, l) => sum + (l.pricePerUnit || 0) * (l.quantity || 0),
@@ -388,12 +436,6 @@ const CreateOrder: React.FC = () => {
 
     // — build the two taxes we always need —
     const taxesToApply: Tax[] = [{ name: "IVA", value: 16, amount: 0 }]
-
-    // — if payment is Zelle or Efectivo $, add IGTF —
-    const pmName = (paymentMethod?.fullMethod as PaymentMethod)?.name
-    if (pmName === "Zelle" || pmName === "Efectivo $") {
-      taxesToApply.push({ name: "IGTF", value: 3, amount: 0 })
-    }
 
     // — compute each tax amount off the same base —
     const computedTaxes = taxesToApply.map((t) => ({
@@ -495,30 +537,30 @@ const CreateOrder: React.FC = () => {
         !prevState
           ? prevState
           : {
-            ...prevState,
-            recepient: {
-              ...prevState.recepient,
-              name: editableClientInfo.name,
-              lastName: editableClientInfo.lastName,
-              email: editableClientInfo.email,
-              phone: editableClientInfo.phone,
-            },
-          }
+              ...prevState,
+              recepient: {
+                ...prevState.recepient,
+                name: editableClientInfo.name,
+                lastName: editableClientInfo.lastName,
+                email: editableClientInfo.email,
+                phone: editableClientInfo.phone,
+              },
+            }
       )
     } else if (!e.target.checked) {
       setEditableShippingAddress((prevState) =>
         !prevState
           ? prevState
           : {
-            ...prevState,
-            recepient: {
-              ...prevState.recepient,
-              name: "",
-              lastName: "",
-              email: "",
-              phone: "",
-            },
-          }
+              ...prevState,
+              recepient: {
+                ...prevState.recepient,
+                name: "",
+                lastName: "",
+                email: "",
+                phone: "",
+              },
+            }
       )
     }
   }
@@ -589,6 +631,8 @@ const CreateOrder: React.FC = () => {
     return true
   }
 
+  console.log(orderLines)
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     if (!validateForm()) return
@@ -610,14 +654,12 @@ const CreateOrder: React.FC = () => {
       return
     }
 
-    // Si no es pickup, y la dirección de envío no está, es un error (ya validado, pero doble check)
     if (!isPickupSelected && !editableShippingAddress?.address?.line1) {
       showSnackBar("Error: Dirección de envío requerida.")
       setIsSubmitting(false)
       return
     }
 
-    // Si no se usa envío para facturación, y la dirección de facturación no está, es un error (ya validado, pero doble check)
     if (!useShippingForBilling && !editableBillingAddress?.address?.line1) {
       showSnackBar("Error: Dirección de facturación requerida.")
       setIsSubmitting(false)
@@ -646,6 +688,7 @@ const CreateOrder: React.FC = () => {
         total: displayTotals.total,
         payment: [mainPayment],
       }
+
       const finalShippingAddress = isPickupSelected
         ? createBlankAddress()
         : editableShippingAddress
@@ -654,6 +697,7 @@ const CreateOrder: React.FC = () => {
         method: shippingMethod.fullMethod as ShippingMethod,
         country: finalShippingAddress.address.country,
         address: finalShippingAddress,
+        preferredDeliveryDate: prefDate ? prefDate.toDate() : new Date(),
       }
 
       const billingDetails: BillingDetails = {
@@ -680,20 +724,20 @@ const CreateOrder: React.FC = () => {
             sku: `${l.selectedProduct.id}-${l.selectedVariant?.id || "novar"}-${l.selectedArt?.id || "noart"}`,
             art: l.selectedArt
               ? (() => {
-                const fullArt = l.selectedArt.fullArt
-                if ("_id" in fullArt) {
-                  return {
-                    _id: fullArt._id,
-                    artId: fullArt.artId,
-                    title: fullArt.title,
-                    largeThumbUrl: fullArt.largeThumbUrl,
-                    prixerUsername: fullArt.prixerUsername,
-                    exclusive: fullArt.exclusive,
+                  const fullArt = l.selectedArt.fullArt
+                  if ("_id" in fullArt) {
+                    return {
+                      _id: fullArt._id,
+                      artId: fullArt.artId,
+                      title: fullArt.title,
+                      largeThumbUrl: fullArt.largeThumbUrl,
+                      prixerUsername: fullArt.prixerUsername,
+                      exclusive: fullArt.exclusive,
+                    }
+                  } else {
+                    return fullArt
                   }
-                } else {
-                  return fullArt
-                }
-              })()
+                })()
               : undefined,
             product: {
               _id: l.selectedProduct.fullProduct._id,
@@ -1143,6 +1187,23 @@ const CreateOrder: React.FC = () => {
                 <LocalShippingOutlined sx={{ mr: 1 }} />
                 Envío
               </Typography>
+              {/* <DatePicker
+                label="Fecha estimada de entrega"
+                value={prefDate}
+                onChange={handlePrefDate}
+                disabled={isSubmitting}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    // error:
+                    //   !!validationErrors?.startDate ||
+                    //   !!validationErrors?.dateRange,
+                    // helperText:
+                    //   validationErrors?.startDate ||
+                    //   validationErrors?.dateRange,
+                  },
+                }}
+              /> */}
               <Autocomplete
                 fullWidth
                 options={shippingMethodOptions}
@@ -1154,6 +1215,15 @@ const CreateOrder: React.FC = () => {
                 )}
                 sx={{ mb: 2 }}
               />
+              <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
+                <DatePicker
+                  sx={{ width: "100%" }}
+                  label="Fecha estimada de entrega"
+                  value={prefDate}
+                   format="DD/MM/YYYY"
+                  onChange={(newValue) => setPrefDate(dayjs(newValue))}
+                />
+              </LocalizationProvider>
               {!isPickupSelected ? (
                 <>
                   {editableShippingAddress && (

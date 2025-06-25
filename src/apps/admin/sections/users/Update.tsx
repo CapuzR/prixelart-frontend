@@ -145,7 +145,7 @@ const initialPrixerFormState: Partial<Prixer> = {
   phone: "",
   avatar: "",
   termsAgree: false,
-  status: true
+  status: true,
 }
 
 const initialFormState: Pick<
@@ -414,17 +414,15 @@ const UpdateUser: React.FC = () => {
     }
   }
 
-  // Generic handler for Prixer text/checkbox inputs
   const handlePrixerInputChange = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    const target = event.target as HTMLInputElement // Cast needed for checked property
+    const target = event.target as HTMLInputElement 
     const name = target.name as keyof Prixer
     const value = target.type === "checkbox" ? target.checked : target.value
 
     setPrixerFormData((prevData) => ({ ...prevData, [name]: value }))
 
-    // Clear specific prixer validation error
     if (
       validationErrors?.prixer &&
       validationErrors.prixer[name as keyof PrixerValidationErrors]
@@ -571,56 +569,39 @@ const UpdateUser: React.FC = () => {
     const payload: Partial<User> = {
       firstName: userFormData.firstName,
       lastName: userFormData.lastName,
-      email: userFormData.email?.toLowerCase(), // Standardize email
-      active: prixerFormData.status, //TODO: use as Prixer prop, not a User one
-      role: userFormData.role, // Send the current role selection
+      email: userFormData.email?.toLowerCase(),
+      // active: prixerFormData.status, TODO: use as Prixer prop, not a User one
+      role: userFormData.role,
 
       avatar: userFormData.avatar?.trim() || undefined,
       phone: userFormData.phone?.trim() || undefined,
       country: userFormData.country?.trim() || undefined,
       city: userFormData.city?.trim() || undefined,
-      birthdate: birthdateValue ? birthdateValue.toDate() : undefined, // Convert Dayjs back to Date
+      birthdate: birthdateValue ? birthdateValue.toDate() : undefined,
       gender: userFormData.gender || undefined,
       address: userFormData.address?.trim() || undefined,
       billingAddress: userFormData.billingAddress?.trim() || undefined,
       shippingAddress: userFormData.shippingAddress?.trim() || undefined,
-      instagram: userFormData.instagram?.trim() || undefined, // User social links
+      instagram: userFormData.instagram?.trim() || undefined, 
       facebook: userFormData.facebook?.trim() || undefined,
       twitter: userFormData.twitter?.trim() || undefined,
       ci: userFormData.ci?.trim() || undefined,
-      // status: prixerFormData.status, //TODO: about the line 575
       account: userFormData.account?.trim() || undefined,
-      // DO NOT SEND username or password
     }
-
-    // --- Conditional Prixer Data ---
-    // Add or remove/nullify the 'prixer' sub-document based on the selected role
     if (isPrixerRoleSelected) {
-      // If prixer role is selected, include the prixer data from its form state
       payload.prixer = {
-        // Required fields (based on validation)
-        specialty: prixerFormData.specialty || [], // Ensure array
-        description: prixerFormData.description || "", // Ensure string
-
-        // Optional fields from prixerFormData
-        termsAgree: prixerFormData.termsAgree ?? false, // Ensure boolean
+        specialty: prixerFormData.specialty || [],
+        description: prixerFormData.description || "",
+        termsAgree: prixerFormData.termsAgree ?? false,
         instagram: prixerFormData.instagram?.trim() || undefined,
         twitter: prixerFormData.twitter?.trim() || undefined,
         facebook: prixerFormData.facebook?.trim() || undefined,
         phone: prixerFormData.phone?.trim() || undefined,
         avatar: prixerFormData.avatar?.trim() || undefined,
-        status: prixerFormData.status ?? true, // Include status if managed here
+        status: prixerFormData.status,
       }
-      // Decision: Should user-level phone/avatar/socials be overridden by Prixer ones if both exist?
-      // Example: If Prixer phone exists, prioritize it for the user record?
-      // payload.phone = payload.prixer.phone || payload.phone; // Uncomment if this logic is desired
-      // payload.avatar = payload.prixer.avatar || payload.avatar;
     } else {
-      // If prixer role is NOT selected, explicitly set prixer to null or undefined
-      // This tells the backend to remove/dissociate the Prixer sub-document.
-      // Check your backend API: does it expect `null` or simply omitting the key?
-      // Sending `null` is often clearer for removal.
-      payload.prixer = null as any // Or undefined, depending on API
+      payload.prixer = null as any
     }
 
     try {
@@ -827,7 +808,10 @@ const UpdateUser: React.FC = () => {
                       value={userFormData.firstName}
                       // onChange={handleUserInputChange}
                       onChange={(e) => {
-                        setUserFormData(prev => ({ ...prev, firstName: e.target.value }));
+                        setUserFormData((prev) => ({
+                          ...prev,
+                          firstName: e.target.value,
+                        }))
                       }}
                       required
                       fullWidth
@@ -905,9 +889,9 @@ const UpdateUser: React.FC = () => {
                     <FormControlLabel
                       control={
                         <Checkbox
-                          checked={prixerFormData.status ?? true}
+                          checked={prixerFormData.status}
                           onChange={handlePrixerInputChange}
-                          name="active"
+                          name="status"
                           disabled={isSubmitting}
                         />
                       }

@@ -59,16 +59,16 @@ import {
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 
 import { useSnackBar } from "context/GlobalContext"
-import { Order, OrderStatus, GlobalPaymentStatus } from "types/order.types"
+import { Order, OrderStatus, GlobalPaymentStatus, ShippingDetails } from "types/order.types"
 import Title from "@apps/admin/components/Title"
 import ConfirmationDialog from "@components/ConfirmationDialog/ConfirmationDialog"
 import { deleteOrder, getOrders } from "@api/order.api"
 import excelJS from "exceljs"
-import moment from "moment"
 import "moment/locale/es"
 import { format, parseISO, isValid } from "date-fns"
 import { Permissions } from "types/permissions.types"
 import { getPermissions } from "@api/admin.api"
+import dayjs, { Dayjs } from "dayjs"
 
 interface OrderSummary {
   _id: string
@@ -84,6 +84,7 @@ interface OrderSummary {
   paymentMethodName?: string
   shippingDate?: Date
   createdBy?: string
+  shipping: ShippingDetails
 }
 
 const getStatusChipProps = (
@@ -254,6 +255,7 @@ const ReadOrders: React.FC = () => {
             primaryStatus: getLatestStatus(order.status),
             shippingMethodName: shipping?.method?.name || "N/A",
             paymentMethodName: payment?.payment?.[0]?.method?.name || "N/A",
+            shipping: order.shipping
           }
         })
 
@@ -523,8 +525,8 @@ const ReadOrders: React.FC = () => {
                       {new Date(order.createdOn).toLocaleDateString()}
                     </TableCell>
                     <TableCell>
-                      {order.shippingDate
-                        ? new Date(order.shippingDate).toLocaleDateString()
+                      {order.shipping.preferredDeliveryDate
+                        ? dayjs(order.shipping.preferredDeliveryDate).format('DD/MM/YYYY')
                         : ""}
                     </TableCell>
                     <TableCell>
@@ -565,7 +567,7 @@ const ReadOrders: React.FC = () => {
                         <Tooltip title="Ver/Editar Orden">
                           <IconButton
                             aria-label="edit"
-                            color="primary"
+                            color="secondary"
                             onClick={() => handleUpdate(order._id)}
                             disabled={!order._id || isDeleting}
                             size="small"

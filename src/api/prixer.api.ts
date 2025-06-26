@@ -1,6 +1,7 @@
 import { PrixResponse } from "types/prixResponse.types";
 import axios from "axios";
 import { User } from "types/user.types";
+import { Prixer } from "types/prixer.types";
 
 export const fetchAllPrixers = async (): Promise<User[]> => {
     const URI = `${import.meta.env.VITE_BACKEND_URL}/prixer/read-all`;
@@ -52,6 +53,32 @@ export const getPrixerByUsername = async (username: string): Promise<User> => {
 
     } catch (error) {
         console.error(`Error fetching user by ID '${username}':`, error);
+        throw error;
+    }
+};
+
+export const updatePrixerProfile = async (
+    id: string,
+    data: Partial<Prixer>
+): Promise<PrixResponse> => {
+    const URI = `${import.meta.env.VITE_BACKEND_URL}/prixer/update`;
+    try {
+        const response = await axios.put<PrixResponse>(
+            URI,
+            { id, ...data },
+            { withCredentials: true }
+        );
+
+        if (!response.data.success) {
+            throw new Error(response.data.message || "Failed to update profile.");
+        }
+
+        return response.data;
+    } catch (error) {
+        console.error("Error updating prixer profile:", error);
+        if (axios.isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.message || "An unknown API error occurred.");
+        }
         throw error;
     }
 };

@@ -49,4 +49,5 @@ export interface Product {
   };
   thumbUrl?: string;
   variants?: Array<Variant>;
+  productionLines?: string[];
 }

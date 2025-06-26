@@ -68,7 +68,7 @@ export default function Catalog() {
 
         {/* Floating buttons */}
 
-        <Grid2
+        {/* <Grid2
           sx={{
             position: "fixed",
             bottom: "24px",
@@ -76,7 +76,7 @@ export default function Catalog() {
           }}
         >
           <FloatingAddButton />
-        </Grid2>
+        </Grid2> */}
       </Container>
     </>
   )

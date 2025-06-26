@@ -33,7 +33,20 @@ export default function PrixerGrid(): React.ReactElement {
     fetchAllPrixersActive()
       .then(data => {
         if (Array.isArray(data)) {
-          setTiles(utils.shuffle(data));
+          const datav2 = data.map(user => {
+            if (user.prixer && !user.prixer._id) {
+              return {
+                ...user,
+                prixer: {
+                  ...user.prixer,
+                  _id: user._id
+                }
+              };
+            }
+            return user;
+          });
+
+          setTiles(utils.shuffle(datav2));
         } else {
           console.error("Fetched data is not an array:", data);
           setTiles([]); 
@@ -46,8 +59,7 @@ export default function PrixerGrid(): React.ReactElement {
       })
       .finally(() => setLoading(false));
   }, []);
-
-  const activePrixers = tiles.filter(tile => tile.prixer?.avatar && tile.prixer.status);
+  const activePrixers = tiles.filter(tile => tile.prixer?.avatar);
 
   if (loading) {
     return (

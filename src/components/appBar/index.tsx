@@ -15,24 +15,17 @@ import Divider from "@mui/material/Divider"
 import Badge from "@mui/material/Badge"
 import Box from "@mui/material/Box"
 
-// --- Icons ---
 import MenuIcon from "@mui/icons-material/Menu"
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft"
 import ChevronRightIcon from "@mui/icons-material/ChevronRight"
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined"
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney"
 
-// --- Assets ---
 import logo from "./Logotipo_Prixelart_H2.png"
-// import CB from '../../apps/orgs/orgLanding/assets/isotipo.svg';
 
-// --- Contexts ---
 import { useCurrency, useUser } from "context/GlobalContext"
 import { useCart } from "context/CartContext"
 
-// --- Constants ---
-const LOCAL_STORAGE_TOKEN_KEY = "token"
-const LOCAL_STORAGE_TOKEN_EXPIRE_KEY = "tokenExpire"
 const drawerWidth = 240
 
 const NAV_ITEMS = [
@@ -213,11 +206,11 @@ const MenuAppBar: React.FC = () => {
   const loggedInUserMenuItems = [
     {
       label: "Mi Perfil",
-      onClick: () => handleNavigate(`/prixer/${user!.username}`),
+      onClick: () => handleNavigate(`/prixer/${user?.username}`),
     },
     {
       label: "Mi Cuenta",
-      onClick: () => handleNavigate(`/prixer/${user!.username}`),
+      onClick: () => handleNavigate(`/prixer/${user!.username}/stats`),
     },
     // { label: 'Cambiar contraseña', onClick: () => handleNavigate(`/prixer/${user!.username}`) },
 
@@ -248,13 +241,13 @@ const MenuAppBar: React.FC = () => {
     }),
     ...(isMobile &&
       drawerOpen && {
-        width: `calc(100% - ${drawerWidth}px)`,
-        marginLeft: `${drawerWidth}px`,
-        transition: theme.transitions.create(["margin", "width"], {
-          easing: theme.transitions.easing.easeOut,
-          duration: theme.transitions.duration.enteringScreen,
-        }),
+      width: `calc(100% - ${drawerWidth}px)`,
+      marginLeft: `${drawerWidth}px`,
+      transition: theme.transitions.create(["margin", "width"], {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen,
       }),
+    }),
   }
 
   const drawerHeaderSx: SxProps<Theme> = (currentTheme) => ({
@@ -277,11 +270,11 @@ const MenuAppBar: React.FC = () => {
       sx={
         orientation === "vertical"
           ? {
-              display: "flex",
-              borderRight: (theme) => `1px solid ${theme.palette.divider}`,
-              alignItems: "flex-start",
-              width: "100%",
-            }
+            display: "flex",
+            borderRight: (theme) => `1px solid ${theme.palette.divider}`,
+            alignItems: "flex-start",
+            width: "100%",
+          }
           : {}
       }
     >

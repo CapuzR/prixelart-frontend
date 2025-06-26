@@ -392,7 +392,7 @@ const ReadProducts: React.FC = () => {
                                         <TableCell padding="checkbox" sx={{ width: '3%' }} /> {/* Expand icon */}
                                         <TableCell sx={{ width: '10%' }}>Imagen</TableCell>
                                         <TableCell
-                                            sx={{ fontWeight: 'bold', width: '27%' }}
+                                            sx={{ fontWeight: 'bold', width: '22%' }}
                                             sortDirection={sortConfig.key === 'name' ? sortConfig.direction : false}>
                                             <TableSortLabel active={sortConfig.key === 'name'} direction={sortConfig.key === 'name' ? sortConfig.direction : 'asc'} onClick={() => handleSortRequest('name')}>
                                                 Nombre {sortConfig.key === 'name' ? (<Box component="span" sx={visuallyHidden}>{sortConfig.direction} sort</Box>) : null}
@@ -405,11 +405,12 @@ const ReadProducts: React.FC = () => {
                                                 Categoría {sortConfig.key === 'category' ? (<Box component="span" sx={visuallyHidden}>{sortConfig.direction} sort</Box>) : null}
                                             </TableSortLabel>
                                         </TableCell>
+                                        <TableCell sx={{ fontWeight: 'bold', width: '15%' }}>Líneas de Producción</TableCell>
                                         <TableCell
-                                            align="center" sx={{ fontWeight: 'bold', width: '10%' }}
+                                            align="center" sx={{ fontWeight: 'bold', width: '5%' }}
                                             sortDirection={sortConfig.key === 'variantsCount' ? sortConfig.direction : false}>
                                             <TableSortLabel active={sortConfig.key === 'variantsCount'} direction={sortConfig.key === 'variantsCount' ? sortConfig.direction : 'asc'} onClick={() => handleSortRequest('variantsCount')}>
-                                                Variantes {sortConfig.key === 'variantsCount' ? (<Box component="span" sx={visuallyHidden}>{sortConfig.direction} sort</Box>) : null}
+                                                #Var {sortConfig.key === 'variantsCount' ? (<Box component="span" sx={visuallyHidden}>{sortConfig.direction} sort</Box>) : null}
                                             </TableSortLabel>
                                         </TableCell>
                                         <TableCell
@@ -419,8 +420,8 @@ const ReadProducts: React.FC = () => {
                                                 Estado {sortConfig.key === 'active' ? (<Box component="span" sx={visuallyHidden}>{sortConfig.direction} sort</Box>) : null}
                                             </TableSortLabel>
                                         </TableCell>
-                                        <TableCell sx={{ fontWeight: 'bold', width: '10%' }} align='center'>Misc</TableCell> {/* Misc flags like Best Seller */}
-                                        <TableCell align="right" sx={{ fontWeight: 'bold', width: '15%' }}>Acciones</TableCell>
+                                        <TableCell sx={{ fontWeight: 'bold', width: '5%' }} align='center'>Misc</TableCell> {/* Misc flags like Best Seller */}
+                                        <TableCell align="right" sx={{ fontWeight: 'bold', width: '10%' }}>Acciones</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -442,6 +443,16 @@ const ReadProducts: React.FC = () => {
                                                     <TableCell><Avatar variant="rounded" src={product.thumbUrl || product.sources?.images?.[0]?.url || undefined} alt={product.name} sx={{ width: 56, height: 56 }} /></TableCell>
                                                     <TableCell component="th" scope="row">{product.name}</TableCell>
                                                     <TableCell>{product.category}</TableCell>
+                                                    <TableCell>
+                                                        <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+                                                            {product.productionLines?.map((line, index) => (
+                                                                <Chip key={index} label={line} size="small" variant="outlined" />
+                                                            ))}
+                                                            {(!product.productionLines || product.productionLines.length === 0) && (
+                                                                <Typography variant="caption" color="text.secondary">-</Typography>
+                                                            )}
+                                                        </Stack>
+                                                    </TableCell>
                                                     <TableCell align="center">{product.variants?.length || 0}</TableCell>
                                                     <TableCell><Chip icon={product.active ? <CheckCircleIcon /> : <CancelIcon />} label={product.active ? 'Activo' : 'Inactivo'} color={product.active ? 'success' : 'default'} size="small" variant="outlined" /></TableCell>
                                                     <TableCell align='center'>
@@ -458,7 +469,7 @@ const ReadProducts: React.FC = () => {
                                                 {/* Expandable Row */}
                                                 <TableRow>
                                                     {/* Span across all columns */}
-                                                    <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}> {/* Update colSpan to match total columns */}
+                                                    <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={9}> {/* Update colSpan to match total columns */}
                                                         <Collapse in={isExpanded} timeout="auto" unmountOnExit>
                                                             {/* Use the helper component */}
                                                             <VariantDetailsTable variants={product.variants || []} />
@@ -471,7 +482,7 @@ const ReadProducts: React.FC = () => {
                                     {/* Handle empty state after filtering */}
                                     {paginatedProducts.length === 0 && (
                                         <TableRow>
-                                            <TableCell colSpan={8} align="center"> {/* Update colSpan */}
+                                            <TableCell colSpan={9} align="center"> {/* Update colSpan */}
                                                 No se encontraron productos que coincidan con los filtros/búsqueda.
                                             </TableCell>
                                         </TableRow>
@@ -504,7 +515,7 @@ const ReadProducts: React.FC = () => {
 
 
             {/* Confirmation Dialog (Keep as is) */}
-            <ConfirmationDialog open={dialogOpen} onClose={handleCloseDialog} onConfirm={handleConfirmDelete} title="Confirmar Eliminación" message={<>...</>} confirmText="Eliminar" cancelText="Cancelar" isPerformingAction={isDeleting} />
+            <ConfirmationDialog open={dialogOpen} onClose={handleCloseDialog} onConfirm={handleConfirmDelete} title="Confirmar Eliminación" message={<>¿Está seguro que desea eliminar el producto <strong>{productToDelete?.name}</strong>? Esta acción no se puede deshacer.</>} confirmText="Eliminar" cancelText="Cancelar" isPerformingAction={isDeleting} />
         </>
     );
 };

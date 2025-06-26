@@ -138,6 +138,12 @@ import EditableAddressForm from "./components/EditableAddressForm"
 import { getPermissions } from "@api/admin.api"
 import { Permissions } from "types/permissions.types"
 
+import dayjs, { Dayjs } from "dayjs"
+import "dayjs/locale/es"
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
+import { DatePicker } from "@mui/x-date-pickers/DatePicker"
+
 interface MethodOption {
   id: string
   label: string
@@ -411,6 +417,7 @@ export default function UpdateOrder() {
   const [permissions, setPermissions] = useState<Permissions | null>(null)
   const { showSnackBar: showSnackBarFromContext, showSnackBar } = useSnackBar()
   const showSnackBarRef = useRef(showSnackBarFromContext)
+
   useEffect(() => {
     showSnackBarRef.current = showSnackBarFromContext
   }, [showSnackBarFromContext])
@@ -440,6 +447,7 @@ export default function UpdateOrder() {
   const [paymentMethodOptions, setPaymentMethodOptions] = useState<
     MethodOption[]
   >([])
+  const [prefDate, setPrefDate] = useState<Dayjs>(dayjs())
 
   const [prevPayments, setPrevPayments] = useState<Payment[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -795,6 +803,11 @@ export default function UpdateOrder() {
   }, [editableOrderLines, selectedShippingMethod, order])
 
   useEffect(() => {
+    const newPrefDate = calculatePreferredDate(editableOrderLines)
+    setPrefDate(newPrefDate)
+  }, [editableOrderLines])
+
+  useEffect(() => {
     if (isPickupSelected) {
       setEditableShippingAddress(createBlankAddress())
       setUseShippingForBilling(false)
@@ -833,6 +846,38 @@ export default function UpdateOrder() {
     order,
     editableBillingAddress?.address?.line1,
   ])
+
+  const calculatePreferredDate = (lines: OrderLineFormState[]): Dayjs => {
+    const today = dayjs()
+    if (!lines || lines.length === 0) {
+      return today
+    }
+
+    const productionTimesInDays = lines.map((line) => {
+      const timeString = line.selectedProduct?.fullProduct?.productionTime
+
+      return parseInt(timeString || "0", 10)
+    })
+
+    const maxProductionTime = Math.max(...productionTimesInDays)
+
+    // return today.add(maxProductionTime, 'day');
+
+    let deliveryDate = dayjs()
+    let daysAdded = 0
+
+    while (daysAdded < maxProductionTime) {
+      deliveryDate = deliveryDate.add(1, "day")
+
+      const dayOfWeek = deliveryDate.day()
+
+      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+        daysAdded++
+      }
+    }
+
+    return deliveryDate
+  }
 
   const onVoucherImageLoadInCropper = (
     e: React.SyntheticEvent<HTMLImageElement>
@@ -1682,6 +1727,7 @@ export default function UpdateOrder() {
             country: isPickupSelected
               ? createBlankAddress().address.country
               : shippingAddr.address.country || "",
+            preferredDeliveryDate: prefDate ? prefDate.toDate() : new Date(),
           }
         : undefined,
       payment: {
@@ -2660,6 +2706,76 @@ export default function UpdateOrder() {
                   </ListItem>
                 </List>
               </Paper>
+              {order.consumerDetails && (
+                <Paper
+                  elevation={1}
+                  sx={{ p: { xs: 2, md: 2.5 }, mb: 2.5, borderRadius: 2 }}
+                  id="client-details-section"
+                >
+                  <Typography
+                    variant="h6"
+                    gutterBottom
+                    sx={{ display: "flex", alignItems: "center", mb: 1 }}
+                  >
+                    <PersonOutline sx={{ mr: 1, color: "primary.main" }} />
+                    Detalles del Cliente
+                  </Typography>
+                  {editableClientInfo && (
+                    <Stack spacing={2}>
+                      <Grid2 container spacing={2}>
+                        <Grid2 size={{ xs: 12, md: 6 }}>
+                          <TextField
+                            name="name"
+                            label="Nombre Cliente"
+                            value={editableClientInfo.name}
+                            onChange={handleClientInfoChange}
+                            variant="outlined"
+                            size="small"
+                            fullWidth
+                            disabled={isSubmitting}
+                            required
+                          />
+                        </Grid2>
+                        <Grid2 size={{ xs: 12, md: 6 }}>
+                          <TextField
+                            name="lastName"
+                            label="Apellido Cliente"
+                            value={editableClientInfo.lastName}
+                            onChange={handleClientInfoChange}
+                            variant="outlined"
+                            size="small"
+                            fullWidth
+                            disabled={isSubmitting}
+                            required
+                          />
+                        </Grid2>
+                      </Grid2>
+                      <TextField
+                        name="email"
+                        label="Email Cliente"
+                        type="email"
+                        value={editableClientInfo.email || ""}
+                        onChange={handleClientInfoChange}
+                        variant="outlined"
+                        size="small"
+                        fullWidth
+                        disabled={isSubmitting}
+                      />
+                      <TextField
+                        name="phone"
+                        label="Teléfono Cliente"
+                        value={editableClientInfo.phone}
+                        onChange={handleClientInfoChange}
+                        variant="outlined"
+                        size="small"
+                        fullWidth
+                        disabled={isSubmitting}
+                        required
+                      />
+                    </Stack>
+                  )}
+                </Paper>
+              )}
               <Paper
                 elevation={1}
                 sx={{ p: { xs: 2, md: 2.5 }, mb: 2.5, borderRadius: 2 }}
@@ -2703,6 +2819,18 @@ export default function UpdateOrder() {
                     />
                   )}
                 />
+                <LocalizationProvider
+                  dateAdapter={AdapterDayjs}
+                  adapterLocale="es"
+                >
+                  <DatePicker
+                    sx={{ width: "100%" }}
+                    label="Fecha estimada de entrega"
+                    value={prefDate}
+                    format="DD/MM/YYYY"
+                    onChange={(newValue) => setPrefDate(dayjs(newValue))}
+                  />
+                </LocalizationProvider>
                 {!isPickupSelected && (
                   <>
                     <Typography
@@ -2820,76 +2948,7 @@ export default function UpdateOrder() {
                     </Typography>
                   )}
               </Paper>
-              {order.consumerDetails && (
-                <Paper
-                  elevation={1}
-                  sx={{ p: { xs: 2, md: 2.5 }, mb: 2.5, borderRadius: 2 }}
-                  id="client-details-section"
-                >
-                  <Typography
-                    variant="h6"
-                    gutterBottom
-                    sx={{ display: "flex", alignItems: "center", mb: 1 }}
-                  >
-                    <PersonOutline sx={{ mr: 1, color: "primary.main" }} />
-                    Detalles del Cliente
-                  </Typography>
-                  {editableClientInfo && (
-                    <Stack spacing={2}>
-                      <Grid2 container spacing={2}>
-                        <Grid2 size={{ xs: 12, md: 6 }}>
-                          <TextField
-                            name="name"
-                            label="Nombre Cliente"
-                            value={editableClientInfo.name}
-                            onChange={handleClientInfoChange}
-                            variant="outlined"
-                            size="small"
-                            fullWidth
-                            disabled={isSubmitting}
-                            required
-                          />
-                        </Grid2>
-                        <Grid2 size={{ xs: 12, md: 6 }}>
-                          <TextField
-                            name="lastName"
-                            label="Apellido Cliente"
-                            value={editableClientInfo.lastName}
-                            onChange={handleClientInfoChange}
-                            variant="outlined"
-                            size="small"
-                            fullWidth
-                            disabled={isSubmitting}
-                            required
-                          />
-                        </Grid2>
-                      </Grid2>
-                      <TextField
-                        name="email"
-                        label="Email Cliente"
-                        type="email"
-                        value={editableClientInfo.email || ""}
-                        onChange={handleClientInfoChange}
-                        variant="outlined"
-                        size="small"
-                        fullWidth
-                        disabled={isSubmitting}
-                      />
-                      <TextField
-                        name="phone"
-                        label="Teléfono Cliente"
-                        value={editableClientInfo.phone}
-                        onChange={handleClientInfoChange}
-                        variant="outlined"
-                        size="small"
-                        fullWidth
-                        disabled={isSubmitting}
-                        required
-                      />
-                    </Stack>
-                  )}
-                </Paper>
-              )}
+
               <Paper
                 elevation={1}
                 sx={{ p: { xs: 2, md: 2.5 }, mb: 2.5, borderRadius: 2 }}
@@ -2935,7 +2994,7 @@ export default function UpdateOrder() {
             </Grid2>
           </Grid2>
         </CustomTabPanel>
-        <CustomTabPanel value={activeStep} index={0}>
+        <CustomTabPanel value={activeStep} index={1}>
           <Box sx={{ mt: 3 }}>
             <Grid2 container spacing={2}>
               <Grid2 size={{ xs: 12 }}>

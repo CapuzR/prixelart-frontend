@@ -45,6 +45,7 @@ interface GetMovementsOptions {
     type?: string;
     dateFrom?: string;
     dateTo?: string;
+    destinatary?: string
 }
 
 // --- Define Expected Paginated Response Structure ---
@@ -57,19 +58,20 @@ interface GetMovementsResponse extends Omit<PrixResponse, 'result'> {
     result: PaginatedMovementsResult | null;
 }
 
-// --- Updated API Function ---
 export const getMovements = async (options: GetMovementsOptions): Promise<PaginatedMovementsResult> => {
-    const { page, limit, sortBy = 'date', sortOrder = 'desc', ...filters } = options;
-    // Construct query parameters
-    const params = new URLSearchParams({
+    const {destinatary, page, limit, sortBy = 'date', sortOrder = 'desc', ...filters } = options;
+    type QueryParams = Record<string, string>;
+    const queryParams: QueryParams = {
         page: String(page),
         limit: String(limit),
         sortBy: sortBy,
         sortOrder: sortOrder,
-    });
+        destinatary: destinatary!,
+      };
 
-    // Add filter params if they exist
-    Object.entries(filters).forEach(([key, value]) => {
+      const params = new URLSearchParams(queryParams);
+
+      Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== '') {
             params.append(key, String(value));
         }

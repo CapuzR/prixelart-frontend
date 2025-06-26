@@ -1,4 +1,3 @@
-// src/apps/admin/sections/orders/views/ReadOrders.tsx
 import React, {
   useRef,
   useState,
@@ -24,7 +23,6 @@ import {
   CircularProgress,
   Alert,
   Tooltip,
-  Stack,
   Chip,
   Link,
   TablePagination,
@@ -32,7 +30,6 @@ import {
   InputAdornment,
   Fab,
   InputLabel,
-  ToggleButton,
   FormControl,
   Select,
   MenuItem,
@@ -42,10 +39,8 @@ import Grid2 from "@mui/material/Grid" // Assuming this is Material UI's Unstabl
 import EditIcon from "@mui/icons-material/Edit"
 import DeleteIcon from "@mui/icons-material/Delete"
 import AddIcon from "@mui/icons-material/Add"
-import InfoIcon from "@mui/icons-material/Info"
 import CheckCircleIcon from "@mui/icons-material/CheckCircle"
 import CancelIcon from "@mui/icons-material/Cancel"
-import SearchIcon from "@mui/icons-material/Search"
 import FilterListOffIcon from "@mui/icons-material/FilterListOff"
 import {
   LocalShippingOutlined,
@@ -59,16 +54,16 @@ import {
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 
 import { useSnackBar } from "context/GlobalContext"
-import { Order, OrderStatus, GlobalPaymentStatus } from "types/order.types"
+import { Order, OrderStatus, GlobalPaymentStatus, ShippingDetails } from "types/order.types"
 import Title from "@apps/admin/components/Title"
 import ConfirmationDialog from "@components/ConfirmationDialog/ConfirmationDialog"
 import { deleteOrder, getOrders } from "@api/order.api"
 import excelJS from "exceljs"
-import moment from "moment"
 import "moment/locale/es"
 import { format, parseISO, isValid } from "date-fns"
 import { Permissions } from "types/permissions.types"
 import { getPermissions } from "@api/admin.api"
+import dayjs, { Dayjs } from "dayjs"
 
 interface OrderSummary {
   _id: string
@@ -84,6 +79,7 @@ interface OrderSummary {
   paymentMethodName?: string
   shippingDate?: Date
   createdBy?: string
+  shipping: ShippingDetails
 }
 
 const getStatusChipProps = (
@@ -254,6 +250,7 @@ const ReadOrders: React.FC = () => {
             primaryStatus: getLatestStatus(order.status),
             shippingMethodName: shipping?.method?.name || "N/A",
             paymentMethodName: payment?.payment?.[0]?.method?.name || "N/A",
+            shipping: order.shipping
           }
         })
 
@@ -317,12 +314,12 @@ const ReadOrders: React.FC = () => {
       const statusMatch =
         filterStatus === "" ||
         order?.primaryStatus?.toString() ===
-          ALL_STATUSES.indexOf(filterStatus).toString()
+        ALL_STATUSES.indexOf(filterStatus).toString()
 
       const payStatusMatch =
         filterPayStatus === "" ||
         order?.payStatus?.toString() ===
-          ALL_PAY_STATUSES.indexOf(filterPayStatus).toString()
+        ALL_PAY_STATUSES.indexOf(filterPayStatus).toString()
 
       const dateMatch =
         (!startDate || new Date(order.createdOn) >= startDate) &&
@@ -355,24 +352,24 @@ const ReadOrders: React.FC = () => {
 
   const handleSelectFilterChange =
     (setter: React.Dispatch<React.SetStateAction<any>>) =>
-    (event: SelectChangeEvent<any>) => {
-      const value = event.target.value
-      setter(value)
-      if (setter === setFilterStatus && value !== "") {
-        setFilterIsNotConcretado(false)
+      (event: SelectChangeEvent<any>) => {
+        const value = event.target.value
+        setter(value)
+        if (setter === setFilterStatus && value !== "") {
+          setFilterIsNotConcretado(false)
+        }
+        triggerSearchOrFilter()
       }
-      triggerSearchOrFilter()
-    }
 
   const handleDateFilterChange =
     (setter: React.Dispatch<React.SetStateAction<Date | null>>) =>
-    (
-      value: unknown,
-      context: PickerChangeHandlerContext<DateValidationError>
-    ) => {
-      setter(value as Date | null)
-      triggerSearchOrFilter()
-    }
+      (
+        value: unknown,
+        context: PickerChangeHandlerContext<DateValidationError>
+      ) => {
+        setter(value as Date | null)
+        triggerSearchOrFilter()
+      }
 
   const handleClearFilters = () => {
     setSearchQuery("")
@@ -523,8 +520,8 @@ const ReadOrders: React.FC = () => {
                       {new Date(order.createdOn).toLocaleDateString()}
                     </TableCell>
                     <TableCell>
-                      {order.shippingDate
-                        ? new Date(order.shippingDate).toLocaleDateString()
+                      {order.shipping.preferredDeliveryDate
+                        ? dayjs(order.shipping.preferredDeliveryDate).format('DD/MM/YYYY')
                         : ""}
                     </TableCell>
                     <TableCell>
@@ -565,7 +562,7 @@ const ReadOrders: React.FC = () => {
                         <Tooltip title="Ver/Editar Orden">
                           <IconButton
                             aria-label="edit"
-                            color="primary"
+                            color="secondary"
                             onClick={() => handleUpdate(order._id)}
                             disabled={!order._id || isDeleting}
                             size="small"
@@ -605,6 +602,9 @@ const ReadOrders: React.FC = () => {
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
           labelRowsPerPage="Órdenes por página:"
+          labelDisplayedRows={({ from, to, count }) =>
+            `${from}–${to} de ${count !== -1 ? count : `más de ${to}`}`
+          }
         />
       </Paper>
     )
@@ -750,8 +750,8 @@ const ReadOrders: React.FC = () => {
             typeof line.item.product?.selection === "string"
               ? line.item.product.selection
               : line.item.product?.selection
-                  ?.map((attr: any) => attr.value)
-                  .join(", ") || "",
+                ?.map((attr: any) => attr.value)
+                .join(", ") || "",
           quantity: line.quantity,
           unitPrice: formatPrice(line.pricePerUnit),
         }

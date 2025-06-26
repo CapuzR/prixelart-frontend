@@ -24,6 +24,7 @@ import ArtUploader from "@apps/artist/artUploader"
 import CreateService from "@components/createService"
 import ForgotPassword from "@apps/artist/passwordReset/ForgotPassword"
 import PasswordReset from "@apps/artist/passwordReset/PasswordReset" 
+import PrixerStats from "@apps/artist/profile/Stats"
 
 import { usePrixerCreator } from "@context/GlobalContext"
 
@@ -51,6 +52,7 @@ const {uploadArt, setArtModal} = usePrixerCreator()
         <Route path="/testimonios" element={<TestimonialsGrid />} />
         <Route path="/arte/:artId" element={<ArtDetail />} />
         <Route path="/prixer/:username" element={<PrixerProfile />} />
+        <Route path="/prixer/:username/stats" element={<PrixerStats />} />
         <Route path="/org/:username" element={<PrixerProfile />} />
         <Route path="/crear-prix" element={<Flow />} />
         <Route path="/producto/:id" element={<ProductDetails />} />

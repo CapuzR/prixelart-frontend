@@ -201,18 +201,6 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking }) => {
               amount: ivaAmount,
             })
 
-            // Add IGTF (3%) if the payment method is "Efectivo $"
-            if (checkoutState.billing?.paymentMethod === "Efectivo $") {
-              const igtfValue = 3
-              const igtfAmount = subtotal * (igtfValue / 100)
-              taxes.push({
-                id: "igtf",
-                name: "IGTF:",
-                value: igtfValue,
-                amount: igtfAmount,
-              })
-            }
-
             checkoutState.order.tax = taxes
             const totalTaxes = taxes.reduce((sum, tax) => sum + tax.amount, 0)
             checkoutState.order.total = parseFloat(
@@ -272,18 +260,6 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking }) => {
               value: ivaValue,
               amount: ivaAmount,
             })
-
-            // Add IGTF (3%) if the payment method is "Efectivo $"
-            if (checkoutState.billing?.paymentMethod === "Efectivo $") {
-              const igtfValue = 3
-              const igtfAmount = subtotal * (igtfValue / 100)
-              taxes.push({
-                id: "igtf",
-                name: "IGTF:",
-                value: igtfValue,
-                amount: igtfAmount,
-              })
-            }
 
             checkoutState.order.tax = taxes
             const totalTaxes = taxes.reduce((sum, tax) => sum + tax.amount, 0)

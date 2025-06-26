@@ -131,21 +131,28 @@ export const getArts = async (): Promise<Art[]> => {
     }
 };
 
-export const fetchGallery = async (filters: object): Promise<{ arts: Art[]; length: number }> => {
+interface GalleryResponse {
+  arts: Art[];
+  hasMore: boolean;
+}
+
+export const fetchGallery = async (filters: object): Promise<GalleryResponse> => {
     const URI = `${BACKEND_URL}/art/read-gallery`;
 
     try {
         const res = await axios.post(URI, filters);
         const result = res.data as PrixResponse;
 
-        const gallery = result.result as Gallery;
+        // Ensure you return the new structure. The backend now sends 'hasMore' instead of 'length'.
+        const gallery = result.result as unknown as GalleryResponse;
         return {
             arts: gallery.arts,
-            length: gallery.length
+            hasMore: gallery.hasMore
         };
     } catch (error) {
         console.error("Error fetching gallery data:", error);
-        return { arts: [], length: 0 };
+        // On error, we assume there are no arts and no more pages.
+        return { arts: [], hasMore: false };
     }
 };
 

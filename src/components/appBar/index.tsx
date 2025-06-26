@@ -208,6 +208,10 @@ const MenuAppBar: React.FC = () => {
       label: "Mi Perfil",
       onClick: () => handleNavigate(`/prixer/${user?.username}`),
     },
+    {
+      label: "Mi Cuenta",
+      onClick: () => handleNavigate(`/prixer/${user!.username}/stats`),
+    },
     // { label: 'Cambiar contraseña', onClick: () => handleNavigate(`/prixer/${user!.username}`) },
 
     { label: "Cerrar Sesión", onClick: handleLogout },
@@ -237,13 +241,13 @@ const MenuAppBar: React.FC = () => {
     }),
     ...(isMobile &&
       drawerOpen && {
-        width: `calc(100% - ${drawerWidth}px)`,
-        marginLeft: `${drawerWidth}px`,
-        transition: theme.transitions.create(["margin", "width"], {
-          easing: theme.transitions.easing.easeOut,
-          duration: theme.transitions.duration.enteringScreen,
-        }),
+      width: `calc(100% - ${drawerWidth}px)`,
+      marginLeft: `${drawerWidth}px`,
+      transition: theme.transitions.create(["margin", "width"], {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen,
       }),
+    }),
   }
 
   const drawerHeaderSx: SxProps<Theme> = (currentTheme) => ({
@@ -266,11 +270,11 @@ const MenuAppBar: React.FC = () => {
       sx={
         orientation === "vertical"
           ? {
-              display: "flex",
-              borderRight: (theme) => `1px solid ${theme.palette.divider}`,
-              alignItems: "flex-start",
-              width: "100%",
-            }
+            display: "flex",
+            borderRight: (theme) => `1px solid ${theme.palette.divider}`,
+            alignItems: "flex-start",
+            width: "100%",
+          }
           : {}
       }
     >

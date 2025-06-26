@@ -32,7 +32,7 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
 
   const [searchValue, setSearchValue] = useState<string>(getParams().get('name') || '');
   const [categoryValue, setCategoryValue] = useState<string>(getParams().get('category') || '');
-  
+
   const [tiles, setTiles] = useState<Art[]>([]);
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true);
@@ -43,10 +43,10 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
     const newParams = new URLSearchParams();
     if (query) newParams.set('name', query);
     if (category) newParams.set('category', category);
-    
+
     navigate({ search: newParams.toString() }, { replace: true });
   };
-  
+
   const debouncedSearch = useCallback(debounce(performSearch, 500), []);
 
   // Handler for text input changes from the SearchBar
@@ -97,7 +97,7 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
             return [...prevTiles, ...uniqueNewArts];
           }
         });
-        
+
         setHasMore(response.hasMore);
 
       } catch (error: any) {
@@ -106,7 +106,7 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
           setFetchMoreError(error.message || 'Ocurrió un error al cargar más arte.');
         } else {
           setHasMore(false);
-          if(pageNumber === 1) {
+          if (pageNumber === 1) {
             setFetchMoreError(error.message || 'Ocurrió un error al cargar el arte.');
           }
         }
@@ -139,9 +139,9 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
 
   const handleRetryFetchMore = () => {
     setFetchMoreError(null);
-    setPageNumber(p => p); 
+    setPageNumber(p => p);
   };
-  
+
   const handleRetryInitialLoad = () => {
     setFetchMoreError(null);
     setHasMore(true);
@@ -167,7 +167,7 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
     }
     // Initial load failed
     if (!loading && pageNumber === 1 && tiles.length === 0 && fetchMoreError) {
-       return (
+      return (
         <Box textAlign="center" p={3}>
           <Typography variant="h6" color="error" gutterBottom>
             Error al cargar el arte.

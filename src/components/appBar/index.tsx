@@ -206,11 +206,7 @@ const MenuAppBar: React.FC = () => {
   const loggedInUserMenuItems = [
     {
       label: "Mi Perfil",
-      onClick: () => handleNavigate(`/prixer/${user!.username}`),
-    },
-    {
-      label: "Mi Cuenta",
-      onClick: () => handleNavigate(`/prixer/${user!.username}/stats`),
+      onClick: () => handleNavigate(`/prixer/${user?.username}`),
     },
     // { label: 'Cambiar contraseña', onClick: () => handleNavigate(`/prixer/${user!.username}`) },
 

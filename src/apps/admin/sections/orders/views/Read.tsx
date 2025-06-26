@@ -314,12 +314,12 @@ const ReadOrders: React.FC = () => {
       const statusMatch =
         filterStatus === "" ||
         order?.primaryStatus?.toString() ===
-          ALL_STATUSES.indexOf(filterStatus).toString()
+        ALL_STATUSES.indexOf(filterStatus).toString()
 
       const payStatusMatch =
         filterPayStatus === "" ||
         order?.payStatus?.toString() ===
-          ALL_PAY_STATUSES.indexOf(filterPayStatus).toString()
+        ALL_PAY_STATUSES.indexOf(filterPayStatus).toString()
 
       const dateMatch =
         (!startDate || new Date(order.createdOn) >= startDate) &&
@@ -352,24 +352,24 @@ const ReadOrders: React.FC = () => {
 
   const handleSelectFilterChange =
     (setter: React.Dispatch<React.SetStateAction<any>>) =>
-    (event: SelectChangeEvent<any>) => {
-      const value = event.target.value
-      setter(value)
-      if (setter === setFilterStatus && value !== "") {
-        setFilterIsNotConcretado(false)
+      (event: SelectChangeEvent<any>) => {
+        const value = event.target.value
+        setter(value)
+        if (setter === setFilterStatus && value !== "") {
+          setFilterIsNotConcretado(false)
+        }
+        triggerSearchOrFilter()
       }
-      triggerSearchOrFilter()
-    }
 
   const handleDateFilterChange =
     (setter: React.Dispatch<React.SetStateAction<Date | null>>) =>
-    (
-      value: unknown,
-      context: PickerChangeHandlerContext<DateValidationError>
-    ) => {
-      setter(value as Date | null)
-      triggerSearchOrFilter()
-    }
+      (
+        value: unknown,
+        context: PickerChangeHandlerContext<DateValidationError>
+      ) => {
+        setter(value as Date | null)
+        triggerSearchOrFilter()
+      }
 
   const handleClearFilters = () => {
     setSearchQuery("")
@@ -750,8 +750,8 @@ const ReadOrders: React.FC = () => {
             typeof line.item.product?.selection === "string"
               ? line.item.product.selection
               : line.item.product?.selection
-                  ?.map((attr: any) => attr.value)
-                  .join(", ") || "",
+                ?.map((attr: any) => attr.value)
+                .join(", ") || "",
           quantity: line.quantity,
           unitPrice: formatPrice(line.pricePerUnit),
         }

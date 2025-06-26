@@ -1,70 +1,81 @@
 // src/apps/admin/sections/users/views/UpdateUser.tsx
 import React, {
-  useState,
-  useEffect,
-  useCallback,
   ChangeEvent,
   FormEvent,
   SyntheticEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
 } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import axios from "axios"
 import { PrixResponse } from "types/prixResponse.types"
-// Hooks, Types, Context, API
+
 import { useSnackBar } from "context/GlobalContext"
 import { User } from "types/user.types"
 import { Prixer } from "types/prixer.types"
 import { Permissions } from "types/permissions.types"
 
-import { getUserById, updateUser } from "@api/user.api"
+import { getUserById, updateUser, getBalance, getUsers } from "@api/user.api"
 import { isAValidEmail } from "utils/validations" // Assuming no username/password validation needed here
 import Grid2 from "@mui/material/Grid"
-// MUI Components
 import { Lock, Visibility, VisibilityOff } from "@mui/icons-material"
 import {
-  Box,
-  Typography,
-  TextField,
-  OutlinedInput,
-  Button,
-  Paper,
-  FormControlLabel,
-  Checkbox,
-  CircularProgress,
   Alert,
-  Stack,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
-  FormHelperText,
   Autocomplete,
-  Chip,
-  InputAdornment,
-  Divider,
   Avatar,
+  Box,
+  Button,
+  Checkbox,
+  Chip,
+  CircularProgress,
+  Divider,
+  FormControl,
+  FormControlLabel,
+  FormHelperText,
   IconButton,
+  InputAdornment,
+  InputLabel,
+  Link,
+  MenuItem,
   Modal,
-  Tabs,
-  Tab,
+  OutlinedInput,
+  Paper,
+  Select,
   SelectChangeEvent,
+  Skeleton,
+  Stack,
+  Tab,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
+  TableSortLabel,
+  Tabs,
+  TextField,
+  Tooltip,
+  Typography,
 } from "@mui/material"
-// Removed Password specific imports as they are not needed for update
+import { visuallyHidden } from "@mui/utils"
+
 import Title from "@apps/admin/components/Title"
 
-// Date Picker & Dayjs
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
-import dayjs, { Dayjs } from "dayjs" // Import dayjs and Dayjs type
+import dayjs, { Dayjs } from "dayjs"
 import {
   PickerChangeHandlerContext,
   DateValidationError,
-} from "@mui/x-date-pickers" // Import Picker context/types
+} from "@mui/x-date-pickers"
 import { getPermissions } from "@api/admin.api"
 import { Movement } from "types/movement.types"
-import { createMovement } from "@api/movement.api"
+import { createMovement, getMovements } from "@api/movement.api"
+import EditIcon from "@mui/icons-material/Edit"
 
-// --- Constants and Options (Copied/Aligned with CreateUser) ---
-const AVAILABLE_ROLES = ["consumer", "prixer", "seller", "admin"] // Adjust  based on permissions
+const AVAILABLE_ROLES = ["consumer", "prixer", "seller", "admin"]
 const AVAILABLE_GENDERS = ["Masculino", "Femenino", "Otro", "Prefiero no decir"]
 const AVAILABLE_SPECIALTIES = [
   "Ilustración",
@@ -73,10 +84,13 @@ const AVAILABLE_SPECIALTIES = [
   "Artes Plásticas",
   "Música",
   "Escritura",
-] // Should ideally be fetched
+]
 
-// --- Type Definitions (Copied/Adapted from CreateUser) ---
-// Base errors excluding password and username (as it's read-only)
+type Sort = "asc" | "desc"
+const formatCurrency = (value: number): string => `$${value.toFixed(2)}`
+const formatDate = (date?: Date): string =>
+  date ? new Date(date).toLocaleString() : "N/A"
+
 interface UserBaseValidationErrors {
   firstName?: string
   lastName?: string
@@ -108,6 +122,23 @@ interface PrixerValidationErrors {
   avatar?: string
   termsAgree?: string // Added termsAgree
 }
+
+interface HeadCell {
+  id: keyof Movement | "actions"
+  label: string
+  numeric: boolean
+  sortable: boolean
+}
+
+const headCells: readonly HeadCell[] = [
+  { id: "date", numeric: false, label: "Fecha", sortable: true },
+  { id: "type", numeric: false, label: "Tipo", sortable: true },
+  { id: "description", numeric: false, label: "Descripción", sortable: true },
+  { id: "order", numeric: false, label: "Orden Asociada", sortable: true },
+  { id: "value", numeric: true, label: "Valor", sortable: true },
+  { id: "actions", numeric: false, label: "Acciones", sortable: false },
+]
+
 interface UserValidationErrors extends UserBaseValidationErrors {
   prixer?: PrixerValidationErrors // Nested errors for Prixer part
 }
@@ -213,10 +244,24 @@ const UpdateUser: React.FC = () => {
   const [value, setValue] = useState(0)
   type MovementType = "Depósito" | "Retiro"
   const movementTypeOptions: MovementType[] = ["Depósito", "Retiro"]
+  const [movements, setMovements] = useState<Movement[]>([])
+  const [totalMovements, setTotalMovements] = useState<number>(0)
+
+  const [rowsPerPage, setRowsPerPage] = useState<number>(10)
+  const [order, setOrder] = useState<Sort>("desc")
+  const [orderBy, setOrderBy] = useState<keyof Movement>("date")
+  const [page, setPage] = useState<number>(0)
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>()
+  const [searchQuery, setSearchQuery] = useState<string>("")
+  const [filterType, setFilterType] = useState<string>("")
+  const [startDate, setStartDate] = useState<Date | null>(null)
+  const [endDate, setEndDate] = useState<Date | null>(null)
 
   const [formData, setFormData] = useState(initialFormState)
   const [amount, setAmount] = useState("")
   const [errorSubmit, setErrorSubmit] = useState<string | null>(null)
+
+  const abortControllerRef = useRef<AbortController | null>(null)
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue)
@@ -224,6 +269,10 @@ const UpdateUser: React.FC = () => {
   const isPrixerRoleSelected = userFormData.role?.includes("prixer")
 
   const loadUser = useCallback(async () => {
+    abortControllerRef.current?.abort()
+    abortControllerRef.current = new AbortController()
+    const signal = abortControllerRef.current.signal
+
     if (!id) {
       setErrorFetch("ID de usuario inválido.")
       setIsLoading(false)
@@ -231,18 +280,13 @@ const UpdateUser: React.FC = () => {
       navigate("/admin/users/read")
       return
     }
+
     setIsLoading(true)
     setErrorFetch(null)
     setValidationErrors(null)
 
     try {
-      const userData = await getUserById(id)
-      if (!userData) {
-        throw new Error("Usuario no encontrado.")
-      }
-      if (userData.account) {
-        const readBalance = await getBalance(userData?.account)
-      }
+      const userData = await getUserById(id, { signal })
       setOriginalUsername(userData.username || "N/A")
 
       setUserFormData({
@@ -288,6 +332,12 @@ const UpdateUser: React.FC = () => {
             "Prixer data found but role missing. Role 'prixer' added to form state."
           )
         }
+        if (userData.account !== undefined) {
+          const fetchedBalance = await getBalance(userData.account, { signal })
+          if (fetchedBalance !== null) {
+            setBalance(fetchedBalance)
+          }
+        }
       } else {
         setPrixerFormData(initialPrixerFormState)
         if (userData.role?.includes("prixer")) {
@@ -301,6 +351,10 @@ const UpdateUser: React.FC = () => {
         }
       }
     } catch (err: any) {
+      if (err.name === "CanceledError" || err.name === "AbortError") {
+        console.log("Request successfully aborted.")
+        return
+      }
       console.error("Failed to load user:", err)
       const message =
         err.response?.data?.message ||
@@ -309,40 +363,95 @@ const UpdateUser: React.FC = () => {
       setErrorFetch(message)
       showSnackBar(message)
     } finally {
-      setIsLoading(false)
+      if (!signal.aborted) {
+        setIsLoading(false)
+      }
     }
   }, [id, navigate, showSnackBar])
 
-  // const checkPermissions = async () => {
-  //   const response = await getPermissions()
-  //   setPermissions(response)
-  // }
-
   useEffect(() => {
     loadUser()
-    // checkPermissions()
   }, [])
 
-  const getBalance = async (_id: string | undefined) => {
-    const base_url = import.meta.env.VITE_BACKEND_URL + "/account/readById"
-    try {
-      const response = await axios.post<PrixResponse>(base_url, {
-        withCredentials: true,
-        _id,
-      })
+  const loadMovements = useCallback(
+    async (showLoadingIndicator = true) => {
+      if (showLoadingIndicator) setIsLoading(true)
 
-      if (!response.data.success) {
-        console.error(
-          "Backend reported authentication failure:",
-          response.data.message
-        )
-        throw new Error(response.data.message || "Authentication failed")
+      try {
+        if (!userFormData.account) return
+        const apiPage = page + 1
+        const response = await getMovements({
+          destinatary: userFormData.account,
+          page: apiPage,
+          limit: rowsPerPage,
+          sortBy: orderBy,
+          sortOrder: order,
+          search: searchQuery,
+          type: filterType,
+          dateFrom: startDate?.toISOString(),
+          dateTo: endDate?.toISOString(),
+        })
+
+        setMovements(response.data)
+        setTotalMovements(response.totalCount)
+        setErrorFetch(null)
+      } catch (err: any) {
+        const message = err.message || "Error al cargar movimientos."
+        setErrorFetch(message)
+        if (!showLoadingIndicator) {
+          showSnackBar(`Error al actualizar: ${message}`)
+        }
+        console.error("Error fetching filtered/paginated data:", err)
+      } finally {
+        if (showLoadingIndicator || movements.length === 0) {
+          setIsLoading(false)
+        } else {
+          setIsLoading(false)
+        }
       }
-      setBalance((response?.data?.result as { balance: number }).balance)
-    } catch (e) {
-      console.log(e)
-      throw e
-    }
+    },
+    [
+      page,
+      rowsPerPage,
+      order,
+      orderBy,
+      showSnackBar,
+      searchQuery,
+      filterType,
+      startDate,
+      endDate,
+      userFormData.account
+    ]
+  )
+
+  useEffect(() => {
+     loadMovements()
+  }, [loadMovements, userFormData.account])
+
+  const triggerSearch = useCallback(() => {
+    setPage(0)
+    loadMovements(false)
+  }, [loadMovements])
+
+  const handleRequestSort = (
+    event: React.MouseEvent<unknown>,
+    property: keyof Movement
+  ) => {
+    const isAsc = orderBy === property && order === "asc"
+    setOrder(isAsc ? "desc" : "asc")
+    setOrderBy(property)
+    setPage(0)
+  }
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage)
+  }
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
   }
 
   const handleNewPasswordChange = (e: any) => {
@@ -359,6 +468,14 @@ const UpdateUser: React.FC = () => {
 
   const openModal = () => {
     setModal(!modal)
+  }
+
+  const handleUpdate = (movementId: string) => {
+    if (!movementId) {
+      showSnackBar("Falta ID.")
+      return
+    }
+    navigate(`/admin/movements/update/${movementId}`)
   }
   // Generic handler for most User text/select/checkbox inputs
   const handleUserInputChange = (
@@ -417,7 +534,7 @@ const UpdateUser: React.FC = () => {
   const handlePrixerInputChange = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    const target = event.target as HTMLInputElement 
+    const target = event.target as HTMLInputElement
     const name = target.name as keyof Prixer
     const value = target.type === "checkbox" ? target.checked : target.value
 
@@ -582,7 +699,7 @@ const UpdateUser: React.FC = () => {
       address: userFormData.address?.trim() || undefined,
       billingAddress: userFormData.billingAddress?.trim() || undefined,
       shippingAddress: userFormData.shippingAddress?.trim() || undefined,
-      instagram: userFormData.instagram?.trim() || undefined, 
+      instagram: userFormData.instagram?.trim() || undefined,
       facebook: userFormData.facebook?.trim() || undefined,
       twitter: userFormData.twitter?.trim() || undefined,
       ci: userFormData.ci?.trim() || undefined,
@@ -732,6 +849,60 @@ const UpdateUser: React.FC = () => {
     }))
   }
 
+  interface EnhancedTableProps {
+    onRequestSort: (
+      event: React.MouseEvent<unknown>,
+      property: keyof Movement
+    ) => void
+    order: Sort
+    orderBy: string
+  }
+
+  function EnhancedTableHead(props: EnhancedTableProps) {
+    const { order, orderBy, onRequestSort } = props
+    const createSortHandler =
+      (property: keyof Movement) => (event: React.MouseEvent<unknown>) => {
+        onRequestSort(event, property)
+      }
+
+    return (
+      <TableHead
+        sx={{ backgroundColor: (theme) => theme.palette.action.hover }}
+      >
+        <TableRow>
+          {headCells.map((headCell) => (
+            <TableCell
+              key={headCell.id}
+              align={headCell.numeric ? "right" : "left"}
+              padding={"normal"}
+              sortDirection={orderBy === headCell.id ? order : false}
+              sx={{ fontWeight: "bold" }}
+            >
+              {headCell.sortable ? (
+                <TableSortLabel
+                  active={orderBy === headCell.id}
+                  direction={orderBy === headCell.id ? order : "asc"}
+                  onClick={createSortHandler(headCell.id as keyof Movement)}
+                >
+                  {headCell.label}
+                  {orderBy === headCell.id ? (
+                    <Box component="span" sx={visuallyHidden}>
+                      {order === "desc"
+                        ? "sorted descending"
+                        : "sorted ascending"}
+                    </Box>
+                  ) : null}
+                </TableSortLabel>
+              ) : (
+                headCell.label
+              )}
+            </TableCell>
+          ))}
+        </TableRow>
+      </TableHead>
+    )
+  }
+
   return (
     <>
       <Title
@@ -778,6 +949,7 @@ const UpdateUser: React.FC = () => {
         >
           <Tab label="Info" {...a11yProps(0)} />
           <Tab label="Balance" {...a11yProps(1)} />
+          <Tab label="Movimientos" {...a11yProps(3)} />
         </Tabs>
         {!isLoading && !errorFetch && (
           <>
@@ -1370,140 +1542,315 @@ const UpdateUser: React.FC = () => {
             </CustomTabPanel>
 
             <CustomTabPanel value={value} index={1}>
-              <Grid2 size={{ xs: 12 }}>
-                <Typography
-                  color="secondary"
-                  variant="h5"
-                  sx={{ textAlign: "center" }}
-                >
-                  Balance: $
-                  {balance?.toLocaleString("de-DE", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </Typography>
-              </Grid2>
-              <Grid2 size={{ xs: 12 }}>
-                <Paper elevation={3} sx={{ p: 3, mt: 2 }}>
-                  {userFormData.account ? (
-                    <form onSubmit={handleSubmitMovement}>
-                      <Grid2 container spacing={3}>
-                        <Grid2 size={{ xs: 12, sm: 6 }}>
-                          <FormControl
-                            fullWidth
-                            required
-                            error={!!errorSubmit && !formData.type}
-                            disabled={isSubmitting}
-                          >
-                            <InputLabel id="movement-type-select-label">
-                              Tipo de Movimiento
-                            </InputLabel>
-                            <Select<MovementType> // Specify the type for better type safety
-                              labelId="movement-type-select-label"
-                              id="movement-type-select"
-                              value={formData.type}
-                              label="Tipo de Movimiento" // Important for label positioning
-                              onChange={handleTypeChange} // Use the dedicated handler
-                            >
-                              {movementTypeOptions.map((typeOption) => (
-                                <MenuItem key={typeOption} value={typeOption}>
-                                  {typeOption}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
-                        </Grid2>
-
-                        <Grid2 size={{ xs: 12, sm: 6 }}>
-                          <TextField
-                            label="Valor"
-                            name="value"
-                            type="number"
-                            value={amount}
-                            onChange={(e) => setAmount(e.target.value)}
-                            onBlur={handleBlur}
-                            required
-                            fullWidth
-                            disabled={isSubmitting}
-                            inputProps={{ step: "0.01" }}
-                            error={!!errorSubmit && isNaN(formData.value)}
-                          />
-                        </Grid2>
-
-                        <Grid2 size={{ xs: 12 }}>
-                          <TextField
-                            label="Descripción"
-                            name="description"
-                            value={formData.description}
-                            onChange={handleInputChange}
-                            required
-                            fullWidth
-                            multiline
-                            rows={3}
-                            disabled={isSubmitting}
-                            error={
-                              !!errorSubmit && !formData.description.trim()
-                            }
-                          />
-                        </Grid2>
-                        <Grid2 size={{ xs: 12, sm: 6 }}>
-                          <TextField
-                            label="ID de Orden (Opcional)"
-                            name="order"
-                            value={formData.order || ""}
-                            onChange={handleInputChange}
-                            fullWidth
-                            disabled={isSubmitting}
-                            helperText="Asociar este movimiento a una orden específica"
-                          />
-                        </Grid2>
-
-                        <Grid2 size={{ xs: 12 }}>
-                          <Stack
-                            direction="row"
-                            justifyContent="flex-end"
-                            spacing={2}
-                            sx={{ mt: 2 }}
-                          >
-                            <Button
-                              type="button"
-                              variant="outlined"
-                              color="secondary"
-                              onClick={handleCancel}
+              <Grid2
+                container
+                sx={{ justifyContent: "center", alignItems: "center" }}
+              >
+                <Grid2 size={{ xs: 12 }} sx={{ mb: 5 }}>
+                  <Typography
+                    color="secondary"
+                    variant="h5"
+                    sx={{ textAlign: "center" }}
+                  >
+                    Balance: $
+                    {balance?.toLocaleString("de-DE", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </Typography>
+                </Grid2>
+                <Grid2 size={{ xs: 12, md: 6 }}>
+                  <Paper elevation={3} sx={{ p: 3, mt: 2 }}>
+                    <Typography
+                      color="secondary"
+                      variant="h6"
+                      sx={{ textAlign: "center", mb: 4 }}
+                    >
+                      Agregar movimiento
+                    </Typography>
+                    {userFormData.account ? (
+                      <form onSubmit={handleSubmitMovement}>
+                        <Grid2 container spacing={3}>
+                          <Grid2 size={{ xs: 12, sm: 6 }}>
+                            <FormControl
+                              fullWidth
+                              required
+                              error={!!errorSubmit && !formData.type}
                               disabled={isSubmitting}
                             >
-                              Cancelar
-                            </Button>
-                            <Button
-                              type="submit"
-                              variant="contained"
-                              color="primary"
-                              disabled={isSubmitting}
-                              startIcon={
-                                isSubmitting ? (
-                                  <CircularProgress size={20} color="inherit" />
-                                ) : null
-                              }
-                            >
-                              {isSubmitting ? "Creando..." : "Crear Movimiento"}
-                            </Button>
-                          </Stack>
-                        </Grid2>
-
-                        {errorSubmit && (
-                          <Grid2 size={{ xs: 12 }}>
-                            <Alert severity="error" sx={{ mt: 2 }}>
-                              {errorSubmit}
-                            </Alert>
+                              <InputLabel id="movement-type-select-label">
+                                Tipo de Movimiento
+                              </InputLabel>
+                              <Select<MovementType> // Specify the type for better type safety
+                                labelId="movement-type-select-label"
+                                id="movement-type-select"
+                                value={formData.type}
+                                label="Tipo de Movimiento" // Important for label positioning
+                                onChange={handleTypeChange} // Use the dedicated handler
+                              >
+                                {movementTypeOptions.map((typeOption) => (
+                                  <MenuItem key={typeOption} value={typeOption}>
+                                    {typeOption}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            </FormControl>
                           </Grid2>
-                        )}
-                      </Grid2>
-                    </form>
-                  ) : (
-                    <Typography>Este prixer no tiene cartera aún.</Typography>
-                  )}
-                </Paper>
+
+                          <Grid2 size={{ xs: 12, sm: 6 }}>
+                            <TextField
+                              label="Valor"
+                              name="value"
+                              type="number"
+                              value={amount}
+                              onChange={(e) => setAmount(e.target.value)}
+                              onBlur={handleBlur}
+                              required
+                              fullWidth
+                              disabled={isSubmitting}
+                              inputProps={{ step: "0.01" }}
+                              error={!!errorSubmit && isNaN(formData.value)}
+                            />
+                          </Grid2>
+
+                          <Grid2 size={{ xs: 12 }}>
+                            <TextField
+                              label="Descripción"
+                              name="description"
+                              value={formData.description}
+                              onChange={handleInputChange}
+                              required
+                              fullWidth
+                              multiline
+                              rows={3}
+                              disabled={isSubmitting}
+                              error={
+                                !!errorSubmit && !formData.description.trim()
+                              }
+                            />
+                          </Grid2>
+                          <Grid2 size={{ xs: 12, sm: 6 }}>
+                            <TextField
+                              label="ID de Orden (Opcional)"
+                              name="order"
+                              value={formData.order || ""}
+                              onChange={handleInputChange}
+                              fullWidth
+                              disabled={isSubmitting}
+                              helperText="Asociar este movimiento a una orden específica"
+                            />
+                          </Grid2>
+
+                          <Grid2 size={{ xs: 12 }}>
+                            <Stack
+                              direction="row"
+                              justifyContent="flex-end"
+                              spacing={2}
+                              sx={{ mt: 2 }}
+                            >
+                              <Button
+                                type="button"
+                                variant="outlined"
+                                color="secondary"
+                                onClick={handleCancel}
+                                disabled={isSubmitting}
+                              >
+                                Cancelar
+                              </Button>
+                              <Button
+                                type="submit"
+                                variant="contained"
+                                color="primary"
+                                disabled={isSubmitting}
+                                startIcon={
+                                  isSubmitting ? (
+                                    <CircularProgress
+                                      size={20}
+                                      color="inherit"
+                                    />
+                                  ) : null
+                                }
+                              >
+                                {isSubmitting
+                                  ? "Creando..."
+                                  : "Crear Movimiento"}
+                              </Button>
+                            </Stack>
+                          </Grid2>
+
+                          {errorSubmit && (
+                            <Grid2 size={{ xs: 12 }}>
+                              <Alert severity="error" sx={{ mt: 2 }}>
+                                {errorSubmit}
+                              </Alert>
+                            </Grid2>
+                          )}
+                        </Grid2>
+                      </form>
+                    ) : (
+                      <Typography>Este prixer no tiene cartera aún.</Typography>
+                    )}
+                  </Paper>
+                </Grid2>
               </Grid2>
+            </CustomTabPanel>
+
+            <CustomTabPanel value={value} index={2}>
+              {!isLoading && movements.length === 0 && !errorFetch && (
+                <Alert severity="info" sx={{ m: 2 }}>
+                  No se encontraron movimientos con los filtros aplicados.
+                </Alert>
+              )}
+              {isLoading && movements.length > 0 ? (
+                Array.from(new Array(rowsPerPage)).map((_, index) => (
+                  <TableRow key={`skeleton-${index}`} style={{ height: 53 }}>
+                    {headCells.map((cell) => (
+                      <TableCell
+                        key={cell.id}
+                        align={cell.numeric ? "right" : "left"}
+                      >
+                        <Skeleton animation="wave" />
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <Paper sx={{ width: "100%", mb: 2 }}>
+                  <TableContainer>
+                    <Table sx={{ minWidth: 750 }} aria-label="movements table">
+                      <EnhancedTableHead
+                        order={order}
+                        orderBy={orderBy}
+                        onRequestSort={handleRequestSort}
+                      />
+                      <TableBody>
+                        {/* Show Skeletons OR Actual Data */}
+                        {isLoading && movements.length > 0
+                          ? Array.from(new Array(rowsPerPage)).map(
+                              (_, index) => (
+                                <TableRow
+                                  key={`skeleton-${index}`}
+                                  style={{ height: 53 }}
+                                >
+                                  {headCells.map((cell) => (
+                                    <TableCell
+                                      key={cell.id}
+                                      align={cell.numeric ? "right" : "left"}
+                                    >
+                                      <Skeleton animation="wave" />
+                                    </TableCell>
+                                  ))}
+                                </TableRow>
+                              )
+                            )
+                          : movements.map((movement) => {
+                              return (
+                                <TableRow
+                                  hover
+                                  key={movement._id?.toString()}
+                                  sx={{
+                                    "&:last-child td, &:last-child th": {
+                                      border: 0,
+                                    },
+                                  }}
+                                >
+                                  {/* Apply responsive hiding here  */}
+                                  <TableCell>
+                                    {formatDate(movement.date)}
+                                  </TableCell>
+                                  <TableCell>{movement.type}</TableCell>
+                                  <TableCell
+                                    sx={{
+                                      display: { xs: "none", md: "table-cell" },
+                                    }}
+                                  >
+                                    {movement.description}
+                                  </TableCell>
+                                  <TableCell
+                                    sx={{
+                                      display: { xs: "none", lg: "table-cell" },
+                                    }}
+                                  >
+                                    {movement.order ? (
+                                      <Link
+                                        component="button"
+                                        variant="body2"
+                                        onClick={
+                                          () => {
+                                            setSelectedOrderId(movement.order)
+                                            openModal()
+                                          }
+                                          //     navigate(
+                                          //       `/admin/order/detail/${movement.order}`
+                                          //     )
+                                        }
+                                        sx={{ textAlign: "left" }}
+                                      >
+                                        {movement.order}
+                                      </Link>
+                                    ) : (
+                                      "-"
+                                    )}
+                                  </TableCell>
+                                  <TableCell
+                                    align="right"
+                                    sx={{
+                                      color:
+                                        movement.value >= 0
+                                          ? "success.main"
+                                          : "error.main",
+                                      fontWeight: "medium",
+                                    }}
+                                  >
+                                    {formatCurrency(movement.value)}
+                                  </TableCell>
+                                  <TableCell align="right">
+                                    <Box
+                                      sx={{
+                                        display: "flex",
+                                        justifyContent: "flex-end",
+                                        gap: 0.5,
+                                      }}
+                                    >
+                                      <Tooltip title="Editar Movimiento">
+                                        {/* Disable edit if ID is somehow missing */}
+                                        <IconButton
+                                          aria-label="edit"
+                                          color="primary"
+                                          onClick={() =>
+                                            handleUpdate(
+                                              movement._id!.toString()
+                                            )
+                                          }
+                                          disabled={!movement._id || isLoading}
+                                          size="small"
+                                        >
+                                          <EditIcon fontSize="small" />
+                                        </IconButton>
+                                      </Tooltip>
+                                    </Box>
+                                  </TableCell>
+                                </TableRow>
+                              )
+                            })}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                  <TablePagination
+                    rowsPerPageOptions={[5, 10, 25, 50]}
+                    component="div"
+                    count={totalMovements}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                    labelRowsPerPage="Filas por página:"
+                    labelDisplayedRows={({ from, to, count }) =>
+                      `${from}-${to} de ${count !== -1 ? count : `más de ${to}`}`
+                    }
+                  />
+                </Paper>
+              )}
             </CustomTabPanel>
           </>
         )}

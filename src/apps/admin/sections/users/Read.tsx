@@ -1,40 +1,39 @@
 // src/apps/admin/sections/users/views/ReadUsers.tsx
 import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useMemo,
   ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
 } from "react"
 import { useNavigate } from "react-router-dom"
 
-// MUI Components
 import {
+  Alert,
+  Avatar,
   Box,
-  Typography,
+  Button,
+  Chip,
+  CircularProgress,
+  FormControl,
+  IconButton,
+  InputLabel,
+  MenuItem,
   Paper,
+  Select,
+  Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
-  TableRow,
-  Button,
-  IconButton,
-  CircularProgress,
-  Alert,
-  Tooltip,
-  Stack,
-  Chip,
-  Avatar,
-  Toolbar,
-  TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
   TablePagination,
-  TableSortLabel, // Added components
+  TableRow,
+  TableSortLabel,
+  TextField,
+  Toolbar,
+  Tooltip,
+  Typography,
 } from "@mui/material"
 import EditIcon from "@mui/icons-material/Edit"
 import DeleteIcon from "@mui/icons-material/Delete"
@@ -120,7 +119,6 @@ const ReadUsers: React.FC = () => {
   const [page, setPage] = useState<number>(0)
   const [rowsPerPage, setRowsPerPage] = useState<number>(10) // Default rows per page
 
-  // --- Fetch Data ---
   const loadUsers = useCallback(
     async (showLoading = true) => {
       if (showLoading) setIsLoading(true)
@@ -129,7 +127,6 @@ const ReadUsers: React.FC = () => {
         const fetchedUsers = (await getUsers()) as User[]
         setUsers(fetchedUsers) // Set the original list
       } catch (err: any) {
-        /* ... error handling ... */
         const message = err.message || "Error al cargar."
         setError(message)
         showSnackBar(message)
@@ -148,7 +145,6 @@ const ReadUsers: React.FC = () => {
   const processedUsers = useMemo(() => {
     const datav2 = users.map((user) => {
         if (user.prixer && user.prixer._id === undefined) {
-          console.log(user.username)
           return {
             ...user,
             prixer: {
@@ -197,8 +193,6 @@ const ReadUsers: React.FC = () => {
       page * rowsPerPage + rowsPerPage
     )
   }, [users, searchQuery, filters, order, orderBy, page, rowsPerPage])
-
-  console.log(processedUsers[0]?.prixer?._id)
 
   // Calculate total count *after* filtering for pagination
   const totalFilteredCount = useMemo(() => {
@@ -497,8 +491,7 @@ const ReadUsers: React.FC = () => {
                     },
                   }}
                 >
-                  <TableCell sx={{ width: "5%" }}>Avatar</TableCell>{" "}
-                  {/* Adjusted width */}
+                  <TableCell sx={{ width: "5%" }}>Avatar</TableCell>
                   {headCells.map((headCell) => (
                     <TableCell
                       key={headCell.id}

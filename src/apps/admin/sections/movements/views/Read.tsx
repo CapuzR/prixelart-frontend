@@ -2,41 +2,40 @@ import React, { useState, useEffect, useCallback, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 
 import {
+  Alert,
+  Avatar,
   Box,
-  Typography,
-  Paper,
-  Table,
+  Button,
   Card,
   CardContent,
   CardHeader,
+  CircularProgress,
+  Divider,
+  FormControl,
+  IconButton,
+  InputLabel,
+  Link,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  MenuItem,
+  Modal,
+  Paper,
+  Select,
+  Skeleton,
+  Stack,
+  Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
-  TableRow,
-  Button,
-  IconButton,
-  CircularProgress,
-  Alert,
-  Tooltip,
-  Avatar,
-  Link,
-  Stack,
   TablePagination,
-  FormHelperText,
+  TableRow,
   TableSortLabel,
-  FormControl,
-  Select,
   TextField,
-  InputLabel,
-  MenuItem,
-  Skeleton,
-  Modal,
-  List,
-  ListItemIcon,
-  ListItem,
-  ListItemText,
-  Divider,
+  Tooltip,
+  Typography,
 } from "@mui/material"
 import Grid2 from "@mui/material/Grid"
 import AddIcon from "@mui/icons-material/Add"
@@ -54,41 +53,27 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers"
 import {
   CalendarToday,
   PersonOutline,
-  LocalShippingOutlined,
   ReceiptOutlined,
   StorefrontOutlined,
-  PaletteOutlined,
-  CollectionsOutlined,
-  InfoOutlined,
-  AddCircleOutline,
-  PauseCircleFilled,
+
 } from "@mui/icons-material"
 
 import { getOrderById } from "@api/order.api"
 
 import {
-  Address,
-  BasicInfo,
-  Item,
+
   Order,
   OrderLine,
   OrderStatus,
-  PaymentMethod,
-  ShippingMethod,
-  Tax,
-  Payment,
   GlobalPaymentStatus,
-  PaymentDetails,
   CustomImage,
-  // Asumiendo que PaymentVoucher es un string (URL) en tu tipo Order
-} from "../../../../../types/order.types" // Ajusta la ruta a tus tipos
+} from "../../../../../types/order.types"
 
 import {
   Product,
   Variant,
-  VariantAttribute,
 } from "../../../../../types/product.types"
-import { Art, PickedArt } from "../../../../../types/art.types"
+import { Art } from "../../../../../types/art.types"
 
 interface UserAccountMap {
   [accountId: string]: {
@@ -423,7 +408,7 @@ const ReadMovements: React.FC = () => {
       setIsLoading(false)
     }
   }
-  console.log(selectedOrderId)
+
   useEffect(() => {
     loadOrder()
   }, [selectedOrderId])

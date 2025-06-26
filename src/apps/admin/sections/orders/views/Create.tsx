@@ -1,12 +1,11 @@
-// src/apps/admin/sections/orders/views/CreateOrder.tsx
 import React, {
-  useState,
-  useEffect,
-  useCallback,
   ChangeEvent,
   FormEvent,
   SyntheticEvent,
+  useCallback,
+  useEffect,
   useMemo,
+  useState,
 } from "react"
 import { useNavigate } from "react-router-dom"
 import Grid2 from "@mui/material/Grid"
@@ -23,28 +22,28 @@ import { fetchActiveProducts } from "@api/product.api"
 import { getArts } from "@api/art.api"
 
 import {
-  Box,
-  Typography,
-  TextField,
-  Button,
-  Paper,
-  CircularProgress,
   Alert,
-  Stack,
-  Divider,
-  Avatar,
   Autocomplete,
-  FormControlLabel,
-  Checkbox,
+  Avatar,
+  Box,
+  Button,
   Card,
   CardContent,
   CardHeader,
+  Checkbox,
+  CircularProgress,
+  Container,
+  Divider,
+  FormControlLabel,
   IconButton,
+  InputAdornment,
   List,
   ListItem,
-  InputAdornment,
   ListItemText,
-  Container,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
 } from "@mui/material"
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong"
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline"
@@ -62,21 +61,21 @@ import Title from "@apps/admin/components/Title"
 
 // Types
 import {
-  BasicInfo,
   Address,
+  BasicInfo,
+  BillingDetails,
+  ConsumerDetails,
+  CustomImage,
+  GlobalPaymentStatus,
   Order,
   OrderLine,
   OrderStatus,
+  Payment,
+  PaymentDetails,
   PaymentMethod,
+  ShippingDetails,
   ShippingMethod,
   Tax,
-  PaymentDetails,
-  ConsumerDetails,
-  BillingDetails,
-  ShippingDetails,
-  Payment,
-  GlobalPaymentStatus,
-  CustomImage,
 } from "types/order.types"
 import { Product, Variant } from "types/product.types"
 import { Art, PickedArt } from "types/art.types"
@@ -630,8 +629,6 @@ const CreateOrder: React.FC = () => {
     }
     return true
   }
-
-  console.log(orderLines)
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()

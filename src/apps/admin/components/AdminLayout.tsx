@@ -5,6 +5,7 @@ import { Permissions } from "types/permissions.types";
 import { Box, CircularProgress, Typography, CssBaseline, Toolbar, Button, useTheme } from "@mui/material";
 import { getPermissions } from "@api/admin.api";
 import Sidebar, { SectionState } from "./SideBar";
+import { useSnackBar } from "@context/GlobalContext";
 
 const EXPANDED_DRAWER_WIDTH = 300; // The full width of the sidebar when open
 
@@ -27,6 +28,7 @@ const initialSectionState: SectionState = {
 
 const AdminLayout: React.FC = () => {
     const theme = useTheme();
+    const { showSnackBar } = useSnackBar();
     const COLLAPSED_DRAWER_WIDTH = Number(theme.spacing(7).replace('px', '')); // Standard MUI icon size + padding
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [openSections, setOpenSections] = useState<SectionState>(initialSectionState);
@@ -85,6 +87,15 @@ const AdminLayout: React.FC = () => {
 
         checkAuthAndPermissions();
     }, [location.pathname, navigate]);
+
+    useEffect(() => {
+        if (permissions && !loading) {
+            if (location.pathname === '/admin/dashboard' && permissions.area !== 'Master') {
+                showSnackBar("El dashboard es solo para administradores Master.");
+                navigate('/admin/orders/read', { replace: true });
+            }
+        }
+    }, [permissions, loading, location.pathname, navigate, showSnackBar]);
 
     if (loading) {
         return (

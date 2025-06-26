@@ -1,12 +1,11 @@
-// src/apps/admin/sections/products/views/CreateProduct.tsx
-import React, { useState, ChangeEvent, FormEvent, useRef } from "react"
+import React, { useState, ChangeEvent, FormEvent, useRef, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { v4 as uuidv4 } from "uuid"
 
 // Hooks, Types, Context, API
 import { useSnackBar } from "context/GlobalContext" // Asegúrate que la ruta sea correcta
 import { Product, Variant, VariantAttribute } from "types/product.types" // Asegúrate que la ruta sea correcta
-import { createProduct } from "@api/product.api" // Asegúrate que la ruta sea correcta
+import { createProduct, fetchUniqueProductionLines } from "@api/product.api" // Asegúrate que la ruta sea correcta
 
 // MUI Components
 import {
@@ -34,6 +33,8 @@ import {
   DialogActions,
   LinearProgress,
   FormHelperText,
+  Autocomplete,
+  createFilterOptions,
 } from "@mui/material"
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline"
 import DeleteIcon from "@mui/icons-material/Delete"
@@ -117,19 +118,23 @@ interface FormState
   > {
   attributeTypes: AttributeType[]
   variants: FormVariant[]
+  productionLines: string[]
 }
 
 interface ValidationErrors {
   product?: {
-    [key in keyof Omit<FormState, "variants" | "attributeTypes">]?: string
+    [key in keyof Omit<
+      FormState,
+      "variants" | "attributeTypes" | "productionLines"
+    >]?: string
   }
   attributeTypes?: { [index: number]: { name?: string } }
   variants?: {
     [tempId: string]: {
       [key in
-        | keyof Omit<FormVariant, "variantImage">
-        | "attributeValues"
-        | "variantImage"]?: string
+      | keyof Omit<FormVariant, "variantImage">
+      | "attributeValues"
+      | "variantImage"]?: string
     }
   }
 }
@@ -167,6 +172,7 @@ const initialFormState: FormState = {
   hasSpecialVar: false,
   attributeTypes: [{ ...initialAttributeTypeState }],
   variants: [],
+  productionLines: [],
 }
 
 // --- Helper Functions ---
@@ -260,6 +266,23 @@ const CreateProduct: React.FC = () => {
   const imgRef = useRef<HTMLImageElement | null>(null)
   const previewCanvasRef = useRef<HTMLCanvasElement | null>(null)
 
+  const [allProductionLines, setAllProductionLines] = useState<string[]>([])
+  const [isLoadingLines, setIsLoadingLines] = useState<boolean>(true)
+
+  useEffect(() => {
+    const loadLines = async () => {
+      try {
+        const lines = await fetchUniqueProductionLines()
+        setAllProductionLines(lines)
+      } catch (error) {
+        showSnackBar("Error al cargar las líneas de producción existentes.")
+      } finally {
+        setIsLoadingLines(false)
+      }
+    }
+    loadLines()
+  }, [showSnackBar])
+
   // --- Manejadores de Recorte e Imagen ---
   const onImageLoadInCropper = (e: React.SyntheticEvent<HTMLImageElement>) => {
     imgRef.current = e.currentTarget
@@ -290,7 +313,7 @@ const CreateProduct: React.FC = () => {
       openCropperWithFile(file, "productMainImage", tempImageId)
     }
     if (event.target) {
-      ;(event.target as HTMLInputElement).value = ""
+      ; (event.target as HTMLInputElement).value = ""
     }
   }
 
@@ -469,32 +492,33 @@ const CreateProduct: React.FC = () => {
   }
 
   // Dentro de const UpdateProduct: React.FC = () => {
-// ...
+  // ...
 
-const handleDragStart = (event: DragStartEvent) => {
-  setActiveDraggedImageId(event.active.id as string);
-};
-
-const handleDragEnd = (event: DragEndEvent) => {
-  setActiveDraggedImageId(null); // Limpia el ID activo
-  const { active, over } = event;
-
-  if (over && active.id !== over.id) {
-    setProductImages((items) => {
-      const oldIndex = items.findIndex((item) => item.id === active.id);
-      const newIndex = items.findIndex((item) => item.id === over.id);
-      // arrayMove es una función de @dnd-kit/sortable que reordena el array
-      return arrayMove(items, oldIndex, newIndex);
-    });
-
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveDraggedImageId(event.active.id as string)
   }
-};
 
-// También necesitarás una referencia a la imagen que se está arrastrando para el DragOverlay
-const activeDraggedImage = activeDraggedImageId ? productImages.find(img => img.id === activeDraggedImageId) : null;
+  const handleDragEnd = (event: DragEndEvent) => {
+    setActiveDraggedImageId(null) // Limpia el ID activo
+    const { active, over } = event
 
-// ...
-// }
+    if (over && active.id !== over.id) {
+      setProductImages((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id)
+        const newIndex = items.findIndex((item) => item.id === over.id)
+        // arrayMove es una función de @dnd-kit/sortable que reordena el array
+        return arrayMove(items, oldIndex, newIndex)
+      })
+    }
+  }
+
+  // También necesitarás una referencia a la imagen que se está arrastrando para el DragOverlay
+  const activeDraggedImage = activeDraggedImageId
+    ? productImages.find((img) => img.id === activeDraggedImageId)
+    : null
+
+  // ...
+  // }
 
   const handleVariantImageSelect = (
     event: ChangeEvent<HTMLInputElement>,
@@ -506,7 +530,7 @@ const activeDraggedImage = activeDraggedImageId ? productImages.find(img => img.
       openCropperWithFile(file, "variantImage", variantTempId)
     }
     if (event.target) {
-      ;(event.target as HTMLInputElement).value = ""
+      ; (event.target as HTMLInputElement).value = ""
     }
   }
 
@@ -606,9 +630,9 @@ const activeDraggedImage = activeDraggedImageId ? productImages.find(img => img.
             variants: prev.variants.map((v) =>
               v.tempId === targetId && v.variantImage
                 ? {
-                    ...v,
-                    variantImage: { ...v.variantImage, progress: percentage },
-                  }
+                  ...v,
+                  variantImage: { ...v.variantImage, progress: percentage },
+                }
                 : v
             ),
           }))
@@ -646,14 +670,14 @@ const activeDraggedImage = activeDraggedImageId ? productImages.find(img => img.
               variants: prev.variants.map((v) =>
                 v.tempId === targetId && v.variantImage
                   ? {
-                      ...v,
-                      variantImage: {
-                        ...v.variantImage,
-                        url: imageUrl,
-                        progress: 100,
-                        file: undefined,
-                      },
-                    }
+                    ...v,
+                    variantImage: {
+                      ...v.variantImage,
+                      url: imageUrl,
+                      progress: 100,
+                      file: undefined,
+                    },
+                  }
                   : v
               ),
             }))
@@ -675,13 +699,13 @@ const activeDraggedImage = activeDraggedImageId ? productImages.find(img => img.
               variants: prev.variants.map((v) =>
                 v.tempId === targetId && v.variantImage
                   ? {
-                      ...v,
-                      variantImage: {
-                        ...v.variantImage,
-                        error: errorMsg,
-                        file: undefined,
-                      },
-                    }
+                    ...v,
+                    variantImage: {
+                      ...v.variantImage,
+                      error: errorMsg,
+                      file: undefined,
+                    },
+                  }
                   : v
               ),
             }))
@@ -705,13 +729,13 @@ const activeDraggedImage = activeDraggedImageId ? productImages.find(img => img.
             variants: prev.variants.map((v) =>
               v.tempId === targetId && v.variantImage
                 ? {
-                    ...v,
-                    variantImage: {
-                      ...v.variantImage,
-                      error: errorMsg,
-                      file: undefined,
-                    },
-                  }
+                  ...v,
+                  variantImage: {
+                    ...v.variantImage,
+                    error: errorMsg,
+                    file: undefined,
+                  },
+                }
                 : v
             ),
           }))
@@ -895,11 +919,11 @@ const activeDraggedImage = activeDraggedImageId ? productImages.find(img => img.
       variants: prev.variants.map((variant) =>
         variant.tempId === tempId
           ? {
-              ...variant,
-              [field]: value,
-              variantNameManuallyEdited:
-                field === "name" ? true : variant.variantNameManuallyEdited,
-            }
+            ...variant,
+            [field]: value,
+            variantNameManuallyEdited:
+              field === "name" ? true : variant.variantNameManuallyEdited,
+          }
           : variant
       ),
     }))
@@ -1244,6 +1268,7 @@ const activeDraggedImage = activeDraggedImageId ? productImages.find(img => img.
       sources: { images: uploadedImageUrls },
       thumbUrl:
         uploadedImageUrls.length > 0 ? uploadedImageUrls[0].url : undefined,
+      productionLines: formData.productionLines,
     }
 
     try {
@@ -1271,6 +1296,7 @@ const activeDraggedImage = activeDraggedImageId ? productImages.find(img => img.
   }
 
   const handleCancel = () => navigate("/admin/products/read")
+  const filter = createFilterOptions<string | { inputValue?: string }>()
 
   // --- Render ---
   return (
@@ -1377,7 +1403,7 @@ const activeDraggedImage = activeDraggedImageId ? productImages.find(img => img.
                         <SortableProductImage
                           image={activeDraggedImage}
                           isSubmitting={isSubmitting} // Pasar props necesarias para el estilo del overlay
-                          onRemove={() => {}} // onRemove no es relevante para el overlay
+                          onRemove={() => { }} // onRemove no es relevante para el overlay
                           isOverlay // Prop para indicar que es el overlay
                         />
                       ) : null}
@@ -1437,7 +1463,36 @@ const activeDraggedImage = activeDraggedImageId ? productImages.find(img => img.
                 helperText={validationErrors?.product?.cost}
               />
             </Grid2>
-            <Grid2 size={{ xs: 12, sm: 4 }}>
+            <Grid2 size={{ xs: 12 }}>
+              <Autocomplete
+                multiple
+                freeSolo
+                id="production-lines-autocomplete"
+                options={allProductionLines}
+                value={formData.productionLines}
+                loading={isLoadingLines}
+                onChange={(event, newValue) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    productionLines: newValue,
+                  }));
+                }}
+                renderTags={(value, getTagProps) =>
+                  value.map((option, index) => (
+                    <Chip variant="outlined" label={option} {...getTagProps({ index })} />
+                  ))
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Líneas de Producción"
+                    placeholder="Seleccione o añada nuevas líneas"
+                    helperText="Puede crear nuevas líneas escribiendo y presionando Enter."
+                  />
+                )}
+              />
+            </Grid2>
+            <Grid2 size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Mockup URL (Opcional)"
                 name="mockUp"
@@ -1450,7 +1505,7 @@ const activeDraggedImage = activeDraggedImageId ? productImages.find(img => img.
                 helperText={validationErrors?.product?.mockUp}
               />
             </Grid2>
-            <Grid2 size={{ xs: 12 }}>
+            <Grid2 size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Coordenadas (Opcional)"
                 name="coordinates"
@@ -1561,7 +1616,7 @@ const activeDraggedImage = activeDraggedImageId ? productImages.find(img => img.
                     sx={{
                       color:
                         formData.attributeTypes.length === 1 &&
-                        formData.variants.length > 0
+                          formData.variants.length > 0
                           ? "grey.400"
                           : "error.main",
                     }}
@@ -1760,8 +1815,8 @@ const activeDraggedImage = activeDraggedImageId ? productImages.find(img => img.
                             }}
                           >
                             {currentVariantImage &&
-                            (currentVariantImage.url ||
-                              currentVariantImage.file) ? (
+                              (currentVariantImage.url ||
+                                currentVariantImage.file) ? (
                               <Box
                                 sx={{
                                   width: 88,
@@ -1892,43 +1947,43 @@ const activeDraggedImage = activeDraggedImageId ? productImages.find(img => img.
                                     isSubmitting ||
                                     (!!currentVariantImage?.file &&
                                       typeof currentVariantImage?.progress ===
-                                        "number" &&
+                                      "number" &&
                                       currentVariantImage.progress < 100)
                                   }
                                   size="small"
-                                  // sx={{ mb: 0.5 }}
-                                  // color="gray"
+                                // sx={{ mb: 0.5 }}
+                                // color="gray"
                                 >
                                   {currentVariantImage?.url ||
-                                  currentVariantImage?.file
+                                    currentVariantImage?.file
                                     ? "Cambiar"
                                     : "Añadir"}
                                 </Button>
                               </label>
                               {(currentVariantImage?.url ||
                                 currentVariantImage?.file) && (
-                                <Button
-                                  variant="outlined"
-                                  component="span"
-                                  size="small"
-                                  color="secondary"
-                                  onClick={() =>
-                                    handleRemoveVariantImage(variant.tempId)
-                                  }
-                                  startIcon={<DeleteIcon />}
-                                  disabled={
-                                    isSubmitting ||
-                                    (!!currentVariantImage?.file &&
-                                      typeof currentVariantImage?.progress ===
+                                  <Button
+                                    variant="outlined"
+                                    component="span"
+                                    size="small"
+                                    color="secondary"
+                                    onClick={() =>
+                                      handleRemoveVariantImage(variant.tempId)
+                                    }
+                                    startIcon={<DeleteIcon />}
+                                    disabled={
+                                      isSubmitting ||
+                                      (!!currentVariantImage?.file &&
+                                        typeof currentVariantImage?.progress ===
                                         "number" &&
-                                      currentVariantImage.progress < 100)
-                                  }
+                                        currentVariantImage.progress < 100)
+                                    }
                                   // variant="text"
                                   // sx={{ display: "block" }}
-                                >
-                                  Quitar
-                                </Button>
-                              )}
+                                  >
+                                    Quitar
+                                  </Button>
+                                )}
                             </Box>
                           </Box>
                           {variantErrors?.variantImage && (
@@ -1974,7 +2029,7 @@ const activeDraggedImage = activeDraggedImageId ? productImages.find(img => img.
                                 }
                                 helperText={
                                   !!variantErrors?.attributeValues &&
-                                  !variant.attributes[attrType.name]?.trim()
+                                    !variant.attributes[attrType.name]?.trim()
                                     ? "Valor requerido"
                                     : ""
                                 }
@@ -2024,12 +2079,12 @@ const activeDraggedImage = activeDraggedImageId ? productImages.find(img => img.
             {validationErrors?.product?.name && !formData.name.trim()
               ? null
               : validationErrors?.product?.name && (
-                  <Grid2 size={{ xs: 12 }}>
-                    <Alert severity="error" sx={{ mt: 2 }}>
-                      Error: {validationErrors.product.name}
-                    </Alert>
-                  </Grid2>
-                )}
+                <Grid2 size={{ xs: 12 }}>
+                  <Alert severity="error" sx={{ mt: 2 }}>
+                    Error: {validationErrors.product.name}
+                  </Alert>
+                </Grid2>
+              )}
             <Grid2 size={{ xs: 12 }}>
               <Stack
                 direction="row"
@@ -2093,7 +2148,7 @@ const activeDraggedImage = activeDraggedImageId ? productImages.find(img => img.
             Recortar Imagen (Aspecto{" "}
             {PRODUCT_IMAGE_ASPECT === 1
               ? "1:1"
-              : `${PRODUCT_IMAGE_ASPECT * 9}:9`}
+              : `${(PRODUCT_IMAGE_ASPECT * 16).toFixed(0)}:16`}
             )
           </DialogTitle>
           <DialogContent

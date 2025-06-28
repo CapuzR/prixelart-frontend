@@ -353,6 +353,16 @@ export default function PrixerProfileCard() {
     setCurrentTab(newValue)
   }
 
+  const handleSortChange = (event: SelectChangeEvent<string>) => {
+    setSortOption(event.target.value)
+  }
+
+  const handleFilterCategoryChange = (event: SelectChangeEvent<string>) => {
+    setFilterCategory(event.target.value)
+  }
+
+  const getImageListCols = () => (isSmallScreen ? 2 : isMediumScreen ? 3 : 4)
+
   useEffect(() => {
     // When prixer data is loaded, initialize the form data
     if (prixer) {
@@ -1169,7 +1179,7 @@ export default function PrixerProfileCard() {
               <Tab
                 icon={<CollectionsBookmark />}
                 iconPosition="start"
-                label="Portfolio"
+                label="Artes"
                 value="portfolio"
               />
               <Tab
@@ -1181,7 +1191,7 @@ export default function PrixerProfileCard() {
               <Tab
                 icon={<PersonIcon />}
                 iconPosition="start"
-                label="Acerca de"
+                label="Biografía"
                 value="about"
               />
             </Tabs>
@@ -1190,15 +1200,286 @@ export default function PrixerProfileCard() {
           {/* --- PORTFOLIO TAB --- */}
           {currentTab === "portfolio" && (
             <Box sx={{ p: { xs: 2, sm: 3 } }}>
-              {/* Portfolio content is not editable here*/}
-            </Box>
+            <Grid2 container spacing={isSmallScreen ? 1 : 2} sx={{ mb: 2.5 }}>
+              <Grid2
+                size={{
+                  xs: 12,
+                  sm: availableCategories.length > 0 ? 6 : 12,
+                  md: availableCategories.length > 0 ? 5 : 8,
+                }}
+              >
+                <FormControl fullWidth size="small" variant="outlined">
+                  <InputLabel id="sort-by-label">Ordenar Por</InputLabel>
+                  <Select
+                    labelId="sort-by-label"
+                    value={sortOption}
+                    label="Ordenar Por"
+                    onChange={handleSortChange}
+                  >
+                    {sortOptions.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        <Stack direction="row" alignItems="center" spacing={1}>
+                          {option.icon}
+                          {option.label}
+                        </Stack>
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid2>
+              {availableCategories.length > 0 && (
+                <Grid2
+                  size={{
+                    xs: 12,
+                    sm: 6,
+                    md: availableCategories.length > 0 ? 5 : 4,
+                  }}
+                >
+                  <FormControl fullWidth size="small" variant="outlined">
+                    <InputLabel id="filter-category-label">Categoría</InputLabel>
+                    <Select
+                      labelId="filter-category-label"
+                      value={filterCategory}
+                      label="Categoría"
+                      onChange={handleFilterCategoryChange}
+                    >
+                      <MenuItem value="">
+                        <Stack direction="row" alignItems="center" spacing={1}>
+                          <CategoryIcon fontSize="small" />
+                          Todas Las Categorías
+                        </Stack>
+                      </MenuItem>
+                      {availableCategories.map((category) => (
+                        <MenuItem key={category} value={category}>
+                          {category}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid2>
+              )}
+              {(filterCategory || sortOption !== sortOptions[0].value) &&
+                availableCategories.length > 0 && (
+                  <Grid2
+                    size={{ xs: 12, md: 2 }}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: { xs: "flex-start", md: "flex-end" },
+                    }}
+                  >
+                    <Button
+                      variant="text"
+                      size="small"
+                      onClick={() => {
+                        setFilterCategory("")
+                        setSortOption(sortOptions[0].value)
+                      }}
+                      sx={{ mt: { xs: 1, md: 0 } }}
+                    >
+                      Limpiar Filtros
+                    </Button>
+                  </Grid2>
+                )}
+            </Grid2>
+            {artsLoading && (
+              <Box
+                display="flex"
+                flexDirection="column"
+                justifyContent="center"
+                alignItems="center"
+                my={3}
+                sx={{ minHeight: "200px" }}
+              >
+                <CircularProgress />
+                <Typography variant="body1" sx={{ mt: 2 }}>
+                  Cargando artes...
+                </Typography>
+              </Box>
+            )}
+            {artsError && !artsLoading && (
+              <Alert
+                severity="warning"
+                sx={{ my: 2 }}
+              >{`Could not load artworks: ${artsError}`}</Alert>
+            )}
+            {!artsLoading && !artsError && arts.length === 0 && (
+              <Paper
+                elevation={0}
+                sx={{ p: 3, textAlign: "center", backgroundColor: "grey.100" }}
+              >
+                <InfoOutlined
+                  sx={{ fontSize: 40, color: "text.secondary", mb: 1 }}
+                />
+                <Typography variant="h6" color="text.secondary">
+                  No se encontraron artes
+                </Typography>
+                <Typography variant="body1" color="text.secondary">
+                  Este Prixer no dispone de artes en este momento
+                </Typography>
+              </Paper>
+            )}
+            {arts.length > 0 && (
+              <ImageList
+                variant="quilted"
+                cols={getImageListCols()}
+                gap={12}
+              >
+                {arts.map((art) => (
+                  <ImageListItem
+                    key={art._id?.toString() || art.artId}
+                    onClick={() => navigate(`/arte/${art.artId}`)}
+                    sx={{
+                      borderRadius: 1.5,
+                      overflow: "hidden",
+                      cursor: "pointer",
+                      "&:hover .MuiImageListItemBar-root": { opacity: 1 },
+                      "&:hover img": { transform: "scale(1.03)" },
+                    }}
+                  >
+                    <img
+                      src={`${art.mediumThumbUrl || art.imageUrl}`}
+                      alt={art.title}
+                      loading="lazy"
+                      style={{
+                        display: "block",
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        backgroundColor: "grey.200",
+                      }}
+                    />
+                    <ImageListItemBar
+                      title={art.title}
+                      subtitle={art.category || art.artType}
+                      position="bottom"
+                      sx={{
+                        background:
+                          "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%)",
+                      }}
+                    />
+                  </ImageListItem>
+                ))}
+              </ImageList>
+            )}
+            {hasNextPage && (
+              <div
+                ref={loadMoreTriggerRef}
+                style={{ height: "1px", margin: "30px 0 10px" }}
+              />
+            )}
+            {moreArtsLoading && (
+              <Box display="flex" justifyContent="center" my={2}>
+                <CircularProgress size={30} />
+              </Box>
+            )}
+          </Box>
           )}
 
           {/* --- SERVICES TAB --- */}
           {currentTab === "services" && (
             <Box sx={{ p: { xs: 2, sm: 3 } }}>
-              {/* Services content is not editable here */}
-            </Box>
+            {servicesLoading && (
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                my={4}
+                sx={{ minHeight: "200px" }}
+              >
+                <CircularProgress />
+                <Typography variant="body1" sx={{ ml: 2 }}>
+                  Cargando servicios...
+                </Typography>
+              </Box>
+            )}
+            {servicesError && !servicesLoading && (
+              <Alert severity="warning" sx={{ my: 2 }}>
+                {servicesError}
+              </Alert>
+            )}
+            {!servicesLoading && !servicesError && services.length === 0 && (
+              <Paper
+                elevation={0}
+                sx={{ p: 3, textAlign: "center", backgroundColor: "grey.100" }}
+              >
+                <InfoOutlined
+                  sx={{ fontSize: 40, color: "text.secondary", mb: 1 }}
+                />
+                <Typography variant="h6" color="text.secondary">
+                  No se encontraron servicios
+                </Typography>
+                <Typography variant="body1" color="text.secondary">
+                  Este prixer no tiene servicios listados actualmente.
+                </Typography>
+              </Paper>
+            )}
+            {services.length > 0 && (
+              <Grid2 container spacing={3}>
+                {services.map((service) => (
+                  <Grid2
+                    size={{ xs: 12, sm: 6 }}
+                    key={service._id?.toString()}
+                  >
+                    <Card
+                      sx={{
+                        height: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                        transition: "box-shadow 0.3s, transform 0.3s",
+                        "&:hover": {
+                          transform: "translateY(-4px)",
+                          boxShadow: 6,
+                        }
+                      }}
+                    >
+                      <img
+                        src={
+                          service.sources.images[0]?.url ||
+                          "https://via.placeholder.com/300x200.png?text=No+Image"
+                        }
+                        alt={service.title}
+                        style={{
+                          width: "100%",
+                          height: "180px",
+                          objectFit: "cover",
+                        }}
+                      />
+                      <CardContent sx={{ flexGrow: 1 }}>
+                        <Typography variant="h6" gutterBottom>
+                          {service.title}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{
+                            display: "-webkit-box",
+                            WebkitBoxOrient: "vertical",
+                            WebkitLineClamp: 3,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          {service.description}
+                        </Typography>
+                      </CardContent>
+                      <Box sx={{ p: 2, pt: 0 }}>
+                        <Button
+                          fullWidth
+                          variant="contained"
+                          onClick={() =>
+                            navigate(`/servicio/${service._id?.toString()}`)
+                          }
+                        >
+                          Ver Servicio
+                        </Button>
+                      </Box>
+                    </Card>
+                  </Grid2>
+                ))}
+              </Grid2>
+            )}
+          </Box>
           )}
 
           {/* --- ABOUT TAB --- */}

@@ -45,6 +45,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material"
+import { createFilterOptions } from "@mui/material/Autocomplete"
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong"
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline"
 import DeleteIcon from "@mui/icons-material/Delete"
@@ -79,11 +80,13 @@ import {
 } from "types/order.types"
 import { Product, Variant } from "types/product.types"
 import { Art, PickedArt } from "types/art.types"
+import { UserOptions } from "types/user.types"
 import dayjs, { Dayjs } from "dayjs"
-import 'dayjs/locale/es'; 
+import "dayjs/locale/es"
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
+import { getUsers } from "@api/user.api"
 // --- Helper Interfaces ---
 interface MethodOption {
   id: string
@@ -129,7 +132,7 @@ interface EditablePriceFieldsProps {
   updateLine: (tempId: string, values: Partial<OrderLineFormState>) => void
 }
 
-dayjs.locale('es'); 
+dayjs.locale("es")
 
 const initialLine: Omit<OrderLineFormState, "tempId"> = {
   selectedPrixer: null,
@@ -199,7 +202,8 @@ const CreateOrder: React.FC = () => {
   const [productOptions, setProductOptions] = useState<ProductOption[]>([])
   const [artOptions, setArtOptions] = useState<ArtOption[]>([])
   const [prixerOptions, setPrixerOptions] = useState<PrixerOption[]>([])
-
+  const [userOptions, setUserOptions] = useState<UserOptions[]>([])
+  const [selectedUser, setSelectedUser] = useState<UserOptions | null>(null)
   const [orderLines, setOrderLines] = useState<OrderLineFormState[]>([
     { ...initialLine, tempId: uuidv4() },
   ])
@@ -227,6 +231,87 @@ const CreateOrder: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [errorFetch, setErrorFetch] = useState<string | null>(null)
   const [errorSubmit, setErrorSubmit] = useState<string | null>(null)
+
+  const handleAutocompleteChange = (
+    event: React.SyntheticEvent,
+    newValue: UserOptions | string | null
+  ) => {
+    if (typeof newValue === "string") {
+      setEditableClientInfo({
+        name: newValue,
+        lastName: "",
+        email: "",
+        phone: "",
+      })
+      setEditableShippingAddress(null)
+      setEditableBillingAddress(null)
+    } else if (newValue) {
+      setEditableClientInfo({
+        name: newValue.firstName || "",
+        lastName: newValue.lastName || "",
+        email: newValue.email || "",
+        phone: newValue.phone || "",
+      })
+      const shippingAddr: Address | null = newValue.shippingAddress
+        ? {
+            recepient: {
+              name: newValue.firstName || "",
+              lastName: newValue.lastName || "",
+              email: newValue.email || "",
+              phone: newValue.phone || "",
+            },
+            address: {
+              line1: newValue.shippingAddress,
+              line2: "",
+              reference: "",
+              city: "",
+              state: "",
+              zipCode: "",
+              country: "",
+            },
+          }
+        : null
+
+      const billingAddr: Address | null = newValue.billingAddress
+        ? {
+            recepient: {
+              name: newValue.firstName || "",
+              lastName: newValue.lastName || "",
+              email: newValue.email || "",
+              phone: newValue.phone || "",
+            },
+            address: {
+              line1: newValue.billingAddress,
+              line2: "",
+              reference: "",
+              city: "",
+              state: "",
+              zipCode: "",
+              country: "",
+            },
+          }
+        : null
+
+      setEditableShippingAddress(shippingAddr)
+      setEditableBillingAddress(billingAddr)
+    } else {
+      setEditableClientInfo({ name: "", lastName: "", email: "", phone: "" })
+      setEditableShippingAddress(null)
+      setEditableBillingAddress(null)
+    }
+  }
+
+  const filter = createFilterOptions<UserOptions>()
+
+  const handleInputChange = (
+    event: React.SyntheticEvent,
+    newInputValue: string
+  ) => {
+    setEditableClientInfo((prev) => ({
+      ...prev,
+      name: newInputValue,
+    }))
+  }
 
   const isPickupSelected = useMemo(() => {
     if (!shippingMethod) return false
@@ -263,12 +348,13 @@ const CreateOrder: React.FC = () => {
     setIsLoading(true)
     setErrorFetch(null)
     try {
-      const [shippingMethods, paymentMethods, products, arts] =
+      const [shippingMethods, paymentMethods, products, arts, clients] =
         await Promise.all([
           fetchShippingMethods(),
           readAllPaymentMethods(),
           fetchActiveProducts("A-Z"),
           getArts(),
+          getUsers(),
         ])
 
       setShippingMethodOptions(
@@ -293,6 +379,18 @@ const CreateOrder: React.FC = () => {
         }))
       )
 
+      const reducedUsers: UserOptions[] = clients.map((user) => ({
+        _id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phone: user.phone,
+        shippingAddress: user.shippingAddress,
+        billingAddress: user.billingAddress,
+      }))
+
+      setUserOptions(reducedUsers)
+
       const existingArts = arts.map((a) => ({
         id: a._id!.toString(),
         label: a.title,
@@ -313,7 +411,7 @@ const CreateOrder: React.FC = () => {
           }
 
           return {
-            id: customArtPlaceholder.artId, // <-- CHANGE 'artId' to 'id' here
+            id: customArtPlaceholder.artId,
             label: customArtPlaceholder.title,
             thumb: favicon,
             fullArt: customArtPlaceholder,
@@ -386,41 +484,41 @@ const CreateOrder: React.FC = () => {
       totalUnits: orderLines.reduce((u, l) => u + (l.quantity || 0), 0),
     })
 
-    const newPrefDate = calculatePreferredDate(orderLines);
-    setPrefDate(newPrefDate);
+    const newPrefDate = calculatePreferredDate(orderLines)
+    setPrefDate(newPrefDate)
   }, [orderLines, shippingMethod])
 
   const calculatePreferredDate = (lines: OrderLineFormState[]): Dayjs => {
-    const today = dayjs();
+    const today = dayjs()
     if (!lines || lines.length === 0) {
-      return today;
+      return today
     }
-  
-    const productionTimesInDays = lines.map(line => {
-      const timeString = line.selectedProduct?.fullProduct?.productionTime;
-      
-      return parseInt(timeString || '0', 10);
-    });
-  
-    const maxProductionTime = Math.max(...productionTimesInDays);
-  
+
+    const productionTimesInDays = lines.map((line) => {
+      const timeString = line.selectedProduct?.fullProduct?.productionTime
+
+      return parseInt(timeString || "0", 10)
+    })
+
+    const maxProductionTime = Math.max(...productionTimesInDays)
+
     // return today.add(maxProductionTime, 'day');
 
-    let deliveryDate = dayjs();
-    let daysAdded = 0;
-  
+    let deliveryDate = dayjs()
+    let daysAdded = 0
+
     while (daysAdded < maxProductionTime) {
-      deliveryDate = deliveryDate.add(1, 'day');
-  
-      const dayOfWeek = deliveryDate.day();
-      
+      deliveryDate = deliveryDate.add(1, "day")
+
+      const dayOfWeek = deliveryDate.day()
+
       if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-        daysAdded++;
+        daysAdded++
       }
     }
 
-   return deliveryDate;
-  };
+    return deliveryDate
+  }
 
   useEffect(() => {
     const sub = orderLines.reduce(
@@ -497,6 +595,7 @@ const CreateOrder: React.FC = () => {
       pricePerUnit: price,
     })
   }
+
   const handleVariant = (tempId: string, v: VariantOption | null) => {
     const price = parseFloat(v?.fullVariant.publicPrice || "0")
     updateLine(tempId, { selectedVariant: v, pricePerUnit: price })
@@ -1101,36 +1200,46 @@ const CreateOrder: React.FC = () => {
                 Detalles Cliente
               </Typography>
               <Stack spacing={2}>
-                {/* TO DO: Facilitar el formulario de clientes autocompletando con data existente */}
-                {/* <Autocomplete
+                <Autocomplete
                   fullWidth
-                  options={productOptions}
+                  freeSolo
+                  options={userOptions}
                   value={editableClientInfo.name}
-                  onChange={(e, v) => handleProduct(line.tempId, v)}
+                  onChange={handleAutocompleteChange}
+                  onInputChange={handleInputChange}
                   disabled={isSubmitting}
+                  getOptionLabel={(option) =>
+                    typeof option === "string" ? option : option.firstName || ""
+                  }
+                  filterOptions={(options, params) => {
+                    const filtered = filter(options, params)
+                    const { inputValue } = params
+                    const isExisting = options.some(
+                      (option) => inputValue === option.firstName
+                    )
+                    return filtered
+                  }}
+                  renderOption={(props, option) => (
+                    <li
+                      {...props}
+                      key={option._id?.toString() || option.firstName}
+                    >
+                      {option.lastName
+                        ? `${option.firstName} ${option.lastName}`
+                        : option.firstName}
+                    </li>
+                  )}
                   renderInput={(params) => (
                     <TextField
                       {...params}
                       name="name"
-                      label="Nombre"
-                      value={editableClientInfo.name}
-                      onChange={handleClientChange}
+                      label="Nombre" // El label ahora es solo "Nombre"
                       size="small"
                       fullWidth
                       required
                       disabled={isSubmitting}
                     />
                   )}
-                /> */}
-                <TextField
-                  name="name"
-                  label="Nombre"
-                  value={editableClientInfo.name}
-                  onChange={handleClientChange}
-                  size="small"
-                  fullWidth
-                  required
-                  disabled={isSubmitting}
                 />
                 <TextField
                   name="lastName"
@@ -1184,23 +1293,6 @@ const CreateOrder: React.FC = () => {
                 <LocalShippingOutlined sx={{ mr: 1 }} />
                 Envío
               </Typography>
-              {/* <DatePicker
-                label="Fecha estimada de entrega"
-                value={prefDate}
-                onChange={handlePrefDate}
-                disabled={isSubmitting}
-                slotProps={{
-                  textField: {
-                    fullWidth: true,
-                    // error:
-                    //   !!validationErrors?.startDate ||
-                    //   !!validationErrors?.dateRange,
-                    // helperText:
-                    //   validationErrors?.startDate ||
-                    //   validationErrors?.dateRange,
-                  },
-                }}
-              /> */}
               <Autocomplete
                 fullWidth
                 options={shippingMethodOptions}
@@ -1212,12 +1304,15 @@ const CreateOrder: React.FC = () => {
                 )}
                 sx={{ mb: 2 }}
               />
-              <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
+              <LocalizationProvider
+                dateAdapter={AdapterDayjs}
+                adapterLocale="es"
+              >
                 <DatePicker
                   sx={{ width: "100%" }}
                   label="Fecha estimada de entrega"
                   value={prefDate}
-                   format="DD/MM/YYYY"
+                  format="DD/MM/YYYY"
                   onChange={(newValue) => setPrefDate(dayjs(newValue))}
                 />
               </LocalizationProvider>

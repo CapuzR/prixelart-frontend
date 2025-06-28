@@ -27,3 +27,14 @@ export interface User {
   twitter?: string;
   gender?: string;
 }
+
+export type UserOptions = Pick<
+  User,
+  | "_id"
+  | "firstName"
+  | "lastName"
+  | "email"
+  | "phone"
+  | "shippingAddress"
+  | "billingAddress"
+>;

@@ -364,7 +364,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
 
         {/* Orders Section */}
-        {canViewOrders && (
+        {/* {canViewOrders && ( */}
           <>
             <ListItemButton onClick={() => onSectionClick("orders")} sx={sectionHeaderStyle('/admin/orders')}>
               <ListItemIcon><ReceiptIcon /></ListItemIcon>
@@ -379,17 +379,17 @@ const Sidebar: React.FC<SidebarProps> = ({
                     <ListItemText primary="Crear Órden" />
                   </ListItemButton>
                 )}
-                {(permissions.detailOrder || permissions.orderStatus) && (
+                {/* {(permissions.detailOrder || permissions.orderStatus) && ( */}
                   <ListItemButton component={RouterLink} to="/admin/orders/read" sx={listItemStyle('/admin/orders/read')}>
                     <ListItemIcon><ListAltIcon fontSize="small" /></ListItemIcon>
                     <ListItemText primary="Ver Órdenes" />
                   </ListItemButton>
-                )}
+                {/* )} */}
               </List>
             </Collapse>
             <Divider sx={{ my: 1 }} />
           </>
-        )}
+        {/* )} */}
 
         {/* Order History Section */}
         {/*         {cancreateOrder && ( */}

@@ -243,8 +243,8 @@ const CreateOrder: React.FC = () => {
         email: "",
         phone: "",
       })
-      setEditableShippingAddress(null)
-      setEditableBillingAddress(null)
+      // setEditableShippingAddress(createBlankAddress())
+      // setEditableBillingAddress(createBlankAddress())
     } else if (newValue) {
       setEditableClientInfo({
         name: newValue.firstName || "",
@@ -270,7 +270,7 @@ const CreateOrder: React.FC = () => {
               country: "",
             },
           }
-        : null
+        : createBlankAddress()
 
       const billingAddr: Address | null = newValue.billingAddress
         ? {
@@ -290,16 +290,18 @@ const CreateOrder: React.FC = () => {
               country: "",
             },
           }
-        : null
+        : createBlankAddress()
 
       setEditableShippingAddress(shippingAddr)
       setEditableBillingAddress(billingAddr)
+      console.log(editableShippingAddress)
     } else {
       setEditableClientInfo({ name: "", lastName: "", email: "", phone: "" })
-      setEditableShippingAddress(null)
-      setEditableBillingAddress(null)
+      setEditableShippingAddress(createBlankAddress())
+      setEditableBillingAddress(createBlankAddress())
     }
   }
+  console.log(editableShippingAddress)
 
   const filter = createFilterOptions<UserOptions>()
 

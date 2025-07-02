@@ -20,6 +20,7 @@ import { Art } from "types/art.types"
 import { Slider } from "@components/Slider"
 import { Image } from "@components/Image"
 import Grid2 from "@mui/material/Grid"
+import FooterSection from "./FooterSection"
 
 const useBreakpoints = () => {
   const theme = useTheme()
@@ -332,7 +333,7 @@ const Home: React.FC = () => {
         </Grid2>
       </Grid2>
 
-      <Box
+      {/* <Box
         component="footer"
         sx={{ bgcolor: "background.paper", p: 6, textAlign: "center" }}
       >
@@ -357,7 +358,8 @@ const Home: React.FC = () => {
           </IconButton>
         </Typography>
         <Copyright />
-      </Box>
+      </Box> */}
+      <FooterSection/>
     </Box>
   )
 }

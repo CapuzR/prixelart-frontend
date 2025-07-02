@@ -18,7 +18,7 @@ export default defineConfig(async () => {
       preprocessorOptions: {
         scss: {
           api: 'modern',
-          additionalData: `@use "@/theme.scss" as *;`,
+          additionalData: `@use "@/styles/theme.scss" as *;`,
         },
       },
     },

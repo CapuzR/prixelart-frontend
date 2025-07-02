@@ -3,11 +3,9 @@ import { useNavigate } from "react-router-dom"
 import { Box, Paper, Typography, Button, IconButton } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 import useMediaQuery from "@mui/material/useMediaQuery"
-import InstagramIcon from "@mui/icons-material/Instagram"
 
 import ProductElement from "components/ProductElement"
 import BrandsCarousel from "components/brandsCarousel/brandsCarousel"
-import Copyright from "@components/Copyright/copyright"
 
 import { fetchCarouselImages } from "@api/preferences.api"
 import { fetchBestSellers } from "@api/product.api"

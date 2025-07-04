@@ -223,7 +223,7 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({
             <CurrencySwitch />
           </div> */}
         </div>
-        <Grid2 container spacing={5} style={{ marginTop: 20 }}>
+        <Grid2 container spacing={isMobile ? 2 : 3} style={{ marginTop: 20 }}>
           {displayedProducts && displayedProducts.length > 0 ? (
             displayedProducts.map((product) => (
               <Grid2

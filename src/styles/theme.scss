@@ -1,4 +1,6 @@
 @use "sass:color";
+@import "./_fonts/futura";
+@import "./_fonts/ubuntu";
 
 $primary-color: #d33f49;
 $secondary-color: #404e5c;
@@ -15,8 +17,11 @@ $success-color: #27ae60;
 $warning-color: #f39c12;
 $info-color: #3498db;
 
-$font-family-sans: 'Roboto', sans-serif;
-$font-family-serif: 'Merriweather', serif;
+$font-family-sans: "Roboto", sans-serif;
+$font-family-serif: "Merriweather", serif;
+$font-family-futura: "Futura", sans-serif;
+$font-family-ubuntu: "Ubuntu", sans-serif;
+
 $font-size-base: 16px;
 $font-size-small: 1rem;
 $font-size-medium: 1.25rem;
@@ -84,10 +89,12 @@ $z-index-tooltip: 1100;
   }
 }
 
-@mixin button($bg-color,
+@mixin button(
+  $bg-color,
   $text-color: $text-light-color,
   $hover-bg-color: color.adjust($bg-color, $lightness: -10%),
-  $hover-text-color: $text-color) {
+  $hover-text-color: $text-color
+) {
   background-color: $bg-color;
   color: $text-color;
   padding: $button-padding;
@@ -120,24 +127,32 @@ $z-index-tooltip: 1100;
   padding: $size;
 }
 
-@mixin text-heading($size: $font-size-large, $weight: $font-weight-bold, $line-height: 1.2) {
+@mixin text-heading(
+  $size: $font-size-large,
+  $weight: $font-weight-bold,
+  $line-height: 1.2
+) {
   font-size: $size;
   font-weight: $weight;
   line-height: $line-height;
 }
 
-@mixin text-body($size: $font-size-base,
+@mixin text-body(
+  $size: $font-size-base,
   $weight: $font-weight-normal,
-  $line-height: $line-height-base) {
+  $line-height: $line-height-base
+) {
   font-size: $size;
   font-weight: $weight;
   line-height: $line-height;
 }
 
-@mixin paper($bg-color: white,
+@mixin paper(
+  $bg-color: white,
   $shadow: $box-shadow-medium,
   $radius: $border-radius-lg,
-  $spacing: $spacing-md) {
+  $spacing: $spacing-md
+) {
   background-color: $bg-color;
   box-shadow: $shadow;
   border-radius: $radius;
@@ -187,5 +202,4 @@ p {
 .final-price {
   font-weight: bold;
   font-size: 1.5rem;
-
 }

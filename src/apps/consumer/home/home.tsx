@@ -52,9 +52,7 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
 }) => (
   <Paper
     elevation={5}
-    sx={{ mb: 4, bgcolor: "grey.100", borderRadius: 8,
-       position: "relative"
-       }}
+    sx={{ mb: 4, bgcolor: "grey.100", borderRadius: 8, position: "relative" }}
   >
     <Box
       sx={{
@@ -178,9 +176,11 @@ const HeroSlider: React.FC<HeroSliderProps> = ({
 
   return (
     <Box
-      sx={{ 
+      sx={{
         position: "relative",
-         width: "100%", height: `calc(100vh - 64px)` }}
+        width: "100%",
+        height: `calc(100vh - 64px)`,
+      }}
     >
       {images.length > 0 && (
         <Slider
@@ -251,7 +251,14 @@ const Home: React.FC = () => {
   }, [])
 
   return (
-    <Box sx={{ flex: 1, width: "100%", position: "relative" }}>
+    <Box
+      sx={{
+        mt: isMobile ? "-56px" : "-64px",
+        flex: 1,
+        width: "100%",
+        position: "relative",
+      }}
+    >
       <Grid2 container>
         <Grid2 size={{ xs: 12 }}>
           <HeroSlider
@@ -357,7 +364,7 @@ const Home: React.FC = () => {
         </Typography>
         <Copyright />
       </Box> */}
-      <FooterSection/>
+      <FooterSection />
     </Box>
   )
 }

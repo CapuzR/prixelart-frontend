@@ -14,6 +14,8 @@ import Drawer from "@mui/material/Drawer"
 import Divider from "@mui/material/Divider"
 import Badge from "@mui/material/Badge"
 import Box from "@mui/material/Box"
+import Button from "@mui/material/Button"
+import ButtonGroup from "@mui/material/ButtonGroup"
 
 import MenuIcon from "@mui/icons-material/Menu"
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft"
@@ -22,6 +24,8 @@ import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined"
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney"
 
 import logo from "./Logotipo_Prixelart_H2.png"
+import anom from "../../assets/images/anom-user.png"
+import bag from "../../assets/images/shop-bag.png"
 
 import { useCurrency, useUser } from "context/GlobalContext"
 import { useCart } from "context/CartContext"
@@ -68,7 +72,16 @@ const ShoppingCartButton: React.FC<ShoppingCartButtonProps> = ({
 }) => (
   <IconButton onClick={onClick} color="inherit">
     <Badge overlap="rectangular" badgeContent={itemCount} color="error">
-      <ShoppingCartOutlinedIcon />
+      <img
+        src={bag}
+        alt=""
+        style={{
+          height: 25,
+          width: "auto",
+          // borderRadius: "50%",
+          objectFit: "cover",
+        }}
+      />
     </Badge>
   </IconButton>
 )
@@ -78,6 +91,7 @@ const MenuAppBar: React.FC = () => {
   const theme = useTheme()
   const navigate = useNavigate()
   const location = useLocation()
+  const isHome = location.pathname === "/"
   const isMobile = useMediaQuery(theme.breakpoints.down("md"))
   const { cart } = useCart()
   const { user, setUser } = useUser()
@@ -235,19 +249,24 @@ const MenuAppBar: React.FC = () => {
   }
 
   const appBarSx: SxProps<Theme> = {
+    background: isHome
+      ? "transparent"
+      : "linear-gradient(to bottom, #404e5c 80%, rgba(64, 78, 92, 0) 100%)",
+    boxShadow: "none",
+    position: "fixed",
     transition: theme.transitions.create(["margin", "width"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
     ...(isMobile &&
       drawerOpen && {
-      width: `calc(100% - ${drawerWidth}px)`,
-      marginLeft: `${drawerWidth}px`,
-      transition: theme.transitions.create(["margin", "width"], {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.enteringScreen,
+        width: `calc(100% - ${drawerWidth}px)`,
+        marginLeft: `${drawerWidth}px`,
+        transition: theme.transitions.create(["margin", "width"], {
+          easing: theme.transitions.easing.easeOut,
+          duration: theme.transitions.duration.enteringScreen,
+        }),
       }),
-    }),
   }
 
   const drawerHeaderSx: SxProps<Theme> = (currentTheme) => ({
@@ -270,11 +289,11 @@ const MenuAppBar: React.FC = () => {
       sx={
         orientation === "vertical"
           ? {
-            display: "flex",
-            borderRight: (theme) => `1px solid ${theme.palette.divider}`,
-            alignItems: "flex-start",
-            width: "100%",
-          }
+              display: "flex",
+              borderRight: (theme) => `1px solid ${theme.palette.divider}`,
+              alignItems: "flex-start",
+              width: "100%",
+            }
           : {}
       }
     >
@@ -315,6 +334,12 @@ const MenuAppBar: React.FC = () => {
     </Tabs>
   )
 
+  const buttons = [
+    // { text: "Nosotros" },
+    { text: "Galería", onClick: () => handleNavigate("/galeria") },
+    { text: "Tienda", onClick: () => handleNavigate("/productos") },
+    { text: "Contacto" },
+  ]
   // --- Mobile Drawer ---
   const drawerContent = (
     <Box sx={{ width: drawerWidth }} role="presentation">
@@ -362,26 +387,10 @@ const MenuAppBar: React.FC = () => {
     </Box>
   )
 
-  // Chiguire:
-  // const brillanteKeyframes = {
-  //   '0%': { boxShadow: '0 0 0 0 rgba(255, 255, 255, 0.7)' },
-  //   '50%': { boxShadow: '0 0 0 20px rgba(255, 255, 255, 0)' },
-  //   '100%': { boxShadow: '0 0 0 0 rgba(255, 255, 255, 0)' },
-  // };
-  // const chiguireImageSx: SxProps<Theme> = {
-  //   width: 45,
-  //   height: 45,
-  //   borderRadius: '50%',
-  //   '@keyframes animacion-brillo': brillanteKeyframes,
-  //   animation: 'animacion-brillo 2s infinite',
-  // };
-
-  // --- Main Return ---
   return (
     <Box sx={{ flexGrow: 1, minWidth: "100%", minHeight: "100%" }}>
       <AppBar color="secondary" position="fixed" sx={appBarSx}>
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-          {/* Left Section (Menu/Logo) */}
           <Box sx={{ display: "flex", alignItems: "center" }}>
             {/* {isMobile && (
               <IconButton
@@ -398,23 +407,32 @@ const MenuAppBar: React.FC = () => {
               onClick={() => handleNavigate("/")}
               sx={logoButtonOuterSx}
             />
-            {/* Chiguireo
-             <IconButton onClick={() => handleNavigate('/chiguirebipolar')} size="medium" sx={{ ml: 2, display: { xs: 'none', md: 'inline-flex'} }}>
-               <Box component="img" src={CB} sx={chiguireImageSx} />
-             </IconButton>
-            */}
           </Box>
 
-          {/* Middle Section (Desktop Tabs) */}
           {!isMobile && (
             <Box
               sx={{ flexGrow: 1, display: "flex", justifyContent: "center" }}
             >
-              {renderNavTabs("horizontal")}
+              {/* {renderNavTabs("horizontal")} */}
+              <ButtonGroup size="large" aria-label="Large button group">
+                {buttons.map((button, i) => (
+                  <Button
+                    sx={{
+                      borderColor: "transparent",
+                      color: "white",
+                      textTransform: "uppercase",
+                      fontFamily: "Ubuntu",
+                    }}
+                    key={i}
+                    onClick={button.onClick}
+                  >
+                    {button.text}
+                  </Button>
+                ))}
+              </ButtonGroup>
             </Box>
           )}
 
-          {/* Right Section (Actions/User Menu) */}
           <Box sx={{ display: "flex", alignItems: "center" }}>
             {!isMobile && (
               <ShoppingCartButton
@@ -442,7 +460,16 @@ const MenuAppBar: React.FC = () => {
                   }}
                 />
               ) : (
-                <MenuIcon />
+                <img
+                  src={anom}
+                  alt="Anom Avatar"
+                  style={{
+                    height: 25,
+                    width: "auto",
+                    // borderRadius: "50%",
+                    objectFit: "cover",
+                  }}
+                />
               )}
             </IconButton>
             <Menu
@@ -467,7 +494,6 @@ const MenuAppBar: React.FC = () => {
         </Toolbar>
       </AppBar>
 
-      {/* Mobile Drawer */}
       {isMobile && (
         <Drawer
           sx={{

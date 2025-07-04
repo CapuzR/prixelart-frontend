@@ -148,6 +148,7 @@ export default function FooterSection() {
         "& p": {
           color: "white",
         },
+        paddingTop: isMobile ? 2 : 20,
         paddingBottom: isMobile ? 3 : 0,
       }}
     >

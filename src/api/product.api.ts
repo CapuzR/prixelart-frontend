@@ -30,7 +30,7 @@ export const fetchProducts = async (): Promise<Product[]> => {
     if (!res.data.success || !Array.isArray(res.data.result)) {
         console.error("Failed to fetch:", res.data.message)
     }
-
+console.log(res.data)
     const items = res.data.result as Product[]
     return items
 }
@@ -160,6 +160,37 @@ export const updateProduct = async (
         }
 
         const updatedAdmin = response.data.result as unknown as Product
+        return updatedAdmin
+    } catch (error) {
+        console.error(`Error updating productt:`, error)
+        throw error
+    }
+}
+
+export const updateManyProduct = async (products: Product[]): Promise<Product[]> => {
+    const base_url = `${import.meta.env.VITE_BACKEND_URL}/product/update-many-products`
+    try {
+        const response = await axios.put<PrixResponse>(base_url, products, {
+            withCredentials: true,
+            // ContentType: 'application/json'
+        })
+
+        if (!response.data.success) {
+            console.error(
+                `Backend reported failure updating products`,
+                response.data.message
+            )
+            throw new Error(response.data.message || `Failed to update products`)
+        }
+
+        if (!response.data.result) {
+            console.error(
+                `Backend reported success but no product data returned after update.`
+            )
+            throw new Error(`No data received after updating product.`)
+        }
+
+        const updatedAdmin = response.data.result as unknown as Product[]
         return updatedAdmin
     } catch (error) {
         console.error(`Error updating productt:`, error)

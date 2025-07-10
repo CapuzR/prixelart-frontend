@@ -2972,7 +2972,7 @@ export default function UpdateOrder() {
                   onChange={handleObservationsChange}
                   fullWidth
                   multiline
-                  rows={3}
+                  rows={observations.length > 0 ? 8 : 3}
                   disabled={isSubmitting}
                   placeholder="Observaciones ingresadas por el cliente"
                   variant="outlined"

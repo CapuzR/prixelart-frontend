@@ -3,11 +3,9 @@ import { useNavigate } from "react-router-dom"
 import { Box, Paper, Typography, Button, IconButton } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 import useMediaQuery from "@mui/material/useMediaQuery"
-import InstagramIcon from "@mui/icons-material/Instagram"
 
 import ProductElement from "components/ProductElement"
 import BrandsCarousel from "components/brandsCarousel/brandsCarousel"
-import Copyright from "@components/Copyright/copyright"
 
 import { fetchCarouselImages } from "@api/preferences.api"
 import { fetchBestSellers } from "@api/product.api"
@@ -20,6 +18,8 @@ import { Art } from "types/art.types"
 import { Slider } from "@components/Slider"
 import { Image } from "@components/Image"
 import Grid2 from "@mui/material/Grid"
+import FooterSection from "./FooterSection"
+import AboutUs from "./AboutUs"
 
 const useBreakpoints = () => {
   const theme = useTheme()
@@ -53,9 +53,7 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
 }) => (
   <Paper
     elevation={5}
-    sx={{ mb: 4, bgcolor: "grey.100", borderRadius: 8,
-       position: "relative"
-       }}
+    sx={{ mb: 4, bgcolor: "grey.100", borderRadius: 8, position: "relative" }}
   >
     <Box
       sx={{
@@ -179,9 +177,11 @@ const HeroSlider: React.FC<HeroSliderProps> = ({
 
   return (
     <Box
-      sx={{ 
+      sx={{
         position: "relative",
-         width: "100%", height: `calc(100vh - 64px)` }}
+        width: "100%",
+        height: `calc(100vh - 64px)`,
+      }}
     >
       {images.length > 0 && (
         <Slider
@@ -252,7 +252,14 @@ const Home: React.FC = () => {
   }, [])
 
   return (
-    <Box sx={{ flex: 1, width: "100%", position: "relative" }}>
+    <Box
+      sx={{
+        mt: isMobile ? "-56px" : "-64px",
+        flex: 1,
+        width: "100%",
+        position: "relative",
+      }}
+    >
       <Grid2 container>
         <Grid2 size={{ xs: 12 }}>
           <HeroSlider
@@ -261,7 +268,7 @@ const Home: React.FC = () => {
             headline="Encuentra el cuadro ideal para ti."
           />
         </Grid2>
-
+        <AboutUs/>
         <Grid2 size={{ xs: 12 }}>
           <Box sx={{ mx: "auto", width: isXs ? "90%" : "80%", py: 4 }}>
             <CarouselSection
@@ -332,7 +339,7 @@ const Home: React.FC = () => {
         </Grid2>
       </Grid2>
 
-      <Box
+      {/* <Box
         component="footer"
         sx={{ bgcolor: "background.paper", p: 6, textAlign: "center" }}
       >
@@ -357,7 +364,8 @@ const Home: React.FC = () => {
           </IconButton>
         </Typography>
         <Copyright />
-      </Box>
+      </Box> */}
+      <FooterSection />
     </Box>
   )
 }

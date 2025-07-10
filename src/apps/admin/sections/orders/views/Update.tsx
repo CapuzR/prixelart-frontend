@@ -803,7 +803,12 @@ export default function UpdateOrder() {
   }, [editableOrderLines, selectedShippingMethod, order])
 
   useEffect(() => {
-    const newPrefDate = calculatePreferredDate(editableOrderLines)
+    let newPrefDate
+    if (order?.shipping?.preferredDeliveryDate) {
+      newPrefDate = dayjs(order?.shipping?.preferredDeliveryDate)
+    } else {
+      newPrefDate = calculatePreferredDate(editableOrderLines)
+    }
     setPrefDate(newPrefDate)
   }, [editableOrderLines])
 
@@ -2106,7 +2111,7 @@ export default function UpdateOrder() {
               {isSubmitting ? "Guardando..." : "Guardar Cambios"}
             </Button>
           </Grid2>
-          {order.shipping?.estimatedDeliveryDate &&
+          {order.shipping?.preferredDeliveryDate &&
             getOverallOrderStatus(editableOrderLines) !==
               OrderStatus.Delivered &&
             getOverallOrderStatus(editableOrderLines) !==
@@ -2114,11 +2119,11 @@ export default function UpdateOrder() {
               <Alert
                 severity="info"
                 icon={<LocalShippingOutlined />}
-                sx={{ borderRadius: 2 }}
+                sx={{ borderRadius: 2, mt: 2 }}
               >
-                Fecha estimada de entrega original:
+                Fecha estimada de entrega:
                 <strong>
-                  {formatDate(order.shipping.estimatedDeliveryDate, false)}
+                  {formatDate(order.shipping.preferredDeliveryDate, false)}
                 </strong>
               </Alert>
             )}
@@ -2967,7 +2972,7 @@ export default function UpdateOrder() {
                   onChange={handleObservationsChange}
                   fullWidth
                   multiline
-                  rows={3}
+                  rows={observations.length > 0 ? 8 : 3}
                   disabled={isSubmitting}
                   placeholder="Observaciones ingresadas por el cliente"
                   variant="outlined"

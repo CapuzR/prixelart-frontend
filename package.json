@@ -27,7 +27,7 @@
     "axios": "^1.8.1",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
-    "exceljs": "^4.3.0",
+    "exceljs": "^4.4.0",
     "firebase": "^9.15.0",
     "html2canvas": "^1.4.1",
     "immutable": "^4.1.0",
@@ -62,7 +62,8 @@
     "tus-js-client": "^4.3.1",
     "victory": "^36.6.11",
     "vite": "^6.2.0",
-    "world-atlas": "^2.0.2"
+    "world-atlas": "^2.0.2",
+    "xlsx": "^0.18.5"
   },
   "scripts": {
     "dev": "yarn vite",

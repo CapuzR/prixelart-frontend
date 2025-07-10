@@ -1,5 +1,6 @@
 import Button from "components/Button"
 import Typography from "@mui/material/Typography"
+import Grid2 from "@mui/material/Grid"
 import { WhatsApp, AddShoppingCart } from "@mui/icons-material"
 import { formatNumberString, formatRange } from "utils/formats"
 import { Slider } from "components/Slider"
@@ -79,39 +80,33 @@ export default function Card({
         const currentBaseMax =
           basePrices.length > 0 ? Math.max(...basePrices) : null
 
-        // --- Step 2: Fetch Final Prices (considering discounts) ---
-        // Map variants to promises that resolve with [originalPrice, finalPrice]
         const pricePromises = (product.variants ?? []).map(
           async (variant): Promise<[number, number] | null> => {
-            // Check if discountId array exists and is not empty
             const hasDiscount =
               Array.isArray(variant.discountId) && variant.discountId.length > 0
 
             if (hasDiscount && variant._id && product._id) {
-              // Fetch potentially discounted price
               const fetchedPrices = await fetchVariantPrice(
                 variant._id,
                 product._id.toString()
               )
-              // fetchVariantPrice now returns null on error/not found/parse failure
               return fetchedPrices
             } else {
               const priceNum = formatNumberString(variant[priceField])
-              if (isNaN(priceNum)) return null // Invalid public price
-              return [priceNum, priceNum] // Original and Final are the same
+              if (isNaN(priceNum)) return null
+              return [priceNum, priceNum]
             }
           }
         )
 
         const results = await Promise.all(pricePromises)
 
-        // Filter out null results (errors, invalid data) and extract final prices
         const validFinalPrices = results
           .filter(
             (result): result is [number, number] =>
               result !== null && !isNaN(result[1])
-          ) // Ensure result exists and final price is a number
-          .map((result) => result[1]) // Get the final price (index 1)
+          )
+          .map((result) => result[1])
 
         if (validFinalPrices.length === 0) {
           throw new Error("No se pudieron determinar los precios finales.")
@@ -120,7 +115,6 @@ export default function Card({
         const currentFinalMin = Math.min(...validFinalPrices)
         const currentFinalMax = Math.max(...validFinalPrices)
 
-        // Update state only if component is still mounted
         if (isMounted) {
           setPriceInfo({
             baseMin: currentBaseMin,
@@ -176,7 +170,6 @@ export default function Card({
       return "Precio no disponible"
     }
 
-    // Format the final price range
     const finalPriceString = formatRange(
       priceInfo.finalMin,
       priceInfo.finalMax,
@@ -184,14 +177,12 @@ export default function Card({
       conversionRate
     )
 
-    // Check if the base range is valid and different from the final range
     const baseRangeDiffers =
       priceInfo.baseMin !== null &&
       (priceInfo.baseMin !== priceInfo.finalMin ||
         priceInfo.baseMax !== priceInfo.finalMax)
 
     if (baseRangeDiffers) {
-      // Format the base price range
       const basePriceString = formatRange(
         priceInfo.baseMin,
         priceInfo.baseMax,
@@ -199,7 +190,6 @@ export default function Card({
         conversionRate
       )
 
-      // Use dangerouslySetInnerHTML to render the strikethrough style
       return (
         <span
           dangerouslySetInnerHTML={{
@@ -215,7 +205,6 @@ export default function Card({
         />
       )
     } else {
-      // Only show the final price if base and final are the same or base is invalid
       return (
         <span
           dangerouslySetInnerHTML={{
@@ -227,8 +216,11 @@ export default function Card({
   }
 
   return (
-    <div
+    <Grid2
+      container
       className={`${styles["card-root"]}`}
+      spacing={1.5}
+      padding={3}
       id={product.name}
       style={
         isCart
@@ -236,30 +228,33 @@ export default function Card({
           : { flexDirection: isMobile ? "column" : "row" }
       }
     >
-      <div className={styles["slider-container"]}>
+      <Grid2 size={{ xs: 12 }}>
+        <Typography
+          gutterBottom
+          variant="h4"
+          component="h3"
+          className="truncate"
+          sx={{ fontSize: "1.9rem" }}
+        >
+          {product.name.split("\r\n")[0]}
+        </Typography>
+      </Grid2>
+
+      <Grid2 size={{ xs:12, sm: 4 }}>
         <Slider images={product?.sources?.images}>
           {product?.sources?.images?.map((image, i) => (
             <Image key={i} src={image.url} alt={product?.name} />
           ))}
         </Slider>
-      </div>
-      <div className={styles["card-content"]}>
-        <div className={styles["main-content"]}>
-          <Typography
-            gutterBottom
-            variant="h4"
-            component="h3"
-            className="truncate"
-            sx={{ fontSize: "1.9rem" }}
-          >
-            {product.name.split("\r\n")[0]}
-          </Typography>
+      </Grid2>
+      <Grid2 size={{ xs:12, sm: 8 }}>
+        <Grid2 className={styles["main-content"]}>
           {/* <p style={isCart ? { margin: 0 } : {}}>
             {product.description.split("\r\n")[0].length > 60
               ? `${product.description.split("\r\n")[0].slice(0, 65)}...`
               : `${product.description.split("\r\n")[0]}`}
           </p> */}
-          <div
+          <Grid2
             className="ql-editor"
             dangerouslySetInnerHTML={{
               __html:
@@ -270,7 +265,7 @@ export default function Card({
           />
           <Typography
             gutterBottom
-            component="div"
+            // component="Grid2"
             style={{
               fontSize: 15,
               marginTop: "1rem",
@@ -279,32 +274,29 @@ export default function Card({
               ...(isCart ? { margin: 0 } : {}),
             }}
           >
-            {renderPrice()} {/* Call the render function */}
+            {renderPrice()}
           </Typography>
-        </div>
-        <div className={styles["buttons-wrapper"]}>
-          {!onProductSelect && (
-            <Button onClick={() => handleProductSelection()}>
-              <AddShoppingCart />
-            </Button>
-          )}
-          <Button onClick={() => handleDetails(product)}>Detalles</Button>
-          <Button
-            type="onlyText"
-            color="primary"
-            className={styles["waButton"]}
-            onClick={() => {
-              const url = `${window.location}/producto/${product._id}`
-              window.open(
-                utils.generateWaProductMessage(product, url),
-                "_blank"
-              )
-            }}
-          >
-            <WhatsApp /> Info
+        </Grid2>
+      </Grid2>
+      <Grid2 size={{ xs: 12 }} className={styles["buttons-wrapper"]}>
+        {!onProductSelect && (
+          <Button onClick={() => handleProductSelection()}>
+            <AddShoppingCart />
           </Button>
-        </div>
-      </div>
-    </div>
+        )}
+        <Button onClick={() => handleDetails(product)}>Detalles</Button>
+        <Button
+          type="onlyText"
+          color="primary"
+          className={styles["waButton"]}
+          onClick={() => {
+            const url = `${window.location}/producto/${product._id}`
+            window.open(utils.generateWaProductMessage(product, url), "_blank")
+          }}
+        >
+          <WhatsApp /> Info
+        </Button>
+      </Grid2>
+    </Grid2>
   )
 }

@@ -100,7 +100,7 @@ export const permissionGroups: PermissionGroup[] = [
 // Also ensure permissionLabels includes keys for all items defined above
 export const permissionLabels: { [key in keyof Omit<Permissions, '_id' | 'area'>]: string } = {
     detailOrder: "Ver detalles de pedido",
-    detailPay: "Modificar status de pago",
+    detailPay: "Modificar detalles de pago",
     createOrder: "Crear y modificar pedido",
     createProduct: "Crear y modificar productos",
     deleteProduct: "Eliminar productos",
@@ -112,18 +112,24 @@ export const permissionLabels: { [key in keyof Omit<Permissions, '_id' | 'area'>
     deleteShippingMethod: "Eliminar método de envío",
     modifyBanners: "Modificar banners",
     modifyTermsAndCo: "Modificar términos y condiciones",
-    modifyDollar: "Modificar valor del dolar",
+    modifyDollar: "Modificar valor del dólar",
     modifyBestSellers: "Modificar productos más vendidos",
     modifyArtBestSellers: "Modificar artes más vendidos",
     createTestimonial: "Crear, modificar, mostrar y ordenar testimonios",
     deleteTestimonial: "Eliminar testimonios",
     modifyAdmins: "Crear, modificar y eliminar Admins",
     prixerBan: "Banear a Prixers",
-    setPrixerBalance: "Modificar Balance de Prixers",
+    setPrixerBalance: "Modificar balance de Prixers",
     readMovements: "Leer movimientos",
     artBan: "Banear artes",
     createConsumer: "Crear y modificar clientes",
     readConsumers: "Leer clientes",
     deleteConsumer: "Eliminar clientes",
-    orderStatus: "Modificar status de pedido", // Make sure this was included
+    orderStatus: "Modificar status de pedido",
+    updateAdmins: "Actualizar información de administradores",
+    updateArtBestSellers: "Actualizar lista de artes más vendidos",
+    updateBanners: "Actualizar banners",
+    updateBestSellers: "Actualizar lista de productos más vendidos",
+    updateDollar: "Actualizar valor del dólar",
+    updateTermsAndCo: "Actualizar términos y condiciones"
 };

@@ -19,6 +19,7 @@ import { Slider } from "@components/Slider"
 import { Image } from "@components/Image"
 import Grid2 from "@mui/material/Grid"
 import FooterSection from "./FooterSection"
+import AboutUs from "./AboutUs"
 
 const useBreakpoints = () => {
   const theme = useTheme()
@@ -267,7 +268,7 @@ const Home: React.FC = () => {
             headline="Encuentra el cuadro ideal para ti."
           />
         </Grid2>
-
+        <AboutUs/>
         <Grid2 size={{ xs: 12 }}>
           <Box sx={{ mx: "auto", width: isXs ? "90%" : "80%", py: 4 }}>
             <CarouselSection

@@ -1,4 +1,3 @@
-import React, { useEffect } from "react"
 import { useTheme } from "@mui/material/styles"
 
 import Grid2 from "@mui/material/Grid"
@@ -86,32 +85,28 @@ export default function FooterSection() {
         url: "/registrar",
       },
     ],
-    [
-      {
-        text: "Tienda",
-      },
-      {
-        text: "Productos",
-        url: "/productos",
-      },
-      // {
-      //   text: "Especificaciones",
-      // },
-      // {
-      //   text: "Personaliza",
-      // },
-      // {
-      //   text: "Relacionados",
-      // },
-    ],
+    // [
+    //   {
+    //     text: "Tienda",
+    //   },
+    //   {
+    //     text: "Productos",
+    //     url: "/productos",
+    //   },
+    // {
+    //   text: "Especificaciones",
+    // },
+    // {
+    //   text: "Personaliza",
+    // },
+    // {
+    //   text: "Relacionados",
+    // },
+    // ],
     [
       {
         text: "Contacto",
         url: "/contacto",
-      },
-      {
-        text: "Redes Sociales",
-        // url: "/redes",
       },
       {
         text: "Horario",
@@ -138,18 +133,19 @@ export default function FooterSection() {
   return (
     <Grid2
       container
-      padding={isMobile ? 2 : 10}
-      spacing={isMobile ? 1 : 3}
+      padding={isMobile ? 2 : 16}
+      spacing={isMobile ? 1 : 8}
       sx={{
-        height: "100vh",
+        height: "max-content",
         background: isMobile
           ? `url(${footerBg}) top right / cover no-repeat transparent`
-          : `url(${footerBg}) top / 100% 100% no-repeat transparent`,
+          : `url(${footerBg}) top / cover no-repeat transparent`,
         "& p": {
           color: "white",
         },
-        paddingTop: isMobile ? 2 : 20,
-        paddingBottom: isMobile ? 3 : 0,
+        paddingTop: isMobile ? 2 : 15,
+        // gap: isMobile ? 2 : 
+        // paddingBottom: isMobile ? 3 : 0,
       }}
     >
       <Grid2
@@ -167,28 +163,27 @@ export default function FooterSection() {
         />
       </Grid2>
       <Grid2
-        size={{ xs: 12, sm: 9 }}
+        size={{ xs: 12, sm: 8.5 }}
         sx={{
           display: "flex",
           justifyContent: "center",
           gap: 4,
-          height: "fit-content",
+          height: "auto",
           flexDirection: "column",
         }}
       >
         <Grid2
-        container
+          container
           sx={{
             display: "flex",
-            gap: 1,
+            gap: isMobile ? 0 : 1,
             height: "fit-content",
-            justifyContent: isMobile ? "center" : "unset"
-
+            justifyContent: isMobile ? "center" : "space-between",
           }}
         >
           {allLinks.map((columnLinks, colIndex) => (
             <Grid2
-              size={{ xs: 5, sm: 2.4 }}
+              size={{ xs: 4, sm: 2.4 }}
               key={colIndex}
               sx={{
                 gap: 2,
@@ -241,9 +236,9 @@ export default function FooterSection() {
         >
           <iframe
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3923.0137146357715!2d-66.79591852237525!3d10.499584637532607!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8c2a57720849cba1%3A0xcde4fd59e5307907!2sPrixelart%20C.A.!5e0!3m2!1ses!2sve!4v1751474653621!5m2!1ses!2sve"
-            width={isMobile ? "320" : "460"}
-            height="160"
-            style={{ border: 0, borderRadius: 20 }}
+            width={isMobile ? "320" : "60%"}
+            height="100%"
+            style={{ border: 0, borderRadius: 20, minHeight: isMobile ? 150 : 250 }}
             allowFullScreen={true}
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
@@ -253,8 +248,9 @@ export default function FooterSection() {
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
-              alignItems: "end",
-              marginTop: isMobile ? 2 : 0,
+              alignItems: isMobile ? "center" : "end",
+              // marginTop: isMobile ? 2 : 0,
+              margin: isMobile ? "2rem 0" : 0
             }}
           >
             <Typography
@@ -309,6 +305,7 @@ export default function FooterSection() {
           justifyContent: "center",
           color: "white",
           height: "fit-content",
+          mb: isMobile ? "2rem" : 0
         }}
       >
         <Copyright />

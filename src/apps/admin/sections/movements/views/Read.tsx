@@ -686,14 +686,14 @@ const ReadMovements: React.FC = () => {
                           align="right"
                           sx={{
                             color:
-                              movement.value >= 0
+                              movement.type === "Depósito"
                                 ? "success.main"
                                 : "error.main",
                             fontWeight: "medium",
                           }}
                         >
-                          {formatCurrency(movement.value)}
-                        </TableCell>
+                                    {`${movement.type === "Retiro" ? "-" : ""} ${formatCurrency(movement.value)}`}
+                                    </TableCell>
                         <TableCell align="right">
                           <Box
                             sx={{

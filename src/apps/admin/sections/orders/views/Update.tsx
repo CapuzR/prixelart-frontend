@@ -1526,7 +1526,7 @@ export default function UpdateOrder() {
       return
     }
     for (const [index, line] of editableOrderLines.entries()) {
-      /* ... (validación de líneas sin cambios) ... */ if (
+     if (
         !line.selectedProduct
       ) {
         showSnackBar(`Item #${index + 1}: Producto es requerido.`)

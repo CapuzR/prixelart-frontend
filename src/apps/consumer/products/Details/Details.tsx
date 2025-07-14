@@ -12,7 +12,7 @@ import Landscape from './views/Landscape';
 import { queryCreator } from '@apps/consumer/flow/helpers';
 import { SelectChangeEvent } from '@mui/material';
 import { Product, Variant, VariantAttribute } from '../../../../types/product.types'; // Import VariantAttribute
-import { fetchActiveProductDetails, fetchVariantPrice } from '@api/product.api';
+import { fetchActiveProductDetails, fetchVariantPrice, fetchAllVariantPricesForProduct } from '@api/product.api';
 import { formatNumberString } from '@utils/formats';
 
 ReactGA.initialize('G-0RWP9B33D8');
@@ -120,74 +120,67 @@ const Details: React.FC<DetailsProps> = ({ productId }) => {
 
   useEffect(() => {
     if (!product?._id || !product.variants || product.variants.length === 0) {
-      setCalculatedRangeInfo({ baseMin: null, baseMax: null, finalMin: null, finalMax: null, isLoading: false, error: product ? 'Producto sin variantes.' : null });
-      return;
+        setCalculatedRangeInfo({ baseMin: null, baseMax: null, finalMin: null, finalMax: null, isLoading: false, error: product ? 'Producto sin variantes.' : null });
+        return;
     }
 
     let isMounted = true;
 
     const calculatePrices = async () => {
-      // Start loading for range calculation
-      setCalculatedRangeInfo(prev => ({ ...prev, isLoading: true, error: null }));
+        setCalculatedRangeInfo(prev => ({ ...prev, isLoading: true, error: null }));
 
-      try {
-        // --- Step 1: Calculate Base Prices ---
-        const isPrixer = user?.prixer;
-        const basePriceField: keyof Variant = isPrixer && 'prixerPrice' in product.variants![0] ? 'prixerPrice' : 'publicPrice';
+        try {
+            const allVariantPrices = await fetchAllVariantPricesForProduct(product._id!.toString());
 
-        const basePrices = product.variants!
-          .map(v => {
-            const priceValue = v[basePriceField];
-            return priceValue != null ? formatNumberString(String(priceValue)) : NaN;
-          })
-          .filter(p => !isNaN(p));
+            if (!isMounted) return; 
 
-        const currentBaseMin = basePrices.length > 0 ? Math.min(...basePrices) : null;
-        const currentBaseMax = basePrices.length > 0 ? Math.max(...basePrices) : null;
+            if (allVariantPrices.length === 0) {
+                throw new Error("No se pudieron determinar los precios para ninguna variante.");
+            }
 
-        // --- Step 2: Fetch Final Prices for ALL variants ---
-        const pricePromises = product.variants!.map(variant =>
-          fetchVariantPrice(variant._id!, product._id!.toString()) // Fetch original & final
-        );
+            const isPrixer = user?.prixer;
+            const basePriceField: keyof Variant = isPrixer && 'prixerPrice' in product.variants![0] ? 'prixerPrice' : 'publicPrice';
 
-        const results = await Promise.all(pricePromises);
+            const basePrices = product.variants!
+                .map(v => {
+                    const priceValue = v[basePriceField];
+                    return priceValue != null ? formatNumberString(String(priceValue)) : NaN;
+                })
+                .filter(p => !isNaN(p));
 
-        const validPrices = results.filter((result): result is [number, number] => result !== null);
+            const currentBaseMin = basePrices.length > 0 ? Math.min(...basePrices) : null;
+            const currentBaseMax = basePrices.length > 0 ? Math.max(...basePrices) : null;
 
-        if (validPrices.length === 0) {
-          throw new Error("No se pudieron determinar los precios finales para el rango.");
+            const finalPrices = allVariantPrices.map(p => p.finalPrice);
+            const currentFinalMin = Math.min(...finalPrices);
+            const currentFinalMax = Math.max(...finalPrices);
+
+            if (isMounted) {
+                setCalculatedRangeInfo({
+                    baseMin: currentBaseMin,
+                    baseMax: currentBaseMax,
+                    finalMin: currentFinalMin,
+                    finalMax: currentFinalMax,
+                    isLoading: false,
+                    error: null,
+                });
+            }
+
+        } catch (err) {
+            console.error("Error al calcular el rango de precios del producto:", err);
+            if (isMounted) {
+                setCalculatedRangeInfo({
+                    baseMin: null, baseMax: null, finalMin: null, finalMax: null,
+                    isLoading: false,
+                    error: err instanceof Error ? err.message : 'Error al calcular rango de precios.',
+                });
+            }
         }
-
-        const finalPrices = validPrices.map(p => p[1]); // index 1 is final price
-        const currentFinalMin = Math.min(...finalPrices);
-        const currentFinalMax = Math.max(...finalPrices);
-
-        if (isMounted) {
-          setCalculatedRangeInfo({
-            baseMin: currentBaseMin,
-            baseMax: currentBaseMax,
-            finalMin: currentFinalMin,
-            finalMax: currentFinalMax,
-            isLoading: false, // Finished loading range
-            error: null,
-          });
-        }
-
-      } catch (err) {
-        console.error("Error calculating product price range:", err);
-        if (isMounted) {
-          setCalculatedRangeInfo({
-            baseMin: null, baseMax: null, finalMin: null, finalMax: null,
-            isLoading: false,
-            error: err instanceof Error ? err.message : 'Error al calcular rango de precios.',
-          });
-        }
-      }
     };
 
     calculatePrices();
     return () => { isMounted = false; };
-  }, [product, user]);
+}, [product, user]);
 
   useEffect(() => {
     if (!product?.variants || product.variants.length === 0) {
@@ -206,43 +199,42 @@ const Details: React.FC<DetailsProps> = ({ productId }) => {
   }, [product?.variants, searchParams]);
 
   useEffect(() => {
-    // Reset previous selected price info when variant changes or becomes undefined
     setSelectedVariantPriceInfo({ original: null, final: null, isLoading: false, error: null });
 
     if (selectedVariant?._id && product?._id) {
       let isMounted = true;
-      const fetchSpecificPrice = async () => {
-        setSelectedVariantPriceInfo({ original: null, final: null, isLoading: true, error: null });
-        try {
-          const priceResult = await fetchVariantPrice(selectedVariant._id!, product._id!.toString());
 
-          if (isMounted) {
-            if (priceResult) {
-              setSelectedVariantPriceInfo({
-                original: priceResult[0], // Original price
-                final: priceResult[1],    // Final price
-                isLoading: false,
-                error: null,
-              });
-            } else {
-              throw new Error("No se pudo obtener el precio para la variante seleccionada.");
-            }
+      const fetchSpecificPrice = async () => {
+          setSelectedVariantPriceInfo({ original: null, final: null, isLoading: true, error: null });
+          try {
+              const priceResult = await fetchVariantPrice(selectedVariant._id!, product._id!.toString());
+
+              if (isMounted) {
+                  if (priceResult && priceResult.length === 2) { 
+                      setSelectedVariantPriceInfo({
+                          original: priceResult[0],
+                          final: priceResult[1],
+                          isLoading: false,
+                          error: null,
+                      });
+                  } else {
+                      throw new Error("No se pudo obtener el precio para la variante seleccionada.");
+                  }
+              }
+          } catch (error) {
+              console.error('Error fetching selected variant price:', error);
+              if (isMounted) {
+                  setSelectedVariantPriceInfo({
+                      original: null, final: null, isLoading: false,
+                      error: error instanceof Error ? error.message : 'Error al obtener precio.',
+                  });
+              }
           }
-        } catch (error) {
-          console.error('Error fetching selected variant price:', error);
-          if (isMounted) {
-            setSelectedVariantPriceInfo({
-              original: null, final: null, isLoading: false,
-              error: error instanceof Error ? error.message : 'Error al obtener precio.',
-            });
-          }
-        }
       };
+
       fetchSpecificPrice();
       return () => { isMounted = false; };
-    }
-    // No cleanup needed if no variant is selected
-  }, [selectedVariant?._id, product?._id]);
+  }  }, [selectedVariant?._id, product?._id]);
 
 
   // --- Event Handlers ---

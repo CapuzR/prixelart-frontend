@@ -3,29 +3,29 @@ import { Prixer } from "./prixer.types";
 
 export interface User {
   _id?: ObjectId;
-  username: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  password?: string;
   account?: string;
-  role?: string[];
-  login_count?: number;
-  country?: string;
-  city?: string;
-  prixer?: Prixer;
-  avatar?: string;
   active: boolean;
-  ci?: string;
-  phone?: string;
   address?: string;
+  avatar?: string;
   billingAddress?: string;
-  shippingAddress?: string;
   birthdate?: Date;
-  instagram?: string;
+  ci?: string;
+  city?: string;
+  country?: string;
+  email: string;
   facebook?: string;
-  twitter?: string;
+  firstName: string;
   gender?: string;
+  instagram?: string;
+  lastName: string;
+  login_count?: number;
+  password?: string;
+  phone?: string;
+  prixer?: Prixer;
+  role?: string[];
+  shippingAddress?: string;
+  twitter?: string;
+  username: string;
 }
 
 export type UserOptions = Pick<

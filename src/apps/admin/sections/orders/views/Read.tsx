@@ -517,7 +517,7 @@ const ReadOrders: React.FC = () => {
                       </Link>
                     </TableCell>
                     <TableCell>
-                      {new Date(order.createdOn).toLocaleDateString()}
+                      {dayjs(order.createdOn).format('DD/MM/YYYY')}
                     </TableCell>
                     <TableCell>
                       {order.shipping.preferredDeliveryDate

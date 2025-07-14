@@ -244,7 +244,6 @@ const ReadMovements: React.FC = () => {
       if (showLoadingIndicator) setIsLoading(true)
 
       try {
-        // 1. Fetch Paginated, Sorted, Filtered Movements
         const apiPage = page + 1
         const response = await getMovements({
           page: apiPage,
@@ -253,16 +252,14 @@ const ReadMovements: React.FC = () => {
           sortOrder: order,
           search: searchQuery,
           type: filterType,
-          dateFrom: startDate?.toISOString(), // Send ISO string to backend
-          dateTo: endDate?.toISOString(), // Send ISO string to backend
+          dateFrom: startDate?.toISOString(),
+          dateTo: endDate?.toISOString(),
         })
 
         setMovements(response.data)
         setTotalMovements(response.totalCount)
-        setError(null) // Clear error only on successful fetch
+        setError(null)
 
-        // ... (rest of the user fetching logic remains the same) ...
-        // 2. Extract Unique Destinatary Account IDs *from the current page*
         const accountIds = [
           ...new Set(
             response.data.map((m) => m.destinatary).filter((id) => !!id)
@@ -270,7 +267,6 @@ const ReadMovements: React.FC = () => {
         ] as string[]
 
         
-        // 3. Fetch User Details *only* for users on the current page
         if (accountIds.length > 0) {
           const idsToFetch = accountIds.filter((id) => !ownerInfoMap[id])
           if (idsToFetch.length > 0) {

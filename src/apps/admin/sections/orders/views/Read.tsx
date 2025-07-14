@@ -54,7 +54,12 @@ import {
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 
 import { useSnackBar } from "context/GlobalContext"
-import { Order, OrderStatus, GlobalPaymentStatus, ShippingDetails } from "types/order.types"
+import {
+  Order,
+  OrderStatus,
+  GlobalPaymentStatus,
+  ShippingDetails,
+} from "types/order.types"
 import Title from "@apps/admin/components/Title"
 import ConfirmationDialog from "@components/ConfirmationDialog/ConfirmationDialog"
 import { deleteOrder, getOrders } from "@api/order.api"
@@ -250,7 +255,7 @@ const ReadOrders: React.FC = () => {
             primaryStatus: getLatestStatus(order.status),
             shippingMethodName: shipping?.method?.name || "N/A",
             paymentMethodName: payment?.payment?.[0]?.method?.name || "N/A",
-            shipping: order.shipping
+            shipping: order.shipping,
           }
         })
 
@@ -314,12 +319,12 @@ const ReadOrders: React.FC = () => {
       const statusMatch =
         filterStatus === "" ||
         order?.primaryStatus?.toString() ===
-        ALL_STATUSES.indexOf(filterStatus).toString()
+          ALL_STATUSES.indexOf(filterStatus).toString()
 
       const payStatusMatch =
         filterPayStatus === "" ||
         order?.payStatus?.toString() ===
-        ALL_PAY_STATUSES.indexOf(filterPayStatus).toString()
+          ALL_PAY_STATUSES.indexOf(filterPayStatus).toString()
 
       const dateMatch =
         (!startDate || new Date(order.createdOn) >= startDate) &&
@@ -352,24 +357,24 @@ const ReadOrders: React.FC = () => {
 
   const handleSelectFilterChange =
     (setter: React.Dispatch<React.SetStateAction<any>>) =>
-      (event: SelectChangeEvent<any>) => {
-        const value = event.target.value
-        setter(value)
-        if (setter === setFilterStatus && value !== "") {
-          setFilterIsNotConcretado(false)
-        }
-        triggerSearchOrFilter()
+    (event: SelectChangeEvent<any>) => {
+      const value = event.target.value
+      setter(value)
+      if (setter === setFilterStatus && value !== "") {
+        setFilterIsNotConcretado(false)
       }
+      triggerSearchOrFilter()
+    }
 
   const handleDateFilterChange =
     (setter: React.Dispatch<React.SetStateAction<Date | null>>) =>
-      (
-        value: unknown,
-        context: PickerChangeHandlerContext<DateValidationError>
-      ) => {
-        setter(value as Date | null)
-        triggerSearchOrFilter()
-      }
+    (
+      value: unknown,
+      context: PickerChangeHandlerContext<DateValidationError>
+    ) => {
+      setter(value as Date | null)
+      triggerSearchOrFilter()
+    }
 
   const handleClearFilters = () => {
     setSearchQuery("")
@@ -517,11 +522,13 @@ const ReadOrders: React.FC = () => {
                       </Link>
                     </TableCell>
                     <TableCell>
-                      {dayjs(order.createdOn).format('DD/MM/YYYY')}
+                      {dayjs(order.createdOn).format("DD/MM/YYYY")}
                     </TableCell>
                     <TableCell>
                       {order.shipping.preferredDeliveryDate
-                        ? dayjs(order.shipping.preferredDeliveryDate).format('DD/MM/YYYY')
+                        ? dayjs(order.shipping.preferredDeliveryDate).format(
+                            "DD/MM/YYYY"
+                          )
                         : ""}
                     </TableCell>
                     <TableCell>
@@ -720,7 +727,7 @@ const ReadOrders: React.FC = () => {
           orderId: order._id?.toString().slice(-6),
           createdOn: formatDate(order.createdOn),
           customerName: `${order.consumerDetails?.basic.name || ""} ${order.consumerDetails?.basic.lastName || ""}`,
-          customerType: "N/A", // NOTA: 'consumerType' no está en la nueva interfaz. Necesitarías agregarlo a ConsumerDetails si lo requieres.
+          customerType: "Particular", // NOTA: 'consumerType' no está en la nueva interfaz. Necesitarías agregarlo a ConsumerDetails si lo requieres.
           observations: stripHtml(order.observations),
           seller: order.seller || order.createdBy,
           paymentMethod: order.payment?.payment
@@ -750,10 +757,10 @@ const ReadOrders: React.FC = () => {
             typeof line.item.product?.selection === "string"
               ? line.item.product.selection
               : line.item.product?.selection
-                ?.map((attr: any) => attr.value)
-                .join(", ") || "",
+                  ?.map((attr: any) => attr.value)
+                  .join(", ") || "",
           quantity: line.quantity,
-          unitPrice: formatPrice(line.pricePerUnit),
+          unitPrice: line.pricePerUnit,
         }
 
         const row = worksheet.addRow(rowData)

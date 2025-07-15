@@ -489,7 +489,7 @@ const OrderArchiveDetail: React.FC = () => {
                             Status Pago Actual: <Chip label={orderData.payStatus || 'N/A'} color={getPayStatusColor(orderData.payStatus)} size="small" />
                         </DialogContentText>
 
-                        <FormControl fullWidth margin="normal" disabled={isUpdatingStatus || !canUpdateOrderStatus}>
+                        <FormControl fullWidth margin="normal" disabled={isUpdatingStatus}>
                             <InputLabel id="new-status-select-label">Nuevo Status Orden</InputLabel>
                             <Select
                                 labelId="new-status-select-label"

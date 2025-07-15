@@ -2,8 +2,14 @@ import { PrixResponse } from "types/prixResponse.types";
 import axios from "axios";
 import { Movement } from "types/movement.types";
 import { BACKEND_URL } from "./utils.api";
+import { Account } from "types/account.types";
 
-export const createMovement = async (data: Partial<Movement>): Promise<any> => {
+export interface CreateMovementApiResponse {
+    createResult: PrixResponse & { result?: Movement };
+    balanceResult: PrixResponse & { result?: Account };
+}
+
+export const createMovement = async (data: Partial<Movement>): Promise<CreateMovementApiResponse> => {
     const base_url = import.meta.env.VITE_BACKEND_URL + "/movement/create"
     try {
         const response = await axios.post<PrixResponse>(base_url, data, { withCredentials: true })
@@ -13,7 +19,7 @@ export const createMovement = async (data: Partial<Movement>): Promise<any> => {
             throw new Error(response.data.message || "Authentication failed");
         }
 
-        const newMovement = response.data.result as unknown as any;
+        const newMovement = response.data.result as unknown as CreateMovementApiResponse;
         return newMovement;
     } catch (e) {
         console.log(e)
@@ -59,7 +65,7 @@ interface GetMovementsResponse extends Omit<PrixResponse, 'result'> {
 }
 
 export const getMovements = async (options: GetMovementsOptions): Promise<PaginatedMovementsResult> => {
-    const {destinatary, page, limit, sortBy = 'date', sortOrder = 'desc', ...filters } = options;
+    const { destinatary, page, limit, sortBy = 'date', sortOrder = 'desc', ...filters } = options;
     type QueryParams = Record<string, string>;
     const queryParams: QueryParams = {
         page: String(page),
@@ -67,11 +73,11 @@ export const getMovements = async (options: GetMovementsOptions): Promise<Pagina
         sortBy: sortBy,
         sortOrder: sortOrder,
         destinatary: destinatary!
-      };
+    };
 
-      const params = new URLSearchParams(queryParams);
+    const params = new URLSearchParams(queryParams);
 
-      Object.entries(filters).forEach(([key, value]) => {
+    Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== '') {
             params.append(key, String(value));
         }
@@ -87,7 +93,7 @@ export const getMovements = async (options: GetMovementsOptions): Promise<Pagina
             throw new Error(response.data.message || "Failed to fetch movements");
         }
 
-        return response.data.result; 
+        return response.data.result;
     } catch (e) {
         console.error("Error fetching movements:", e);
         if (axios.isAxiosError(e)) {

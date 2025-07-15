@@ -69,6 +69,8 @@ import {
 } from "@mui/x-date-pickers"
 import Grid2 from "@mui/material/Grid"
 import excelJS from "exceljs"
+import { getPermissions } from "@api/admin.api"
+import { Permissions } from "types/permissions.types"
 
 const ALL_STATUSES: OrderStatus[] = [
   "Anulado",
@@ -191,6 +193,7 @@ const ReadOrderArchives: React.FC = () => {
   const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
   const [searchParams, setSearchParams] = useSearchParams()
+  const [permissions, setPermissions] = useState<Permissions | null>(null)
 
   // --- State ---
   const [orders, setOrders] = useState<OrderArchive[]>([])
@@ -245,6 +248,11 @@ const ReadOrderArchives: React.FC = () => {
 
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const isInitialMount = useRef(true)
+
+  const readPermissions = async () => {
+    const response = await getPermissions()
+    setPermissions(response)
+  }
 
   const loadOrders = useCallback(
     async (showInitialLoadingIndicator = true) => {
@@ -354,6 +362,7 @@ const ReadOrderArchives: React.FC = () => {
   ])
 
   useEffect(() => {
+    readPermissions()
     loadOrders(!orders.length)
   }, [loadOrders])
 
@@ -771,9 +780,9 @@ const ReadOrderArchives: React.FC = () => {
                   ))
                 : orders.map((orderItem) => {
                     // Determine if the update action should be enabled
-                    const isUpdatable = !FINAL_STATUSES.includes(
-                      orderItem.status
-                    )
+                    const isUpdatable =
+                      !FINAL_STATUSES.includes(orderItem.status) ||
+                      permissions?.area === "Master"
 
                     return (
                       <TableRow
@@ -1007,16 +1016,16 @@ const ReadOrderArchives: React.FC = () => {
           prixer: line.art?.prixerUsername || "N/A",
           art: line.art?.title || "N/A",
           product: line.product?.name || "N/A",
-          attributes:
-            Array.isArray(line.product?.selection)
-              ? line.product?.selection.join(", ")
-              : typeof line.product?.selection === "object" && line.product?.selection.attributes
-              ? line.product?.selection.attributes.map(
-                  (attr: any) => `${attr.name}: ${attr.value}`
-                ).join(", ")
+          attributes: Array.isArray(line.product?.selection)
+            ? line.product?.selection.join(", ")
+            : typeof line.product?.selection === "object" &&
+                line.product?.selection.attributes
+              ? line.product?.selection.attributes
+                  .map((attr: any) => `${attr.name}: ${attr.value}`)
+                  .join(", ")
               : typeof line.product?.selection === "string"
-              ? line.product?.selection
-              : "",
+                ? line.product?.selection
+                : "",
           quantity: line.quantity,
           unitPrice: line.product.finalPrice,
         }
@@ -1258,7 +1267,8 @@ const ReadOrderArchives: React.FC = () => {
                 isUpdatingStatus ||
                 (selectedOrderForUpdate
                   ? FINAL_STATUSES.includes(selectedOrderForUpdate.status) &&
-                    selectedOrderForUpdate.status !== "Concretado"
+                    selectedOrderForUpdate.status !== "Concretado" &&
+                    permissions?.area === "Master"
                   : false)
               }
             >

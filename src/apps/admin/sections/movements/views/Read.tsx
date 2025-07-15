@@ -39,14 +39,14 @@ import {
 } from "@mui/material"
 import Grid2 from "@mui/material/Grid"
 import AddIcon from "@mui/icons-material/Add"
-import EditIcon from "@mui/icons-material/Edit"
+import DeleteIcon from "@mui/icons-material/Delete"
 import FilterListOffIcon from "@mui/icons-material/FilterListOff"
 import { visuallyHidden } from "@mui/utils"
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
 import { useSnackBar } from "context/GlobalContext"
 import Title from "@apps/admin/components/Title"
 import { Movement } from "types/movement.types"
-import { getMovements } from "@api/movement.api"
+import { getMovements, reverseMovement } from "@api/movement.api"
 import { User } from "types/user.types"
 import { getUsers } from "@api/user.api"
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers"
@@ -153,9 +153,14 @@ const ReadMovements: React.FC = () => {
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const [modal, setModal] = useState<boolean>(false)
+  const [delMovModal, setdelMovModal] = useState<boolean>(false)
   const [selectedOrder, setSelectedOrder] = useState<Order | undefined>(
     undefined
   )
+  const [selectedMov, setSelectedMov] = useState<Movement | undefined>(
+    undefined
+  )
+
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>()
 
   const [editableOrderLines, setEditableOrderLines] = useState<
@@ -164,6 +169,10 @@ const ReadMovements: React.FC = () => {
 
   const openModal = () => {
     setModal(!modal)
+  }
+
+  const openDelMovModal = () => {
+    setdelMovModal(!delMovModal)
   }
 
   const getOverallOrderStatus = (
@@ -413,12 +422,35 @@ const ReadMovements: React.FC = () => {
   }, [loadMovementsAndUsers])
 
   const handleCreate = () => navigate("/admin/movements/create")
-  const handleUpdate = (movementId: string) => {
-    if (!movementId) {
-      showSnackBar("Falta ID.")
+
+  const handleDelete = (movement: Movement) => {
+    setSelectedMov(movement)
+    openDelMovModal()
+  }
+
+  const deleteMovement = async () => {
+    if (selectedMov === undefined) {
       return
     }
-    navigate(`/admin/movements/update/${movementId}`)
+    setIsLoading(true)
+    try {
+      if (selectedMov && selectedMov._id) {
+      const response = await reverseMovement(selectedMov?._id)
+      if (response) {
+        showSnackBar(`Movimiento "${selectedMov?._id?.slice(-6)}..." revertido exitosamente.`);
+        navigate("/admin/movements/read");}
+    } else {
+        throw new Error("La reversión del movimiento no devolvió una respuesta esperada.");
+    }
+    } catch (err: any) {
+      console.error("Failed to load data:", err)
+      const errorMsg = err.message || "Error al cargar los datos."
+      showSnackBar(errorMsg)
+    } finally {
+      setIsLoading(false)
+      openDelMovModal()
+      setSelectedMov(undefined)
+    }
   }
 
   const handleRequestSort = (
@@ -692,8 +724,8 @@ const ReadMovements: React.FC = () => {
                             fontWeight: "medium",
                           }}
                         >
-                                    {`${movement.type === "Retiro" ? "-" : ""} ${formatCurrency(movement.value)}`}
-                                    </TableCell>
+                          {`${movement.type === "Retiro" ? "-" : ""} ${formatCurrency(movement.value)}`}
+                        </TableCell>
                         <TableCell align="right">
                           <Box
                             sx={{
@@ -702,18 +734,15 @@ const ReadMovements: React.FC = () => {
                               gap: 0.5,
                             }}
                           >
-                            <Tooltip title="Editar Movimiento">
-                              {/* Disable edit if ID is somehow missing */}
+                            <Tooltip title="Eliminar Movimiento">
                               <IconButton
                                 aria-label="edit"
                                 color="primary"
-                                onClick={() =>
-                                  handleUpdate(movement._id!.toString())
-                                }
+                                onClick={() => handleDelete(movement)}
                                 disabled={!movement._id || isLoading}
                                 size="small"
                               >
-                                <EditIcon fontSize="small" />
+                                <DeleteIcon fontSize="small" />
                               </IconButton>
                             </Tooltip>
                           </Box>
@@ -742,7 +771,6 @@ const ReadMovements: React.FC = () => {
     )
   }
 
-  // --- Main Return Structure ---
   return (
     // Wrap with LocalizationProvider for Date Pickers
     <LocalizationProvider dateAdapter={AdapterDateFns} /* adapterLocale={es} */>
@@ -1126,6 +1154,58 @@ const ReadMovements: React.FC = () => {
               nuevo.
             </Typography>
           )}
+        </Box>
+      </Modal>
+
+      <Modal
+        open={delMovModal}
+        onClose={openDelMovModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 800,
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            borderRadius: 2,
+            p: 4,
+          }}
+        >
+          <Grid2>
+            <Typography variant="h5" sx={{ textAlign: "center", mb: 2 }}>
+              ¿Seguro que quieres eliminar este movimiento?
+            </Typography>
+            <Typography>
+              {`Se eliminará el movimiento #${selectedMov?._id?.slice(-6)} del historial y se
+              revertirá su valor ($${selectedMov?.value}) del balance del prixer 
+              ${selectedMov?.destinatary ? ownerInfoMap[selectedMov?.destinatary]?.name : 'indeterminado'}.`}
+            </Typography>
+            <Grid2
+              sx={{ mt: 2, justifyContent: "center", gap: 2, display: 'flex' }}
+            >
+              <Button
+                color="secondary"
+                onClick={() => openDelMovModal()}
+                size="small"
+                sx={{ ml: 1 }}
+              >
+                Cerrar
+              </Button>
+              <Button
+                color="primary"
+                onClick={() => deleteMovement()}
+                size="small"
+                sx={{ ml: 1 }}
+              >
+                Eliminar
+              </Button>
+            </Grid2>
+          </Grid2>
         </Box>
       </Modal>
     </LocalizationProvider>

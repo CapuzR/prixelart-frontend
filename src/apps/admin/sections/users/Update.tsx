@@ -72,8 +72,12 @@ import {
 } from "@mui/x-date-pickers"
 import { getPermissions } from "@api/admin.api"
 import { Movement } from "types/movement.types"
-import { createMovement, getMovements } from "@api/movement.api"
-import EditIcon from "@mui/icons-material/Edit"
+import {
+  createMovement,
+  getMovements,
+  reverseMovement,
+} from "@api/movement.api"
+import DeleteIcon from "@mui/icons-material/Delete"
 
 const AVAILABLE_ROLES = ["consumer", "prixer", "seller", "admin"]
 const AVAILABLE_GENDERS = ["Masculino", "Femenino", "Otro", "Prefiero no decir"]
@@ -246,6 +250,9 @@ const UpdateUser: React.FC = () => {
   const movementTypeOptions: MovementType[] = ["Depósito", "Retiro"]
   const [movements, setMovements] = useState<Movement[]>([])
   const [totalMovements, setTotalMovements] = useState<number>(0)
+  const [selectedMov, setSelectedMov] = useState<Movement | undefined>(
+    undefined
+  )
 
   const [rowsPerPage, setRowsPerPage] = useState<number>(10)
   const [order, setOrder] = useState<Sort>("desc")
@@ -420,7 +427,7 @@ const UpdateUser: React.FC = () => {
       filterType,
       startDate,
       endDate,
-      userFormData.account
+      userFormData.account,
     ]
   )
 
@@ -766,12 +773,17 @@ const UpdateUser: React.FC = () => {
 
     try {
       const response = await createMovement(payload)
+      loadUser()
+      loadMovements()
 
-      if (response) {
+      if (response?.createMovement?.success) {
         showSnackBar(
           `Movimiento "${formData.description.substring(0, 20)}..." creado exitosamente.`
         )
-        // navigate("/admin/movements/read")
+        if (response?.balanceResult?.success) {
+          showSnackBar(response?.balanceResult?.message)
+        }
+        setValue(0)
       } else {
         throw new Error(
           "La creación del movimiento no devolvió una respuesta esperada."
@@ -780,44 +792,49 @@ const UpdateUser: React.FC = () => {
     } catch (err: any) {
       console.error("Failed to create movement:", err)
       const message = err.message || "Error al crear el movimiento."
-      setErrorSubmit(message)
+      // setErrorSubmit(message)
       showSnackBar(message)
     } finally {
       setIsSubmitting(false)
     }
   }
 
-  const handleCancel = () => {
-    navigate("/admin/users/read")
+  const handleDelete = (movement: Movement) => {
+    setSelectedMov(movement)
+    openModal()
   }
 
-  const changePassword = (e: any) => {
-    e.preventDefault()
-    if (!newPassword) {
-      showSnackBar("Por favor completa todos los campos requeridos.")
-    } else {
-      const base_url =
-        import.meta.env.VITE_BACKEND_URL + "/change-prixer-password"
-      const data = {
-        username: originalUsername,
-        newPassword: newPassword,
+  const deleteMovement = async () => {
+    setIsLoading(true)
+    try {
+      if (selectedMov && selectedMov._id) {
+        const response = await reverseMovement(selectedMov?._id)
+        if (response) {
+          showSnackBar(
+            `Movimiento "${selectedMov?._id?.slice(-6)}..." revertido exitosamente.`
+          )
+          // navigate("/admin/movements/read")
+        } else {
+          throw new Error(
+            "La reversión del movimiento no devolvió una respuesta esperada."
+          )
+        }
+      } else {
+        console.error("No se pudo obtener el ID del movimiento seleccionado.")
       }
-      axios
-        .post(base_url, data)
-        .then((response) => {
-          if (response.data.info === "error_current_password") {
-            showSnackBar(response.data.message)
-          } else if (response.data.info === "error_new_password") {
-            showSnackBar(response.data.message)
-          } else {
-            openModal()
-            showSnackBar("Cambio de clave exitoso.")
-          }
-        })
-        .catch((error) => {
-          console.log(error.response)
-        })
+    } catch (err: any) {
+      console.error("Failed to load data:", err)
+      const errorMsg = err.message || "Error al cargar los datos."
+      showSnackBar(errorMsg)
+    } finally {
+      setIsLoading(false)
+      openModal()
+      setSelectedMov(undefined)
     }
+  }
+
+  const handleCancel = () => {
+    navigate("/admin/users/read")
   }
 
   const handleTypeChange = (event: SelectChangeEvent<MovementType>) => {
@@ -1778,7 +1795,7 @@ const UpdateUser: React.FC = () => {
                                         onClick={
                                           () => {
                                             setSelectedOrderId(movement.order)
-                                            openModal()
+                                            // openModal()
                                           }
                                           //     navigate(
                                           //       `/admin/order/detail/${movement.order}`
@@ -1812,20 +1829,15 @@ const UpdateUser: React.FC = () => {
                                         gap: 0.5,
                                       }}
                                     >
-                                      <Tooltip title="Editar Movimiento">
-                                        {/* Disable edit if ID is somehow missing */}
+                                      <Tooltip title="Eliminar Movimiento">
                                         <IconButton
                                           aria-label="edit"
                                           color="primary"
-                                          onClick={() =>
-                                            handleUpdate(
-                                              movement._id!.toString()
-                                            )
-                                          }
+                                          onClick={() => handleDelete(movement)}
                                           disabled={!movement._id || isLoading}
                                           size="small"
                                         >
-                                          <EditIcon fontSize="small" />
+                                          <DeleteIcon fontSize="small" />
                                         </IconButton>
                                       </Tooltip>
                                     </Box>
@@ -1868,7 +1880,7 @@ const UpdateUser: React.FC = () => {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: 400,
+            width: 800,
             bgcolor: "background.paper",
             // border: "2px solid #000",
             boxShadow: 24,
@@ -1878,46 +1890,36 @@ const UpdateUser: React.FC = () => {
             pb: 3,
           }}
         >
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            ¿Seguro que quieres cambiar esta contraseña?{" "}
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2, mb: 2 }}>
-            Asegúrate de informar al Prixer, aún no tenemos medio de
-            comunicación para hacerle saber.
-          </Typography>
-          <Grid2 size={{ xs: 12 }} sx={{ mb: 2 }}>
-            <FormControl variant="outlined" fullWidth>
-              <InputLabel htmlFor="new-password">Contraseña nueva</InputLabel>
-              <OutlinedInput
-                id="new-password"
-                type={showNewPassword ? "text" : "password"}
-                value={newPassword}
-                label="Contraseña nueva"
-                //   error={newPasswordError}
-                onChange={handleNewPasswordChange}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowNewPassword}
-                      onMouseDown={handleMouseDownNewPassword}
-                      edge="end"
-                    >
-                      {showNewPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-              />
-            </FormControl>
+          <Grid2>
+            <Typography variant="h5" sx={{ textAlign: "center", mb: 2 }}>
+              ¿Seguro que quieres eliminar este movimiento?
+            </Typography>
+            <Typography>
+              {`Se eliminará el movimiento #${selectedMov?._id?.slice(-6)} del historial y se
+              revertirá su valor ($${selectedMov?.value}) del balance del prixer 
+              ${userFormData.firstName} ${userFormData.lastName}.`}
+            </Typography>
+            <Grid2
+              sx={{ mt: 2, justifyContent: "center", gap: 2, display: "flex" }}
+            >
+              <Button
+                color="secondary"
+                onClick={() => openModal()}
+                size="small"
+                sx={{ ml: 1 }}
+              >
+                Cerrar
+              </Button>
+              <Button
+                color="primary"
+                onClick={() => deleteMovement()}
+                size="small"
+                sx={{ ml: 1 }}
+              >
+                Eliminar
+              </Button>
+            </Grid2>
           </Grid2>
-          <Button
-            variant="contained"
-            color="primary"
-            disabled={isSubmitting || isLoading}
-            onClick={(e) => changePassword(e)}
-          >
-            Guardar contraseña
-          </Button>
         </Box>
       </Modal>
     </>

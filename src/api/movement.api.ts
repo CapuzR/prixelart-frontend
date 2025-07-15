@@ -3,7 +3,7 @@ import axios from "axios";
 import { Movement } from "types/movement.types";
 import { BACKEND_URL } from "./utils.api";
 
-export const createMovement = async (data: Partial<Movement>): Promise<Movement> => {
+export const createMovement = async (data: Partial<Movement>): Promise<any> => {
     const base_url = import.meta.env.VITE_BACKEND_URL + "/movement/create"
     try {
         const response = await axios.post<PrixResponse>(base_url, data, { withCredentials: true })
@@ -13,7 +13,7 @@ export const createMovement = async (data: Partial<Movement>): Promise<Movement>
             throw new Error(response.data.message || "Authentication failed");
         }
 
-        const newMovement = response.data.result as unknown as Movement;
+        const newMovement = response.data.result as unknown as any;
         return newMovement;
     } catch (e) {
         console.log(e)
@@ -101,6 +101,32 @@ export const updateMovement = async (id: string, movementData: Partial<Movement>
     const base_url = `${import.meta.env.VITE_BACKEND_URL}/movement/update/${id}`;
     try {
         const response = await axios.put<PrixResponse>(base_url, movementData, {
+            withCredentials: true,
+        });
+
+        if (!response.data.success) {
+            console.error(`Backend reported failure updating movement`, response.data.message);
+            throw new Error(response.data.message || `Failed to update movement`);
+        }
+
+        if (!response.data.result) {
+            console.error(`Backend reported success but no movement data returned after update.`);
+            throw new Error(`No data received after updating movement.`);
+        }
+
+        const updatedMovement = response.data.result as unknown as Movement;
+        return updatedMovement;
+
+    } catch (error) {
+        console.error(`Error updating movement`, error);
+        throw error;
+    }
+};
+
+export const reverseMovement = async (id: string): Promise<Movement> => {
+    const base_url = `${import.meta.env.VITE_BACKEND_URL}/movement/reverse/${id}`;
+    try {
+        const response = await axios.put<PrixResponse>(base_url, {
             withCredentials: true,
         });
 

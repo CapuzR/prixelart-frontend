@@ -334,7 +334,7 @@ const Home: React.FC = () => {
           </Box>
         </Grid2>
 
-        <Grid2 size={{ xs: 12 }} sx={{ mt: 4 }}>
+        <Grid2 size={{ xs: 12 }}>
           <BrandsCarousel />
         </Grid2>
       </Grid2>

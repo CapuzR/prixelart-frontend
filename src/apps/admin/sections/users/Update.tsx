@@ -425,7 +425,7 @@ const UpdateUser: React.FC = () => {
   )
 
   useEffect(() => {
-     loadMovements()
+    loadMovements()
   }, [loadMovements, userFormData.account])
 
   const triggerSearch = useCallback(() => {
@@ -1796,13 +1796,13 @@ const UpdateUser: React.FC = () => {
                                     align="right"
                                     sx={{
                                       color:
-                                        movement.value >= 0
+                                        movement.type === "Depósito"
                                           ? "success.main"
                                           : "error.main",
                                       fontWeight: "medium",
                                     }}
                                   >
-                                    {formatCurrency(movement.value)}
+                                    {`${movement.type === "Retiro" ? "-" : ""} ${formatCurrency(movement.value)}`}
                                   </TableCell>
                                   <TableCell align="right">
                                     <Box

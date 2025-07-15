@@ -55,13 +55,11 @@ import {
   PersonOutline,
   ReceiptOutlined,
   StorefrontOutlined,
-
 } from "@mui/icons-material"
 
 import { getOrderById } from "@api/order.api"
 
 import {
-
   Order,
   OrderLine,
   OrderStatus,
@@ -69,10 +67,7 @@ import {
   CustomImage,
 } from "../../../../../types/order.types"
 
-import {
-  Product,
-  Variant,
-} from "../../../../../types/product.types"
+import { Product, Variant } from "../../../../../types/product.types"
 import { Art } from "../../../../../types/art.types"
 
 interface UserAccountMap {
@@ -244,7 +239,6 @@ const ReadMovements: React.FC = () => {
       if (showLoadingIndicator) setIsLoading(true)
 
       try {
-        // 1. Fetch Paginated, Sorted, Filtered Movements
         const apiPage = page + 1
         const response = await getMovements({
           page: apiPage,
@@ -253,24 +247,20 @@ const ReadMovements: React.FC = () => {
           sortOrder: order,
           search: searchQuery,
           type: filterType,
-          dateFrom: startDate?.toISOString(), // Send ISO string to backend
-          dateTo: endDate?.toISOString(), // Send ISO string to backend
+          dateFrom: startDate?.toISOString(),
+          dateTo: endDate?.toISOString(),
         })
 
         setMovements(response.data)
         setTotalMovements(response.totalCount)
-        setError(null) // Clear error only on successful fetch
+        setError(null)
 
-        // ... (rest of the user fetching logic remains the same) ...
-        // 2. Extract Unique Destinatary Account IDs *from the current page*
         const accountIds = [
           ...new Set(
             response.data.map((m) => m.destinatary).filter((id) => !!id)
           ),
         ] as string[]
 
-        
-        // 3. Fetch User Details *only* for users on the current page
         if (accountIds.length > 0) {
           const idsToFetch = accountIds.filter((id) => !ownerInfoMap[id])
           if (idsToFetch.length > 0) {
@@ -594,7 +584,6 @@ const ReadMovements: React.FC = () => {
               onRequestSort={handleRequestSort}
             />
             <TableBody>
-              {/* Show Skeletons OR Actual Data */}
               {showSkeletons
                 ? Array.from(new Array(rowsPerPage)).map((_, index) => (
                     <TableRow key={`skeleton-${index}`} style={{ height: 53 }}>
@@ -613,7 +602,7 @@ const ReadMovements: React.FC = () => {
                       ? ownerInfoMap[movement.destinatary]
                       : null
                     const isDestinataryLoading =
-                      movement.destinatary && !destinataryInfo // Check if ID exists but info hasn't loaded
+                      movement.destinatary && !destinataryInfo
 
                     return (
                       <TableRow
@@ -623,7 +612,6 @@ const ReadMovements: React.FC = () => {
                           "&:last-child td, &:last-child th": { border: 0 },
                         }}
                       >
-                        {/* Apply responsive hiding here  */}
                         <TableCell>{formatDate(movement.date)}</TableCell>
                         <TableCell>{movement.type}</TableCell>
                         <TableCell
@@ -631,7 +619,6 @@ const ReadMovements: React.FC = () => {
                         >
                           {movement.description}
                         </TableCell>{" "}
-                        {/* Example Hide Description on XS */}
                         <TableCell>
                           {movement.destinatary ? (
                             destinataryInfo ? (
@@ -674,8 +661,6 @@ const ReadMovements: React.FC = () => {
                         <TableCell
                           sx={{ display: { xs: "none", lg: "table-cell" } }}
                         >
-                          {" "}
-                          {/* Example Hide Order on XS/SM/MD */}
                           {movement.order ? (
                             <Link
                               component="button"
@@ -701,14 +686,14 @@ const ReadMovements: React.FC = () => {
                           align="right"
                           sx={{
                             color:
-                              movement.value >= 0
+                              movement.type === "Depósito"
                                 ? "success.main"
                                 : "error.main",
                             fontWeight: "medium",
                           }}
                         >
-                          {formatCurrency(movement.value)}
-                        </TableCell>
+                                    {`${movement.type === "Retiro" ? "-" : ""} ${formatCurrency(movement.value)}`}
+                                    </TableCell>
                         <TableCell align="right">
                           <Box
                             sx={{
@@ -819,13 +804,11 @@ const ReadMovements: React.FC = () => {
             >
               <Tooltip title="Limpiar Filtros y Búsqueda">
                 <span>
-                  {" "}
-                  {/* Tooltip needs a span wrapper if button is disabled */}
                   <IconButton
                     onClick={handleClearFilters}
                     disabled={
                       !searchQuery && !filterType && !startDate && !endDate
-                    } // Disable if no filters applied
+                    }
                     color="default"
                   >
                     <FilterListOffIcon />

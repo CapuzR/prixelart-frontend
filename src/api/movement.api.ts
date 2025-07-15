@@ -66,7 +66,7 @@ export const getMovements = async (options: GetMovementsOptions): Promise<Pagina
         limit: String(limit),
         sortBy: sortBy,
         sortOrder: sortOrder,
-        destinatary: destinatary!,
+        destinatary: destinatary!
       };
 
       const params = new URLSearchParams(queryParams);
@@ -87,15 +87,13 @@ export const getMovements = async (options: GetMovementsOptions): Promise<Pagina
             throw new Error(response.data.message || "Failed to fetch movements");
         }
 
-        // Return the nested result directly
-        return response.data.result; // Contains { data: Movement[], totalCount: number }
+        return response.data.result; 
     } catch (e) {
-        console.error("Error fetching movements:", e); // Log the specific error
-        // Rethrow or handle as appropriate for your app's error strategy
+        console.error("Error fetching movements:", e);
         if (axios.isAxiosError(e)) {
             throw new Error(`Network or server error: ${e.response?.data?.message || e.message}`);
         }
-        throw e; // Rethrow other errors
+        throw e;
     }
 };
 

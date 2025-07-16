@@ -776,7 +776,7 @@ const UpdateUser: React.FC = () => {
       loadUser()
       loadMovements()
 
-      if (response?.createMovement?.success) {
+      if (response?.createResult?.success) {
         showSnackBar(
           `Movimiento "${formData.description.substring(0, 20)}..." creado exitosamente.`
         )

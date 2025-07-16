@@ -135,7 +135,7 @@ import BrokenImageIcon from "@mui/icons-material/BrokenImage"
 import { getCurrentOrderStatus } from "@apps/consumer/trackOrder/utils"
 import EditableAddressForm from "./components/EditableAddressForm"
 
-import { getPermissions } from "@api/admin.api"
+import { fetchSellers, getPermissions } from "@api/admin.api"
 import { Permissions } from "types/permissions.types"
 
 import dayjs, { Dayjs } from "dayjs"
@@ -440,7 +440,7 @@ export default function UpdateOrder() {
     useState<Address | null>(null)
   const [useShippingForBilling, setUseShippingForBilling] =
     useState<boolean>(true)
-
+  const [sellers, setSellers] = useState<string[]>([])
   const [shippingMethodOptions, setShippingMethodOptions] = useState<
     MethodOption[]
   >([])
@@ -483,7 +483,6 @@ export default function UpdateOrder() {
   const [cropModalOpen, setCropModalOpen] = useState<boolean>(false)
   const imgRef = useRef<HTMLImageElement | null>(null)
   const previewCanvasRef = useRef<HTMLCanvasElement | null>(null)
-  const formRef = useRef<HTMLFormElement>(null)
 
   const [activeStep, setActiveStep] = React.useState(0)
 
@@ -527,6 +526,11 @@ export default function UpdateOrder() {
   const readPermissions = async () => {
     const response = await getPermissions()
     setPermissions(response)
+  }
+
+  const readSellers = async () => {
+    const response = await fetchSellers()
+    setSellers(response)
   }
 
   const loadData = useCallback(async () => {
@@ -767,6 +771,7 @@ export default function UpdateOrder() {
   useEffect(() => {
     loadData()
     readPermissions()
+    readSellers()
   }, [])
 
   useEffect(() => {
@@ -1412,6 +1417,12 @@ export default function UpdateOrder() {
     setCurrentMethod(selectedMethod)
   }
 
+  const handleSeller = (selected: string | undefined) => {
+    if (order) {
+      setOrder({ ...order, seller: selected })
+    }
+  }
+
   const handleAddPaymentVoucher = async () => {
     if (
       // !currentVoucherImage ||
@@ -1526,9 +1537,7 @@ export default function UpdateOrder() {
       return
     }
     for (const [index, line] of editableOrderLines.entries()) {
-     if (
-        !line.selectedProduct
-      ) {
+      if (!line.selectedProduct) {
         showSnackBar(`Item #${index + 1}: Producto es requerido.`)
         setIsSubmitting(false)
         return
@@ -1765,6 +1774,7 @@ export default function UpdateOrder() {
           "Order updated via admin panel (v2 UI - with TUS vouchers)",
         ],
       ],
+      seller: order.seller,
     }
     let mainPayments: Payment[] = []
     if (selectedPaymentMethod) {
@@ -2082,8 +2092,9 @@ export default function UpdateOrder() {
                 color="textSecondary"
                 sx={{ display: "flex", alignItems: "center", mt: 0.5 }}
               >
-                <CalendarToday fontSize="small" sx={{ mr: 0.5 }} /> Realizada
-                el: {formatDate(order.createdOn)}
+                <CalendarToday fontSize="small" sx={{ mr: 0.5 }} /> Creada el:{" "}
+                {formatDate(order.createdOn)}
+                {permissions?.area !== "Master" && order.seller && " por " + order.seller}
               </Typography>
             </Box>
             <Button
@@ -2143,6 +2154,27 @@ export default function UpdateOrder() {
           <Grid2 container spacing={{ xs: 2, md: 3 }}>
             <Grid2 size={{ xs: 12 }} sx={{ mt: 2 }}>
               <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                {permissions?.area === "Master" && (
+                  <FormControl
+                    size="small"
+                    disabled={isSubmitting}
+                    sx={{ minWidth: 200 }}
+                  >
+                    <InputLabel>Vendedor</InputLabel>
+                    <Select
+                      sx={{ width: "100%" }}
+                      value={order.seller}
+                      onChange={(e) => handleSeller(e.target.value)}
+                      label="Vendedor"
+                    >
+                      {sellers.map((seller, i) => (
+                        <MenuItem key={seller + i} value={seller}>
+                          {seller}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                )}
                 <FormControl size="small" disabled={isSubmitting}>
                   <InputLabel>Estado</InputLabel>
                   <Select

@@ -20,6 +20,7 @@ import { Image } from "@components/Image"
 import Grid2 from "@mui/material/Grid"
 import FooterSection from "./FooterSection"
 import AboutUs from "./AboutUs"
+import ScrollToTopButton from "@components/ScrollToTop"
 
 const useBreakpoints = () => {
   const theme = useTheme()
@@ -268,7 +269,7 @@ const Home: React.FC = () => {
             headline="Encuentra el cuadro ideal para ti."
           />
         </Grid2>
-        <AboutUs/>
+        <AboutUs />
         <Grid2 size={{ xs: 12 }}>
           <Box sx={{ mx: "auto", width: isXs ? "90%" : "80%", py: 4 }}>
             <CarouselSection
@@ -338,33 +339,8 @@ const Home: React.FC = () => {
           <BrandsCarousel />
         </Grid2>
       </Grid2>
-
-      {/* <Box
-        component="footer"
-        sx={{ bgcolor: "background.paper", p: 6, textAlign: "center" }}
-      >
-        <Typography variant="h6" gutterBottom sx={{ color: "#404e5c" }}>
-          Si quieres convertirte en un Prixer{" "}
-          <a
-            href="https://prixelart.com/registrar"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            regístrate
-          </a>
-          .
-        </Typography>
-        <Typography variant="subtitle1" component="p">
-          <IconButton
-            href="https://instagram.com/prixelart"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <InstagramIcon sx={{ color: "#404e5c" }} />
-          </IconButton>
-        </Typography>
-        <Copyright />
-      </Box> */}
+      
+      <ScrollToTopButton />
       <FooterSection />
     </Box>
   )

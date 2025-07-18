@@ -22,6 +22,7 @@ import ServiceDetailsModal from "./components/ServiceDetailsModal"
 
 import useMediaQuery from "@mui/material/useMediaQuery"
 import { useTheme } from "@mui/material/styles"
+import ScrollToTopButton from "@components/ScrollToTop"
 
 const AllServicesDisplay: React.FC = () => {
   const theme = useTheme()
@@ -138,8 +139,7 @@ const AllServicesDisplay: React.FC = () => {
       const prixerIdString =
         typeof service.userid === "string"
           ? service.userid
-          : typeof service.prixer === "string" &&
-            service.prixer?.toString()
+          : typeof service.prixer === "string" && service.prixer?.toString()
 
       const prixerDetails = prixerIdString
         ? prixerDetailsMap.get(prixerIdString)
@@ -229,6 +229,7 @@ const AllServicesDisplay: React.FC = () => {
         prixerUsername={selectedPrixerDetails?.username}
         prixerAvatar={selectedPrixerDetails?.avatar}
       />
+      <ScrollToTopButton />
     </Container>
   )
 }

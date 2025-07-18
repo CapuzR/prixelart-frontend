@@ -532,7 +532,7 @@ const ReadUsers: React.FC = () => {
                   >
                     <TableCell>
                       <Avatar
-                        src={user.avatar || undefined}
+                        src={user?.avatar || user.prixer?.avatar || undefined}
                         alt={user.username}
                         sx={{ width: 32, height: 32 }}
                       />

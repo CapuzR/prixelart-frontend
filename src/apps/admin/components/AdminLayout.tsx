@@ -151,7 +151,7 @@ const AdminLayout: React.FC = () => {
                     overflowY: 'auto',
                 }}
             >
-                <Toolbar />
+                {/* <Toolbar /> */}
                 <Outlet />
             </Box>
         </Box>

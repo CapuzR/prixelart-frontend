@@ -922,11 +922,7 @@ const UpdateUser: React.FC = () => {
 
   return (
     <>
-      <Title
-        title={`Actualizar Usuario: ${isLoading ? "Cargando..." : originalUsername || "Inválido"}`}
-      />
-
-      <Paper elevation={3} sx={{ p: 3, mt: 2 }}>
+      <Paper elevation={3} sx={{ p: 3, pt: 6 }}>
         {isLoading && (
           <Box
             sx={{
@@ -959,17 +955,42 @@ const UpdateUser: React.FC = () => {
             {errorFetch}
           </Alert>
         )}
-        <Tabs
-          value={value}
-          onChange={handleChange}
-          aria-label="basic tabs example"
-        >
-          <Tab label="Info" {...a11yProps(0)} />
-          <Tab label="Balance" {...a11yProps(1)} />
-          <Tab label="Movimientos" {...a11yProps(3)} />
-        </Tabs>
+
         {!isLoading && !errorFetch && (
           <>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 3,
+                justifyContent: "center",
+              }}
+            >
+              <Avatar
+                src={
+                  userFormData?.avatar || prixerFormData?.avatar || undefined
+                }
+                alt={userFormData.username}
+                sx={{ width: 56, height: 56 }}
+              />
+              {/* <Typography
+          variant="h4"
+          color="secondary"
+        >{userFormData?.role ? userFormData?.role[0] : 'cliente'}</Typography> */}
+              <Typography
+                variant="h3"
+                color="secondary"
+              >{`${userFormData.firstName} ${userFormData.lastName}`}</Typography>
+            </Box>
+            <Tabs
+              value={value}
+              onChange={handleChange}
+              aria-label="basic tabs example"
+            >
+              <Tab label="Info" {...a11yProps(0)} />
+              <Tab label="Balance" {...a11yProps(1)} />
+              <Tab label="Movimientos" {...a11yProps(3)} />
+            </Tabs>
             <CustomTabPanel value={value} index={0}>
               <form onSubmit={handleSubmit} noValidate>
                 <Grid2 container spacing={3}>

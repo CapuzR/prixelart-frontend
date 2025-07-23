@@ -57,7 +57,7 @@ import {
   CycleTimeData,
 } from "@api/order.api";
 import { getPermissions } from "@api/admin.api";
-import { Permissions } from "types/permissions.types";
+import { PermissionsV2 } from "types/permissions.types";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -91,7 +91,7 @@ const getStartOfMonth = (): Date => {
 
 const SellerDashboard: React.FC = () => {
   const navigate = useNavigate();
-  const [permissions, setPermissions] = useState<Permissions | null>(null);
+  const [permissions, setPermissions] = useState<PermissionsV2 | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState(0);

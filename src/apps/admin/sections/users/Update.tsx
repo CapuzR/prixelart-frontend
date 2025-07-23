@@ -15,7 +15,7 @@ import { PrixResponse } from "types/prixResponse.types"
 import { useSnackBar } from "context/GlobalContext"
 import { User } from "types/user.types"
 import { Prixer } from "types/prixer.types"
-import { Permissions } from "types/permissions.types"
+import { PermissionsV2 } from "types/permissions.types"
 
 import { getUserById, updateUser, getBalance, getUsers } from "@api/user.api"
 import { isAValidEmail } from "utils/validations" // Assuming no username/password validation needed here
@@ -227,7 +227,7 @@ const UpdateUser: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
-  // const [permissions, setPermissions] = useState<Permissions | null>(null)
+  // const [permissions, setPermissions] = useState<PermissionsV2 | null>(null)
 
   const [userFormData, setUserFormData] =
     useState<Partial<User>>(initialUserFormState)

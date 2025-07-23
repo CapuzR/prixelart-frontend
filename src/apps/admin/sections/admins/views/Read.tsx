@@ -33,7 +33,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { visuallyHidden } from '@mui/utils';
 
 import { Admin } from 'types/admin.types';
-import { Permissions } from 'types/permissions.types';
+import { PermissionsV2 } from 'types/permissions.types';
 import { useSnackBar } from 'context/GlobalContext';
 import Title from '@apps/admin/components/Title';
 import ConfirmationDialog from '@components/ConfirmationDialog/ConfirmationDialog';
@@ -152,7 +152,7 @@ export default function ReadAdmins() {
   useEffect(() => {
     const fetchAreas = async () => {
       try {
-        const permissionsList: Permissions[] = await getRoles();
+        const permissionsList: PermissionsV2[] = await getRoles();
         const areas: string[] = permissionsList.map(p => p.area).sort();
         setAvailableAreas(areas);
       } catch (err: any) {

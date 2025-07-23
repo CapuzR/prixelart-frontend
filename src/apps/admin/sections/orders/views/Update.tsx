@@ -136,7 +136,7 @@ import { getCurrentOrderStatus } from "@apps/consumer/trackOrder/utils"
 import EditableAddressForm from "./components/EditableAddressForm"
 
 import { fetchSellers, getPermissions } from "@api/admin.api"
-import { Permissions } from "types/permissions.types"
+import { PermissionsV2 } from "types/permissions.types"
 
 import dayjs, { Dayjs } from "dayjs"
 import "dayjs/locale/es"
@@ -414,7 +414,7 @@ function CustomTabPanel(props: TabPanelProps) {
 export default function UpdateOrder() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const [permissions, setPermissions] = useState<Permissions | null>(null)
+  const [permissions, setPermissions] = useState<PermissionsV2 | null>(null)
   const { showSnackBar: showSnackBarFromContext, showSnackBar } = useSnackBar()
   const showSnackBarRef = useRef(showSnackBarFromContext)
 
@@ -2223,7 +2223,7 @@ export default function UpdateOrder() {
                   <InputLabel>Estado de Pago</InputLabel>
                   <Select
                     label="Estado de pago"
-                    disabled={!permissions?.detailPay}
+                    disabled={!permissions?.orders.updatePayStatus}
                     value={getLatestpayOrderStatus(order)}
                     onChange={(e) =>
                       handleOrderPayStatusChange(

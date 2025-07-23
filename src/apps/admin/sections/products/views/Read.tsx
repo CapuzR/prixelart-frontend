@@ -54,7 +54,7 @@ import Grid2 from "@mui/material/Grid"
 // Hooks, Types, Context, API
 import { useSnackBar } from "context/GlobalContext"
 import { Product, Variant, VariantAttribute } from "types/product.types"
-import { Permissions } from "types/permissions.types"
+import { PermissionsV2 } from "types/permissions.types"
 
 import {
   fetchProducts,
@@ -169,7 +169,7 @@ type ProductSortKeys =
 const ReadProducts: React.FC = () => {
   const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
-  const [permissions, setPermissions] = useState<Permissions | null>(null)
+  const [permissions, setPermissions] = useState<PermissionsV2 | null>(null)
 
   // --- State ---
   const [products, setProducts] = useState<Product[]>([]) // Original data

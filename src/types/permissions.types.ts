@@ -38,14 +38,15 @@ export interface Permissions {
   updateTermsAndCo: boolean
 }
 
-interface PermissionsV2 {
+export interface PermissionsV2 {
   _id?: ObjectId
   area: string
   admins: {
     createAdmin: boolean
     createAdminRole: boolean
-    readAdminRoles: boolean
+    deleteAdmin: boolean
     readAdmins: boolean
+    readAdminRoles: boolean
     updateAdmin: boolean
     updateAdminRole: boolean
   }
@@ -54,32 +55,40 @@ interface PermissionsV2 {
     createArt: boolean
     readAllArts: boolean
     updateArt: boolean
+    deleteArt: boolean
   }
   discounts: {
     createDiscount: boolean
     deleteDiscount: boolean
     readAllDiscounts: boolean
     updateDiscount: boolean
+    useDiscount: boolean
   }
   movements: {
     createMovement: boolean
     deleteMovement: boolean
+    reverseMovement: boolean
     readAllMovements: boolean
     readMovementsByPrixer: boolean
     updateMovement: boolean
   }
   orders: {
+    archiveOrder: boolean
     create: boolean
-    deleteOrders: boolean
+    deleteOrder: boolean
     downloadData: boolean
+    readAllOrders: boolean
+    readHistory: boolean
     readOrderDetails: boolean
-    readPayDetails: boolean
-    updateDetails: boolean
+    readPayDetails: boolean // read prices and vouchers register
+    updateDetails: boolean // basicInfo: client data, billing or shipping data
     updateGeneralStatus: boolean
+    updateItem: boolean // after creation can change the Item, WARNING: this will change price, subtotal, taxs, total costs, etc
     updateItemPrice: boolean
     updateItemStatus: boolean
     updatePayDetails: boolean
     updatePayStatus: boolean
+    updateSeller: boolean
   }
   paymentMethods: {
     createPaymentMethod: boolean
@@ -94,22 +103,34 @@ interface PermissionsV2 {
     updateArtBestSellers: boolean
     updateBanner: boolean
     updateBestSellers: boolean
-    updateDollar: boolean
+    updateDollarValue: boolean
     updateTermsAndCo: boolean
   }
   products: {
     createProduct: boolean
+    createVariant: boolean
     deleteProduct: boolean
+    deleteVariant: boolean
     downloadData: boolean
     loadData: boolean
     readAllProducts: boolean
+    updateImages: boolean
+    updateMockup: boolean
     updateProduct: boolean
+    updateVariant: boolean
   }
   shippingMethod: {
     createShippingMethod: boolean
     deleteShippingMethod: boolean
     readAllShippingMethod: boolean
     updateShippingMethod: boolean
+  }
+  surcharges: {
+    createSurcharge: boolean
+    deleteSurcharge: boolean
+    readAllSurcharges: boolean
+    updateSurcharge: boolean
+    useSurcharge: boolean
   }
   testimonials: {
     createTestimonial: boolean

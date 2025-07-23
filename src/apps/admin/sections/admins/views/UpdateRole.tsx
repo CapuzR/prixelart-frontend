@@ -9,8 +9,8 @@ import { useParams, useNavigate } from "react-router-dom"
 
 // Hooks and Context
 import { useSnackBar } from "context/GlobalContext"
-import { PermissionsV2 } from "types/permissions.types" // Asegúrate de que esta ruta sea correcta para tu interfaz PermissionsV2
-import { createRole, getRoleById, updateRole } from "@api/admin.api" // updateRole y getRoleById para UpdateAdminRole
+import { PermissionsV2 } from "types/permissions.types"
+import { createRole, getRoleById, updateRole } from "@api/admin.api"
 
 // MUI Components
 import {
@@ -26,27 +26,20 @@ import {
   FormGroup,
   Alert,
   Stack,
-  Accordion, // Añadido Stack para UpdateAdminRole
+  Accordion,
   AccordionSummary,
   AccordionDetails,
 } from "@mui/material"
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore" // Icon for Accordion
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 
-import Title from "@apps/admin/components/Title" // Optional: Use Title component
-import { permissionGroups } from "../roles/roles" // permissionGroups ya está actualizado en el Canvas
+import Title from "@apps/admin/components/Title"
+import { permissionGroups } from "../roles/roles"
 import Grid2 from "@mui/material/Grid"
-
-// --- Helper para inicializar el estado anidado de permisos ---
-// Esto crea un objeto PermissionsV2 con todas las propiedades booleanas en false
-// o con los valores proporcionados en initialData
 const initializeNestedPermissions = (
   initialData?: PermissionsV2
 ): Omit<PermissionsV2, "_id"> => {
   const initial: Omit<PermissionsV2, "_id"> = {
     area: initialData?.area || "",
-    // Inicializa todas las categorías de permisos como objetos vacíos.
-    // TypeScript se encargará de que las propiedades booleanas se añadan
-    // en el bucle de `forEach` a continuación.
     admins: {},
     art: {},
     discounts: {},
@@ -56,21 +49,20 @@ const initializeNestedPermissions = (
     preferences: {},
     products: {},
     shippingMethod: {},
+    surcharges: {},
     testimonials: {},
     users: {},
-  } as Omit<PermissionsV2, "_id"> // Asegura que todas las claves de nivel superior estén presentes
+  } as Omit<PermissionsV2, "_id">
 
   permissionGroups.forEach((group) => {
     group.items.forEach((item) => {
       const parts = item.key.split(".")
-      let current: any = initial // Usamos 'any' temporalmente para la navegación por el objeto
-      let currentInitialData: any = initialData // Para navegar por los datos iniciales
+      let current: any = initial
+      let currentInitialData: any = initialData
 
       for (let i = 0; i < parts.length; i++) {
         const part = parts[i]
         if (i === parts.length - 1) {
-          // Si es la última parte de la ruta (ej. 'create' en 'orders.create'),
-          // asignamos el valor booleano. Si viene en initialData, lo usamos, sino false.
           current[part] =
             currentInitialData &&
             typeof currentInitialData === "object" &&
@@ -78,7 +70,6 @@ const initializeNestedPermissions = (
               ? currentInitialData[part]
               : false
         } else {
-          // Si no es la última parte, nos aseguramos de que el objeto anidado exista.
           if (
             !current[part] ||
             typeof current[part] !== "object" ||
@@ -86,9 +77,8 @@ const initializeNestedPermissions = (
           ) {
             current[part] = {}
           }
-          current = current[part] // Nos movemos al siguiente nivel de anidamiento
+          current = current[part]
 
-          // También movemos en los datos iniciales
           if (
             currentInitialData &&
             typeof currentInitialData === "object" &&
@@ -96,7 +86,7 @@ const initializeNestedPermissions = (
           ) {
             currentInitialData = currentInitialData[part]
           } else {
-            currentInitialData = undefined // Si la ruta no existe en initialData, no hay más valores a copiar
+            currentInitialData = undefined
           }
         }
       }
@@ -105,52 +95,45 @@ const initializeNestedPermissions = (
   return initial
 }
 
-// --- Helper para obtener un valor de permiso anidado por su ruta (ej. "orders.readOrderDetails") ---
 const getNestedPermissionValue = (
   permissions: Omit<PermissionsV2, "_id">,
   path: string
 ): boolean => {
   const parts = path.split(".")
-  let current: any = permissions // Usamos 'any' para la navegación segura
+  let current: any = permissions
 
   for (const part of parts) {
     if (current && typeof current === "object" && part in current) {
       current = current[part]
     } else {
-      // Si alguna parte de la ruta no existe, el permiso es false
       return false
     }
   }
-  // Asegurarse de que el valor final sea booleano
   return typeof current === "boolean" ? current : false
 }
 
-// --- Helper para establecer un valor de permiso anidado por su ruta (ej. "orders.create") ---
 const setNestedPermissionValue = (
   permissions: Omit<PermissionsV2, "_id">,
   path: string,
   value: boolean
 ): Omit<PermissionsV2, "_id"> => {
-  // Creamos una copia profunda para asegurar inmutabilidad
-  const newPermissions = JSON.parse(JSON.stringify(permissions)) // Copia profunda simple
+  const newPermissions = JSON.parse(JSON.stringify(permissions))
   const parts = path.split(".")
   let current: any = newPermissions
 
   for (let i = 0; i < parts.length; i++) {
     const part = parts[i]
     if (i === parts.length - 1) {
-      // Última parte de la ruta, establecer el valor
       if (typeof current === "object" && current !== null) {
         current[part] = value
       }
     } else {
-      // No es la última parte, asegurarse de que el objeto anidado exista
       if (
         !(part in current) ||
         typeof current[part] !== "object" ||
         current[part] === null
       ) {
-        current[part] = {} // Crear el objeto si no existe
+        current[part] = {}
       }
       current = current[part]
     }
@@ -158,7 +141,6 @@ const setNestedPermissionValue = (
   return newPermissions
 }
 
-// --- Componente CreateRole (sin cambios significativos, solo para contexto) ---
 const CreateRole: React.FC = () => {
   const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
@@ -317,7 +299,6 @@ const CreateRole: React.FC = () => {
               </Divider>
             </Grid2>
 
-            {/* Permissions Accordions */}
             {permissionGroups.map((group) => {
               const groupKeys = group.items.map((item) => item.key)
               const checkedCount = groupKeys.reduce(
@@ -425,7 +406,6 @@ const CreateRole: React.FC = () => {
               )
             })}
 
-            {/* Submission Error Display */}
             {errorSubmit && (
               <Grid2 size={{ xs: 12 }}>
                 <Alert severity="error" sx={{ mt: 2 }}>
@@ -434,7 +414,6 @@ const CreateRole: React.FC = () => {
               </Grid2>
             )}
 
-            {/* Buttons Section */}
             <Grid2 size={{ xs: 12 }}>
               <Box
                 sx={{
@@ -475,15 +454,11 @@ const CreateRole: React.FC = () => {
   )
 }
 
-// --- Componente UpdateAdminRole ---
 const UpdateAdminRole: React.FC = () => {
-  // --- Hooks ---
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
 
-  // --- State ---
-  // Ahora formData es de tipo PermissionsV2
   const [formData, setFormData] = useState<Omit<PermissionsV2, "_id">>(
     initializeNestedPermissions()
   )
@@ -497,7 +472,6 @@ const UpdateAdminRole: React.FC = () => {
     false
   )
 
-  // --- Fetch Role Data ---
   const fetchRole = useCallback(async () => {
     if (!id) {
       setErrorFetch("No se proporcionó ID del rol.")
@@ -511,7 +485,6 @@ const UpdateAdminRole: React.FC = () => {
     setErrorFetch(null)
     setErrorSubmit(null)
     try {
-      // Esperamos que getRoleById devuelva PermissionsV2
       const response = await getRoleById(id)
       if (response) {
         const roleData = response as PermissionsV2
@@ -537,8 +510,6 @@ const UpdateAdminRole: React.FC = () => {
     fetchRole()
   }, [fetchRole])
 
-  // --- Handlers ---
-
   const handleAccordionChange =
     (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
       setExpandedAccordion(isExpanded ? panel : false)
@@ -552,7 +523,6 @@ const UpdateAdminRole: React.FC = () => {
         area: value,
       }))
     } else {
-      // Para los checkboxes de permisos, usamos el helper setNestedPermissionValue
       setFormData((prevData) =>
         setNestedPermissionValue(prevData, name, checked)
       )
@@ -596,7 +566,6 @@ const UpdateAdminRole: React.FC = () => {
     }
   }
 
-  // --- Form Validation ---
   const validateForm = (): boolean => {
     if (!formData.area.trim()) {
       return false
@@ -604,7 +573,6 @@ const UpdateAdminRole: React.FC = () => {
     return true
   }
 
-  // --- Handle Submission ---
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setNameTouched(true)
@@ -618,7 +586,6 @@ const UpdateAdminRole: React.FC = () => {
 
     try {
       console.log("Updating Role Data:", id, formData)
-      // Asegúrate de que updateRole espera el formato PermissionsV2
       const response = await updateRole(id, formData)
 
       if (response) {
@@ -642,15 +609,11 @@ const UpdateAdminRole: React.FC = () => {
     }
   }
 
-  // --- Handle Cancel ---
   const handleCancel = () => {
     navigate("/admin/admins/roles/read")
   }
 
-  // --- Derived State for Validation ---
   const nameHasError = nameTouched && !formData.area.trim()
-
-  // --- Render Logic ---
 
   if (isLoading) {
     return (
@@ -694,7 +657,6 @@ const UpdateAdminRole: React.FC = () => {
       <Paper elevation={3} sx={{ p: { xs: 2, sm: 3 }, mt: 2 }}>
         <form onSubmit={handleSubmit} noValidate>
           <Grid2 container spacing={3}>
-            {/* Area Name Input */}
             <Grid2 size={{ xs: 12 }}>
               <TextField
                 label="Nombre del Área/Rol"
@@ -705,7 +667,7 @@ const UpdateAdminRole: React.FC = () => {
                 required
                 fullWidth
                 variant="outlined"
-                disabled={isSubmitting || isLoading} // Disable during initial load AND submission
+                disabled={isSubmitting || isLoading}
                 error={nameHasError}
                 helperText={
                   nameHasError ? "El nombre del Área/Rol es obligatorio." : ""
@@ -720,7 +682,6 @@ const UpdateAdminRole: React.FC = () => {
               </Divider>
             </Grid2>
 
-            {/* Permissions Accordions */}
             {permissionGroups.map((group) => {
               const groupKeys = group.items.map((item) => item.key)
               const checkedCount = groupKeys.reduce(
@@ -832,7 +793,6 @@ const UpdateAdminRole: React.FC = () => {
               )
             })}
 
-            {/* Submission Error Display */}
             {errorSubmit && (
               <Grid2 size={{ xs: 12 }}>
                 <Alert severity="error" sx={{ mt: 2 }}>
@@ -841,7 +801,6 @@ const UpdateAdminRole: React.FC = () => {
               </Grid2>
             )}
 
-            {/* Buttons Section */}
             <Grid2 size={{ xs: 12 }}>
               <Box
                 sx={{

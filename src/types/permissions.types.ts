@@ -45,6 +45,7 @@ export interface PermissionsV2 {
     createAdmin: boolean
     createAdminRole: boolean
     deleteAdmin: boolean
+    deleteAdminRole: boolean
     readAdmins: boolean
     readAdminRoles: boolean
     updateAdmin: boolean
@@ -65,6 +66,7 @@ export interface PermissionsV2 {
     useDiscount: boolean
   }
   movements: {
+    createWallet: boolean
     createMovement: boolean
     deleteMovement: boolean
     reverseMovement: boolean
@@ -142,10 +144,14 @@ export interface PermissionsV2 {
     banConsumer: boolean
     banPrixer: boolean
     banUser: boolean
+    promoteToPrixer: boolean
     createConsumer: boolean
     deleteConsumer: boolean
+    deleteUser: boolean
     readAllUsers: boolean
     readPrixerBalance: boolean
     setPrixerBalance: boolean
+    updatePrixer: boolean
+    updateUser: boolean
   }
 }

@@ -9,6 +9,7 @@ export interface Order {
   createdOn: Date
   createdBy?: string
   updates?: [Date, string][]
+  history?: HistoryEntry[];
   consumerDetails?: ConsumerDetails
   payment: PaymentDetails
   shipping: ShippingDetails
@@ -28,6 +29,11 @@ export interface Order {
   observations?: string
 }
 
+export interface HistoryEntry {
+  timestamp: Date;
+  user: string;
+  description: string;
+}
 export interface ConsumerDetails {
   basic: BasicInfo
   selectedAddress: BasicAddress

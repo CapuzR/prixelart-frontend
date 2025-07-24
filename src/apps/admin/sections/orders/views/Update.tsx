@@ -87,6 +87,12 @@ import {
   Tab,
   Tabs,
   useMediaQuery,
+  Table,
+  TableRow,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
 } from "@mui/material"
 import Grid2 from "@mui/material/Grid"
 
@@ -143,6 +149,7 @@ import "dayjs/locale/es"
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
+import MDEditor from "@uiw/react-md-editor"
 
 interface MethodOption {
   id: string
@@ -2094,7 +2101,9 @@ export default function UpdateOrder() {
               >
                 <CalendarToday fontSize="small" sx={{ mr: 0.5 }} /> Creada el:{" "}
                 {formatDate(order.createdOn)}
-                {permissions?.area !== "Master" && order.seller && " por " + order.seller}
+                {permissions?.area !== "Master" &&
+                  order.seller &&
+                  " por " + order.seller}
               </Typography>
             </Box>
             <Button
@@ -3308,6 +3317,62 @@ export default function UpdateOrder() {
             </Grid2>
           </Box>
         </CustomTabPanel>
+        <CustomTabPanel value={activeStep} index={2}>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead
+                sx={{ backgroundColor: (theme) => theme.palette.action.hover }}
+              >
+                <TableRow>
+                  <TableCell align="center">Fecha</TableCell>
+                  <TableCell align="center">Descripción</TableCell>
+                  <TableCell align="center">Autor</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {order?.history &&
+                  order?.history.length > 0 &&
+                  order.history.map((mov) => (
+                    <TableRow
+                    // style={{
+                    //   display: "flex",
+                    //   justifyContent: "space-between",
+                    // }}
+                    >
+                      <TableCell align="center">
+                        <Typography style={{ fontSize: "14px" }}>
+                          {new Date(mov.timestamp)
+                            .toLocaleString("en-GB", {
+                              timeZone: "UTC",
+                            })
+                            .slice(0, 10)}
+                        </Typography>
+                      </TableCell>
+
+                      <TableCell align="center">
+                        <Typography style={{ fontSize: "14px" }}>
+                          <div data-color-mode="light">
+                            <MDEditor.Markdown source={mov.description} />
+                          </div>
+                        </Typography>
+                      </TableCell>
+
+                      <TableCell align="center">
+                        <Typography
+                          style={{
+                            fontSize: "14px",
+                          }}
+                        >
+                          {mov.user}
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </CustomTabPanel>
+
         {errorSubmit && (
           <Alert severity="error" sx={{ mt: 1 }}>
             {errorSubmit}

@@ -51,6 +51,11 @@ export const permissionGroups: PermissionGroup[] = [
         label: "Ver detalles de pedido",
       },
       {
+        key: "orders.readAllOrders",
+        check: (r: PermissionsV2) => r.orders.readPayDetails,
+        label: "Ver todos los pedidos",
+      },
+      {
         key: "orders.readPayDetails",
         check: (r: PermissionsV2) => r.orders.readPayDetails,
         label: "Ver detalles de pago",

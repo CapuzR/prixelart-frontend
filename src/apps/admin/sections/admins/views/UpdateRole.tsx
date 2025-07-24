@@ -35,6 +35,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 import Title from "@apps/admin/components/Title"
 import { permissionGroups } from "../roles/roles"
 import Grid2 from "@mui/material/Grid"
+
 const initializeNestedPermissions = (
   initialData?: PermissionsV2
 ): Omit<PermissionsV2, "_id"> => {

@@ -476,6 +476,7 @@ export default function ArtUploader({
       onSuccess: async () => {
         const tusUploadInstance = upload as any
         let finalS3Url: string | null = null
+        
         if (tusUploadInstance._req?._xhr?.getResponseHeader) {
           finalS3Url =
             tusUploadInstance._req._xhr.getResponseHeader("x-final-url") ||
@@ -488,6 +489,7 @@ export default function ArtUploader({
         if (finalS3Url && finalS3Url.startsWith("https://https//")) {
           finalS3Url = finalS3Url.replace("https://https//", "https://")
         }
+
         const imageUrl = finalS3Url || upload.url
 
         if (imageUrl && setImageState) {

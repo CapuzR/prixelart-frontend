@@ -43,19 +43,19 @@ export interface ConsumerDetails {
 }
 
 export interface Payment {
-  id: string;
-  description: string;
-  voucher?: string; // IMG ***
-  metadata?: string;
-  amount?: string;
-  createdOn: Date;
-  lastFourDigits?: string;
-  method: PaymentMethod;
+  id: string
+  description: string
+  voucher?: string // IMG ***
+  metadata?: string
+  amount?: string
+  createdOn: Date
+  lastFourDigits?: string
+  method: PaymentMethod
 }
 
 export interface PaymentDetails {
-  total: number;
-  payment: Payment[];
+  total: number
+  payment: Payment[]
   status: [GlobalPaymentStatus, Date][]
 }
 
@@ -128,12 +128,13 @@ export enum GlobalPaymentStatus {
 }
 
 export interface PaymentMethod {
-  _id?: ObjectId;
-  active: boolean;
-  createdBy: string;
-  createdOn: Date;
-  name: string;
-  instructions?: string;
+  _id?: ObjectId
+  active: boolean
+  createdBy: string
+  createdOn: Date
+  name: string
+  label?: string
+  instructions?: string
   // lastFourDigits?: string; // Optional, last four digits of a card
   // voucher?: Payment; // Optional, voucher for bank transfer or task payment
   // metadata?: string;

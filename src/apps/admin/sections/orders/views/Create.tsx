@@ -784,7 +784,7 @@ const CreateOrder: React.FC = () => {
       const paymentDetails: PaymentDetails = {
         status: [[GlobalPaymentStatus.Pending, new Date()]],
         total: displayTotals.total,
-        payment: [mainPayment],
+        payment: [],
       }
 
       const finalShippingAddress = isPickupSelected
@@ -874,10 +874,6 @@ const CreateOrder: React.FC = () => {
         observations: observations || undefined,
       }
 
-      console.log(
-        "Creando orden con payload:",
-        JSON.stringify(payload, null, 2)
-      )
       await createOrder(payload as Order)
       showSnackBar("Orden creada exitosamente.")
       navigate("/admin/orders/read")

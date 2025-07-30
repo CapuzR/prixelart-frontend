@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { fetchVariantPrice } from "@api/product.api"
 import { useUser } from "@context/GlobalContext"
+import MDEditor from "@uiw/react-md-editor"
 
 interface CardProps {
   product: Product
@@ -240,29 +241,31 @@ export default function Card({
         </Typography>
       </Grid2>
 
-      <Grid2 size={{ xs:12, sm: 4 }}>
+      <Grid2 size={{ xs: 12, sm: 4 }}>
         <Slider images={product?.sources?.images}>
           {product?.sources?.images?.map((image, i) => (
             <Image key={i} src={image.url} alt={product?.name} />
           ))}
         </Slider>
       </Grid2>
-      <Grid2 size={{ xs:12, sm: 8 }}>
+      <Grid2 size={{ xs: 12, sm: 8 }}>
         <Grid2 className={styles["main-content"]}>
-          {/* <p style={isCart ? { margin: 0 } : {}}>
-            {product.description.split("\r\n")[0].length > 60
-              ? `${product.description.split("\r\n")[0].slice(0, 65)}...`
-              : `${product.description.split("\r\n")[0]}`}
-          </p> */}
-          <Grid2
-            className="ql-editor"
-            dangerouslySetInnerHTML={{
-              __html:
-                product.description.split("\r\n")[0].length > 60
-                  ? `${product.description.split("\r\n")[0].slice(0, 65)}...`
-                  : `${product.description.split("\r\n")[0]}`,
-            }}
-          />
+          <div data-color-mode="light" className={styles["modal-text"]}>
+            <MDEditor.Markdown
+              source={
+                product.description
+                  .split("\r\n")[0]
+                  .replace(/(\*|_|~|`|\[|\]|\(|\)|#)/g, "").length > 60
+                  ? `${product.description
+                      .split("\r\n")[0]
+                      .replace(/(\*|_|~|`|\[|\]|\(|\)|#)/g, "")
+                      .slice(0, 65)}...`
+                  : product.description
+                      .split("\r\n")[0]
+                      .replace(/(\*|_|~|`|\[|\]|\(|\)|#)/g, "")
+              }
+            />
+          </div>
           <Typography
             gutterBottom
             // component="Grid2"

@@ -181,3 +181,21 @@ export const getBalance = async (_id: string, options: RequestOptions = {}) => {
     throw e
   }
 }
+
+export const createWallet = async (email: string) => {
+  const base_url = import.meta.env.VITE_BACKEND_URL + "/account/create"
+  try {
+    const response = await axios.post(base_url,{email: email})
+
+    if (!response.data.success) {
+      console.error(
+        "Backend reported authentication failure:",
+        response.data.message
+      )
+      throw new Error(response.data.message || "Authentication failed")
+    } else return response
+  } catch (error) {
+    console.log(error)
+    throw error
+  }
+}

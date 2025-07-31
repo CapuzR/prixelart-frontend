@@ -9,6 +9,7 @@ import { useTheme } from "@mui/material/styles"
 
 import styles from "./styles.module.scss"
 import { useState } from "react"
+import ScrollToTopButton from "@components/ScrollToTop"
 
 const Cart = () => {
   const [checking, setChecking] = useState(false)
@@ -41,6 +42,7 @@ const Cart = () => {
           </>
         )}
       </Grid2>
+      <ScrollToTopButton />
     </Grid2>
   )
 }

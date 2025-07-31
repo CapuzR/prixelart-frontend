@@ -87,6 +87,13 @@ import {
   Tab,
   Tabs,
   useMediaQuery,
+  Table,
+  TableRow,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  Modal,
 } from "@mui/material"
 import Grid2 from "@mui/material/Grid"
 
@@ -135,7 +142,7 @@ import BrokenImageIcon from "@mui/icons-material/BrokenImage"
 import { getCurrentOrderStatus } from "@apps/consumer/trackOrder/utils"
 import EditableAddressForm from "./components/EditableAddressForm"
 
-import { getPermissions } from "@api/admin.api"
+import { fetchSellers, getPermissions } from "@api/admin.api"
 import { Permissions } from "types/permissions.types"
 
 import dayjs, { Dayjs } from "dayjs"
@@ -143,6 +150,7 @@ import "dayjs/locale/es"
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
+import MDEditor from "@uiw/react-md-editor"
 
 interface MethodOption {
   id: string
@@ -440,7 +448,7 @@ export default function UpdateOrder() {
     useState<Address | null>(null)
   const [useShippingForBilling, setUseShippingForBilling] =
     useState<boolean>(true)
-
+  const [sellers, setSellers] = useState<string[]>([])
   const [shippingMethodOptions, setShippingMethodOptions] = useState<
     MethodOption[]
   >([])
@@ -462,13 +470,12 @@ export default function UpdateOrder() {
   >([])
   const [displayTotals, setDisplayTotals] = useState<DisplayTotals | null>(null)
 
+  const [openNewPay, setOpenNewPay] = useState<boolean>(false)
   const [currentVoucherImage, setCurrentVoucherImage] =
     useState<ImageUploadState | null>(null)
   const [currentDescription, setCurrentDescription] = useState<string>("")
   const [currentAmount, setCurrentAmount] = useState<Number>(0)
-  const [currentMethod, setCurrentMethod] = useState<
-    string | MethodOption | null
-  >(null)
+  const [currentMethod, setCurrentMethod] = useState<MethodOption | null>(null)
   const [paymentVouchers, setPaymentVouchers] = useState<ImageUploadState[]>([])
   const [imageToCropDetails, setImageToCropDetails] = useState<{
     originalFile: File
@@ -483,7 +490,6 @@ export default function UpdateOrder() {
   const [cropModalOpen, setCropModalOpen] = useState<boolean>(false)
   const imgRef = useRef<HTMLImageElement | null>(null)
   const previewCanvasRef = useRef<HTMLCanvasElement | null>(null)
-  const formRef = useRef<HTMLFormElement>(null)
 
   const [activeStep, setActiveStep] = React.useState(0)
 
@@ -527,6 +533,11 @@ export default function UpdateOrder() {
   const readPermissions = async () => {
     const response = await getPermissions()
     setPermissions(response)
+  }
+
+  const readSellers = async () => {
+    const response = await fetchSellers()
+    setSellers(response)
   }
 
   const loadData = useCallback(async () => {
@@ -736,6 +747,7 @@ export default function UpdateOrder() {
       }
 
       const existingVoucherImages: ImageUploadState[] = []
+
       if (
         orderData.payment?.payment &&
         Array.isArray(orderData.payment.payment)
@@ -767,6 +779,7 @@ export default function UpdateOrder() {
   useEffect(() => {
     loadData()
     readPermissions()
+    readSellers()
   }, [])
 
   useEffect(() => {
@@ -1149,7 +1162,8 @@ export default function UpdateOrder() {
 
   const handleRemoveVoucherImage = (idToRemove: string) => {
     setPaymentVouchers((prev) => prev.filter((img) => img.id !== idToRemove))
-    showSnackBarRef.current(
+    setPrevPayments((prev) => prev.filter((img) => img.id !== idToRemove))
+    showSnackBar(
       "Comprobante eliminado de la lista (se guardará al actualizar)."
     )
   }
@@ -1368,7 +1382,6 @@ export default function UpdateOrder() {
   }
 
   const validateForm = (): boolean => {
-    /* ... (sin cambios, pero asegurarse que no valide imágenes de voucher si no es necesario aquí) ... */ const showSnackBar =
       showSnackBarRef.current
     if (!selectedShippingMethod) {
       showSnackBar("Método de envío es requerido.")
@@ -1378,31 +1391,6 @@ export default function UpdateOrder() {
       showSnackBar("Método de pago es requerido.")
       return false
     }
-    // if (!isPickupSelected) {
-    //   if (
-    //     !editableShippingAddress?.address?.line1 ||
-    //     !editableShippingAddress?.address?.city ||
-    //     !editableShippingAddress?.address?.country ||
-    //     !editableShippingAddress?.recepient?.name
-    //   ) {
-    //     showSnackBar(
-    //       "Dirección de Envío: campos requeridos (Destinatario, Línea 1, Ciudad, País) están incompletos."
-    //     )
-    //     return false
-    //   }
-    // }
-    // if (
-    //   !useShippingForBilling &&
-    //   (!editableBillingAddress?.address?.line1 ||
-    //     !editableBillingAddress?.address?.city ||
-    //     !editableBillingAddress?.address?.country ||
-    //     !editableBillingAddress?.recepient?.name)
-    // ) {
-    //   showSnackBar(
-    //     "Dirección de Facturación: campos requeridos (Destinatario, Línea 1, Ciudad, País) están incompletos."
-    //   )
-    //   return false
-    // }
     return true
   }
 
@@ -1412,17 +1400,22 @@ export default function UpdateOrder() {
     setCurrentMethod(selectedMethod)
   }
 
+  const handleSeller = (selected: string | undefined) => {
+    if (order) {
+      setOrder({ ...order, seller: selected })
+    }
+  }
+
   const handleAddPaymentVoucher = async () => {
     if (
-      // !currentVoucherImage ||
-      // !currentDescription ||
       !currentAmount ||
       !currentMethod
     ) {
-      // showSnackBar("Por favor, completa todos los campos del comprobante.")
+      showSnackBar("Por favor, completa los campos obligatorios.")
       return
     }
     if (!currentVoucherImage?.url) return
+
     const newPayment: any = {
       id: uuidv4(),
       voucher: currentVoucherImage.url,
@@ -1435,6 +1428,7 @@ export default function UpdateOrder() {
 
     const updatedPayments: Payment[] = [...prevPayments, newPayment]
     setPrevPayments(updatedPayments)
+
     const updatedPaymentDetails: PaymentDetails = {
       total: order?.payment?.total || Number(currentAmount) || 0,
       status: order?.payment?.status || [
@@ -1470,24 +1464,16 @@ export default function UpdateOrder() {
       }
     })
     try {
-      console.log(
-        "Updating Order Data with new vouchers:",
-        id,
-        JSON.stringify(payloadForAPI, null, 2)
-      )
       const response = await updateOrder(id!, payloadForAPI)
 
       if (response) {
-        // Asume que 'response' indica éxito
         showSnackBar(
           `Orden #${order?.number || id} actualizada con nuevo comprobante.`
         )
-        setCurrentVoucherImage(null) // Limpia el estado del voucher actual
+        setCurrentVoucherImage(null)
         setCurrentDescription("")
         setCurrentAmount(0)
-        // setCurrentMethod(""); // Comentado si currentMethod no es un estado para el voucher individual
-        // Opcional: Recargar los datos de la orden desde el backend para asegurar consistencia total
-        // loadData();
+        setOpenNewPay(false)
       } else {
         throw new Error(
           "La actualización de la orden no devolvió una respuesta exitosa."
@@ -1500,20 +1486,9 @@ export default function UpdateOrder() {
           err.message ||
           "Error al actualizar la orden con el comprobante."
       )
-      // No reviertas el estado aquí a menos que sea necesario, el usuario podría querer reintentar.
     } finally {
-      setIsSubmitting(false) // Asegúrate de resetear isSubmitting
+      setIsSubmitting(false)
     }
-    // Limpiar los campos del formulario para el siguiente comprobante
-
-    // Revocar el object URL para liberar memoria
-    // if (currentVoucherImage?.preview) {
-    //   URL.revokeObjectURL(currentVoucherImage.preview)
-    // }
-    // const fileInput = document.getElementById("voucher-image-input")
-    // if (fileInput) {
-    //   fileInput.value = ""
-    // }
   }
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -1526,9 +1501,7 @@ export default function UpdateOrder() {
       return
     }
     for (const [index, line] of editableOrderLines.entries()) {
-     if (
-        !line.selectedProduct
-      ) {
+      if (!line.selectedProduct) {
         showSnackBar(`Item #${index + 1}: Producto es requerido.`)
         setIsSubmitting(false)
         return
@@ -1665,7 +1638,6 @@ export default function UpdateOrder() {
       finalBillToInfo = shippingAddr.recepient
     }
 
-    // Recolectar URLs de comprobantes subidos
     const voucherPaymentObjects: Payment[] = paymentVouchers
       .filter((imgState) => imgState.url && !imgState.error)
       .map((imgState) => {
@@ -1687,9 +1659,6 @@ export default function UpdateOrder() {
         }
 
         if (!selectedPaymentMethod) {
-          // Handle cases where a payment method (needed for the Payment object) isn't selected.
-          // This might involve an error, a default, or skipping.
-          // For this example, we'll log an error and skip, but you should decide the best approach.
           console.error(
             "Cannot create voucher payment entry without a selectedPaymentMethod."
           )
@@ -1702,12 +1671,12 @@ export default function UpdateOrder() {
         return {
           id: imgState.isExisting
             ? imgState.id.split("-voucher-")[0].replace("payments-", "")
-            : uuidv4(), // Attempt to reuse existing ID or generate new
+            : uuidv4(),
           description: description,
-          voucher: imgState.url, // <<< Key change: property name
-          method: selectedPaymentMethod.fullMethod as PaymentMethod, // Assign the order's selected payment method
-          amount: "0", // Vouchers typically don't have a separate amount here or it's part of the total
-          metadata: `Voucher linked to ${selectedPaymentMethod.label}`, // Optional metadata
+          voucher: imgState.url,
+          method: selectedPaymentMethod.fullMethod as PaymentMethod,
+          amount: "0",
+          metadata: `Voucher linked to ${selectedPaymentMethod.label}`,
         }
       })
       .filter(Boolean) as Payment[]
@@ -1765,45 +1734,9 @@ export default function UpdateOrder() {
           "Order updated via admin panel (v2 UI - with TUS vouchers)",
         ],
       ],
+      seller: order.seller,
     }
-    let mainPayments: Payment[] = []
-    if (selectedPaymentMethod) {
-      const existingMainInstallment = order.payment?.payment?.find(
-        (inst) =>
-          !inst.voucher ||
-          !paymentVouchers.some((pv) => pv.url === inst.voucher)
-      )
-
-      if (existingMainInstallment) {
-        mainPayments.push({
-          ...existingMainInstallment,
-          method: selectedPaymentMethod.fullMethod as PaymentMethod,
-          amount: (
-            displayTotals?.total ??
-            parseFloat(existingMainInstallment.amount || "0")
-          ).toString(),
-        })
-      } else {
-        mainPayments.push({
-          id: uuidv4(),
-          createdOn: new Date(),
-          description: selectedPaymentMethod.label || "Pago Principal",
-          method: selectedPaymentMethod.fullMethod as PaymentMethod,
-          amount: (displayTotals?.total ?? 0).toString(),
-          voucher: undefined,
-        })
-      }
-    } else if (order.payment?.payment) {
-      mainPayments = order.payment.payment.filter(
-        (inst) =>
-          !inst.voucher ||
-          !paymentVouchers.some(
-            (pv) => pv.url === inst.voucher && pv.isExisting
-          )
-      )
-    }
-
-    const finalPayments = [...mainPayments, ...voucherPaymentObjects]
+    const finalPayments = prevPayments;
 
     payload.payment = {
       ...(order.payment || {}),
@@ -2024,7 +1957,7 @@ export default function UpdateOrder() {
   const allowNumericWithDecimal = (
     event: React.KeyboardEvent<HTMLInputElement>
   ) => {
-    const target = event.target as HTMLInputElement // Type assertion
+    const target = event.target as HTMLInputElement
     if (
       !/[0-9.]/.test(event.key) &&
       ![
@@ -2043,7 +1976,7 @@ export default function UpdateOrder() {
     }
   }
 
-  console.log(order)
+  console.log("Detalles de la orden:", order)
 
   return (
     <Container maxWidth="lg" sx={{ py: { xs: 2, md: 3 } }}>
@@ -2082,8 +2015,11 @@ export default function UpdateOrder() {
                 color="textSecondary"
                 sx={{ display: "flex", alignItems: "center", mt: 0.5 }}
               >
-                <CalendarToday fontSize="small" sx={{ mr: 0.5 }} /> Realizada
-                el: {formatDate(order.createdOn)}
+                <CalendarToday fontSize="small" sx={{ mr: 0.5 }} /> Creada el:{" "}
+                {formatDate(order.createdOn)}
+                {permissions?.area !== "Master" &&
+                  order.seller &&
+                  " por " + order.seller}
               </Typography>
             </Box>
             <Button
@@ -2143,6 +2079,27 @@ export default function UpdateOrder() {
           <Grid2 container spacing={{ xs: 2, md: 3 }}>
             <Grid2 size={{ xs: 12 }} sx={{ mt: 2 }}>
               <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                {permissions?.area === "Master" && (
+                  <FormControl
+                    size="small"
+                    disabled={isSubmitting}
+                    sx={{ minWidth: 200 }}
+                  >
+                    <InputLabel>Vendedor</InputLabel>
+                    <Select
+                      sx={{ width: "100%" }}
+                      value={order.seller}
+                      onChange={(e) => handleSeller(e.target.value)}
+                      label="Vendedor"
+                    >
+                      {sellers.map((seller, i) => (
+                        <MenuItem key={seller + i} value={seller}>
+                          {seller}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                )}
                 <FormControl size="small" disabled={isSubmitting}>
                   <InputLabel>Estado</InputLabel>
                   <Select
@@ -3019,7 +2976,6 @@ export default function UpdateOrder() {
                   {prevPayments.length > 0 ? (
                     prevPayments.map((pay) => (
                       <Box key={pay.id} className={classes.imageGridItem}>
-                        {/* Usar clase para tamaño responsivo */}
                         <Box className={classes.imagePreviewItem}>
                           {pay.voucher ? (
                             <img src={pay.voucher} alt="Comprobante" />
@@ -3059,10 +3015,10 @@ export default function UpdateOrder() {
                           </IconButton>
                           <Grid2 size={{ xs: 12 }}>
                             <Typography color="secondary">
-                              Método de pago: {pay.method?.name}
+                              Método de pago: {pay.method?.label}
                             </Typography>
                             <Typography color="secondary">
-                              Monto: {pay.amount}
+                              Monto: ${pay.amount}
                             </Typography>
                             <Typography color="secondary">
                               Descripción: {pay.description}
@@ -3079,18 +3035,45 @@ export default function UpdateOrder() {
                     </Typography>
                   )}
                 </Paper>
-                {paymentVouchers.length < 6 && ( // Solo mostrar si no se ha alcanzado el límite
-                  <Box>
+                <Button
+                  sx={{ margin: "2rem auto", width: "100%" }}
+                  onClick={() => setOpenNewPay(true)}
+                  variant="outlined"
+                  startIcon={<AddCircleOutline />}
+                  disabled={paymentVouchers.length >= 6 || isSubmitting}
+                >
+                  Registrar pago
+                </Button>
+                <Modal
+                  open={openNewPay}
+                  onClose={() => setOpenNewPay(false)}
+                  aria-labelledby="modal-modal-title"
+                  aria-describedby="modal-modal-description"
+                >
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                      width: 800,
+                      bgcolor: "background.paper",
+                      boxShadow: 24,
+                      borderRadius: 2,
+                      pt: 2,
+                      px: 4,
+                      pb: 3,
+                    }}
+                  >
                     <Typography
-                      variant="h6"
+                      variant="h5"
                       gutterBottom
-                      sx={{ margin: 2 }}
+                      sx={{ margin: 2, textAlign: "center" }}
                       color="secondary"
                     >
-                      Añadir Nuevo Comprobante
+                      Registrar nuevo pago
                     </Typography>
                     <Grid2 container spacing={3}>
-                      {/* Columna para la carga de imagen */}
                       <Grid2 size={{ xs: 12, md: 4 }}>
                         <Paper
                           variant="outlined"
@@ -3160,11 +3143,6 @@ export default function UpdateOrder() {
                                 Añadir Comprobante
                               </Button>
                             </label>
-                            {/* {paymentVouchers.length >= 6 && (
-                    <FormHelperText sx={{ textAlign: "center" }}>
-                      Límite alcanzado
-                    </FormHelperText>
-                  )}*/}
                           </Grid2>
                           {/* <input
                 type="file"
@@ -3188,42 +3166,20 @@ export default function UpdateOrder() {
                         </Paper>
                       </Grid2>
 
-                      {/* Columna para los inputs de descripción, monto y método */}
                       <Grid2 size={{ xs: 12, md: 8 }}>
                         <Stack spacing={2}>
-                          <TextField
-                            label="Descripción"
-                            variant="outlined"
-                            fullWidth
-                            value={currentDescription}
-                            onChange={(e) =>
-                              setCurrentDescription(e.target.value)
-                            }
-                            disabled={isSubmitting}
-                          />
-                          <TextField
-                            label="Monto (ej. 150.00)"
-                            variant="outlined"
-                            fullWidth
-                            type="number"
-                            value={currentAmount}
-                            onChange={(e) =>
-                              setCurrentAmount(Number(e.target.value))
-                            }
-                            disabled={isSubmitting}
-                            // InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }} // Opcional
-                          />
                           <FormControl
                             fullWidth
                             variant="outlined"
                             disabled={isSubmitting}
+                            required
                           >
                             <InputLabel id="payment-method-label">
                               Método de Pago
                             </InputLabel>
                             <Select
                               labelId="payment-method-label"
-                              value={currentMethod}
+                              value={currentMethod?.label}
                               onChange={(e) =>
                                 handleSelectedMethod(e.target.value)
                               }
@@ -3236,46 +3192,162 @@ export default function UpdateOrder() {
                               ))}
                             </Select>
                           </FormControl>
+                          <TextField
+                            label="Monto (ej. 150.00)"
+                            variant="outlined"
+                            fullWidth
+                            required
+                            type="number"
+                            value={currentAmount}
+                            onChange={(e) =>
+                              setCurrentAmount(Number(e.target.value))
+                            }
+                            disabled={isSubmitting}
+                            InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }}
+                          />
 
+                          <TextField
+                            label="Descripción"
+                            variant="outlined"
+                            fullWidth
+                            value={currentDescription}
+                            onChange={(e) =>
+                              setCurrentDescription(e.target.value)
+                            }
+                            disabled={isSubmitting}
+                          />
                           <Button
                             variant="contained"
                             color="primary"
-                            startIcon={<AddCircleOutline />}
-                            onClick={handleAddPaymentVoucher} // Nueva función para añadir el comprobante actual a la lista paymentVouchers
+                            startIcon={<SaveIcon />}
+                            onClick={handleAddPaymentVoucher}
                             disabled={
-                              isSubmitting ||
-                              !currentVoucherImage ||
-                              !currentDescription ||
-                              !currentAmount ||
-                              !currentMethod
+                              isSubmitting || !currentAmount || !currentMethod
                             }
-                            sx={{ alignSelf: "flex-start" }} // Para que el botón no ocupe todo el ancho
+                            sx={{ alignSelf: "flex-start" }}
                           >
-                            Añadir este Comprobante
+                            Guardar registro de Pago
                           </Button>
                         </Stack>
                       </Grid2>
                     </Grid2>
                   </Box>
-                )}
-                {paymentVouchers.length > 0 && (
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      textAlign: "right",
-                      width: "100%",
-                      display: "block",
-                      pr: 1,
-                      mt: 0.5,
-                    }}
-                  >
-                    {paymentVouchers.length}/6
-                  </Typography>
-                )}
+                </Modal>
               </Grid2>
             </Grid2>
           </Box>
         </CustomTabPanel>
+        <CustomTabPanel value={activeStep} index={2}>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead
+                sx={{ backgroundColor: (theme) => theme.palette.action.hover }}
+              >
+                <TableRow>
+                  <TableCell align="center">Fecha</TableCell>
+                  <TableCell align="center">Descripción</TableCell>
+                  <TableCell align="center">Autor</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {order?.history &&
+                  order?.history.length > 0 &&
+                  order.history.map((mov) => (
+                    <TableRow
+                    // style={{
+                    //   display: "flex",
+                    //   justifyContent: "space-between",
+                    // }}
+                    >
+                      <TableCell align="center">
+                        <Typography style={{ fontSize: "14px" }}>
+                          {new Date(mov.timestamp)
+                            .toLocaleString("en-GB", {
+                              timeZone: "UTC",
+                            })
+                            .slice(0, 10)}
+                        </Typography>
+                      </TableCell>
+
+                      <TableCell align="center">
+                        <Typography style={{ fontSize: "14px" }}>
+                          <div data-color-mode="light">
+                            <MDEditor.Markdown source={mov.description} />
+                          </div>
+                        </Typography>
+                      </TableCell>
+
+                      <TableCell align="center">
+                        <Typography
+                          style={{
+                            fontSize: "14px",
+                          }}
+                        >
+                          {mov.user}
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </CustomTabPanel>
+        <CustomTabPanel value={activeStep} index={2}>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead
+                sx={{ backgroundColor: (theme) => theme.palette.action.hover }}
+              >
+                <TableRow>
+                  <TableCell align="center">Fecha</TableCell>
+                  <TableCell align="center">Descripción</TableCell>
+                  <TableCell align="center">Autor</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {order?.history &&
+                  order?.history.length > 0 &&
+                  order.history.map((mov) => (
+                    <TableRow
+                    // style={{
+                    //   display: "flex",
+                    //   justifyContent: "space-between",
+                    // }}
+                    >
+                      <TableCell align="center">
+                        <Typography style={{ fontSize: "14px" }}>
+                          {new Date(mov.timestamp)
+                            .toLocaleString("en-GB", {
+                              timeZone: "UTC",
+                            })
+                            .slice(0, 10)}
+                        </Typography>
+                      </TableCell>
+
+                      <TableCell align="center">
+                        <Typography style={{ fontSize: "14px" }}>
+                          <div data-color-mode="light">
+                            <MDEditor.Markdown source={mov.description} />
+                          </div>
+                        </Typography>
+                      </TableCell>
+
+                      <TableCell align="center">
+                        <Typography
+                          style={{
+                            fontSize: "14px",
+                          }}
+                        >
+                          {mov.user}
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </CustomTabPanel>
+
         {errorSubmit && (
           <Alert severity="error" sx={{ mt: 1 }}>
             {errorSubmit}

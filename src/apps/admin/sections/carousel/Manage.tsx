@@ -526,48 +526,26 @@ const ManageCarousels: React.FC = () => {
       },
       onSuccess: async () => {
         const tusUploadInstance = upload as any
-        let xhrOfLastRequest: any = null
         let finalS3Url: string | null = null
 
-        // Lógica para obtener XHR (adaptada de tu código original)
-        if (
-          tusUploadInstance._req &&
-          tusUploadInstance._req._xhr &&
-          typeof tusUploadInstance._req._xhr.getResponseHeader === "function"
-        ) {
-          xhrOfLastRequest = tusUploadInstance._req._xhr
-        } else if (
-          tusUploadInstance.xhr &&
-          typeof tusUploadInstance.xhr.getResponseHeader === "function"
-        ) {
-          xhrOfLastRequest = tusUploadInstance.xhr
-        } else {
-          console.warn(
-            "No se pudo determinar el objeto XHR para leer encabezados en onSuccess de TUS."
-          )
+        if (tusUploadInstance._req?._xhr?.getResponseHeader) {
+          finalS3Url =
+            tusUploadInstance._req._xhr.getResponseHeader("x-final-url") ||
+            tusUploadInstance._req._xhr.getResponseHeader("X-Final-URL")
+        } else if (tusUploadInstance.xhr?.getResponseHeader) {
+          finalS3Url =
+            tusUploadInstance.xhr.getResponseHeader("x-final-url") ||
+            tusUploadInstance.xhr.getResponseHeader("X-Final-URL")
+        }
+        if (finalS3Url && finalS3Url.startsWith("https://https//")) {
+          finalS3Url = finalS3Url.replace("https://https//", "https://")
         }
 
-        if (xhrOfLastRequest) {
-          try {
-            finalS3Url =
-              xhrOfLastRequest.getResponseHeader("x-final-url") ||
-              xhrOfLastRequest.getResponseHeader("X-Final-URL")
-            if (finalS3Url && finalS3Url.startsWith("https://https//")) {
-              finalS3Url = finalS3Url.replace("https://https//", "https://")
-            }
-          } catch (e) {
-            console.error(
-              "Error al leer encabezados del XHR en onSuccess de TUS:",
-              e
-            )
-          }
-        }
-
-        const tusEndpointUrl = upload.url // URL del recurso en el servidor TUS
+        const tusEndpointUrl = upload.url
         let imageUrlToSave: string | undefined =
           finalS3Url || tusEndpointUrl || undefined
 
-        if (!imageUrlToSave) {
+          if (!imageUrlToSave) {
           console.error(
             "ERROR CRÍTICO: No se pudo obtener la URL de la imagen después de la subida TUS."
           )
@@ -579,7 +557,7 @@ const ManageCarousels: React.FC = () => {
 
         setUploadProgress((prev) => ({
           ...prev,
-          [type]: { percentage: 100, status: "Finalizado, guardando..." },
+          [type]: { percentage: 100,  url: imageUrlToSave, status: "Finalizado, guardando..." },
         }))
         try {
           console.log(
@@ -587,7 +565,7 @@ const ManageCarousels: React.FC = () => {
           )
           await createCarouselItem({ type, imageURL: imageUrlToSave })
           showSnackBar("Item agregado.")
-          await loadItems(false) // Recargar items sin mostrar el spinner global
+          await loadItems(false)
           if (type === "desktop") {
             setNewDesktopImageFile(null)
             setDesktopFileDisplayName(null)

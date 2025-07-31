@@ -35,6 +35,7 @@ import { DisplayPriceInfo } from "../Details"
 import MDEditor from "@uiw/react-md-editor"
 import ReactQuill from "react-quill-new"
 import "react-quill/dist/quill.snow.css"
+
 interface LandscapeProps {
   product: Product
   expanded: string | false
@@ -221,12 +222,18 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
                 <Typography>Descripción general</Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <div
+                {/* <div
                   className="ql-editor"
                   dangerouslySetInnerHTML={{
                     __html: props.product.description,
                   }}
-                />
+                /> */}
+                {/* <div className="ql-editor" style={{ height: "auto" }}>
+                  <RenderHTML htmlString={props.product.description} />
+                </div> */}
+                <div data-color-mode="light" className={styles["modal-text"]}>
+                  <MDEditor.Markdown source={props.product.description} />
+                </div>
               </AccordionDetails>
             </Accordion>
           )}
@@ -239,9 +246,13 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
                 <Typography>Especificaciones técnicas</Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <Typography>
+                {/* <Typography>
                   {props.description.technicalSpecification}
-                </Typography>
+                </Typography> */}
+                {/* <RenderHTML htmlString={props.description}/> */}
+                <div data-color-mode="light" className={styles["modal-text"]}>
+                  <MDEditor.Markdown source={props.description.technicalSpecification} />
+                </div>
               </AccordionDetails>
             </Accordion>
           )}

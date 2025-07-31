@@ -6,6 +6,7 @@ import Box from '@mui/material/Box';
 import PrixersGrid from 'apps/consumer/components/prixerGrid/prixerGrid';
 import useMediaQuery from "@mui/material/useMediaQuery"
 import { useTheme } from "@mui/material/styles"
+import ScrollToTopButton from '@components/ScrollToTop';
 
 const Prixers: React.FC = () => {
   const theme = useTheme()
@@ -42,6 +43,7 @@ const Prixers: React.FC = () => {
         </Typography>
       </Box>
       <PrixersGrid />
+      <ScrollToTopButton />
     </Container>
   );
 };

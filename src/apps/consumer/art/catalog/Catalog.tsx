@@ -7,6 +7,7 @@ import ArtUploader from "@apps/artist/artUploader"
 import Typography from "@mui/material/Typography"
 import CreateService from "components/createService"
 import Grid2 from "@mui/material/Grid"
+import ScrollToTopButton from "@components/ScrollToTop"
 
 export default function Catalog() {
   const [openArtFormDialog, setOpenArtFormDialog] = useState<boolean>(false)
@@ -65,19 +66,8 @@ export default function Catalog() {
 
         {/* Create Service Dialog */}
         {openServiceFormDialog && <CreateService />}
-
-        {/* Floating buttons */}
-
-        {/* <Grid2
-          sx={{
-            position: "fixed",
-            bottom: "24px",
-            right: "24px",
-          }}
-        >
-          <FloatingAddButton />
-        </Grid2> */}
       </Container>
+      <ScrollToTopButton />
     </>
   )
 }

@@ -287,7 +287,7 @@ const ReadMovements: React.FC = () => {
                       `${user.firstName || ""} ${user.lastName || ""}`.trim() ||
                       user.username ||
                       "Usuario Desconocido",
-                    avatar: user.avatar,
+                    avatar: user?.avatar || user.prixer?.avatar,
                   }
                 }
               })

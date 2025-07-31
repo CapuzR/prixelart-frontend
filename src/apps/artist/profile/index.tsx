@@ -72,9 +72,15 @@ import { Art } from "types/art.types"
 import { Service } from "types/service.types"
 import { fetchServicesByUser } from "@api/service.api"
 import { useLoading, useSnackBar, useUser } from "@context/GlobalContext"
-import ReactCrop, { centerCrop, Crop, makeAspectCrop, PixelCrop } from "react-image-crop"
+import ReactCrop, {
+  centerCrop,
+  Crop,
+  makeAspectCrop,
+  PixelCrop,
+} from "react-image-crop"
 import { BACKEND_URL } from "@api/utils.api"
 import * as tus from "tus-js-client"
+import ScrollToTopButton from "@components/ScrollToTop"
 
 const ARTS_PER_PAGE = 12
 const availableSpecialties = [
@@ -84,7 +90,7 @@ const availableSpecialties = [
   "Artes Plásticas",
   "Música",
   "Escritura",
-];
+]
 
 const lightboxModalStyle = {
   position: "absolute" as "absolute",
@@ -265,31 +271,43 @@ const PrixerProfileSkeleton: React.FC = () => {
   )
 }
 
-async function canvasPreview(image: HTMLImageElement, canvas: HTMLCanvasElement, crop: PixelCrop) {
-  const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("No 2d context");
+async function canvasPreview(
+  image: HTMLImageElement,
+  canvas: HTMLCanvasElement,
+  crop: PixelCrop
+) {
+  const ctx = canvas.getContext("2d")
+  if (!ctx) throw new Error("No 2d context")
 
-  const scaleX = image.naturalWidth / image.width;
-  const scaleY = image.naturalHeight / image.height;
-  const pixelRatio = window.devicePixelRatio || 1;
+  const scaleX = image.naturalWidth / image.width
+  const scaleY = image.naturalHeight / image.height
+  const pixelRatio = window.devicePixelRatio || 1
 
-  canvas.width = Math.floor(crop.width * scaleX * pixelRatio);
-  canvas.height = Math.floor(crop.height * scaleY * pixelRatio);
+  canvas.width = Math.floor(crop.width * scaleX * pixelRatio)
+  canvas.height = Math.floor(crop.height * scaleY * pixelRatio)
 
-  ctx.scale(pixelRatio, pixelRatio);
-  ctx.imageSmoothingQuality = "high";
+  ctx.scale(pixelRatio, pixelRatio)
+  ctx.imageSmoothingQuality = "high"
 
-  const cropX = crop.x * scaleX;
-  const cropY = crop.y * scaleY;
+  const cropX = crop.x * scaleX
+  const cropY = crop.y * scaleY
 
-  ctx.save();
-  ctx.translate(-cropX, -cropY);
-  ctx.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight);
-  ctx.restore();
+  ctx.save()
+  ctx.translate(-cropX, -cropY)
+  ctx.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight)
+  ctx.restore()
 }
 
-function centerAspectCrop(mediaWidth: number, mediaHeight: number, aspect: number) {
-  return centerCrop(makeAspectCrop({ unit: "%", width: 90 }, aspect, mediaWidth, mediaHeight), mediaWidth, mediaHeight);
+function centerAspectCrop(
+  mediaWidth: number,
+  mediaHeight: number,
+  aspect: number
+) {
+  return centerCrop(
+    makeAspectCrop({ unit: "%", width: 90 }, aspect, mediaWidth, mediaHeight),
+    mediaWidth,
+    mediaHeight
+  )
 }
 
 export default function PrixerProfileCard() {
@@ -311,8 +329,7 @@ export default function PrixerProfileCard() {
   const [servicesLoading, setServicesLoading] = useState<boolean>(true)
   const [servicesError, setServicesError] = useState<string | null>(null)
 
-  const [showFullDescription, setShowFullDescription] =
-    useState<boolean>(false)
+  const [showFullDescription, setShowFullDescription] = useState<boolean>(false)
 
   const [lightboxOpen, setLightboxOpen] = useState<boolean>(false)
   const [lightboxImage, setLightboxImage] = useState<string>("")
@@ -324,12 +341,12 @@ export default function PrixerProfileCard() {
   const { username: routeUsername } = useParams<{ username: string }>()
   const navigate = useNavigate()
   const { user } = useUser()
-  const { showSnackBar } = useSnackBar();
-  const { loading: isSaving, setLoading: setIsSaving } = useLoading();
+  const { showSnackBar } = useSnackBar()
+  const { loading: isSaving, setLoading: setIsSaving } = useLoading()
   const isOwner = user?.username === routeUsername
 
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [formData, setFormData] = useState<Partial<Prixer>>({});
+  const [isEditMode, setIsEditMode] = useState(false)
+  const [formData, setFormData] = useState<Partial<Prixer>>({})
 
   const theme = useTheme()
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"))
@@ -339,15 +356,20 @@ export default function PrixerProfileCard() {
   const loadMoreTriggerRef = useRef<HTMLDivElement | null>(null)
 
   // --- NEW: Uploader and Cropper State ---
-  const [imageSrc, setImageSrc] = useState('');
-  const [crop, setCrop] = useState<Crop>();
-  const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
-  const [cropModalOpen, setCropModalOpen] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState<{ percentage: number; status: string } | null>(null);
-  const imgRef = useRef<HTMLImageElement>(null);
-  const previewCanvasRef = useRef<HTMLCanvasElement>(null);
+  const [imageSrc, setImageSrc] = useState("")
+  const [crop, setCrop] = useState<Crop>()
+  const [completedCrop, setCompletedCrop] = useState<PixelCrop>()
+  const [cropModalOpen, setCropModalOpen] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState<{
+    percentage: number
+    status: string
+  } | null>(null)
+  const imgRef = useRef<HTMLImageElement>(null)
+  const previewCanvasRef = useRef<HTMLCanvasElement>(null)
 
-  const [errors, setErrors] = useState<Partial<Record<keyof Prixer, string | null>>>({});
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof Prixer, string | null>>
+  >({})
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue)
@@ -374,115 +396,119 @@ export default function PrixerProfileCard() {
         twitter: prixer.twitter || "",
         facebook: prixer.facebook || "",
         phone: prixer.phone || "",
-      });
+      })
     }
-  }, [prixerUser]);
+  }, [prixerUser])
 
-  const handleFormChange = (
-    field: keyof Prixer,
-    value: string | string[]
-  ) => {
-    if (typeof value === 'string') {
-      const error = validateField(field, value);
-      setErrors(prev => ({ ...prev, [field]: error }));
+  const handleFormChange = (field: keyof Prixer, value: string | string[]) => {
+    if (typeof value === "string") {
+      const error = validateField(field, value)
+      setErrors((prev) => ({ ...prev, [field]: error }))
     }
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
+    setFormData((prev) => ({ ...prev, [field]: value }))
+  }
 
   const onSelectFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setCrop(undefined); // Makes crop preview update between selections
-      const reader = new FileReader();
+      setCrop(undefined) // Makes crop preview update between selections
+      const reader = new FileReader()
       reader.addEventListener("load", () => {
-        setImageSrc(reader.result?.toString() || "");
-        setCropModalOpen(true);
-      });
-      reader.readAsDataURL(e.target.files[0]);
+        setImageSrc(reader.result?.toString() || "")
+        setCropModalOpen(true)
+      })
+      reader.readAsDataURL(e.target.files[0])
     }
-  };
+  }
 
   const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    imgRef.current = e.currentTarget;
-    const { width, height } = e.currentTarget;
-    setCrop(centerAspectCrop(width, height, 1 / 1)); // 1:1 aspect ratio for avatar
-  };
+    imgRef.current = e.currentTarget
+    const { width, height } = e.currentTarget
+    setCrop(centerAspectCrop(width, height, 1 / 1)) // 1:1 aspect ratio for avatar
+  }
 
   const handleConfirmCropAndUpload = async () => {
-    const image = imgRef.current;
-    const canvas = previewCanvasRef.current;
+    const image = imgRef.current
+    const canvas = previewCanvasRef.current
     if (!image || !canvas || !completedCrop) {
-      throw new Error("Crop canvas does not exist");
+      throw new Error("Crop canvas does not exist")
     }
 
-    await canvasPreview(image, canvas, completedCrop);
+    await canvasPreview(image, canvas, completedCrop)
 
     canvas.toBlob(
       (blob) => {
         if (!blob) {
-          throw new Error("Failed to create blob");
+          throw new Error("Failed to create blob")
         }
-        const croppedFile = new File([blob], "avatar.webp", { type: "image/webp" });
-        handleTusUpload(croppedFile);
+        const croppedFile = new File([blob], "avatar.webp", {
+          type: "image/webp",
+        })
+        handleTusUpload(croppedFile)
       },
       "image/webp",
       0.85
-    );
-    setCropModalOpen(false);
-  };
+    )
+    setCropModalOpen(false)
+  }
 
   const handleTusUpload = (file: File) => {
-    setUploadProgress({ percentage: 0, status: "Starting..." });
+    setUploadProgress({ percentage: 0, status: "Starting..." })
 
     const upload = new tus.Upload(file, {
       endpoint: `${BACKEND_URL}/files`,
       retryDelays: [0, 3000, 5000, 10000],
       metadata: { filename: file.name, filetype: file.type },
       onProgress: (bytesUploaded, bytesTotal) => {
-        const percentage = Math.round((bytesUploaded / bytesTotal) * 100);
-        setUploadProgress({ percentage, status: "Uploading..." });
+        const percentage = Math.round((bytesUploaded / bytesTotal) * 100)
+        setUploadProgress({ percentage, status: "Uploading..." })
       },
       onSuccess: () => {
-
-        const tusUploadInstance = upload as any;
-        let finalUrl: string | null = null;
+        const tusUploadInstance = upload as any
+        let finalUrl: string | null = null
 
         // This logic is adapted from your ManageCarousels component.
         // It correctly tries to find the final URL from the response headers.
-        const xhr = tusUploadInstance.xhr || (tusUploadInstance._req && tusUploadInstance._req._xhr);
+        const xhr =
+          tusUploadInstance.xhr ||
+          (tusUploadInstance._req && tusUploadInstance._req._xhr)
 
         if (xhr && typeof xhr.getResponseHeader === "function") {
-          finalUrl = xhr.getResponseHeader("X-Final-URL") || xhr.getResponseHeader("x-final-url");
+          finalUrl =
+            xhr.getResponseHeader("X-Final-URL") ||
+            xhr.getResponseHeader("x-final-url")
         }
 
         // If the header is missing, fall back to the TUS endpoint URL.
         if (!finalUrl && upload.url) {
-          console.warn("X-Final-URL header not found. Falling back to constructing the URL manually. This might not be the public URL.");
-          const fileId = upload.url.split('/').pop();
-          finalUrl = `${import.meta.env.VITE_PUBLIC_BUCKET_URL}/${fileId}`;
+          console.warn(
+            "X-Final-URL header not found. Falling back to constructing the URL manually. This might not be the public URL."
+          )
+          const fileId = upload.url.split("/").pop()
+          finalUrl = `${import.meta.env.VITE_PUBLIC_BUCKET_URL}/${fileId}`
         }
 
         if (finalUrl) {
           // Update the form state with the new URL
-          handleFormChange("avatar", finalUrl);
+          handleFormChange("avatar", finalUrl)
 
-          setUploadProgress({ percentage: 100, status: "Completed!" });
-          showSnackBar("Avatar uploaded. Click Save to apply.");
-          setTimeout(() => setUploadProgress(null), 3000);
+          setUploadProgress({ percentage: 100, status: "Completed!" })
+          showSnackBar("Avatar uploaded. Click Save to apply.")
+          setTimeout(() => setUploadProgress(null), 3000)
         } else {
-          console.error("CRITICAL: Could not determine final URL after upload.");
-          setUploadProgress({ percentage: 100, status: `Error: Missing URL` });
-          showSnackBar("Upload failed: Could not retrieve file URL.");
+          console.error("CRITICAL: Could not determine final URL after upload.")
+          setUploadProgress({ percentage: 100, status: `Error: Missing URL` })
+          showSnackBar("Upload failed: Could not retrieve file URL.")
         }
       },
       onError: (error) => {
-        console.error("Failed to upload", error);
-        setUploadProgress({ percentage: 0, status: `Error` });
-        showSnackBar(`Upload failed: ${error.message}`);
+        console.error("Failed to upload", error)
+        setUploadProgress({ percentage: 0, status: `Error` })
+        showSnackBar(`Upload failed: ${error.message}`)
       },
-    });
+    })
 
-    upload.start();
-  };
+    upload.start()
+  }
 
   const fieldRefs = {
     avatar: useRef<HTMLInputElement>(null),
@@ -490,67 +516,72 @@ export default function PrixerProfileCard() {
     instagram: useRef<HTMLInputElement>(null),
     twitter: useRef<HTMLInputElement>(null),
     facebook: useRef<HTMLInputElement>(null),
-  };
+  }
 
   const handleSave = async () => {
     if (!prixerUser?._id) {
-      showSnackBar("Error: User ID not found.");
-      return;
+      showSnackBar("Error: User ID not found.")
+      return
     }
 
-    const newErrors: typeof errors = {};
-    let firstErrorField: keyof typeof fieldRefs | null = null;
+    const newErrors: typeof errors = {}
+    let firstErrorField: keyof typeof fieldRefs | null = null
 
-    const fieldsToValidate: Array<keyof typeof fieldRefs> = ['phone', 'instagram', 'twitter', 'facebook'];
+    const fieldsToValidate: Array<keyof typeof fieldRefs> = [
+      "phone",
+      "instagram",
+      "twitter",
+      "facebook",
+    ]
 
     for (const key of fieldsToValidate) {
-      const value = formData[key] as string;
-      const error = validateField(key, value);
+      const value = formData[key] as string
+      const error = validateField(key, value)
       if (error) {
-        newErrors[key] = error;
+        newErrors[key] = error
         if (!firstErrorField) {
-          firstErrorField = key;
+          firstErrorField = key
         }
       }
     }
 
-    setErrors(newErrors);
+    setErrors(newErrors)
 
     if (firstErrorField) {
-      const errorFieldNames = Object.keys(newErrors).join(', ');
-      showSnackBar(`Please fix the following fields: ${errorFieldNames}`);
+      const errorFieldNames = Object.keys(newErrors).join(", ")
+      showSnackBar(`Please fix the following fields: ${errorFieldNames}`)
 
-      fieldRefs[firstErrorField]?.current?.focus();
-      return;
+      fieldRefs[firstErrorField]?.current?.focus()
+      return
     }
 
-    setIsSaving(true);
+    setIsSaving(true)
     try {
       const dataToUpdate: Partial<Prixer> = {
         ...formData,
         specialty: formData.specialty || [],
-      };
+      }
 
       const response = await updatePrixerProfile(
         prixerUser._id.toString(),
         dataToUpdate
-      );
+      )
       if (response.success && response.result) {
-        const updatedUser = response.result as User;
-        setPrixer(updatedUser.prixer || null);
-        setPrixerUser(updatedUser);
-        showSnackBar("Profile updated successfully!");
-        setIsEditMode(false);
+        const updatedUser = response.result as User
+        setPrixer(updatedUser.prixer || null)
+        setPrixerUser(updatedUser)
+        showSnackBar("Profile updated successfully!")
+        setIsEditMode(false)
       } else {
-        showSnackBar(response.message || "Failed to update profile.");
+        showSnackBar(response.message || "Failed to update profile.")
       }
     } catch (err) {
-      console.error("Save failed:", err);
-      showSnackBar("An unexpected error occurred.");
+      console.error("Save failed:", err)
+      showSnackBar("An unexpected error occurred.")
     } finally {
-      setIsSaving(false);
+      setIsSaving(false)
     }
-  };
+  }
 
   const handleCancel = () => {
     setIsEditMode(false)
@@ -645,7 +676,7 @@ export default function PrixerProfileCard() {
           setPrixerUser(userDataResponse)
           setPrixer(userDataResponse.prixer)
           setUserName(userDataResponse.username)
-          const prixerId = userDataResponse._id?.toString();
+          const prixerId = userDataResponse._id?.toString()
 
           setServicesLoading(true)
           await Promise.all([
@@ -658,12 +689,13 @@ export default function PrixerProfileCard() {
             ),
             (async () => {
               try {
-                if (!prixerId) throw new Error("Prixer ID is missing.");
+                if (!prixerId) throw new Error("Prixer ID is missing.")
                 const servicesData = await fetchServicesByUser(prixerId)
                 setServices(
                   servicesData.filter(
                     (s: Service) =>
-                      s.active && (s.visible === true || s.visible === undefined)
+                      s.active &&
+                      (s.visible === true || s.visible === undefined)
                   ) || []
                 )
               } catch (err) {
@@ -742,42 +774,42 @@ export default function PrixerProfileCard() {
   }
 
   const validateField = (name: keyof Prixer, value: string): string | null => {
-    if (!value) return null; // Don't validate empty fields, only on submit
+    if (!value) return null // Don't validate empty fields, only on submit
 
     switch (name) {
-      case 'phone':
-        const phoneRegex = /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/;
+      case "phone":
+        const phoneRegex = /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/
         if (!phoneRegex.test(value)) {
-          return "Invalid phone number format.";
+          return "Invalid phone number format."
         }
-        return null;
+        return null
 
-      case 'instagram':
-      case 'twitter':
-        const handleRegex = /^@?[a-zA-Z0-9._]{1,30}$/;
+      case "instagram":
+      case "twitter":
+        const handleRegex = /^@?[a-zA-Z0-9._]{1,30}$/
         if (!handleRegex.test(value)) {
-          return "Invalid handle format. Spaces are not allowed.";
+          return "Invalid handle format. Spaces are not allowed."
         }
-        return null;
+        return null
 
-      case 'facebook':
+      case "facebook":
         if (/\s/.test(value)) {
-          return "Facebook path cannot contain spaces.";
+          return "Facebook path cannot contain spaces."
         }
-        return null;
+        return null
 
-      case 'avatar':
+      case "avatar":
         try {
-          new URL(value);
-          return null;
+          new URL(value)
+          return null
         } catch (_) {
-          return "Please enter a valid URL.";
+          return "Please enter a valid URL."
         }
 
       default:
-        return null;
+        return null
     }
-  };
+  }
 
   const handleOpenLightbox = (imageUrl: string) => {
     setLightboxImage(imageUrl)
@@ -1042,7 +1074,10 @@ export default function PrixerProfileCard() {
                       multiple
                       value={formData.specialty || []}
                       onChange={(e) =>
-                        handleFormChange("specialty", e.target.value as string[])
+                        handleFormChange(
+                          "specialty",
+                          e.target.value as string[]
+                        )
                       }
                       input={
                         <Input
@@ -1061,7 +1096,9 @@ export default function PrixerProfileCard() {
                         />
                       }
                       renderValue={(selected) => (
-                        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                        <Box
+                          sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}
+                        >
                           {(selected as string[]).map((value) => (
                             <Chip
                               key={value}
@@ -1078,7 +1115,9 @@ export default function PrixerProfileCard() {
                       {availableSpecialties.map((name) => (
                         <MenuItem key={name} value={name}>
                           <Checkbox
-                            checked={(formData.specialty || []).indexOf(name) > -1}
+                            checked={
+                              (formData.specialty || []).indexOf(name) > -1
+                            }
                           />
                           <ListItemText primary={name} />
                         </MenuItem>
@@ -1166,7 +1205,11 @@ export default function PrixerProfileCard() {
           {/* TABS & PANELS                                 */}
           {/* ============================================= */}
           <Box
-            sx={{ borderBottom: 1, borderColor: "divider", bgcolor: "action.hover" }}
+            sx={{
+              borderBottom: 1,
+              borderColor: "divider",
+              bgcolor: "action.hover",
+            }}
           >
             <Tabs
               value={currentTab}
@@ -1200,286 +1243,300 @@ export default function PrixerProfileCard() {
           {/* --- PORTFOLIO TAB --- */}
           {currentTab === "portfolio" && (
             <Box sx={{ p: { xs: 2, sm: 3 } }}>
-            <Grid2 container spacing={isSmallScreen ? 1 : 2} sx={{ mb: 2.5 }}>
-              <Grid2
-                size={{
-                  xs: 12,
-                  sm: availableCategories.length > 0 ? 6 : 12,
-                  md: availableCategories.length > 0 ? 5 : 8,
-                }}
-              >
-                <FormControl fullWidth size="small" variant="outlined">
-                  <InputLabel id="sort-by-label">Ordenar Por</InputLabel>
-                  <Select
-                    labelId="sort-by-label"
-                    value={sortOption}
-                    label="Ordenar Por"
-                    onChange={handleSortChange}
-                  >
-                    {sortOptions.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        <Stack direction="row" alignItems="center" spacing={1}>
-                          {option.icon}
-                          {option.label}
-                        </Stack>
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid2>
-              {availableCategories.length > 0 && (
+              <Grid2 container spacing={isSmallScreen ? 1 : 2} sx={{ mb: 2.5 }}>
                 <Grid2
                   size={{
                     xs: 12,
-                    sm: 6,
-                    md: availableCategories.length > 0 ? 5 : 4,
+                    sm: availableCategories.length > 0 ? 6 : 12,
+                    md: availableCategories.length > 0 ? 5 : 8,
                   }}
                 >
                   <FormControl fullWidth size="small" variant="outlined">
-                    <InputLabel id="filter-category-label">Categoría</InputLabel>
+                    <InputLabel id="sort-by-label">Ordenar Por</InputLabel>
                     <Select
-                      labelId="filter-category-label"
-                      value={filterCategory}
-                      label="Categoría"
-                      onChange={handleFilterCategoryChange}
+                      labelId="sort-by-label"
+                      value={sortOption}
+                      label="Ordenar Por"
+                      onChange={handleSortChange}
                     >
-                      <MenuItem value="">
-                        <Stack direction="row" alignItems="center" spacing={1}>
-                          <CategoryIcon fontSize="small" />
-                          Todas Las Categorías
-                        </Stack>
-                      </MenuItem>
-                      {availableCategories.map((category) => (
-                        <MenuItem key={category} value={category}>
-                          {category}
+                      {sortOptions.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                          <Stack
+                            direction="row"
+                            alignItems="center"
+                            spacing={1}
+                          >
+                            {option.icon}
+                            {option.label}
+                          </Stack>
                         </MenuItem>
                       ))}
                     </Select>
                   </FormControl>
                 </Grid2>
-              )}
-              {(filterCategory || sortOption !== sortOptions[0].value) &&
-                availableCategories.length > 0 && (
+                {availableCategories.length > 0 && (
                   <Grid2
-                    size={{ xs: 12, md: 2 }}
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: { xs: "flex-start", md: "flex-end" },
+                    size={{
+                      xs: 12,
+                      sm: 6,
+                      md: availableCategories.length > 0 ? 5 : 4,
                     }}
                   >
-                    <Button
-                      variant="text"
-                      size="small"
-                      onClick={() => {
-                        setFilterCategory("")
-                        setSortOption(sortOptions[0].value)
-                      }}
-                      sx={{ mt: { xs: 1, md: 0 } }}
-                    >
-                      Limpiar Filtros
-                    </Button>
+                    <FormControl fullWidth size="small" variant="outlined">
+                      <InputLabel id="filter-category-label">
+                        Categoría
+                      </InputLabel>
+                      <Select
+                        labelId="filter-category-label"
+                        value={filterCategory}
+                        label="Categoría"
+                        onChange={handleFilterCategoryChange}
+                      >
+                        <MenuItem value="">
+                          <Stack
+                            direction="row"
+                            alignItems="center"
+                            spacing={1}
+                          >
+                            <CategoryIcon fontSize="small" />
+                            Todas Las Categorías
+                          </Stack>
+                        </MenuItem>
+                        {availableCategories.map((category) => (
+                          <MenuItem key={category} value={category}>
+                            {category}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
                   </Grid2>
                 )}
-            </Grid2>
-            {artsLoading && (
-              <Box
-                display="flex"
-                flexDirection="column"
-                justifyContent="center"
-                alignItems="center"
-                my={3}
-                sx={{ minHeight: "200px" }}
-              >
-                <CircularProgress />
-                <Typography variant="body1" sx={{ mt: 2 }}>
-                  Cargando artes...
-                </Typography>
-              </Box>
-            )}
-            {artsError && !artsLoading && (
-              <Alert
-                severity="warning"
-                sx={{ my: 2 }}
-              >{`Could not load artworks: ${artsError}`}</Alert>
-            )}
-            {!artsLoading && !artsError && arts.length === 0 && (
-              <Paper
-                elevation={0}
-                sx={{ p: 3, textAlign: "center", backgroundColor: "grey.100" }}
-              >
-                <InfoOutlined
-                  sx={{ fontSize: 40, color: "text.secondary", mb: 1 }}
-                />
-                <Typography variant="h6" color="text.secondary">
-                  No se encontraron artes
-                </Typography>
-                <Typography variant="body1" color="text.secondary">
-                  Este Prixer no dispone de artes en este momento
-                </Typography>
-              </Paper>
-            )}
-            {arts.length > 0 && (
-              <ImageList
-                variant="quilted"
-                cols={getImageListCols()}
-                gap={12}
-              >
-                {arts.map((art) => (
-                  <ImageListItem
-                    key={art._id?.toString() || art.artId}
-                    onClick={() => navigate(`/arte/${art.artId}`)}
-                    sx={{
-                      borderRadius: 1.5,
-                      overflow: "hidden",
-                      cursor: "pointer",
-                      "&:hover .MuiImageListItemBar-root": { opacity: 1 },
-                      "&:hover img": { transform: "scale(1.03)" },
-                    }}
-                  >
-                    <img
-                      src={`${art.mediumThumbUrl || art.imageUrl}`}
-                      alt={art.title}
-                      loading="lazy"
-                      style={{
-                        display: "block",
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        backgroundColor: "grey.200",
-                      }}
-                    />
-                    <ImageListItemBar
-                      title={art.title}
-                      subtitle={art.category || art.artType}
-                      position="bottom"
+                {(filterCategory || sortOption !== sortOptions[0].value) &&
+                  availableCategories.length > 0 && (
+                    <Grid2
+                      size={{ xs: 12, md: 2 }}
                       sx={{
-                        background:
-                          "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: { xs: "flex-start", md: "flex-end" },
                       }}
-                    />
-                  </ImageListItem>
-                ))}
-              </ImageList>
-            )}
-            {hasNextPage && (
-              <div
-                ref={loadMoreTriggerRef}
-                style={{ height: "1px", margin: "30px 0 10px" }}
-              />
-            )}
-            {moreArtsLoading && (
-              <Box display="flex" justifyContent="center" my={2}>
-                <CircularProgress size={30} />
-              </Box>
-            )}
-          </Box>
+                    >
+                      <Button
+                        variant="text"
+                        size="small"
+                        onClick={() => {
+                          setFilterCategory("")
+                          setSortOption(sortOptions[0].value)
+                        }}
+                        sx={{ mt: { xs: 1, md: 0 } }}
+                      >
+                        Limpiar Filtros
+                      </Button>
+                    </Grid2>
+                  )}
+              </Grid2>
+              {artsLoading && (
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  justifyContent="center"
+                  alignItems="center"
+                  my={3}
+                  sx={{ minHeight: "200px" }}
+                >
+                  <CircularProgress />
+                  <Typography variant="body1" sx={{ mt: 2 }}>
+                    Cargando artes...
+                  </Typography>
+                </Box>
+              )}
+              {artsError && !artsLoading && (
+                <Alert
+                  severity="warning"
+                  sx={{ my: 2 }}
+                >{`Could not load artworks: ${artsError}`}</Alert>
+              )}
+              {!artsLoading && !artsError && arts.length === 0 && (
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 3,
+                    textAlign: "center",
+                    backgroundColor: "grey.100",
+                  }}
+                >
+                  <InfoOutlined
+                    sx={{ fontSize: 40, color: "text.secondary", mb: 1 }}
+                  />
+                  <Typography variant="h6" color="text.secondary">
+                    No se encontraron artes
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary">
+                    Este Prixer no dispone de artes en este momento
+                  </Typography>
+                </Paper>
+              )}
+              {arts.length > 0 && (
+                <ImageList variant="quilted" cols={getImageListCols()} gap={12}>
+                  {arts.map((art) => (
+                    <ImageListItem
+                      key={art._id?.toString() || art.artId}
+                      onClick={() => navigate(`/arte/${art.artId}`)}
+                      sx={{
+                        borderRadius: 1.5,
+                        overflow: "hidden",
+                        cursor: "pointer",
+                        "&:hover .MuiImageListItemBar-root": { opacity: 1 },
+                        "&:hover img": { transform: "scale(1.03)" },
+                      }}
+                    >
+                      <img
+                        src={`${art.mediumThumbUrl || art.imageUrl}`}
+                        alt={art.title}
+                        loading="lazy"
+                        style={{
+                          display: "block",
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          backgroundColor: "grey.200",
+                        }}
+                      />
+                      <ImageListItemBar
+                        title={art.title}
+                        subtitle={art.category || art.artType}
+                        position="bottom"
+                        sx={{
+                          background:
+                            "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%)",
+                        }}
+                      />
+                    </ImageListItem>
+                  ))}
+                </ImageList>
+              )}
+              {hasNextPage && (
+                <div
+                  ref={loadMoreTriggerRef}
+                  style={{ height: "1px", margin: "30px 0 10px" }}
+                />
+              )}
+              {moreArtsLoading && (
+                <Box display="flex" justifyContent="center" my={2}>
+                  <CircularProgress size={30} />
+                </Box>
+              )}
+            </Box>
           )}
 
           {/* --- SERVICES TAB --- */}
           {currentTab === "services" && (
             <Box sx={{ p: { xs: 2, sm: 3 } }}>
-            {servicesLoading && (
-              <Box
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                my={4}
-                sx={{ minHeight: "200px" }}
-              >
-                <CircularProgress />
-                <Typography variant="body1" sx={{ ml: 2 }}>
-                  Cargando servicios...
-                </Typography>
-              </Box>
-            )}
-            {servicesError && !servicesLoading && (
-              <Alert severity="warning" sx={{ my: 2 }}>
-                {servicesError}
-              </Alert>
-            )}
-            {!servicesLoading && !servicesError && services.length === 0 && (
-              <Paper
-                elevation={0}
-                sx={{ p: 3, textAlign: "center", backgroundColor: "grey.100" }}
-              >
-                <InfoOutlined
-                  sx={{ fontSize: 40, color: "text.secondary", mb: 1 }}
-                />
-                <Typography variant="h6" color="text.secondary">
-                  No se encontraron servicios
-                </Typography>
-                <Typography variant="body1" color="text.secondary">
-                  Este prixer no tiene servicios listados actualmente.
-                </Typography>
-              </Paper>
-            )}
-            {services.length > 0 && (
-              <Grid2 container spacing={3}>
-                {services.map((service) => (
-                  <Grid2
-                    size={{ xs: 12, sm: 6 }}
-                    key={service._id?.toString()}
-                  >
-                    <Card
-                      sx={{
-                        height: "100%",
-                        display: "flex",
-                        flexDirection: "column",
-                        transition: "box-shadow 0.3s, transform 0.3s",
-                        "&:hover": {
-                          transform: "translateY(-4px)",
-                          boxShadow: 6,
-                        }
-                      }}
+              {servicesLoading && (
+                <Box
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  my={4}
+                  sx={{ minHeight: "200px" }}
+                >
+                  <CircularProgress />
+                  <Typography variant="body1" sx={{ ml: 2 }}>
+                    Cargando servicios...
+                  </Typography>
+                </Box>
+              )}
+              {servicesError && !servicesLoading && (
+                <Alert severity="warning" sx={{ my: 2 }}>
+                  {servicesError}
+                </Alert>
+              )}
+              {!servicesLoading && !servicesError && services.length === 0 && (
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 3,
+                    textAlign: "center",
+                    backgroundColor: "grey.100",
+                  }}
+                >
+                  <InfoOutlined
+                    sx={{ fontSize: 40, color: "text.secondary", mb: 1 }}
+                  />
+                  <Typography variant="h6" color="text.secondary">
+                    No se encontraron servicios
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary">
+                    Este prixer no tiene servicios listados actualmente.
+                  </Typography>
+                </Paper>
+              )}
+              {services.length > 0 && (
+                <Grid2 container spacing={3}>
+                  {services.map((service) => (
+                    <Grid2
+                      size={{ xs: 12, sm: 6 }}
+                      key={service._id?.toString()}
                     >
-                      <img
-                        src={
-                          service.sources.images[0]?.url ||
-                          "https://via.placeholder.com/300x200.png?text=No+Image"
-                        }
-                        alt={service.title}
-                        style={{
-                          width: "100%",
-                          height: "180px",
-                          objectFit: "cover",
+                      <Card
+                        sx={{
+                          height: "100%",
+                          display: "flex",
+                          flexDirection: "column",
+                          transition: "box-shadow 0.3s, transform 0.3s",
+                          "&:hover": {
+                            transform: "translateY(-4px)",
+                            boxShadow: 6,
+                          },
                         }}
-                      />
-                      <CardContent sx={{ flexGrow: 1 }}>
-                        <Typography variant="h6" gutterBottom>
-                          {service.title}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{
-                            display: "-webkit-box",
-                            WebkitBoxOrient: "vertical",
-                            WebkitLineClamp: 3,
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                          }}
-                        >
-                          {service.description}
-                        </Typography>
-                      </CardContent>
-                      <Box sx={{ p: 2, pt: 0 }}>
-                        <Button
-                          fullWidth
-                          variant="contained"
-                          onClick={() =>
-                            navigate(`/servicio/${service._id?.toString()}`)
+                      >
+                        <img
+                          src={
+                            service.sources.images[0]?.url ||
+                            "https://via.placeholder.com/300x200.png?text=No+Image"
                           }
-                        >
-                          Ver Servicio
-                        </Button>
-                      </Box>
-                    </Card>
-                  </Grid2>
-                ))}
-              </Grid2>
-            )}
-          </Box>
+                          alt={service.title}
+                          style={{
+                            width: "100%",
+                            height: "180px",
+                            objectFit: "cover",
+                          }}
+                        />
+                        <CardContent sx={{ flexGrow: 1 }}>
+                          <Typography variant="h6" gutterBottom>
+                            {service.title}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{
+                              display: "-webkit-box",
+                              WebkitBoxOrient: "vertical",
+                              WebkitLineClamp: 3,
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                            }}
+                          >
+                            {service.description}
+                          </Typography>
+                        </CardContent>
+                        <Box sx={{ p: 2, pt: 0 }}>
+                          <Button
+                            fullWidth
+                            variant="contained"
+                            onClick={() =>
+                              navigate(`/servicio/${service._id?.toString()}`)
+                            }
+                          >
+                            Ver Servicio
+                          </Button>
+                        </Box>
+                      </Card>
+                    </Grid2>
+                  ))}
+                </Grid2>
+              )}
+            </Box>
           )}
 
           {/* --- ABOUT TAB --- */}
@@ -1521,7 +1578,9 @@ export default function PrixerProfileCard() {
                       variant="standard"
                       label="Phone"
                       value={formData.phone}
-                      onChange={(e) => handleFormChange("phone", e.target.value)}
+                      onChange={(e) =>
+                        handleFormChange("phone", e.target.value)
+                      }
                       error={!!errors.phone}
                       helperText={errors.phone}
                     />
@@ -1611,65 +1670,65 @@ export default function PrixerProfileCard() {
               {/* The Bio accordions are not editable in this implementation */}
               {((bio && bio.biography && bio.biography.length > 0) ||
                 Object.keys(bio || {}).includes("biography")) && (
-                  <Accordion sx={{ mb: 1.5, "&:before": { display: "none" } }}>
-                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                      <Typography variant="subtitle1" fontWeight="medium">
-                        Bio
+                <Accordion sx={{ mb: 1.5, "&:before": { display: "none" } }}>
+                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography variant="subtitle1" fontWeight="medium">
+                      Bio
+                    </Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    {bio?.biography?.[0] ? (
+                      <Typography
+                        component="div"
+                        dangerouslySetInnerHTML={{ __html: bio.biography[0] }}
+                      />
+                    ) : (
+                      <Typography variant="body2" color="text.secondary">
+                        No se encontró la bio.
                       </Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                      {bio?.biography?.[0] ? (
-                        <Typography
-                          component="div"
-                          dangerouslySetInnerHTML={{ __html: bio.biography[0] }}
-                        />
-                      ) : (
-                        <Typography variant="body2" color="text.secondary">
-                          No se encontró la bio.
-                        </Typography>
-                      )}
-                    </AccordionDetails>
-                  </Accordion>
-                )}
+                    )}
+                  </AccordionDetails>
+                </Accordion>
+              )}
 
               {((bio && bio.images && bio.images.length > 0) ||
                 Object.keys(bio || []).includes("images")) && (
-                  <Accordion sx={{ "&:before": { display: "none" } }}>
-                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                      <Typography variant="subtitle1" fontWeight="medium">
-                        Imágenes Destacadas
+                <Accordion sx={{ "&:before": { display: "none" } }}>
+                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography variant="subtitle1" fontWeight="medium">
+                      Imágenes Destacadas
+                    </Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    {(bio?.images?.length ?? 0) > 0 ? (
+                      <ImageList
+                        variant="masonry"
+                        cols={isSmallScreen ? 2 : 3}
+                        gap={8}
+                      >
+                        {(bio?.images ?? []).map((imgUrl, imgIndex) => (
+                          <ImageListItem
+                            key={imgIndex}
+                            sx={{ cursor: "pointer" }}
+                            onClick={() => handleOpenLightbox(imgUrl)}
+                          >
+                            <img
+                              src={imgUrl}
+                              alt={`Imagen Destacada ${imgIndex + 1}`}
+                              loading="lazy"
+                              style={{ borderRadius: "4px" }}
+                            />
+                          </ImageListItem>
+                        ))}
+                      </ImageList>
+                    ) : (
+                      <Typography variant="body2" color="text.secondary">
+                        Este prixer no posee imágenes destacadas.
                       </Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                      {(bio?.images?.length ?? 0) > 0 ? (
-                        <ImageList
-                          variant="masonry"
-                          cols={isSmallScreen ? 2 : 3}
-                          gap={8}
-                        >
-                          {(bio?.images ?? []).map((imgUrl, imgIndex) => (
-                            <ImageListItem
-                              key={imgIndex}
-                              sx={{ cursor: "pointer" }}
-                              onClick={() => handleOpenLightbox(imgUrl)}
-                            >
-                              <img
-                                src={imgUrl}
-                                alt={`Imagen Destacada ${imgIndex + 1}`}
-                                loading="lazy"
-                                style={{ borderRadius: "4px" }}
-                              />
-                            </ImageListItem>
-                          ))}
-                        </ImageList>
-                      ) : (
-                        <Typography variant="body2" color="text.secondary">
-                          Este prixer no posee imágenes destacadas.
-                        </Typography>
-                      )}
-                    </AccordionDetails>
-                  </Accordion>
-                )}
+                    )}
+                  </AccordionDetails>
+                </Accordion>
+              )}
             </Box>
           )}
         </CardContent>
@@ -1755,6 +1814,7 @@ export default function PrixerProfileCard() {
           </Button>
         </DialogActions>
       </Dialog>
+      <ScrollToTopButton />
 
       {/* Hidden canvas for generating the blob */}
       <canvas

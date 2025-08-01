@@ -141,6 +141,7 @@ const AdminLayout: React.FC = () => {
                     flexGrow: 1,
                     bgcolor: "background.default",
                     p: 3,
+                    pt: 6,
                     // --- Animate the width and margin to match the sidebar state ---
                     width: `calc(100% - ${currentDrawerWidth}px)`,
                     transition: theme.transitions.create(['width', 'margin'], {

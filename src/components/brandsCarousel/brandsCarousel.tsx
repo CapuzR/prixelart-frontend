@@ -9,6 +9,15 @@ import cocacola from "../../images/brands/cocacola.png"
 import iskia from "../../images/brands/iskia.png"
 import modusistema from "../../images/brands/modusistema.png"
 import posada from "../../images/brands/posada.png"
+import avenrut from "../../images/brands/avenrut.png"
+import bancaribe from "../../images/brands/bancaribe.png"
+import beco from "../../images/brands/beco.png"
+import calox from "../../images/brands/calox.png"
+import humanitas from "../../images/brands/humanitas.png"
+import megalabs from "../../images/brands/megalabs.png"
+import praline from "../../images/brands/praline.png"
+import vesergenca from "../../images/brands/vesergenca.png"
+
 import { Typography } from "@mui/material"
 
 const images = [
@@ -16,6 +25,14 @@ const images = [
   { url: iskia },
   { url: modusistema },
   { url: posada },
+  { url: avenrut },
+  { url: bancaribe },
+  { url: beco },
+  { url: calox },
+  { url: humanitas },
+  { url: megalabs },
+  { url: praline },
+  { url: vesergenca },
 ]
 
 const BrandsCarousel: React.FC = () => {

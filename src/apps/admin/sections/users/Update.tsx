@@ -9,18 +9,23 @@ import React, {
   useState,
 } from "react"
 import { useParams, useNavigate } from "react-router-dom"
-import axios from "axios"
-import { PrixResponse } from "types/prixResponse.types"
 
 import { useSnackBar } from "context/GlobalContext"
 import { User } from "types/user.types"
 import { Prixer } from "types/prixer.types"
 import { PermissionsV2 } from "types/permissions.types"
 
-import { getUserById, updateUser, getBalance, getUsers } from "@api/user.api"
-import { isAValidEmail } from "utils/validations" // Assuming no username/password validation needed here
+import {
+  getUserById,
+  updateUser,
+  getBalance,
+  createWallet,
+} from "@api/user.api"
+import { isAValidEmail } from "utils/validations"
 import Grid2 from "@mui/material/Grid"
-import { Lock, Visibility, VisibilityOff } from "@mui/icons-material"
+import { AddCircleOutline } from "@mui/icons-material"
+import SaveIcon from "@mui/icons-material/Save"
+
 import {
   Alert,
   Autocomplete,
@@ -35,12 +40,10 @@ import {
   FormControlLabel,
   FormHelperText,
   IconButton,
-  InputAdornment,
   InputLabel,
   Link,
   MenuItem,
   Modal,
-  OutlinedInput,
   Paper,
   Select,
   SelectChangeEvent,
@@ -62,15 +65,12 @@ import {
 } from "@mui/material"
 import { visuallyHidden } from "@mui/utils"
 
-import Title from "@apps/admin/components/Title"
-
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import dayjs, { Dayjs } from "dayjs"
 import {
   PickerChangeHandlerContext,
   DateValidationError,
 } from "@mui/x-date-pickers"
-import { getPermissions } from "@api/admin.api"
 import { Movement } from "types/movement.types"
 import {
   createMovement,
@@ -266,6 +266,9 @@ const UpdateUser: React.FC = () => {
 
   const [formData, setFormData] = useState(initialFormState)
   const [amount, setAmount] = useState("")
+
+  const [openNewPay, setOpenNewPay] = useState<boolean>(false)
+
   const [errorSubmit, setErrorSubmit] = useState<string | null>(null)
 
   const abortControllerRef = useRef<AbortController | null>(null)
@@ -792,7 +795,6 @@ const UpdateUser: React.FC = () => {
     } catch (err: any) {
       console.error("Failed to create movement:", err)
       const message = err.message || "Error al crear el movimiento."
-      // setErrorSubmit(message)
       showSnackBar(message)
     } finally {
       setIsSubmitting(false)
@@ -813,7 +815,6 @@ const UpdateUser: React.FC = () => {
           showSnackBar(
             `Movimiento "${selectedMov?._id?.slice(-6)}..." revertido exitosamente.`
           )
-          // navigate("/admin/movements/read")
         } else {
           throw new Error(
             "La reversión del movimiento no devolvió una respuesta esperada."
@@ -864,6 +865,16 @@ const UpdateUser: React.FC = () => {
       ...prevData,
       value: isNaN(numericValue) ? 0 : numericValue,
     }))
+  }
+
+  const newWallet = async () => {
+    const response = await createWallet(userFormData?.email!)
+    if (response.data.success) {
+      showSnackBar("Cartera creada y balance actualizado exitosamente.")
+      await loadUser()
+    } else {
+      showSnackBar("No fue posible crear la cartera, intente de nuevo")
+    }
   }
 
   interface EnhancedTableProps {
@@ -1598,137 +1609,186 @@ const UpdateUser: React.FC = () => {
                   </Typography>
                 </Grid2>
                 <Grid2 size={{ xs: 12, md: 6 }}>
-                  <Paper elevation={3} sx={{ p: 3, mt: 2 }}>
-                    <Typography
-                      color="secondary"
-                      variant="h6"
-                      sx={{ textAlign: "center", mb: 4 }}
-                    >
-                      Agregar movimiento
-                    </Typography>
-                    {userFormData.account ? (
-                      <form onSubmit={handleSubmitMovement}>
-                        <Grid2 container spacing={3}>
-                          <Grid2 size={{ xs: 12, sm: 6 }}>
-                            <FormControl
-                              fullWidth
-                              required
-                              error={!!errorSubmit && !formData.type}
-                              disabled={isSubmitting}
-                            >
-                              <InputLabel id="movement-type-select-label">
-                                Tipo de Movimiento
-                              </InputLabel>
-                              <Select<MovementType> // Specify the type for better type safety
-                                labelId="movement-type-select-label"
-                                id="movement-type-select"
-                                value={formData.type}
-                                label="Tipo de Movimiento" // Important for label positioning
-                                onChange={handleTypeChange} // Use the dedicated handler
-                              >
-                                {movementTypeOptions.map((typeOption) => (
-                                  <MenuItem key={typeOption} value={typeOption}>
-                                    {typeOption}
-                                  </MenuItem>
-                                ))}
-                              </Select>
-                            </FormControl>
-                          </Grid2>
+                  {userFormData.account ? (
+                    <>
+                      <Button
+                        sx={{ margin: "2rem auto", width: "100%" }}
+                        onClick={() => setOpenNewPay(true)}
+                        variant="outlined"
+                        startIcon={<AddCircleOutline />}
+                        disabled={isSubmitting}
+                      >
+                        Registrar Movimiento
+                      </Button>
+                      <Modal
+                        open={openNewPay}
+                        onClose={() => setOpenNewPay(false)}
+                        aria-labelledby="modal-modal-title"
+                        aria-describedby="modal-modal-description"
+                      >
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)",
+                            width: 800,
+                            bgcolor: "background.paper",
+                            boxShadow: 24,
+                            borderRadius: 2,
+                            pt: 4,
+                            px: 4,
+                            pb: 3,
+                          }}
+                        >
+                          <Typography
+                            color="secondary"
+                            variant="h5"
+                            sx={{ mb: 3, textAlign: "center" }}
+                          >
+                            Registrar Movimiento
+                          </Typography>
+                          <form onSubmit={handleSubmitMovement}>
+                            <Grid2 container spacing={3}>
+                              <Grid2 size={{ xs: 12, sm: 6 }}>
+                                <FormControl
+                                  fullWidth
+                                  required
+                                  error={!!errorSubmit && !formData.type}
+                                  disabled={isSubmitting}
+                                >
+                                  <InputLabel id="movement-type-select-label">
+                                    Tipo de Movimiento
+                                  </InputLabel>
+                                  <Select<MovementType>
+                                    labelId="movement-type-select-label"
+                                    id="movement-type-select"
+                                    value={formData.type}
+                                    label="Tipo de Movimiento"
+                                    onChange={handleTypeChange}
+                                  >
+                                    {movementTypeOptions.map((typeOption) => (
+                                      <MenuItem
+                                        key={typeOption}
+                                        value={typeOption}
+                                      >
+                                        {typeOption}
+                                      </MenuItem>
+                                    ))}
+                                  </Select>
+                                </FormControl>
+                              </Grid2>
 
-                          <Grid2 size={{ xs: 12, sm: 6 }}>
-                            <TextField
-                              label="Valor"
-                              name="value"
-                              type="number"
-                              value={amount}
-                              onChange={(e) => setAmount(e.target.value)}
-                              onBlur={handleBlur}
-                              required
-                              fullWidth
-                              disabled={isSubmitting}
-                              inputProps={{ step: "0.01" }}
-                              error={!!errorSubmit && isNaN(formData.value)}
-                            />
-                          </Grid2>
+                              <Grid2 size={{ xs: 12, sm: 6 }}>
+                                <TextField
+                                  label="Valor"
+                                  name="value"
+                                  type="number"
+                                  value={amount}
+                                  onChange={(e) => setAmount(e.target.value)}
+                                  onBlur={handleBlur}
+                                  required
+                                  fullWidth
+                                  disabled={isSubmitting}
+                                  inputProps={{ step: "0.01" }}
+                                  error={!!errorSubmit && isNaN(formData.value)}
+                                />
+                              </Grid2>
 
-                          <Grid2 size={{ xs: 12 }}>
-                            <TextField
-                              label="Descripción"
-                              name="description"
-                              value={formData.description}
-                              onChange={handleInputChange}
-                              required
-                              fullWidth
-                              multiline
-                              rows={3}
-                              disabled={isSubmitting}
-                              error={
-                                !!errorSubmit && !formData.description.trim()
-                              }
-                            />
-                          </Grid2>
-                          <Grid2 size={{ xs: 12, sm: 6 }}>
-                            <TextField
-                              label="ID de Orden (Opcional)"
-                              name="order"
-                              value={formData.order || ""}
-                              onChange={handleInputChange}
-                              fullWidth
-                              disabled={isSubmitting}
-                              helperText="Asociar este movimiento a una orden específica"
-                            />
-                          </Grid2>
+                              <Grid2 size={{ xs: 12 }}>
+                                <TextField
+                                  label="Descripción"
+                                  name="description"
+                                  value={formData.description}
+                                  onChange={handleInputChange}
+                                  required
+                                  fullWidth
+                                  multiline
+                                  rows={3}
+                                  disabled={isSubmitting}
+                                  error={
+                                    !!errorSubmit &&
+                                    !formData.description.trim()
+                                  }
+                                />
+                              </Grid2>
+                              <Grid2 size={{ xs: 12, sm: 6 }}>
+                                <TextField
+                                  label="ID de Orden (Opcional)"
+                                  name="order"
+                                  value={formData.order || ""}
+                                  onChange={handleInputChange}
+                                  fullWidth
+                                  disabled={isSubmitting}
+                                  helperText="Asociar este movimiento a una orden específica"
+                                />
+                              </Grid2>
 
-                          <Grid2 size={{ xs: 12 }}>
-                            <Stack
-                              direction="row"
-                              justifyContent="flex-end"
-                              spacing={2}
-                              sx={{ mt: 2 }}
-                            >
-                              <Button
-                                type="button"
-                                variant="outlined"
-                                color="secondary"
-                                onClick={handleCancel}
-                                disabled={isSubmitting}
-                              >
-                                Cancelar
-                              </Button>
-                              <Button
-                                type="submit"
-                                variant="contained"
-                                color="primary"
-                                disabled={isSubmitting}
-                                startIcon={
-                                  isSubmitting ? (
-                                    <CircularProgress
-                                      size={20}
-                                      color="inherit"
-                                    />
-                                  ) : null
-                                }
-                              >
-                                {isSubmitting
-                                  ? "Creando..."
-                                  : "Crear Movimiento"}
-                              </Button>
-                            </Stack>
-                          </Grid2>
+                              <Grid2 size={{ xs: 12 }}>
+                                <Stack
+                                  direction="row"
+                                  justifyContent="flex-end"
+                                  spacing={2}
+                                  sx={{ mt: 2 }}
+                                >
+                                  <Button
+                                    type="button"
+                                    variant="outlined"
+                                    color="secondary"
+                                    onClick={() => setOpenNewPay(false)}
+                                    disabled={isSubmitting}
+                                  >
+                                    Cancelar
+                                  </Button>
+                                  <Button
+                                    type="submit"
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={isSubmitting}
+                                    startIcon={
+                                      isSubmitting ? (
+                                        <CircularProgress
+                                          size={20}
+                                          color="inherit"
+                                        />
+                                      ) : (
+                                        <SaveIcon color="inherit" />
+                                      )
+                                    }
+                                  >
+                                    {isSubmitting
+                                      ? "Creando..."
+                                      : "Guardar Movimiento"}
+                                  </Button>
+                                </Stack>
+                              </Grid2>
 
-                          {errorSubmit && (
-                            <Grid2 size={{ xs: 12 }}>
-                              <Alert severity="error" sx={{ mt: 2 }}>
-                                {errorSubmit}
-                              </Alert>
+                              {errorSubmit && (
+                                <Grid2 size={{ xs: 12 }}>
+                                  <Alert severity="error" sx={{ mt: 2 }}>
+                                    {errorSubmit}
+                                  </Alert>
+                                </Grid2>
+                              )}
                             </Grid2>
-                          )}
-                        </Grid2>
-                      </form>
-                    ) : (
+                          </form>
+                        </Box>
+                      </Modal>
+                    </>
+                  ) : (
+                    <Box>
                       <Typography>Este prixer no tiene cartera aún.</Typography>
-                    )}
-                  </Paper>
+                      <Button
+                        sx={{ margin: "2rem auto", width: "100%" }}
+                        onClick={newWallet}
+                        variant="outlined"
+                        startIcon={<AddCircleOutline />}
+                        disabled={isSubmitting}
+                      >
+                        Crear Cartera
+                      </Button>
+                    </Box>
+                  )}
                 </Grid2>
               </Grid2>
             </CustomTabPanel>

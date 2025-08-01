@@ -394,7 +394,7 @@ export default function MovOrder(props: MovDetailsProps) {
               </div>
               <div>
                 {"IVA: $" +
-                  order?.tax.toLocaleString("de-DE", {
+                  order?.tax[0]?.amount.toLocaleString("de-DE", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}

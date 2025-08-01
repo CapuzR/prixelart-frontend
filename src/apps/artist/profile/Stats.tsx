@@ -68,7 +68,9 @@ export default function PrixerProfile() {
 
   const getBalance = async () => {
     const url =
-      import.meta.env.VITE_BACKEND_URL + "/account/readMyAccount/" + user?.account
+      import.meta.env.VITE_BACKEND_URL +
+      "/account/readMyAccount/" +
+      user?.account
     await axios
       .get(url)
       .then((response) => setBalance(response.data.result?.balance || 0))
@@ -402,7 +404,7 @@ export default function PrixerProfile() {
                               onClick={handleClick(
                                 "right-start",
                                 order._id?.toString(),
-                                "Depósito"
+                                "Retiro"
                               )}
                             >
                               {order?._id?.toString().slice(-6)}
@@ -447,6 +449,7 @@ export default function PrixerProfile() {
                           borderRadius: 10,
                           margin: "10px 0px 10px 0px",
                           alignItems: "center",
+                          gap: 8,
                         }}
                       >
                         <Grid2 style={{ fontSize: isDeskTop ? "14px" : "9px" }}>
@@ -462,7 +465,12 @@ export default function PrixerProfile() {
                                 })
                                 .slice(0, 10)}
                         </Grid2>
-                        <Grid2 style={{ fontSize: isDeskTop ? "14px" : "9px" }}>
+                        <Grid2
+                          style={{
+                            fontSize: isDeskTop ? "14px" : "9px",
+                            maxWidth: "70%",
+                          }}
+                        >
                           {mov.description.split("#")[0]}{" "}
                           <Button
                             style={{

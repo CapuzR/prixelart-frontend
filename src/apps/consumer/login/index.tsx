@@ -82,7 +82,6 @@ const AdminLogin: React.FC = () => {
   const [retryCount, setRetryCount] = useState(0)
   const { user, setUser } = useUser()
 
-  // Fetch and retry random art for background
   useEffect(() => {
     let mounted = true
     const fetchArt = async () => {
@@ -112,7 +111,6 @@ const AdminLogin: React.FC = () => {
     }
   }, [retryCount, showSnackBar])
 
-  // Handle form submission with inline validation
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     let valid = true
@@ -139,7 +137,6 @@ const AdminLogin: React.FC = () => {
 
   return (
     <Grid2 container sx={{ minHeight: "100vh" }}>
-      {/* Background image only on larger screens */}
       {!isSmallScreen && (
         <Grid2
           size={{ md: 7 }}

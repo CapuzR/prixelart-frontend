@@ -66,7 +66,7 @@ import { deleteOrder, getOrders } from "@api/order.api"
 import excelJS from "exceljs"
 import "moment/locale/es"
 import { format, parseISO, isValid } from "date-fns"
-import { Permissions } from "types/permissions.types"
+import { PermissionsV2 } from "types/permissions.types"
 import { getPermissions } from "@api/admin.api"
 import dayjs, { Dayjs } from "dayjs"
 
@@ -162,7 +162,7 @@ const ReadOrders: React.FC = () => {
   const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
   const [searchParams, setSearchParams] = useSearchParams()
-  const [permissions, setPermissions] = useState<Permissions | null>(null)
+  const [permissions, setPermissions] = useState<PermissionsV2 | null>(null)
 
   const [rawOrders, setRawOrders] = useState<Order[]>([])
   const [allOrders, setAllOrders] = useState<OrderSummary[]>([])

@@ -13,6 +13,7 @@ import { useParams, useNavigate } from "react-router-dom"
 import { useSnackBar } from "context/GlobalContext"
 import { User } from "types/user.types"
 import { Prixer } from "types/prixer.types"
+import { PermissionsV2 } from "types/permissions.types"
 
 import {
   getUserById,
@@ -226,7 +227,7 @@ const UpdateUser: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
-  // const [permissions, setPermissions] = useState<Permissions | null>(null)
+  // const [permissions, setPermissions] = useState<PermissionsV2 | null>(null)
 
   const [userFormData, setUserFormData] =
     useState<Partial<User>>(initialUserFormState)

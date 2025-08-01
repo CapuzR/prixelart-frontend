@@ -70,7 +70,7 @@ import {
 import Grid2 from "@mui/material/Grid"
 import excelJS from "exceljs"
 import { getPermissions } from "@api/admin.api"
-import { Permissions } from "types/permissions.types"
+import { PermissionsV2 } from "types/permissions.types"
 
 const ALL_STATUSES: OrderStatus[] = [
   "Anulado",
@@ -193,7 +193,7 @@ const ReadOrderArchives: React.FC = () => {
   const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
   const [searchParams, setSearchParams] = useSearchParams()
-  const [permissions, setPermissions] = useState<Permissions | null>(null)
+  const [permissions, setPermissions] = useState<PermissionsV2 | null>(null)
 
   // --- State ---
   const [orders, setOrders] = useState<OrderArchive[]>([])

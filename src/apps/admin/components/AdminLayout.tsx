@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { Permissions } from "types/permissions.types";
+import { PermissionsV2 } from "types/permissions.types";
 
 import { Box, CircularProgress, Typography, CssBaseline, Toolbar, Button, useTheme } from "@mui/material";
 import { getPermissions } from "@api/admin.api";
@@ -50,7 +50,7 @@ const AdminLayout: React.FC = () => {
 
     const currentDrawerWidth = isSidebarOpen ? EXPANDED_DRAWER_WIDTH : COLLAPSED_DRAWER_WIDTH;
 
-    const [permissions, setPermissions] = useState<Permissions | null>(null);
+    const [permissions, setPermissions] = useState<PermissionsV2 | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const location = useLocation();

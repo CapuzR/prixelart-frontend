@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 // Hooks, Context, Types, API 
 import { useSnackBar } from 'context/GlobalContext';
 import { Admin } from 'types/admin.types'; // Assuming this path
-import { Permissions } from 'types/permissions.types'; // To get Role type  for fetching
+import { PermissionsV2 } from 'types/permissions.types'; // To get Role type  for fetching
 import { getRoles, createAdmin /*, checkUsernameExists, checkEmailExists */ } from '@api/admin.api'; // Adjust API functions
 import Grid2 from '@mui/material/Grid';
 // MUI Components
@@ -49,7 +49,7 @@ const CreateAdmin: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
 
-  const [roles, setRoles] = useState<Permissions[]>([]);// For role dropdown
+  const [roles, setRoles] = useState<PermissionsV2[]>([]);// For role dropdown
   const [isLoadingRoles, setIsLoadingRoles] = useState(false);
   const [errorFetchingRoles, setErrorFetchingRoles] = useState<string | null>(null);
 
@@ -57,7 +57,7 @@ const CreateAdmin: React.FC = () => {
   const [errorSubmit, setErrorSubmit] = useState<string | null>(null); // API submission errors
   const [formErrors, setFormErrors] = useState<Record<string, string>>({}); // Field validation errors
   const [permissionModalOpen, setPermissionModalOpen] = useState(false);
-  const [roleToView, setRoleToView] = useState<Permissions | null>(null);
+  const [roleToView, setRoleToView] = useState<PermissionsV2 | null>(null);
 
   // --- Fetch Roles for Dropdown ---
   const fetchRoles = useCallback(async () => {

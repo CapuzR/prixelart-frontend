@@ -9,7 +9,7 @@ export interface CreateMovementApiResponse {
     balanceResult: PrixResponse & { result?: Account };
 }
 
-export const createMovement = async (data: Partial<Movement>): Promise<CreateMovementApiResponse> => {
+export const createMovement = async (data: Partial<Movement>): Promise<PrixResponse> => {
     const base_url = import.meta.env.VITE_BACKEND_URL + "/movement/create"
     try {
         const response = await axios.post<PrixResponse>(base_url, data, { withCredentials: true })
@@ -19,7 +19,7 @@ export const createMovement = async (data: Partial<Movement>): Promise<CreateMov
             throw new Error(response.data.message || "Authentication failed");
         }
 
-        const newMovement = response.data.result as unknown as CreateMovementApiResponse;
+        const newMovement = response.data as unknown as PrixResponse;
         return newMovement;
     } catch (e) {
         console.log(e)

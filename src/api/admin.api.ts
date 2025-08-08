@@ -1,9 +1,9 @@
 import { PrixResponse } from "types/prixResponse.types";
-import { Permissions } from "types/permissions.types"
+import { PermissionsV2 } from "types/permissions.types"
 import axios from "axios";
 import { Admin } from "types/admin.types";
 
-export const getPermissions = async (): Promise<Permissions> => {
+export const getPermissions = async (): Promise<PermissionsV2> => {
     try {
         const response = await axios.get<PrixResponse>(`${import.meta.env.VITE_BACKEND_URL}/admin/check-auth`, {
             withCredentials: true
@@ -19,7 +19,7 @@ export const getPermissions = async (): Promise<Permissions> => {
             throw new Error("No permissions data received.");
         }
 
-        const permissions = response.data.result as unknown as Permissions;
+        const permissions = response.data.result as unknown as PermissionsV2;
 
         return permissions;
 
@@ -29,7 +29,7 @@ export const getPermissions = async (): Promise<Permissions> => {
     }
 };
 
-export const getRoles = async (): Promise<Permissions[]> => {
+export const getRoles = async (): Promise<PermissionsV2[]> => {
     const base_url = import.meta.env.VITE_BACKEND_URL + "/admin/read-roles"
     try {
         const response = await axios.get<PrixResponse>(base_url, { withCredentials: true })
@@ -39,7 +39,7 @@ export const getRoles = async (): Promise<Permissions[]> => {
             throw new Error(response.data.message || "Authentication failed");
         }
 
-        const permissions = response.data.result as unknown as Permissions[];
+        const permissions = response.data.result as unknown as PermissionsV2[];
 
         return permissions;
     } catch (error) {
@@ -179,7 +179,7 @@ export const deleteAdmin = async (username: string): Promise<Admin> => {
     }
 }
 
-export const createRole = async (data: Partial<Permissions>): Promise<Permissions> => {
+export const createRole = async (data: Partial<PermissionsV2>): Promise<PermissionsV2> => {
     const base_url = import.meta.env.VITE_BACKEND_URL + "/permissions/create"
     try {
         const response = await axios.post<PrixResponse>(base_url, data, { withCredentials: true })
@@ -189,7 +189,7 @@ export const createRole = async (data: Partial<Permissions>): Promise<Permission
             throw new Error(response.data.message || "Authentication failed");
         }
 
-        const newRole = response.data.result as unknown as Permissions;
+        const newRole = response.data.result as unknown as PermissionsV2;
         return newRole;
     } catch (e) {
         console.log(e)
@@ -197,7 +197,7 @@ export const createRole = async (data: Partial<Permissions>): Promise<Permission
     }
 }
 
-export const getRoleById = async (id: string): Promise<Permissions> => {
+export const getRoleById = async (id: string): Promise<PermissionsV2> => {
     const base_url = `${import.meta.env.VITE_BACKEND_URL}/permissions/read/${id}`;
     try {
         const response = await axios.get<PrixResponse>(base_url, {
@@ -209,7 +209,7 @@ export const getRoleById = async (id: string): Promise<Permissions> => {
             throw new Error(response.data.message || `Failed to fetch role '${id}'`);
         }
 
-        const role = response.data.result as unknown as Permissions;
+        const role = response.data.result as unknown as PermissionsV2;
         return role;
 
     } catch (error) {
@@ -218,7 +218,7 @@ export const getRoleById = async (id: string): Promise<Permissions> => {
     }
 };
 
-export const updateRole = async (id: string, roleData: Partial<Permissions>): Promise<Permissions> => {
+export const updateRole = async (id: string, roleData: Partial<PermissionsV2>): Promise<PermissionsV2> => {
     const base_url = `${import.meta.env.VITE_BACKEND_URL}/permissions/update/${id}`;
     try {
         // Send only the fields intended for update
@@ -237,7 +237,7 @@ export const updateRole = async (id: string, roleData: Partial<Permissions>): Pr
         }
 
         // Cast the result to Permissions
-        const updatedRole = response.data.result as unknown as Permissions;
+        const updatedRole = response.data.result as unknown as PermissionsV2;
         return updatedRole;
 
     } catch (error) {
@@ -246,7 +246,7 @@ export const updateRole = async (id: string, roleData: Partial<Permissions>): Pr
     }
 };
 
-export const deleteRole = async (id: string): Promise<Permissions> => {
+export const deleteRole = async (id: string): Promise<PermissionsV2> => {
     const base_url = `${import.meta.env.VITE_BACKEND_URL}/permissions/delete/${id}`;
     try {
         const response = await axios.delete<PrixResponse>(base_url, { withCredentials: true });
@@ -256,7 +256,7 @@ export const deleteRole = async (id: string): Promise<Permissions> => {
             throw new Error(response.data.message || `Failed to delete role '${id}'`);
         }
 
-        const deletedRole = response.data.result as unknown as Permissions;
+        const deletedRole = response.data.result as unknown as PermissionsV2;
         return deletedRole;
 
     } catch (error) {

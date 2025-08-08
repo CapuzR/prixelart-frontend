@@ -46,7 +46,6 @@ export default function MovOrder(props: MovDetailsProps) {
   const { classes } = useStyles()
   const theme = useTheme()
   const { user } = useUser()
-
   const [order, setOrder] = useState<Order>()
   const [discountList, setDiscountList] = useState([])
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"))
@@ -63,71 +62,23 @@ export default function MovOrder(props: MovDetailsProps) {
       })
   }
 
+  const getOrderDetail = async () => {
+    const url =
+      import.meta.env.VITE_BACKEND_URL + "/order/read/" + props.orderId
+    await axios
+      .get(url)
+      .then((response) => {
+        setOrder(response.data.result)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
+
   useEffect(() => {
     getDiscounts()
+    getOrderDetail()
   }, [])
-
-  useEffect(() => {
-    const url = import.meta.env.VITE_BACKEND_URL + "/order/readByPrixer"
-    axios
-      .post(url, {
-        order: props.orderId,
-      })
-      .then((res) => {
-        setOrder(res.data)
-      })
-  }, [])
-
-  // const finalPrice = (item) => {
-  //   let unitPrice
-  //   let discount = discountList.find((dis) => dis._id === item.product.discount)
-  //   if (item.product.modifyPrice) {
-  //     unitPrice = Number(item.product.finalPrice * item.quantity)
-  //     return unitPrice
-  //   } else if (typeof item.product.discount === "string") {
-  //     unitPrice = item.product.finalPrice
-  //       ? item.product.finalPrice
-  //       : item.product?.publicEquation
-  //         ? Number(item.product?.publicEquation)
-  //         : Number(item.product.publicPrice?.from) ||
-  //           Number(item.product.prixerEquation) ||
-  //           Number(item.product.prixerPrice.from)
-
-  //     if (discount?.type === "Porcentaje") {
-  //       let op = Number(
-  //         (unitPrice - (unitPrice / 100) * discount.value) * item.quantity
-  //       )
-  //       unitPrice = op
-  //       return unitPrice
-  //     } else if (discount?.type === "Monto") {
-  //       let op = Number((unitPrice - discount.value) * item.quantity)
-  //       unitPrice = op
-  //       return unitPrice
-  //     }
-  //   } else {
-  //     unitPrice = item.product.finalPrice
-  //       ? item.product.finalPrice
-  //       : item.product?.publicEquation
-  //         ? item.product?.publicEquation
-  //         : item.product.publicPrice.from ||
-  //           item.product.prixerEquation ||
-  //           item.product.prixerPrice.from
-
-  //     let op = Number(unitPrice * item.quantity)
-  //     unitPrice = op
-  //     return unitPrice
-  //   }
-  //   // }
-  // }
-
-  // const getDis = (discount) => {
-  //   if (typeof discount === "string") {
-  //     return discount
-  //   } else {
-  //     const s = discountList.find((dis) => dis._id === discount)?.name
-  //     return s
-  //   }
-  // }
 
   function handleKeyDown(event: any) {
     if (event.key === "Escape") {
@@ -443,7 +394,7 @@ export default function MovOrder(props: MovDetailsProps) {
               </div>
               <div>
                 {"IVA: $" +
-                  order?.tax.toLocaleString("de-DE", {
+                  order?.tax[0]?.amount.toLocaleString("de-DE", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}

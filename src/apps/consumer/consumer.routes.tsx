@@ -52,6 +52,9 @@ const {uploadArt, setArtModal} = usePrixerCreator()
         <Route path="/testimonios" element={<TestimonialsGrid />} />
         <Route path="/arte/:artId" element={<ArtDetail />} />
         <Route path="/prixer/:username" element={<PrixerProfile />} />
+        <Route path="/prixer/:username" element={<PrixerProfile />} />
+        <Route path="/:username" element={<PrixerProfile />} />
+
         <Route path="/prixer/:username/stats" element={<PrixerStats />} />
         <Route path="/org/:username" element={<PrixerProfile />} />
         <Route path="/crear-prix" element={<Flow />} />

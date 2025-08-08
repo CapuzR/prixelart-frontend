@@ -20,6 +20,7 @@ import { useUser } from "@context/GlobalContext"
 import { Movement } from "types/movement.types"
 import { Order, OrderStatus } from "types/order.types"
 import { ObjectId } from "mongodb"
+import CountUp from "react-countup"
 
 const useStyles = makeStyles()((theme: Theme) => {
   return {
@@ -66,11 +67,13 @@ export default function PrixerProfile() {
     }
 
   const getBalance = async () => {
-    const url = import.meta.env.VITE_BACKEND_URL + "/account/readById"
-    const data = { _id: user?.account }
+    const url =
+      import.meta.env.VITE_BACKEND_URL +
+      "/account/readMyAccount/" +
+      user?.account
     await axios
-      .post(url, data)
-      .then((response) => setBalance(response.data.result.balance))
+      .get(url)
+      .then((response) => setBalance(response.data.result?.balance || 0))
   }
 
   const getMovements = async () => {
@@ -78,7 +81,7 @@ export default function PrixerProfile() {
     const data = { _id: user?.account }
     await axios
       .post(url, data)
-      .then((response) => setMovements(response.data.movements.reverse()))
+      .then((response) => setMovements(response.data.result?.reverse()))
   }
 
   const getOrders = async () => {
@@ -196,14 +199,11 @@ export default function PrixerProfile() {
   return (
     <Container component="main" maxWidth="xl" className={classes.paper}>
       <CssBaseline />
-      {/* <Grid>
-        <AppBar prixerUsername={prixerUsername} />
-      </Grid2> */}
       <Grid2 className={classes.paper2}>
         <Paper
           sx={{
             width: isDeskTop ? "70%" : "100%",
-            padding: 5,
+            padding: isDeskTop ? 5 : 2,
             borderRadius: 10,
           }}
           elevation={2}
@@ -218,7 +218,7 @@ export default function PrixerProfile() {
               marginTop: 0,
             }}
           >
-            Mi Resumen
+            {`Estadísticas de ${user?.firstName}`}
           </Typography>
           <Grid2 container spacing={2}>
             <Grid2 size={{ xs: 12, sm: 3 }}>
@@ -231,7 +231,7 @@ export default function PrixerProfile() {
                 variant="scrollable"
               >
                 <Tab
-                  label="Balance General"
+                  label="Balance general"
                   style={{
                     textTransform: "none",
                     fontSize: isDeskTop ? 18 : 11,
@@ -240,7 +240,7 @@ export default function PrixerProfile() {
                   }}
                 />
                 <Tab
-                  label="Pedidos"
+                  label="Tus pedidos"
                   style={{
                     textTransform: "none",
                     fontSize: isDeskTop ? 18 : 11,
@@ -249,7 +249,7 @@ export default function PrixerProfile() {
                   }}
                 />
                 <Tab
-                  label="Movimientos"
+                  label="Tus movimientos"
                   style={{
                     textTransform: "none",
                     fontSize: isDeskTop ? 18 : 11,
@@ -304,11 +304,14 @@ export default function PrixerProfile() {
                           color: "#404e5c",
                         }}
                       >
-                        $
-                        {balance?.toLocaleString("de-DE", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
+                        <CountUp
+                          end={balance}
+                          duration={2}
+                          decimals={2}
+                          decimal=","
+                          separator="."
+                          prefix="$ "
+                        />
                       </Typography>
                     </>
                   ) : (
@@ -329,60 +332,102 @@ export default function PrixerProfile() {
               {tab === 1 && (
                 <Grid2>
                   {orders.length > 0 ? (
-                    orders.map((order) => (
+                    <>
                       <Grid2
                         sx={{
                           display: "flex",
                           justifyContent: "space-between",
-                          color: "grey",
-                          backgroundColor: "ghostwhite",
-                          padding: 10,
-                          borderRadius: 10,
-                          margin: "10px 0px 10px 0px",
+                          padding: "0 2rem",
                           alignItems: "center",
                         }}
                       >
-                        <Grid2 style={{ fontSize: isDeskTop ? "14px" : "9px" }}>
-                          {new Date(order.createdOn)
-                            .toLocaleString("en-GB", {
-                              timeZone: "UTC",
-                            })
-                            .slice(0, 10)}
-                        </Grid2>
-                        <Grid2 style={{ fontSize: isDeskTop ? "14px" : "9px" }}>
-                          <Button
-                            style={{
-                              textTransform: "none",
-                              color: "#404e5c",
-                              fontSize: isDeskTop ? "14px" : "9px",
-                              minWidth: 32,
-                            }}
-                            onClick={handleClick(
-                              "right-start",
-                              order._id?.toString(),
-                              "Depósito"
-                            )}
-                          >
-                            {order?._id?.toString().slice(-6)}
-                          </Button>
-                        </Grid2>
-                        <Grid2
+                        <Typography
+                          style={{ fontSize: isDeskTop ? "14px" : "9px" }}
+                        >
+                          Fecha
+                        </Typography>
+                        <Typography
                           style={{
-                            fontWeight: "bold",
+                            fontSize: isDeskTop ? "14px" : "9px",
+                            minWidth: 32,
+                          }}
+                        >
+                          Pedido
+                        </Typography>
+                        <Typography
+                          style={{
                             fontSize: isDeskTop ? "14px" : "9px",
                             display: "flex",
                             alignItems: "center",
                           }}
                         >
-                          {getStatus(order.status)}
-                          <CircularProgress
-                            style={{ marginLeft: 10 }}
-                            variant="determinate"
-                            value={getPercentage(order?.status)}
-                          />
-                        </Grid2>
+                          Estado
+                        </Typography>
                       </Grid2>
-                    ))
+                      {orders.map((order, i) => (
+                        <Grid2
+                          key={i}
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            color: "grey",
+                            backgroundColor: "ghostwhite",
+                            padding: 2,
+                            borderRadius: 10,
+                            margin: "10px 0px 10px 0px",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Grid2
+                            style={{ fontSize: isDeskTop ? "14px" : "9px" }}
+                          >
+                            {new Date(order.createdOn)
+                              .toLocaleString("en-GB", {
+                                timeZone: "UTC",
+                              })
+                              .slice(0, 10)}
+                          </Grid2>
+                          <Grid2
+                            style={{ fontSize: isDeskTop ? "14px" : "9px" }}
+                          >
+                            <Button
+                              sx={{
+                                textTransform: "none",
+                                color: "#404e5c",
+                                fontSize: isDeskTop ? "14px" : "9px",
+                                minWidth: 32,
+                                "&:hover": {
+                                  backgroundColor: "#404e5c",
+                                  color: "white",
+                                },
+                              }}
+                              onClick={handleClick(
+                                "right-start",
+                                order._id?.toString(),
+                                "Retiro"
+                              )}
+                            >
+                              {order?._id?.toString().slice(-6)}
+                            </Button>
+                          </Grid2>
+                          <Grid2
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: isDeskTop ? "14px" : "9px",
+                              display: "flex",
+                              alignItems: "center",
+                            }}
+                          >
+                            {getStatus(order.status)}
+                            <CircularProgress
+                              style={{ marginLeft: 10 }}
+                              variant="determinate"
+                              value={getPercentage(order?.status)}
+                            />
+                          </Grid2>
+                        </Grid2>
+                      ))}
+                    </>
                   ) : (
                     <Typography align="center" variant="h5" color="secondary">
                       Aún no hay pedidos registrados para ti.
@@ -392,8 +437,8 @@ export default function PrixerProfile() {
               )}
               {tab === 2 && (
                 <Grid2>
-                  {movements.length > 0 ? (
-                    movements.map((mov) => (
+                  {movements?.length > 0 ? (
+                    movements?.map((mov) => (
                       <Grid2
                         style={{
                           display: "flex",
@@ -404,6 +449,7 @@ export default function PrixerProfile() {
                           borderRadius: 10,
                           margin: "10px 0px 10px 0px",
                           alignItems: "center",
+                          gap: 8,
                         }}
                       >
                         <Grid2 style={{ fontSize: isDeskTop ? "14px" : "9px" }}>
@@ -419,7 +465,12 @@ export default function PrixerProfile() {
                                 })
                                 .slice(0, 10)}
                         </Grid2>
-                        <Grid2 style={{ fontSize: isDeskTop ? "14px" : "9px" }}>
+                        <Grid2
+                          style={{
+                            fontSize: isDeskTop ? "14px" : "9px",
+                            maxWidth: "70%",
+                          }}
+                        >
                           {mov.description.split("#")[0]}{" "}
                           <Button
                             style={{

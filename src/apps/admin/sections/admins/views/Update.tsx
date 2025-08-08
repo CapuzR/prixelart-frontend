@@ -12,7 +12,7 @@ import { useParams, useNavigate } from "react-router-dom"
 // Hooks, Context, Types, API
 import { useSnackBar } from "context/GlobalContext"
 import { Admin } from "types/admin.types"
-import { Permissions } from "types/permissions.types"
+import { PermissionsV2 } from "types/permissions.types"
 import {
   getRoles,
   getAdminByUsername,
@@ -73,7 +73,7 @@ const UpdateAdmin: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false)
 
-  const [roles, setRoles] = useState<Permissions[]>([]) // Store full Permissions objects
+  const [roles, setRoles] = useState<PermissionsV2[]>([]) // Store full Permissions objects
   const [isLoadingData, setIsLoadingData] = useState<boolean>(true) // Combined loading state
   const [errorLoad, setErrorLoad] = useState<string | null>(null) // Fetching error
 
@@ -83,7 +83,7 @@ const UpdateAdmin: React.FC = () => {
 
   // State for roles permission preview modal
   const [permissionModalOpen, setPermissionModalOpen] = useState(false)
-  const [roleToView, setRoleToView] = useState<Permissions | null>(null)
+  const [roleToView, setRoleToView] = useState<PermissionsV2 | null>(null)
   const [adminId, setAdminId] = useState<string | null>(null) // Store the ID  for update
 
   // --- Fetch Initial Data (Admin + Roles) ---
@@ -99,7 +99,7 @@ const UpdateAdmin: React.FC = () => {
     try {
       const [fetchedAdmin, fetchedRoles] = await Promise.all([
         getAdminByUsername(usernameParam), // Assuming this returns full Admin object including _id
-        getRoles() as Promise<Permissions[]>, // Fetch full roles
+        getRoles() as Promise<PermissionsV2[]>, // Fetch full roles
       ])
 
       if (!fetchedAdmin) {

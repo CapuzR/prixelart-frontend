@@ -2917,6 +2917,11 @@ cosmiconfig@^7.0.0, cosmiconfig@^7.0.1:
     path-type "^4.0.0"
     yaml "^1.10.0"
 
+countup.js@^2.8.0:
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/countup.js/-/countup.js-2.9.0.tgz#599e6482e502e5e3f00f8816637120c9b21856ed"
+  integrity sha512-llqrvyXztRFPp6+i8jx25phHWcVWhrHO4Nlt0uAOSKHB8778zzQswa4MU3qKBvkXfJKftRYFJuVHez67lyKdHg==
+
 crc-32@^1.2.0, crc-32@~1.2.0, crc-32@~1.2.1:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/crc-32/-/crc-32-1.2.2.tgz#3cad35a934b8bf71f25ca524b6da51fb7eace2ff"
@@ -6714,6 +6719,13 @@ react-cool-img@^1.2.9:
   version "1.2.12"
   resolved "https://registry.yarnpkg.com/react-cool-img/-/react-cool-img-1.2.12.tgz#b7a65053d5e234417afeb0791ce650783ebf80db"
   integrity sha512-HambbjVszVVCNAEps+wReo9znzhgpq/72DCRvz4ahKkubEUV/ij0WH3RCQ37rcAPezhchpH75VutDE/ENgWegA==
+
+react-countup@^6.5.3:
+  version "6.5.3"
+  resolved "https://registry.yarnpkg.com/react-countup/-/react-countup-6.5.3.tgz#e892aa3eab2d6ba9c3cdba30bf4ed6764826d848"
+  integrity sha512-udnqVQitxC7QWADSPDOxVWULkLvKUWrDapn5i53HE4DPRVgs+Y5rr4bo25qEl8jSh+0l2cToJgGMx+clxPM3+w==
+  dependencies:
+    countup.js "^2.8.0"
 
 react-dom@^19.1.0:
   version "19.1.0"

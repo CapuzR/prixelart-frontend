@@ -48,14 +48,14 @@ import Grid2 from '@mui/material/Grid';
 
 // Hooks and Context 
 import { useSnackBar } from 'context/GlobalContext';
-import { Permissions } from 'types/permissions.types';
+import { PermissionsV2 } from 'types/permissions.types';
 import { getRoles, deleteRole } from '@api/admin.api';
 
 import Title from '@apps/admin/components/Title';
 import ConfirmationDialog from '@components/ConfirmationDialog/ConfirmationDialog';
 import { permissionGroups } from '../roles/roles';
 
-export const RolePermissionsDetails: React.FC<{ role: Permissions }> = ({ role }) => {
+export const RolePermissionsDetails: React.FC<{ role: PermissionsV2 }> = ({ role }) => {
     const [openGroup, setOpenGroup] = useState<string | null>(null);
 
     const handleGroupClick = (groupTitle: string) => {
@@ -103,17 +103,17 @@ const ReadRoles: React.FC = () => {
     const { showSnackBar } = useSnackBar();
 
     // --- State ---
-    const [roles, setRoles] = useState<Permissions[]>([]); // Original fetched data
+    const [roles, setRoles] = useState<PermissionsV2[]>([]); 
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [isDeleting, setIsDeleting] = useState<boolean>(false);
     const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-    const [roleToDelete, setRoleToDelete] = useState<Permissions | null>(null);
+    const [roleToDelete, setRoleToDelete] = useState<PermissionsV2 | null>(null);
 
     // --- UI Control State ---
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedFilters, setSelectedFilters] = useState<string[]>([]); // Array of group titles
-    const [sortConfig, setSortConfig] = useState<{ key: keyof Permissions | null; direction: 'asc' | 'desc' }>({ key: 'area', direction: 'asc' });
+    const [sortConfig, setSortConfig] = useState<{ key: keyof PermissionsV2 | null; direction: 'asc' | 'desc' }>({ key: 'area', direction: 'asc' });
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10); // Start with fewer rows per page
     const [expandedRow, setExpandedRow] = useState<string | null>(null); // Store ObjectId as string
@@ -123,7 +123,7 @@ const ReadRoles: React.FC = () => {
         setIsLoading(true);
         setError(null);
         try {
-            const fetchedRoles = await getRoles() as Permissions[];
+            const fetchedRoles = await getRoles() as PermissionsV2[];
             if (fetchedRoles.some(role => !role._id)) {
                 console.error("Some roles fetched are missing the '_id' field.");
                 // Ensure _id is treated correctly if it's an ObjectId
@@ -157,7 +157,7 @@ const ReadRoles: React.FC = () => {
         setPage(0); // Reset page on filter change
     };
 
-    const handleSortRequest = (key: keyof Permissions) => {
+    const handleSortRequest = (key: keyof PermissionsV2) => {
         let direction: 'asc' | 'desc' = 'asc';
         if (sortConfig.key === key && sortConfig.direction === 'asc') {
             direction = 'desc';
@@ -179,7 +179,7 @@ const ReadRoles: React.FC = () => {
     };
 
     // --- Delete Handling ---
-    const handleOpenDeleteDialog = (role: Permissions) => {
+    const handleOpenDeleteDialog = (role: PermissionsV2) => {
         if (!role._id) {
             showSnackBar("Cannot delete role: Missing ID.");
             return;

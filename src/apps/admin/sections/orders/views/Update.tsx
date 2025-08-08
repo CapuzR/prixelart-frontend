@@ -1387,10 +1387,10 @@ export default function UpdateOrder() {
       showSnackBar("Método de envío es requerido.")
       return false
     }
-    if (!selectedPaymentMethod) {
-      showSnackBar("Método de pago es requerido.")
-      return false
-    }
+    // if (!selectedPaymentMethod) {
+    //   showSnackBar("Método de pago es requerido.")
+    //   return false
+    // }
     return true
   }
 
@@ -1638,48 +1638,48 @@ export default function UpdateOrder() {
       finalBillToInfo = shippingAddr.recepient
     }
 
-    const voucherPaymentObjects: Payment[] = paymentVouchers
-      .filter((imgState) => imgState.url && !imgState.error)
-      .map((imgState) => {
-        let description = `Comprobante`
-        if (imgState.file?.name) {
-          description = imgState.file.name
-        } else if (imgState.url) {
-          try {
-            const urlParts = imgState.url.split("/")
-            const lastPart = urlParts[urlParts.length - 1]
-            description = decodeURIComponent(lastPart.split("?")[0])
-          } catch (e) {
-            console.warn(
-              "No se pudo generar descripción desde la URL del voucher:",
-              imgState.url
-            )
-            description = `Comprobante ${imgState.id.substring(0, 8)}`
-          }
-        }
+    // const voucherPaymentObjects: Payment[] = paymentVouchers
+    //   .filter((imgState) => imgState.url && !imgState.error)
+    //   .map((imgState) => {
+    //     let description = `Comprobante`
+    //     if (imgState.file?.name) {
+    //       description = imgState.file.name
+    //     } else if (imgState.url) {
+    //       try {
+    //         const urlParts = imgState.url.split("/")
+    //         const lastPart = urlParts[urlParts.length - 1]
+    //         description = decodeURIComponent(lastPart.split("?")[0])
+    //       } catch (e) {
+    //         console.warn(
+    //           "No se pudo generar descripción desde la URL del voucher:",
+    //           imgState.url
+    //         )
+    //         description = `Comprobante ${imgState.id.substring(0, 8)}`
+    //       }
+    //     }
 
-        if (!selectedPaymentMethod) {
-          console.error(
-            "Cannot create voucher payment entry without a selectedPaymentMethod."
-          )
-          showSnackBar(
-            "Error: Se necesita un método de pago principal para asociar los comprobantes."
-          )
-          return null
-        }
+    //     // if (!selectedPaymentMethod) {
+    //     //   console.error(
+    //     //     "Cannot create voucher payment entry without a selectedPaymentMethod."
+    //     //   )
+    //     //   showSnackBar(
+    //     //     "Error: Se necesita un método de pago principal para asociar los comprobantes."
+    //     //   )
+    //     //   return null
+    //     // }
 
-        return {
-          id: imgState.isExisting
-            ? imgState.id.split("-voucher-")[0].replace("payments-", "")
-            : uuidv4(),
-          description: description,
-          voucher: imgState.url,
-          method: selectedPaymentMethod.fullMethod as PaymentMethod,
-          amount: "0",
-          metadata: `Voucher linked to ${selectedPaymentMethod.label}`,
-        }
-      })
-      .filter(Boolean) as Payment[]
+    //     return {
+    //       id: imgState.isExisting
+    //         ? imgState.id.split("-voucher-")[0].replace("payments-", "")
+    //         : uuidv4(),
+    //       description: description,
+    //       voucher: imgState.url,
+    //       method: selectedPaymentMethod.fullMethod as PaymentMethod,
+    //       amount: "0",
+    //       metadata: `Voucher linked to ${selectedPaymentMethod.label}`,
+    //     }
+    //   })
+    //   .filter(Boolean) as Payment[]
 
     const productionStatus = order.status
     const paymentStatus = order.payment.status
@@ -2878,8 +2878,7 @@ export default function UpdateOrder() {
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      label="Método de Pago *"
-                      required
+                      label="Método de Pago"
                       InputProps={{
                         ...params.InputProps,
                         endAdornment: (
@@ -3172,7 +3171,6 @@ export default function UpdateOrder() {
                             fullWidth
                             variant="outlined"
                             disabled={isSubmitting}
-                            required
                           >
                             <InputLabel id="payment-method-label">
                               Método de Pago

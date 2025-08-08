@@ -58,6 +58,14 @@ export interface PermissionsV2 {
     updateArt: boolean
     deleteArt: boolean
   }
+  announcement: {
+    createAnnouncement: boolean
+    readAnnouncements: boolean
+    updateAnnouncement: boolean
+    deleteAnnouncement: boolean
+    archiveAnnouncement: boolean
+    enableAnnouncement: boolean 
+  } 
   discounts: {
     createDiscount: boolean
     deleteDiscount: boolean

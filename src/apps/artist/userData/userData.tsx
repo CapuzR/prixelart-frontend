@@ -301,18 +301,11 @@ const UserData: React.FC<UserDataProps> = (props) => {
                       marginBottom: '4px',
                       justifyContent: isMobile ? 'center' : 'flexstart',
                     }}
-                  ></Box>
-                  <Box
-                    display={'flex'}
-                    style={{
-                      marginBottom: '4px',
-                      justifyContent: isMobile ? 'center' : 'flexstart',
-                    }}
                   >
                     <Typography
                       align={isMobile ? 'center' : 'left'}
                       style={{ fontSize: 14 }}
-                      color="secondary"
+                      color="white"
                     >
                       {description !== 'undefined' && description}
                     </Typography>

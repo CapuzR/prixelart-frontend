@@ -216,27 +216,27 @@ export const permissionGroups: PermissionGroup[] = [
       {
         key: "surcharges.createSurcharge",
         check: (r: PermissionsV2) => r.surcharges.createSurcharge,
-        label: "Crear descuentos",
+        label: "Crear recargos",
       },
       {
         key: "surcharges.readAllSurcharges",
         check: (r: PermissionsV2) => r.surcharges.readAllSurcharges,
-        label: "Ver todos los descuentos",
+        label: "Ver todos los recargos",
       },
       {
         key: "surcharges.updateSurcharge",
         check: (r: PermissionsV2) => r.surcharges.updateSurcharge,
-        label: "Modificar descuentos",
+        label: "Modificar recargos",
       },
       {
         key: "surcharges.deleteSurcharge",
         check: (r: PermissionsV2) => r.surcharges.deleteSurcharge,
-        label: "Eliminar descuentos",
+        label: "Eliminar recargos",
       },
       {
         key: "surcharges.useSurcharge",
         check: (r: PermissionsV2) => r.surcharges.useSurcharge,
-        label: "Usar descuentos",
+        label: "Usar recargos",
       },
     ],
   },

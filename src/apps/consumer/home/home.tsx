@@ -162,13 +162,12 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
 interface HeroSliderProps {
   desktopImages: Array<{ url: string }>
   mobileImages: Array<{ url: string }>
-  headline: string
+  headline?: string
 }
 
 const HeroSlider: React.FC<HeroSliderProps> = ({
   desktopImages,
   mobileImages,
-  headline,
 }) => {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("md"))
@@ -181,7 +180,8 @@ const HeroSlider: React.FC<HeroSliderProps> = ({
       sx={{
         position: "relative",
         width: "100%",
-        height: `calc(100vh - 64px)`,
+        height: `100vh`,
+        // aspectRatio: " 16/ 9",
       }}
     >
       {images.length > 0 && (
@@ -202,6 +202,7 @@ const HeroSlider: React.FC<HeroSliderProps> = ({
           ))}
         </Slider>
       )}
+      {/* {headline &&
       <Box
         sx={{
           position: "absolute",
@@ -219,7 +220,7 @@ const HeroSlider: React.FC<HeroSliderProps> = ({
         >
           {headline}
         </Typography>
-      </Box>
+      </Box>} */}
     </Box>
   )
 }
@@ -266,7 +267,6 @@ const Home: React.FC = () => {
           <HeroSlider
             desktopImages={desktopCarousel.map((i) => ({ url: i.imageURL }))}
             mobileImages={mobileCarousel.map((i) => ({ url: i.imageURL }))}
-            headline="Encuentra el cuadro ideal para ti."
           />
         </Grid2>
         <AboutUs />
@@ -339,7 +339,7 @@ const Home: React.FC = () => {
           <BrandsCarousel />
         </Grid2>
       </Grid2>
-      
+
       <ScrollToTopButton />
       <FooterSection />
     </Box>

@@ -26,4 +26,5 @@ export interface PrixResponse {
     success: boolean;
     message: string;
     result?: PrixResult;
+    details?: any
 }

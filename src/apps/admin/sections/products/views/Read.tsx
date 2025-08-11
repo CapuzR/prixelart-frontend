@@ -613,7 +613,7 @@ const ReadProducts: React.FC = () => {
         const worksheet = workbook.Sheets[sheetName]
         const jsonData: any[] = XLSX.utils.sheet_to_json(worksheet)
 
-        console.log("Datos leídos del Excel:", jsonData)
+        console.log("Datos leídos del Excel")
 
         processAndSendExcelData(jsonData)
       } catch (error) {
@@ -706,8 +706,12 @@ const ReadProducts: React.FC = () => {
 
     try {
       const response = await updateManyProduct(productsToUpdate)
-      showSnackBar("Productos actualizados masivamente con éxito.")
-      loadProducts()
+      if (response.success)
+      {
+        showSnackBar(response.message)
+        loadProducts()
+      }
+      // showSnackBar("Productos actualizados masivamente con éxito.")
     } catch (error) {
       console.error("Error al enviar datos al backend:", error)
       showSnackBar("Error de red o del servidor al actualizar productos.")

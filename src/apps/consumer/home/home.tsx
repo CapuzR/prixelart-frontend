@@ -197,7 +197,7 @@ const HeroSlider: React.FC<HeroSliderProps> = ({
               component="img"
               src={item.url}
               alt={`Hero slide ${idx}`}
-              sx={{ width: "100%", height: "100%", objectFit: "cover" }}
+              sx={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: 'top' }}
             />
           ))}
         </Slider>

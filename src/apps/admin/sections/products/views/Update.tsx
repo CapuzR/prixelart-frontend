@@ -1406,14 +1406,11 @@ const UpdateProduct: React.FC = () => {
 
     try {
       console.log(
-        "Updating Product Data:",
-        productId,
-        JSON.stringify(payload, null, 2)
-      );
+        "Updating Product Data:", productId);
       const response = await updateProduct(productId, payload);
       if (response) {
         showSnackBar(`Producto "${formData.name}" actualizado exitosamente.`);
-        navigate("/admin/products/read");
+        navigate("/admin/product/read");
       } else {
         throw new Error(
           "La actualización del producto falló o no devolvió respuesta."

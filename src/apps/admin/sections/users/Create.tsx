@@ -29,10 +29,10 @@ import { PickerChangeHandlerContext, DateValidationError } from '@mui/x-date-pic
 
 // --- Constants and Options ---
 // Define Roles - fetch if dynamic
-const AVAILABLE_ROLES = ['consumer', 'prixer', 'seller', 'admin']; // Allow multi-select potentially, but restrict admin creation maybe
-const AVAILABLE_GENDERS = ['Masculino', 'Femenino', 'Otro', 'Prefiero no decir'];
+const AVAILABLE_ROLES = ['consumer', 'prixer', 'seller']; // Allow multi-select potentially, but restrict admin creation maybe
+const AVAILABLE_GENDERS = ['Masculino', 'Femenino'];
 // Define or fetch Specialties
-const AVAILABLE_SPECIALTIES = ["Ilustración", "Diseño", "Fotografía", "Artes Plásticas", "Música", "Escritura"];
+const AVAILABLE_SPECIALTIES = ["Ilustración", "Diseño", "Fotografía", "Artes Plásticas"];
 
 // --- Type Definitions ---
 // Define separate structures for validation errors for clarity
@@ -67,12 +67,9 @@ const CreateUser: React.FC = () => {
     // --- State ---
     const [userFormData, setUserFormData] = useState<Partial<User>>(initialUserFormState);
     const [prixerFormData, setPrixerFormData] = useState(initialPrixerFormState);
-    const [confirmPassword, setConfirmPassword] = useState<string>(""); // State for password confirmation
     const [birthdateValue, setBirthdateValue] = useState<Dayjs | null>(null); // State for DatePicker
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [validationErrors, setValidationErrors] = useState<UserValidationErrors | null>(null); // Updated error state
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     // Determine if the Prixer role is selected
     const isPrixerRoleSelected = userFormData.role?.includes('prixer');
@@ -163,45 +160,23 @@ const CreateUser: React.FC = () => {
         }
     };
 
-    // Password / Confirm Password Handlers
-    const handleConfirmPasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
-        setConfirmPassword(event.target.value);
-        if (validationErrors?.confirmPassword || validationErrors?.password?.includes("coinciden")) {
-            setValidationErrors(prevErrors => { const updated = { ...prevErrors }; delete updated.confirmPassword; if (updated.password?.includes("coinciden")) delete updated.password; return Object.keys(updated).length > 0 ? updated : null; });
-        }
-    };
-    const handleClickShowPassword = () => setShowPassword((show) => !show);
-    const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => event.preventDefault();
-    const handleClickShowConfirmPassword = () => setShowConfirmPassword((show) => !show);
-    const handleMouseDownConfirmPassword = (event: React.MouseEvent<HTMLButtonElement>) => event.preventDefault();
-
-
     // --- Validation ---
     const validateForm = (): boolean => {
         const errors: UserValidationErrors = {};
 
         // User Validation
-        if (!userFormData.username?.trim()) errors.username = "Nombre de usuario obligatorio.";
-        else if (!isAValidUsername(userFormData.username)) errors.username = "Formato inválido (letras, números, guión bajo).";
+        if (!userFormData.username?.trim() && isPrixerRoleSelected) errors.username = "Nombre de usuario obligatorio.";
+        else if (userFormData.username && isPrixerRoleSelected && !isAValidUsername(userFormData.username)) errors.username = "Formato inválido (letras, números, guión bajo).";
         if (!userFormData.firstName?.trim()) errors.firstName = "Nombre obligatorio.";
         if (!userFormData.lastName?.trim()) errors.lastName = "Apellido obligatorio.";
-        if (!userFormData.email?.trim()) errors.email = "Email obligatorio.";
-        else if (!isAValidEmail(userFormData.email)) errors.email = "Email inválido.";
-        if (!userFormData.password) errors.password = "Contraseña obligatoria.";
-        else if (!isAValidPassword(userFormData.password)) errors.password = "Contraseña: Mín 8 chars, 1 Mayús, 1 Minús, 1 Núm, 1 Símb.";
-        else if (userFormData.password !== confirmPassword) errors.confirmPassword = "Las contraseñas no coinciden.";
-        if (!confirmPassword) errors.confirmPassword = "Confirme la contraseña.";
         if (!userFormData.role || userFormData.role.length === 0) errors.role = "Seleccione al menos un rol.";
         // Add validation for other User fields if they become required (e.g., phone, address)
-        if (userFormData.avatar && !/^https?:\/\/.+\..+/.test(userFormData.avatar)) errors.avatar = "Formato de URL inválido para avatar de usuario.";
-
 
         // Prixer Validation (only if role is selected)
         if (userFormData.role?.includes('prixer')) {
             const prixerErrors: PrixerValidationErrors = {};
             if (!prixerFormData.description?.trim()) prixerErrors.description = "Descripción de Prixer obligatoria.";
             if (!prixerFormData.specialty || prixerFormData.specialty.length === 0) prixerErrors.specialty = "Seleccione al menos una especialidad.";
-            if (prixerFormData.avatar && !/^https?:\/\/.+\..+/.test(prixerFormData.avatar)) prixerErrors.avatar = "Formato de URL inválido para avatar de prixer.";
             // Add other required Prixer field validations here (e.g., phone)
             // if (!prixerFormData.phone?.trim()) prixerErrors.phone = "Teléfono de Prixer obligatorio.";
 
@@ -223,12 +198,10 @@ const CreateUser: React.FC = () => {
         setIsSubmitting(true);
 
         const payload: User = {
-            // Base User fields from state
             username: userFormData.username!,
             firstName: userFormData.firstName!,
             lastName: userFormData.lastName!,
             email: userFormData.email!.toLowerCase(),
-            password: userFormData.password!,
             active: userFormData.active!,
             role: userFormData.role!,
             // Optional User fields
@@ -269,9 +242,8 @@ const CreateUser: React.FC = () => {
         }
 
         try {
-            console.log("Submitting User Data:", payload);
             const response = await createUser(payload);
-            if (response) { showSnackBar(`Usuario "${payload.username}" creado.`); navigate("/admin/users/read"); }
+            if (response.success) { showSnackBar(`Usuario "${payload.firstName}" creado.`); navigate("/admin/users/read"); }
             else { throw new Error("La creación falló."); }
         } catch (err: any) {
             console.error("Failed create:", err); const message = err.response?.data?.message || err.message || "Error al crear."; setValidationErrors(prev => ({ ...(prev || {}), username: (prev?.username || message) })); showSnackBar(message); // Show near username field
@@ -290,12 +262,11 @@ const CreateUser: React.FC = () => {
 
                         {/* --- User Fields --- */}
                         <Grid2 size={{ xs: 12 }}><Typography variant="h6">Información del Usuario</Typography></Grid2>
-                        <Grid2 size={{ xs: 12, sm: 6 }}><TextField label="Nombre de Usuario" name="username" value={userFormData.username} onChange={handleUserInputChange} required fullWidth disabled={isSubmitting} error={!!validationErrors?.username} helperText={validationErrors?.username || "Solo letras, números y guiones bajos."} /></Grid2>
+                        {isPrixerRoleSelected && ( <Grid2 size={{ xs: 12, sm: 6 }}><TextField label="Nombre de Usuario" name="username" value={userFormData.username} onChange={handleUserInputChange} fullWidth disabled={isSubmitting} error={!!validationErrors?.username} helperText={validationErrors?.username || "Solo letras, números y guiones bajos."} /></Grid2>)}
                         <Grid2 size={{ xs: 12, sm: 6 }}><TextField label="Nombre" name="firstName" value={userFormData.firstName} onChange={handleUserInputChange} required fullWidth disabled={isSubmitting} error={!!validationErrors?.firstName} helperText={validationErrors?.firstName} /></Grid2>
                         <Grid2 size={{ xs: 12, sm: 6 }}><TextField label="Apellido" name="lastName" value={userFormData.lastName} onChange={handleUserInputChange} required fullWidth disabled={isSubmitting} error={!!validationErrors?.lastName} helperText={validationErrors?.lastName} /></Grid2>
-                        <Grid2 size={{ xs: 12, sm: 6 }}><TextField label="Email" name="email" type="email" value={userFormData.email} onChange={handleUserInputChange} required fullWidth disabled={isSubmitting} error={!!validationErrors?.email} helperText={validationErrors?.email} /></Grid2>
-                        <Grid2 size={{ xs: 12, sm: 6 }}> <FormControl fullWidth variant="outlined" required error={!!validationErrors?.password}> <InputLabel>Contraseña</InputLabel> <OutlinedInput type={showPassword ? 'text' : 'password'} name="password" value={userFormData.password} onChange={handleUserInputChange} disabled={isSubmitting} endAdornment={<InputAdornment position="end"> <IconButton onClick={handleClickShowPassword} onMouseDown={handleMouseDownPassword} edge="end"> {showPassword ? <VisibilityOff /> : <Visibility />} </IconButton> </InputAdornment>} label="Contraseña" /> <FormHelperText error={!!validationErrors?.password}>{validationErrors?.password || "Mín 8 chars, 1 Mayús, 1 Minús, 1 Núm, 1 Símb."}</FormHelperText> </FormControl> </Grid2>
-                        <Grid2 size={{ xs: 12, sm: 6 }}> <FormControl fullWidth variant="outlined" required error={!!validationErrors?.confirmPassword}> <InputLabel>Confirmar Contraseña</InputLabel> <OutlinedInput type={showConfirmPassword ? 'text' : 'password'} value={confirmPassword} onChange={handleConfirmPasswordChange} disabled={isSubmitting} endAdornment={<InputAdornment position="end"> <IconButton onClick={handleClickShowConfirmPassword} onMouseDown={handleMouseDownConfirmPassword} edge="end"> {showConfirmPassword ? <VisibilityOff /> : <Visibility />} </IconButton> </InputAdornment>} label="Confirmar Contraseña" /> <FormHelperText error>{validationErrors?.confirmPassword}</FormHelperText> </FormControl> </Grid2>
+                        <Grid2 size={{ xs: 12, sm: 6 }}><TextField label="Email" name="email" type="email" value={userFormData.email} onChange={handleUserInputChange}  fullWidth disabled={isSubmitting} error={!!validationErrors?.email} helperText={validationErrors?.email} /></Grid2>
+                        <Grid2 size={{ xs: 12, sm: 6 }}><TextField label="Teléfono Usuario" name="phone" value={userFormData.phone} onChange={handleUserInputChange} fullWidth disabled={isSubmitting} error={!!validationErrors?.phone} helperText={validationErrors?.phone} /></Grid2>
                         <Grid2 size={{ xs: 12, sm: 6 }}>
                             <Autocomplete
                                 multiple id="user-roles-select" options={AVAILABLE_ROLES} value={userFormData.role || []} onChange={handleRolesChange} disableCloseOnSelect
@@ -306,17 +277,10 @@ const CreateUser: React.FC = () => {
                             />
                         </Grid2>
                         <Grid2 size={{ xs: 12, sm: 6 }} sx={{ display: 'flex', alignItems: 'center' }}><FormControlLabel control={<Checkbox checked={userFormData.active} onChange={handleUserInputChange} name="active" disabled={isSubmitting} />} label="Usuario Activo" /></Grid2>
-
-                        {/* User Avatar */}
-                        <Grid2 size={{ xs: 12, sm: 6 }}>
-                            <TextField label="URL Avatar Usuario (Opcional)" name="avatar" type="url" value={userFormData.avatar} onChange={handleUserInputChange} fullWidth disabled={isSubmitting} error={!!validationErrors?.avatar} helperText={validationErrors?.avatar} />
-                            {userFormData.avatar && !validationErrors?.avatar && (<Box sx={{ mt: 1 }}><Avatar src={userFormData.avatar} sx={{ width: 60, height: 60 }} /></Box>)}
-                        </Grid2>
                         <Grid2 size={{ xs: 12, sm: 6 }}></Grid2> {/* Spacer */}
 
                         {/* Contact Info */}
                         <Grid2 size={{ xs: 12 }}><Divider sx={{ my: 2 }}><Typography variant="overline">Información Adicional (Opcional)</Typography></Divider></Grid2>
-                        <Grid2 size={{ xs: 12, sm: 6 }}><TextField label="Teléfono Usuario" name="phone" value={userFormData.phone} onChange={handleUserInputChange} fullWidth disabled={isSubmitting} error={!!validationErrors?.phone} helperText={validationErrors?.phone} /></Grid2>
                         <Grid2 size={{ xs: 12, sm: 6 }}></Grid2> {/* Spacer */}
 
                         {/* Address Info */}

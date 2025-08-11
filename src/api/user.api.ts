@@ -2,7 +2,7 @@ import { PrixResponse } from "types/prixResponse.types"
 import { User } from "types/user.types"
 import axios from "axios"
 
-export const createUser = async (data: User): Promise<User> => {
+export const createUser = async (data: User): Promise<PrixResponse> => {
   const base_url = import.meta.env.VITE_BACKEND_URL + "/user/create"
   try {
     const response = await axios.post<PrixResponse>(base_url, data, {
@@ -17,7 +17,7 @@ export const createUser = async (data: User): Promise<User> => {
       throw new Error(response.data.message || "Authentication failed")
     }
 
-    const newUser = response.data.result as unknown as User
+    const newUser = response.data as unknown as PrixResponse
     return newUser
   } catch (error) {
     console.log(error)

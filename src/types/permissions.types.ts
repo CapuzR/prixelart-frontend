@@ -48,6 +48,7 @@ export interface PermissionsV2 {
     deleteAdminRole: boolean
     readAdmins: boolean
     readAdminRoles: boolean
+    readGlobalStats?: boolean
     updateAdmin: boolean
     updateAdminRole: boolean
   }

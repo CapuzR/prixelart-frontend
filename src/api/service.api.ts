@@ -2,6 +2,7 @@ import axios from "axios";
 import { BACKEND_URL } from "./utils.api";
 import { PrixResponse } from "types/prixResponse.types";
 import { Service } from "types/service.types";
+import { ObjectId } from "mongodb";
 
 // — Public —
 
@@ -58,7 +59,7 @@ export const fetchServicesByPrixer = async (
 
 /** Get all services by an arbitrary user ID (public) */
 export const fetchServicesByUser = async (
-  userId: string
+  userId: string | ObjectId
 ): Promise<Service[]> => {
   const url = `${BACKEND_URL}/service/by-user/${userId}`;
   try {

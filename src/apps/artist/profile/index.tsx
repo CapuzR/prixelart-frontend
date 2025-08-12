@@ -676,7 +676,7 @@ export default function PrixerProfileCard() {
           setPrixerUser(userDataResponse)
           setPrixer(userDataResponse.prixer)
           setUserName(userDataResponse.username)
-          const prixerId = userDataResponse._id?.toString()
+          const prixerId = userDataResponse?.prixer._id?.toString()
 
           setServicesLoading(true)
           await Promise.all([
@@ -1516,9 +1516,11 @@ export default function PrixerProfileCard() {
                               overflow: "hidden",
                               textOverflow: "ellipsis",
                             }}
-                          >
-                            {service.description}
-                          </Typography>
+                            component="div"
+                            dangerouslySetInnerHTML={{
+                              __html: service.description,
+                            }}
+                          />
                         </CardContent>
                         <Box sx={{ p: 2, pt: 0 }}>
                           <Button

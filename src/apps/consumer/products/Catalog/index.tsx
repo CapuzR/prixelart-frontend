@@ -137,8 +137,8 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({
 
       <>
         <div className={styles["title"]}>
-          <Typography variant="h4">
-            <strong>Productos Prix</strong>
+          <Typography variant="h4" sx={{fontWeight: 'bold'}}>
+            Productos Prix
           </Typography>
         </div>
 

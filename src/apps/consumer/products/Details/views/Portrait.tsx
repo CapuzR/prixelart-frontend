@@ -163,7 +163,7 @@ const Portrait: React.FC<PortraitProps> = (props) => {
   return (
     <Grid2 className={styles["prix-product-container"]}>
       <div className={styles["title-price"]}>
-        <Typography variant="h4" className={styles["title"]}>
+        <Typography color="secondary" variant="h4" className={styles["title"]}>
           {props.product?.name}
         </Typography>
       </div>

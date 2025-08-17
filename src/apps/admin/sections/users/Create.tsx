@@ -30,7 +30,7 @@ import { PickerChangeHandlerContext, DateValidationError } from '@mui/x-date-pic
 // --- Constants and Options ---
 // Define Roles - fetch if dynamic
 const AVAILABLE_ROLES = ['consumer', 'prixer', 'seller']; // Allow multi-select potentially, but restrict admin creation maybe
-const AVAILABLE_GENDERS = ['Masculino', 'Femenino'];
+const AVAILABLE_GENDERS = ['Masculino', 'Femenino', 'Otro', 'Prefiero no decir'];
 // Define or fetch Specialties
 const AVAILABLE_SPECIALTIES = ["Ilustración", "Diseño", "Fotografía", "Artes Plásticas"];
 

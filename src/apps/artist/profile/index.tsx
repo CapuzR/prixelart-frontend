@@ -1515,12 +1515,11 @@ export default function PrixerProfileCard() {
                               WebkitLineClamp: 3,
                               overflow: "hidden",
                               textOverflow: "ellipsis",
+                              component="div"
                             }}
-                            component="div"
-                            dangerouslySetInnerHTML={{
-                              __html: service.description,
-                            }}
-                          />
+                          >
+                            {service.description}
+                          </Typography>
                         </CardContent>
                         <Box sx={{ p: 2, pt: 0 }}>
                           <Button

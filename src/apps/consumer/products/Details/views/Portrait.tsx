@@ -163,21 +163,21 @@ const Portrait: React.FC<PortraitProps> = (props) => {
   return (
     <Grid2 className={styles["prix-product-container"]}>
       <div className={styles["title-price"]}>
-        <Typography variant="h4" className={styles["title"]}>
+        <Typography color="secondary" variant="h4" className={styles["title"]}>
           {props.product?.name}
         </Typography>
       </div>
 
       <div className={styles["carousel-wrapper"]}>
         <Slider
-          images={props.product?.sources?.images || []}
+          images={props.product?.sources?.images.filter(image => image?.url) || []}
           useIndicators={{
             type: "thumbnails",
             position: "over",
             color: { active: "primary", inactive: "secondary" },
           }}
         >
-          {props.product?.sources?.images?.map((image, i) => (
+          {props.product?.sources?.images?.filter(image => image?.url).map((image, i) => (
             <Image key={i} src={image.url} alt={props.product?.name} />
           ))}
         </Slider>

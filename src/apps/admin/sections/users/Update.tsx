@@ -776,17 +776,15 @@ const UpdateUser: React.FC = () => {
 
     try {
       const response = await createMovement(payload)
-      loadUser()
-      loadMovements()
 
-      if (response?.createResult?.success) {
+      if (response?.success) {
         showSnackBar(
           `Movimiento "${formData.description.substring(0, 20)}..." creado exitosamente.`
         )
-        if (response?.balanceResult?.success) {
-          showSnackBar(response?.balanceResult?.message)
+        if (response?.success) {
+          setValue(0)
+          await Promise.all([loadUser(), loadMovements()])
         }
-        setValue(0)
       } else {
         throw new Error(
           "La creación del movimiento no devolvió una respuesta esperada."

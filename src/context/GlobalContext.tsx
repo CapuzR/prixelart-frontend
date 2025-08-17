@@ -3,6 +3,7 @@ import React, {
   useState,
   useContext,
   useMemo,
+  useCallback,
   ReactNode,
   Dispatch,
   SetStateAction,
@@ -96,15 +97,25 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
     setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"))
   }
 
-  const showSnackBar = (message: string) => {
-    console.log("Snackbar triggered with message: ", message)
-    setSnackbarOpen(true)
-    setSnackbarMessage(message)
-  }
+  // const showSnackBar = (message: string) => {
+  //   console.log("Snackbar triggered with message: ", message)
+  //   setSnackbarOpen(true)
+  //   setSnackbarMessage(message)
+  // }
 
-  const closeSnackBar = () => {
+  const showSnackBar = useCallback((message: string) => {
+    console.log("Snackbar triggered with message: ", message)
+    setSnackbarMessage(message)
+    setSnackbarOpen(true)
+  }, [])
+
+  // const closeSnackBar = () => {
+  //   setSnackbarOpen(false)
+  // }
+
+  const closeSnackBar = useCallback(() => {
     setSnackbarOpen(false)
-  }
+  }, [])
 
   const showBackdrop = () => {
     setBackdropOpen(true)
@@ -158,6 +169,8 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
       loading,
       snackbarOpen,
       snackbarMessage,
+      showSnackBar,
+      closeSnackBar,
       backdropOpen,
       user,
       uploadArt,

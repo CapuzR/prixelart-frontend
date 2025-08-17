@@ -242,10 +242,12 @@ export default function Card({
       </Grid2>
 
       <Grid2 size={{ xs: 12, sm: 4 }}>
-        <Slider images={product?.sources?.images}>
-          {product?.sources?.images?.map((image, i) => (
-            <Image key={i} src={image.url} alt={product?.name} />
-          ))}
+        <Slider images={product?.sources?.images?.filter(image => image?.url)}>
+          {product?.sources?.images
+            ?.filter((image) => image?.url) 
+            .map((image, i) => (
+              <Image key={i} src={image.url} alt={product?.name} />
+            ))}
         </Slider>
       </Grid2>
       <Grid2 size={{ xs: 12, sm: 8 }}>

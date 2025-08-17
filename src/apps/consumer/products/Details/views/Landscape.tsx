@@ -172,14 +172,14 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
       <div className={styles["left-side"]}>
         <div className={styles["slider-wrapper"]}>
           <Slider
-            images={props.product?.sources?.images || []}
+            images={props.product?.sources?.images.filter(image => image?.url) || []}
             useIndicators={{
               type: "thumbnails",
               position: "over",
               color: { active: "primary", inactive: "secondary" },
             }}
           >
-            {props.product?.sources?.images?.map((image, i) => (
+            {props.product?.sources?.images?.filter(image => image?.url).map((image, i) => (
               <Image key={i} src={image.url} alt={props.product?.name} />
             ))}
           </Slider>

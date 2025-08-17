@@ -23,15 +23,8 @@ const PrixerProfile: React.FC = () => {
   const username: string | null = window.location.pathname.includes("org")
     ? globalParams.get("/org")
     : globalParams.get("/prixer")
-
-  const [openArtFormDialog, setOpenArtFormDialog] = useState<boolean>(false)
-  const [openServiceFormDialog, setOpenServiceFormDialog] =
-    useState<boolean>(false)
-  const [openShoppingCart, setOpenShoppingCart] = useState<boolean>(false)
-  const [selectedArt, setSelectedArt] = useState<any>(undefined)
   const [feed, setFeed] = useState<string>("Artes")
-  const [createdService, setCreatedService] = useState<boolean>(false)
-  console.log(feed)
+
   const showPrixerGrid = () => {
     switch (feed) {
       case "Settings":

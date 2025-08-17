@@ -676,7 +676,7 @@ export default function PrixerProfileCard() {
           setPrixerUser(userDataResponse)
           setPrixer(userDataResponse.prixer)
           setUserName(userDataResponse.username)
-          const prixerId = userDataResponse._id?.toString()
+          const prixerId = userDataResponse?.prixer._id?.toString()
 
           setServicesLoading(true)
           await Promise.all([
@@ -1515,6 +1515,7 @@ export default function PrixerProfileCard() {
                               WebkitLineClamp: 3,
                               overflow: "hidden",
                               textOverflow: "ellipsis",
+                              component="div"
                             }}
                           >
                             {service.description}

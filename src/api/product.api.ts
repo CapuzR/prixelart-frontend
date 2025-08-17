@@ -202,7 +202,7 @@ export const updateProduct = async (
 
 export const updateManyProduct = async (
   products: Product[]
-): Promise<Product[]> => {
+): Promise<PrixResponse> => {
   const base_url = `${import.meta.env.VITE_BACKEND_URL}/product/update-many-products`
   try {
     const response = await axios.put<PrixResponse>(base_url, products, {
@@ -218,14 +218,14 @@ export const updateManyProduct = async (
       throw new Error(response.data.message || `Failed to update products`)
     }
 
-    if (!response.data.result) {
+    if (!response.data.details) {
       console.error(
         `Backend reported success but no product data returned after update.`
       )
       throw new Error(`No data received after updating product.`)
     }
 
-    const updatedAdmin = response.data.result as unknown as Product[]
+    const updatedAdmin = response.data as unknown as PrixResponse
     return updatedAdmin
   } catch (error) {
     console.error(`Error updating productt:`, error)

@@ -168,7 +168,6 @@ const EditableAddressForm: React.FC<EditableAddressFormProps> = ({
             onChange={handleBasicAddressChange}
             fullWidth
             size="small"
-            required
             disabled={isDisabled}
           />
         </Grid2>

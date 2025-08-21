@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react"
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom"
 
 import "slick-carousel/slick/slick.css"
 import "slick-carousel/slick/slick-theme.css"
@@ -23,24 +23,28 @@ import Copyright from "@components/Copyright/copyright"
 import { fetchActiveProductDetails } from "../../../../api/product.api"
 import { fetchArt } from "../../../../api/art.api"
 import { Item } from "../../../../types/order.types"
-import { useCart } from "context/CartContext";
-import { useSnackBar } from "context/GlobalContext";
+import { useCart } from "context/CartContext"
+import { useSnackBar } from "context/GlobalContext"
+import React from "react"
 
 export default function PrixItem() {
-  const { addOrUpdateItemInCart } = useCart();
-const { showSnackBar } = useSnackBar();
-const navigate = useNavigate();
+  const { addOrUpdateItemInCart } = useCart()
+  const { showSnackBar } = useSnackBar()
+  const navigate = useNavigate()
+  const theme = useTheme();
 
+  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
+  const [isParentInView, setIsParentInView] = useState(true)
   const [activeSlide, setActiveSlide] = useState<number>(0)
   const sliderRef = useRef<any>(null)
-  const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
-
+  const parentRef = useRef(null)
   const basicItem = {
     productId: "6657f83b7a000200122b54de",
     artId: "qLJw_NI",
     price: "23",
     quantity: 1,
+    title: "TOTE BAG X JOSY THOMAS",
   }
   // discount
   // id
@@ -81,45 +85,50 @@ const navigate = useNavigate();
     buildPredefinedItem()
   }, [])
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsParentInView(entry.isIntersecting)
+      },
+      { threshold: 0 }
+    )
+
+    if (parentRef.current) {
+      observer.observe(parentRef.current)
+    }
+
+    return () => {
+      if (parentRef.current) {
+        observer.unobserve(parentRef.current)
+      }
+    }
+  }, [])
+
   const handleAddToCart = () => {
     if (!item.price || item.price === "Error") {
-      showSnackBar("El producto se está cargando, por favor espera.");
-      return;
+      showSnackBar("El producto se está cargando, por favor espera.")
+      return
     }
-  
-    addOrUpdateItemInCart(item as Item, 1);
-    showSnackBar("¡Producto agregado al carrito!");
-    navigate("/carrito");
-  };
+
+    addOrUpdateItemInCart(item as Item, 1)
+    showSnackBar("¡Producto agregado al carrito!")
+    navigate("/carrito")
+  }
 
   const banners = [banner, banner2]
 
   const items = [
     {
       title: "Descripción 1",
-      description:
-        "Una descripción breve pero atractiva del producto o servicio.",
-      imageUrl:
-        "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=500",
+      imageUrl: item.product?.sources.images[0].url,
     },
     {
       title: "Descripción 2",
-      description: "Detalles sobre por qué este servicio es la mejor opción.",
-      imageUrl:
-        "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=500",
+      imageUrl: item.product?.sources.images[1].url,
     },
     {
       title: "Descripción 3",
-      description: "Lo último que hemos lanzado. ¡No te lo puedes perder!",
-      imageUrl:
-        "https://images.unsplash.com/photo-1587620962725-abab7fe55159?w=500",
-    },
-    {
-      title: "Oferta Especial",
-      description:
-        "Aprovecha este descuento por tiempo limitado. Ideal para ti.",
-      imageUrl:
-        "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=500",
+      imageUrl: item.product?.sources.images[2].url,
     },
   ]
 
@@ -162,6 +171,10 @@ const navigate = useNavigate();
         sx={{
           position: "relative",
           height: "70vh",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "end",
+          alignItems: "center",
         }}
       >
         <Grid2
@@ -193,65 +206,142 @@ const navigate = useNavigate();
             transition: "opacity 0.25s ease-in-out",
           }}
         />
+        {basicItem.title && (
+          <Typography
+            gutterBottom
+            variant="h4"
+            component="div"
+            sx={{
+              position: "relative",
+              // bottom: 0,
+              // left: 0,
+              fontFamily: "Futura, sans-serif",
+              fontStyle: "italic",
+              fontWeight: "700",
+              color: "white",
+              paddingBottom: "4rem",
+               // marginLeft: 1,
+              marginBottom: 0,
+              textShadow: "-3px 8px 22px rgba(0,0,0,0.7)",
+            }}
+          >
+            {basicItem.title}
+          </Typography>
+        )}
       </Grid2>
-      <Grid2 size={{ xs: 12 }}>
+      <Grid2 size={{ xs: 12 }} sx={{ marginTop: "-6rem" }}>
         <Box p={5} sx={{ backgroundColor: "transparent" }}>
           <Slider {...settings} ref={sliderRef}>
             {items.map((item, index) => (
               <Box
                 key={index}
-                sx={{ padding: "0 10px" }}
+                sx={{ padding: "10px" }}
                 onClick={() =>
                   sliderRef && sliderRef?.current?.slickGoTo(index)
                 }
               >
-                <Card sx={{ maxWidth: "30rem", margin: "0 auto" }}>
-                  <CardMedia
-                    component="img"
-                    height="140"
-                    image={banner}
-                    alt={item.title}
+                <Grid2
+                  sx={{
+                    background: `url(${item.imageUrl})`,
+                    width: "100%",
+                    height: "auto",
+                    minHeight: isDesktop ? "55vh" : "45vw",
+                    backgroundSize: "cover",
+                    backgroundRepeat: "no-repeat",
+                    backgroundPosition: "center",
+                    display: "flex",
+                    justifyContent: "left",
+                    alignItems: "end",
+                    borderRadius: 3,
+                    boxShadow: "0px 1px 8px 4px rgba(0,0,0,0.15)",
+                    position: "relative",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      bottom: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "60%", // Cubre el 60% inferior
+                      background:
+                        "linear-gradient(to top, rgba(0,0,0,0.8), transparent)",
+                      borderRadius: 3, // Si tu card tiene bordes redondeados
+                    }}
                   />
-                  <CardContent>
-                    <Typography gutterBottom variant="h5" component="div">
-                      {item.title}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {item.description}
-                    </Typography>
-                  </CardContent>
-                </Card>
+                  <Typography
+                    gutterBottom
+                    variant="h6"
+                    component="div"
+                    sx={{
+                      position: "absolute",
+                      bottom: 0,
+                      left: 0,
+                      fontFamily: "Ubuntu, sans-serif",
+                      // fontFamily: "Futura, sans-serif",
+                      // fontStyle: "italic",
+                      fontWeight: "400",
+                      color: "white",
+                      marginLeft: 1,
+                      marginBottom: 0.25,
+                      //  textShadow: '0px 2px 8px rgba(0,0,0,0.7)'
+                    }}
+                  >
+                    {item.title}
+                  </Typography>
+                </Grid2>
               </Box>
             ))}
           </Slider>
         </Box>
-      </Grid2>
-      <Grid2
-        size={{ xs: 12 }}
-        sx={{ display: "flex", justifyContent: "center" }}
-      >
-        {/* CTA */}
-        <Button
-          variant="outlined"
-          size="large"
+        <Grid2
+          size={{ xs: 12 }}
+          // ref={parentRef}
           sx={{
-            color: "#fff",
-            textAlign: "center",
-            zIndex: 1,
             display: "flex",
-            alignItems: "center",
+            height: "50px",
             justifyContent: "center",
-            borderColor: "white",
-            fontFamily: "Futura, sans-serif",
-            fontStyle: "italic",
-            fontWeight: "700",
+            position: "relative",
+            // bottom: 0,
+            // left: "50%",
+            // transform: "translateX(-50%)",
+            zIndex: 1000,
+            marginBottom: "-1.5rem",
           }}
-           onClick={handleAddToCart}
-          // disabled={isSubmitting}
         >
-          Agregar al carrito
-        </Button>
+          {/* CTA */}
+          <Button
+            variant="outlined"
+            size="large"
+            sx={{
+              color: "#fff",
+              width: "max-content",
+              textAlign: "center",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              borderColor: "white",
+              fontFamily: "Futura, sans-serif",
+              fontStyle: "italic",
+              fontWeight: "700",
+              backdropFilter: "blur(10px)",
+              // ...(!isParentInView && {
+              //   position: "fixed",
+              //   bottom: "2rem",
+              //   left: "50%",
+              //   transform: "translateX(-50%)",
+              //   zIndex: 1000,
+
+              // }),
+            }}
+            onClick={handleAddToCart}
+            // disabled={isSubmitting}
+          >
+            Agregar al carrito
+          </Button>
+        </Grid2>
       </Grid2>
+
       <Copyright
         sx={{ color: "white", width: "100%", margin: 4 }}
         align="center"

@@ -1515,7 +1515,6 @@ export default function PrixerProfileCard() {
                               WebkitLineClamp: 3,
                               overflow: "hidden",
                               textOverflow: "ellipsis",
-                              component="div"
                             }}
                           >
                             {service.description}

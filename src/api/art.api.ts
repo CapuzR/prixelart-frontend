@@ -239,7 +239,7 @@ export const createArt = async (data: Partial<Art>): Promise<Art> => {
     }
 }
 
-export const updateArt = async (id: string, artData: Partial<Art>): Promise<Art> => {
+export const updateArt = async (id: string, artData: Partial<Art>): Promise<PrixResponse> => {
     const base_url = `${import.meta.env.VITE_BACKEND_URL}/art/update/${id}`;
     try {
         const response = await axios.put<PrixResponse>(base_url, artData, {
@@ -256,7 +256,7 @@ export const updateArt = async (id: string, artData: Partial<Art>): Promise<Art>
             throw new Error(`No data received after updating art.`);
         }
 
-        const updatedAdmin = response.data.result as unknown as Art;
+        const updatedAdmin = response.data as PrixResponse;
         return updatedAdmin;
 
     } catch (error) {

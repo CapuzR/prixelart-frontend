@@ -60,12 +60,21 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
   const itemsPerPage: number = 30
 
   const performSearch = (query: string, category: string) => {
-    const newParams = new URLSearchParams()
-    if (query) newParams.set("name", query)
-    if (category) newParams.set("category", category)
-
-    navigate({ search: newParams.toString() }, { replace: true })
-  }
+    const newParams = new URLSearchParams(location.search);
+    if (query) {
+      newParams.set("name", query);
+    } else {
+      newParams.delete("name");
+    }
+  
+    if (category) {
+      newParams.set("category", category);
+    } else {
+      newParams.delete("category");
+    }
+  
+    navigate({ search: newParams.toString() }, { replace: true });
+  };
 
   const debouncedSearch = useCallback(debounce(performSearch, 500), [])
 

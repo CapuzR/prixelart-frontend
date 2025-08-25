@@ -16,11 +16,15 @@ import Modal from "@mui/material/Modal"
 
 import { Theme, useTheme } from "@mui/material"
 import { makeStyles } from "tss-react/mui"
-import { useUser } from "@context/GlobalContext"
+import { useSnackBar, useUser } from "@context/GlobalContext"
 import { Movement } from "types/movement.types"
 import { Order, OrderStatus } from "types/order.types"
 import { ObjectId } from "mongodb"
 import CountUp from "react-countup"
+import { DataGrid, GridColDef } from "@mui/x-data-grid"
+import { Art } from "../../../types/art.types"
+
+const paginationModel = { page: 0, pageSize: 5 }
 
 const useStyles = makeStyles()((theme: Theme) => {
   return {
@@ -47,15 +51,54 @@ export default function PrixerProfile() {
   const { user } = useUser()
   const navigate = useNavigate()
   const location = useLocation()
+  const { showSnackBar } = useSnackBar()
 
   const [balance, setBalance] = useState(0)
   const [movements, setMovements] = useState<Movement[]>([])
   const [orders, setOrders] = useState<Order[]>([])
+  const [myArts, setMyArts] = useState<Art[]>([])
+
   const [tab, setTab] = useState(0)
   const [openOrderDetails, setOpenOrderDetails] = useState(false)
   const [orderId, setOrderId] = useState<ObjectId | string | undefined>()
   const [placement, setPlacement] = useState<string | undefined>()
   const [type, setType] = useState<string | undefined>()
+
+  const columns: GridColDef[] = [
+    {
+      field: "artId",
+      headerName: "ID",
+      width: 120,
+      sortable: false,
+      renderCell: (params) => {
+        const artId = params.value as string
+        return (
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => navigate(`/arte/${artId}`)}
+            sx={{textTransform: 'none', width: '100%'}}
+          >
+           { "Ver " + params.value}
+          </Button>
+        )
+      },
+    },
+    { field: "title", headerName: "Título", flex: 1, minWidth: 200 },
+    {
+      field: "comission",
+      headerName: "Comisión",
+      description: "Este es el porcentaje que recibes al venderse tu arte",
+      type: "number",
+      width: 90,
+    },
+    {
+      field: "selled",
+      headerName: "Ventas",
+      description: "Cantidad de veces que se ha vendido tu arte",
+      width: 90,
+    },
+  ]
 
   const handleClick =
     (newPlacement: string, orderId: string | undefined, type?: string) =>
@@ -95,12 +138,23 @@ export default function PrixerProfile() {
       .then((response) => setOrders(response.data.result.reverse()))
   }
 
+  const getMostSelled = async () => {
+    const url =
+      import.meta.env.VITE_BACKEND_URL + "/prixer/readStats/" + user?.username
+    const response = await axios.get(url)
+    showSnackBar(response.data.message)
+    if (response.data.success) {
+      setMyArts(response.data.result)
+    }
+  }
+
   useEffect(() => {
     if (user) {
       if (user?.account !== undefined) {
         getBalance()
         getMovements()
       }
+      getMostSelled()
       getOrders()
     }
 
@@ -258,7 +312,7 @@ export default function PrixerProfile() {
                   }}
                 />
                 <Tab
-                  label="Interacciones"
+                  label="Estadísticas"
                   style={{
                     textTransform: "none",
                     fontSize: isDeskTop ? 18 : 11,
@@ -527,9 +581,25 @@ export default function PrixerProfile() {
                 </Grid2>
               )}
               {tab === 3 && (
-                <Typography align="center" variant="h5" color="secondary">
-                  ¡Próximamente!
-                </Typography>
+                <Grid2>
+                  <Typography
+                    align="center"
+                    variant="h5"
+                    color="secondary"
+                    mb={2}
+                  >
+                    Tus artes más vendidos
+                  </Typography>
+                  <Paper sx={{ height: "auto", width: "100%" }}>
+                    <DataGrid
+                      rows={myArts}
+                      columns={columns}
+                      initialState={{ pagination: { paginationModel } }}
+                      pageSizeOptions={[5, 10, 20]}
+                      sx={{ border: 0 }}
+                    />
+                  </Paper>
+                </Grid2>
               )}
             </Grid2>
           </Grid2>

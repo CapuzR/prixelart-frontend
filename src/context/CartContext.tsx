@@ -120,11 +120,13 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
         }
 
         try {
-          const [_originalApiPrice, userSpecificPrice] = await fetchVariantPrice(
-            String(variantId), // Ensure string
-            String(product._id) // Ensure string
-          );
+          const artId = (line.item.art && '_id' in line.item.art) ? line.item.art._id : undefined;
 
+          const [_originalApiPrice, userSpecificPrice] = await fetchVariantPrice(
+            String(variantId),
+            String(product._id),
+            artId?.toString()
+          );
           const newPriceToUse = userSpecificPrice;
 
           if (Number(line.item.price) !== newPriceToUse) {
@@ -138,7 +140,7 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
                 ...line.item,
                 price: String(newPriceToUse), // Update item's price
               },
-              subtotal: (newPriceToUse - line.discount) * line.quantity,
+              subtotal: (Number(newPriceToUse) - line.discount) * line.quantity,
             };
           }
         } catch (error) {
@@ -215,7 +217,6 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
           line.item.art?.artId === item.art?.artId &&
           isSameSelection(line.item.product?.selection as VariantAttribute[], item.product?.selection as VariantAttribute[])
         );
-
         if (existingLineIndex !== -1) {
           const existingLine = updatedLines[existingLineIndex];
           const updatedQuantity = existingLine.quantity + quantity;

@@ -3,7 +3,7 @@ import { useState } from "react"
 import axios from "axios"
 import { useParams, useNavigate } from "react-router-dom"
 
-import { isAValidPassword } from "utils/validations"
+import { validatePasswordDetailed } from "utils/validations"
 import Copyright from "components/Copyright/copyright"
 
 //material-ui
@@ -25,6 +25,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff"
 import { Theme } from "@mui/material"
 import { makeStyles } from "tss-react/mui"
 import { useSnackBar, useBackdrop } from "context/GlobalContext"
+import FormHelperText from "@mui/material/FormHelperText"
 
 const useStyles = makeStyles()((theme: Theme) => {
   return {
@@ -60,7 +61,9 @@ export default function PasswordReset() {
   // const token = props.match.params.token
 
   //Error states.
-  const [newPasswordError, setNewPasswordError] = useState<boolean>(false)
+  const [passwordError, setPasswordError] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
   const { showSnackBar } = useSnackBar()
   const { showBackdrop, closeBackdrop } = useBackdrop()
   //FALTA AGREGAR AQUI LA VALIDACION DE QUE EL LINK EXISTE.
@@ -68,71 +71,65 @@ export default function PasswordReset() {
     if (!token) {
       showSnackBar("Token inválido o expirado. Por favor inténtalo de nuevo.")
     } else {
+      showBackdrop()
       checkToken()
     }
-  },[])
+  }, [])
 
   const checkToken = async () => {
-    const base_url = import.meta.env.VITE_BACKEND_URL + "/pw-token-check"
-    const data = {
-      token: token,
-    }
-    const response = await axios.post(base_url, data)
-    if (response) {
-      console.log(response.data)
-
-      if (response.data.success) {
-        closeBackdrop()
-        showSnackBar(response.data.message)
-
-      } else {
-        showBackdrop()
-        showSnackBar(response.data.info)
-
+    try {
+      const base_url = import.meta.env.VITE_BACKEND_URL + "/pw-token-check"
+      const data = {
+        token: token,
       }
+      const response = await axios.post(base_url, data)
+      if (response) {
+        showSnackBar(response.data.message)
+      }
+    } catch (error) {
+      showSnackBar("Error al verificar el token. Inténtalo más tarde.")
+    } finally {
+      closeBackdrop()
     }
   }
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (!newPassword) {
-      showSnackBar("Por favor completa todos los campos requeridos.")
-    } else {
+    if (passwordError || !newPassword) {
+      showSnackBar("Por favor, introduce una contraseña válida.")
+    }
+
+    setIsSubmitting(true)
+    try {
       const base_url = import.meta.env.VITE_BACKEND_URL + "/reset-password"
-      const data = {
-        token: token,
-        newPassword: newPassword,
+      const response = await axios.post(base_url, { token, newPassword })
+
+      if (response.data.success) {
+        showSnackBar(response.data.message || "¡Contraseña cambiada con éxito!")
+        navigate("/iniciar")
+      } else {
+        showSnackBar(
+          response.data.message ||
+            "No se pudo cambiar la contraseña. Inténtalo de nuevo."
+        )
       }
-      axios
-        .post(base_url, data)
-        .then((response) => {
-          if (!response.data.success) {
-            setNewPasswordError(true)
-            showSnackBar("Por favor intentar nuevamente")
-          } else {
-            showSnackBar(response.data.info)
-            navigate({ pathname: "/iniciar" })
-          }
-        })
-        .catch((error) => {
-          console.log(error.response)
-        })
+    } catch (error) {
+      console.error(error)
+      showSnackBar("Ocurrió un error en el servidor.")
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
   //New password
-  const handleNewPasswordChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | undefined>
-  ) => {
-    if (isAValidPassword(e.target.value)) {
-      setNewPassword(e.target.value)
-      setNewPasswordError(false)
+  const handleNewPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setNewPassword(value)
+    if (value) {
+      const errorMessage = validatePasswordDetailed(value)
+      setPasswordError(errorMessage)
     } else {
-      setNewPassword(e.target.value)
-      setNewPasswordError(true)
-      showSnackBar(
-        "Disculpa, tu contraseña nueva debe tener entre 8 y 15 caracteres, incluyendo al menos: una minúscula, una mayúscula, un número y un caracter especial."
-      )
+      setPasswordError("")
     }
   }
 
@@ -166,7 +163,6 @@ export default function PasswordReset() {
                   type={showNewPassword ? "text" : "password"}
                   value={newPassword}
                   label="Contraseña nueva"
-                  error={newPasswordError}
                   onChange={handleNewPasswordChange}
                   endAdornment={
                     <InputAdornment position="end">
@@ -181,6 +177,9 @@ export default function PasswordReset() {
                     </InputAdornment>
                   }
                 />
+                {passwordError && (
+                  <FormHelperText>{passwordError}</FormHelperText>
+                )}
               </FormControl>
             </Grid2>
           </Grid2>
@@ -190,6 +189,7 @@ export default function PasswordReset() {
             variant="contained"
             color="primary"
             className={classes.submit}
+            disabled={!newPassword || !!passwordError || isSubmitting}
             value="submit"
           >
             Cambiar contraseña

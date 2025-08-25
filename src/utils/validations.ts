@@ -10,9 +10,37 @@ export function isAValidEmail(email: string | undefined): boolean {
 }
 
 export function isAValidPassword(password: string): boolean {
-  const re = /^(?=.*[\d])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^.&*])[\w!@.#$%^&*]{8,}$/;
+  const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$/;
   return re.test(String(password));
 }
+
+export const validatePasswordDetailed = (password: string) => {
+  if (password.length < 8) {
+    return "Debe tener al menos 8 caracteres.";
+  }
+
+  if (password.length > 15) {
+    return "No puede tener más de 15 caracteres.";
+  }
+
+  if (!/[a-z]/.test(password)) {
+    return "Debe incluir al menos una letra minúscula.";
+  }
+
+  if (!/[A-Z]/.test(password)) {
+    return "Debe incluir al menos una letra mayúscula.";
+  }
+
+  if (!/\d/.test(password)) {
+    return "Debe incluir al menos un número.";
+  }
+
+  if (!/[@$!%*?&]/.test(password)) {
+    return "Debe incluir un símbolo (ej: @, $, !, %, *, ?, &).";
+  }
+
+  return ""; 
+};
 
 export function isAValidPhoneNum(phoneNumber: string): boolean {
   const re = /^[+\s\.]?[0-9]{10,14}$/im;

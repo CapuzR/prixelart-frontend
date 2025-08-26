@@ -213,7 +213,7 @@ const ReadUsers: React.FC = () => {
       const lowerQuery = searchQuery.toLowerCase()
       filteredUsers = filteredUsers.filter(
         (user) =>
-          user.username.toLowerCase().includes(lowerQuery) ||
+          user.username?.toLowerCase().includes(lowerQuery) ||
           user.firstName?.toLowerCase().includes(lowerQuery) ||
           user.lastName?.toLowerCase().includes(lowerQuery) ||
           user.email?.toLowerCase().includes(lowerQuery)
@@ -420,6 +420,7 @@ const ReadUsers: React.FC = () => {
                 onChange={handleFilterChange as any}
               >
                 <MenuItem value="all">Todos</MenuItem>
+                <MenuItem value="Consumer">Cliente</MenuItem>
                 <MenuItem value="prixer">Prixer</MenuItem>
                 <MenuItem value="user">Usuario</MenuItem>
               </Select>

@@ -106,7 +106,10 @@ const Flow = () => {
           "arte",
           "itemId",
           "lineId",
-        ]) // Get all other params
+          "name",
+          "category",
+          "page"
+        ])
 
         const atts: Record<string, string> = {}
         Array.from(selectedAttributes.entries()).map(([key, value]) => {
@@ -176,9 +179,12 @@ const Flow = () => {
 
       if (selectedVariant?._id) {
         try {
+          const artId = (item.art && '_id' in item.art) ? item.art._id : undefined;
+
           const priceResult = await fetchVariantPrice(
             selectedVariant._id,
-            item.sku
+            item.sku,
+            artId?.toString()
           )
           const originalPriceStr = priceResult[1].toString() // Assuming result format is [?, priceString]
 
@@ -357,18 +363,18 @@ const Flow = () => {
           selectedProductId={selectedProductId}
         />
       ) : ( */}
-        <Landscape
-          item={item}
-          handleCart={handleCart}
-          handleSelection={handleSelection}
-          handleChangeElement={handleChangeElement}
-          isItemReady={isItemReady}
-          onArtSelect={handleArtSelect}
-          onProductSelect={handleProductSelect}
-          selectedProductId={selectedProductId}
-          isProductAttributesComplete={isProductAttributesComplete}
-          allAttributeNames={Array.from(allAttributeNames)}
-        />
+      <Landscape
+        item={item}
+        handleCart={handleCart}
+        handleSelection={handleSelection}
+        handleChangeElement={handleChangeElement}
+        isItemReady={isItemReady}
+        onArtSelect={handleArtSelect}
+        onProductSelect={handleProductSelect}
+        selectedProductId={selectedProductId}
+        isProductAttributesComplete={isProductAttributesComplete}
+        allAttributeNames={Array.from(allAttributeNames)}
+      />
       {/* )} */}
     </>
   )

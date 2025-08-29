@@ -1245,6 +1245,7 @@ const CreateProduct: React.FC = () => {
       } = formVariant
       return {
         ...restOfVariant,
+                _id: uuidv4(),
         publicPrice: String(restOfVariant.publicPrice),
         prixerPrice: String(restOfVariant.prixerPrice),
         attributes: attributesArray,

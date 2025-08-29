@@ -1,46 +1,39 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react"
-import { useNavigate } from "react-router-dom"
-import {
-  Container,
-  Typography,
-  Alert,
-  Box,
-  Paper,
-  Skeleton,
-  Tabs,
-  Tab,
-} from "@mui/material"
-import Grid2 from "@mui/material/Grid"
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Container, Typography, Alert, Box, Paper, Skeleton, Tabs, Tab } from '@mui/material';
+import Grid2 from '@mui/material/Grid';
 
 // Icons
-import MonetizationOnIcon from "@mui/icons-material/MonetizationOn"
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart"
-import AssessmentIcon from "@mui/icons-material/Assessment"
-import InventoryIcon from "@mui/icons-material/Inventory"
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined"
-import BarChartIcon from "@mui/icons-material/BarChart"
-import PieChartIcon from "@mui/icons-material/PieChart"
-import ListAltIcon from "@mui/icons-material/ListAlt"
-import PaletteIcon from "@mui/icons-material/Palette"
-import CategoryIcon from "@mui/icons-material/Category"
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+import InventoryIcon from '@mui/icons-material/Inventory';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import PieChartIcon from '@mui/icons-material/PieChart';
+import ListAltIcon from '@mui/icons-material/ListAlt';
+import PaletteIcon from '@mui/icons-material/Palette';
+import CategoryIcon from '@mui/icons-material/Category';
+
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 // Child components
-import { KPICardWithComparison } from "./components/KPICardWithComparison"
-import { DashboardFiltersComponent } from "./components/DashboardFiltersComponent"
-import SalesTrendChart from "./components/SalesTrendChart"
-import PerformanceWidget from "./components/PerformanceWidget"
-import GeoChart from "./components/GeoChart"
-import { PaymentStatusPieChart } from "./components/PaymentStatusPieChart"
-import { PaymentMethodChart } from "./components/PaymentMethodChart"
-import FilteredOrdersList from "./components/FilteredOrdersList"
-import DashboardSkeleton from "./components/DashboardSkeleton"
-import EmptyState from "./components/EmptyState"
-import { OrderStatusFunnelChart } from "./components/OrderStatusFunnelChart"
-import { CustomerAnalyticsChart } from "./components/CustomerAnalyticsChart"
-import { CycleTimeChart } from "./components/CycleTimeChart"
+import { KPICardWithComparison } from './components/KPICardWithComparison';
+import { DashboardFiltersComponent } from './components/DashboardFiltersComponent';
+import SalesTrendChart from './components/SalesTrendChart';
+import PerformanceWidget from './components/PerformanceWidget';
+import GeoChart from './components/GeoChart';
+import { PaymentStatusPieChart } from './components/PaymentStatusPieChart';
+import { PaymentMethodChart } from './components/PaymentMethodChart';
+import FilteredOrdersList from './components/FilteredOrdersList';
+import DashboardSkeleton from './components/DashboardSkeleton';
+import EmptyState from './components/EmptyState';
+import { OrderStatusFunnelChart } from './components/OrderStatusFunnelChart';
+import { CustomerAnalyticsChart } from './components/CustomerAnalyticsChart';
+import { CycleTimeChart } from './components/CycleTimeChart';
 
 // Types & API
-import { Order, OrderStatus, GlobalPaymentStatus } from "types/order.types"
+import { Order, OrderStatus, GlobalPaymentStatus } from 'types/order.types';
 import {
   DashboardFilters,
   fetchGlobalOrdersList,
@@ -55,18 +48,29 @@ import {
   GlobalDashboardStatsData,
   CustomerAnalyticsData,
   CycleTimeData,
-} from "@api/order.api";
-import { getPermissions } from "@api/admin.api";
-import { PermissionsV2 } from "types/permissions.types";
+} from '@api/order.api';
+import { getPermissions } from '@api/admin.api';
+import { PermissionsV2 } from 'types/permissions.types';
 
 interface TabPanelProps {
-  children?: React.ReactNode
-  index: number
-  value: number
+  children?: React.ReactNode;
+  index: number;
+  value: number;
 }
 
+interface SalesChartProps {
+  stats: {
+    totalOrdersAmount: number;
+    totalPaidAmount: number;
+    totalFinalizedAmount: number;
+  };
+  loading: boolean;
+}
+
+const COLORS = ['#0088FE', '#2e7d32'];
+
 function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props
+  const { children, value, index, ...other } = props;
   return (
     <div
       role="tabpanel"
@@ -77,13 +81,13 @@ function TabPanel(props: TabPanelProps) {
     >
       {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
     </div>
-  )
+  );
 }
 
 const getStartOfMonth = (): Date => {
-  const now = new Date()
-  return new Date(now.getFullYear(), now.getMonth(), 1)
-}
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), 1);
+};
 
 const SellerDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -95,31 +99,32 @@ const SellerDashboard: React.FC = () => {
   const [filters, setFilters] = useState<DashboardFilters>({
     startDate: getStartOfMonth(),
     endDate: new Date(),
-  })
+  });
 
   // Data States
-  const [allOrders, setAllOrders] = useState<Order[]>([])
-  const [stats, setStats] = useState<GlobalDashboardStatsData | null>(null)
-  const [sellerPerformance, setSellerPerformance] = useState<any[]>([])
-  const [prixerPerformance, setPrixerPerformance] = useState<any[]>([])
-  const [productPerformance, setProductPerformance] = useState<any[]>([])
-  const [productionLinePerformance, setProductionLinePerformance] = useState<
-    any[]
-  >([])
-  const [artPerformance, setArtPerformance] = useState<any[]>([])
-  const [customerAnalytics, setCustomerAnalytics] =
-    useState<CustomerAnalyticsData | null>(null)
-  const [cycleTimeAnalytics, setCycleTimeAnalytics] = useState<CycleTimeData[]>(
-    []
-  )
+  const [allOrders, setAllOrders] = useState<Order[]>([]);
+  const [stats, setStats] = useState<GlobalDashboardStatsData | null>(null);
+  const [sellerPerformance, setSellerPerformance] = useState<any[]>([]);
+  const [prixerPerformance, setPrixerPerformance] = useState<any[]>([]);
+  const [productPerformance, setProductPerformance] = useState<any[]>([]);
+  const [productionLinePerformance, setProductionLinePerformance] = useState<any[]>([]);
+  const [artPerformance, setArtPerformance] = useState<any[]>([]);
+  const [customerAnalytics, setCustomerAnalytics] = useState<CustomerAnalyticsData | null>(null);
+  const [cycleTimeAnalytics, setCycleTimeAnalytics] = useState<CycleTimeData[]>([]);
+
+  const data = [
+    // { name: 'Total Vendido', value: stats?.totalOrdersAmount || 0 },
+    { name: 'Total Pendiente', value: stats?.totalPendingAmount || 0 },
+    { name: 'Total Pagados', value: stats?.totalPaidAmount || 0 },
+  ];
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setActiveTab(newValue)
-  }
+    setActiveTab(newValue);
+  };
 
   const loadDashboardData = useCallback(async () => {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
     try {
       const [
         ordersData,
@@ -143,87 +148,79 @@ const SellerDashboard: React.FC = () => {
         fetchCustomerAnalytics(filters),
         fetchCycleTimeAnalytics(filters),
         getPermissions(),
-      ])
+      ]);
 
-      setAllOrders(ordersData)
-      setStats(statsData)
-      setSellerPerformance(sellersData)
-      setPrixerPerformance(prixersData)
-      setProductPerformance(productsData)
-      setProductionLinePerformance(productionLinesData)
-      setArtPerformance(artsData)
-      setCustomerAnalytics(customerData)
-      setCycleTimeAnalytics(cycleTimeData)
-      setPermissions(userPermissions)
+      setAllOrders(ordersData);
+      setStats(statsData);
+      setSellerPerformance(sellersData);
+      setPrixerPerformance(prixersData);
+      setProductPerformance(productsData);
+      setProductionLinePerformance(productionLinesData);
+      setArtPerformance(artsData);
+      setCustomerAnalytics(customerData);
+      setCycleTimeAnalytics(cycleTimeData);
+      setPermissions(userPermissions);
     } catch (err) {
-      console.error("Failed to load dashboard data:", err)
-      setError(
-        err instanceof Error ? err.message : "An unknown error occurred."
-      )
+      console.error('Failed to load dashboard data:', err);
+      setError(err instanceof Error ? err.message : 'An unknown error occurred.');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [filters])
+  }, [filters]);
 
   useEffect(() => {
-    loadDashboardData()
-  }, [loadDashboardData])
+    loadDashboardData();
+  }, [loadDashboardData]);
 
-  const handleFilterChange = (newFilters: DashboardFilters) =>
-    setFilters(newFilters)
+  const handleFilterChange = (newFilters: DashboardFilters) => setFilters(newFilters);
 
   const handleViewOrder = (orderId: string, openInNewTab: boolean) => {
-    const path = `/admin/orders/update/${orderId}`
+    const path = `/admin/orders/update/${orderId}`;
     if (openInNewTab) {
-      window.open(path, "_blank")
+      window.open(path, '_blank');
     } else {
-      navigate(path)
+      navigate(path);
     }
-  }
+  };
 
   const handleViewAllOrders = (statusFilter?: string) => {
     const params = new URLSearchParams({
       startDate: filters.startDate.toISOString(),
       endDate: filters.endDate.toISOString(),
-    })
-    if (statusFilter) params.append("payStatus", statusFilter)
-    navigate(`/admin/orders/read?${params.toString()}`)
-  }
+    });
+    if (statusFilter) params.append('payStatus', statusFilter);
+    navigate(`/admin/orders/read?${params.toString()}`);
+  };
 
   const pendingPaymentOrders = useMemo(
     () =>
       allOrders.filter(
-        (o) =>
-          o.payment?.status?.[o.payment.status.length - 1]?.[0] ===
-          GlobalPaymentStatus.Pending
+        (o) => o.payment?.status?.[o.payment.status.length - 1]?.[0] === GlobalPaymentStatus.Pending
       ),
     [allOrders]
-  )
+  );
   const activeOrders = useMemo(
     () =>
       allOrders.filter((o) => {
-        const latestStatus = o.status?.[o.status.length - 1]?.[0]
-        return (
-          latestStatus !== OrderStatus.Finished &&
-          latestStatus !== OrderStatus.Canceled
-        )
+        const latestStatus = o.status?.[o.status.length - 1]?.[0];
+        return latestStatus !== OrderStatus.Finished && latestStatus !== OrderStatus.Canceled;
       }),
     [allOrders]
-  )
+  );
 
-  const isRefetching = loading && !!stats
+  const isRefetching = loading && !!stats;
 
   if (error) {
     return (
       <Container sx={{ py: 4 }}>
         <Alert severity="error">Error: {error}</Alert>
       </Container>
-    )
+    );
   }
 
   if (loading && !stats) {
     return (
-      <Container maxWidth={false} sx={{ py: 3, backgroundColor: "#f4f6f8" }}>
+      <Container maxWidth={false} sx={{ py: 3, backgroundColor: '#f4f6f8' }}>
         <DashboardFiltersComponent
           filters={filters}
           onFiltersChange={handleFilterChange}
@@ -232,23 +229,16 @@ const SellerDashboard: React.FC = () => {
         />
         <DashboardSkeleton />
       </Container>
-    )
+    );
   }
 
   return (
-    <Container maxWidth={false} sx={{ py: 3, backgroundColor: "#f4f6f8" }}>
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={3}
-      >
+    <Container maxWidth={false} sx={{ py: 3, backgroundColor: '#f4f6f8' }}>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
         <Typography variant="h4" fontWeight="bold">
           Dashboard Global
         </Typography>
-        <Typography variant="subtitle1">
-          Bienvenido, {permissions?.area || "Admin"}!
-        </Typography>
+        <Typography variant="subtitle1">Bienvenido, {permissions?.area || 'Admin'}!</Typography>
       </Box>
 
       <DashboardFiltersComponent
@@ -312,44 +302,63 @@ const SellerDashboard: React.FC = () => {
               />
             </Grid2>
           </Grid2>
-
-          <Grid2 container spacing={3} mt={3}>
-            <Grid2 size={{ xs: 12, sm: 6, lg: 4 }}>
-              <KPICardWithComparison
-                title="$ Total Solicitud"
-                value={stats.totalOrdersAmount}
-                previousValue={stats.prevPeriodTotalSales}
-                prefix="$"
-                icon={MonetizationOnIcon}
-                loading={isRefetching}
-              />
+          <Grid2 sx={{ display: 'flex'}} container spacing={3} mt={3}>
+            <Grid2 container spacing={3} mt={3} sx={{ display: 'flex', flexDirection: 'column', width: '45%' }}>
+              <Grid2 size={{ xs: 12 }}>
+                <KPICardWithComparison
+                  title="$ Total Solicitud"
+                  value={stats.totalOrdersAmount}
+                  previousValue={stats.prevPeriodTotalSales}
+                  prefix="$"
+                  icon={MonetizationOnIcon}
+                  loading={isRefetching}
+                />
+              </Grid2>
+              <Grid2 size={{ xs: 12 }}>
+                <KPICardWithComparison
+                  title="$ Total Pagados"
+                  value={stats.totalPaidAmount}
+                  previousValue={stats.prevPeriodTotalOrders}
+                  icon={MonetizationOnIcon}
+                  loading={isRefetching}
+                  prefix="$"
+                />
+              </Grid2>
+              <Grid2 size={{ xs: 12 }}>
+                <KPICardWithComparison
+                  title="$ Total Concretado"
+                  value={stats.totalFinalizedAmount}
+                  previousValue={0}
+                  prefix="$"
+                  icon={MonetizationOnIcon}
+                  loading={isRefetching}
+                />
+              </Grid2>
             </Grid2>
-            <Grid2 size={{ xs: 12, sm: 6, lg: 4 }}>
-              <KPICardWithComparison
-                title="$ Total Pagados"
-                value={stats.totalPaidAmount}
-                previousValue={stats.prevPeriodTotalOrders}
-                icon={MonetizationOnIcon}
-                loading={isRefetching}
-                prefix="$"
-              />
-            </Grid2>
-            <Grid2 size={{ xs: 12, sm: 6, lg: 4 }}>
-              <KPICardWithComparison
-                title="$ Total Concretado"
-                value={stats.totalFinalizedAmount}
-                previousValue={0}
-                prefix="$"
-                icon={MonetizationOnIcon}
-                loading={isRefetching}
-              />
-            </Grid2>
+            <ResponsiveContainer width="50%" height={450}>
+              <PieChart>
+                <Pie
+                  data={data}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  outerRadius={190}
+                  fill="#8884d8"
+                  dataKey="value"
+                  nameKey="name"
+                >
+                  {data.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(value: number) => `$${value.toFixed(2)}`} />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
           </Grid2>
 
-          <Paper
-            sx={{ width: "100%", mt: 3, borderRadius: 2, overflow: "hidden" }}
-          >
-            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+          <Paper sx={{ width: '100%', mt: 3, borderRadius: 2, overflow: 'hidden' }}>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
               <Tabs
                 value={activeTab}
                 onChange={handleTabChange}
@@ -357,31 +366,15 @@ const SellerDashboard: React.FC = () => {
                 variant="scrollable"
                 scrollButtons="auto"
               >
-                <Tab
-                  icon={<BarChartIcon />}
-                  iconPosition="start"
-                  label="Rendimiento General"
-                />
-                <Tab
-                  icon={<PaletteIcon />}
-                  iconPosition="start"
-                  label="Rendimiento de Artes"
-                />
+                <Tab icon={<BarChartIcon />} iconPosition="start" label="Rendimiento General" />
+                <Tab icon={<PaletteIcon />} iconPosition="start" label="Rendimiento de Artes" />
                 <Tab
                   icon={<CategoryIcon />}
                   iconPosition="start"
                   label="Rendimiento de Productos"
                 />
-                <Tab
-                  icon={<PieChartIcon />}
-                  iconPosition="start"
-                  label="Análisis Visual"
-                />
-                <Tab
-                  icon={<ListAltIcon />}
-                  iconPosition="start"
-                  label="Órdenes Recientes"
-                />
+                <Tab icon={<PieChartIcon />} iconPosition="start" label="Análisis Visual" />
+                <Tab icon={<ListAltIcon />} iconPosition="start" label="Órdenes Recientes" />
               </Tabs>
             </Box>
 
@@ -445,10 +438,7 @@ const SellerDashboard: React.FC = () => {
             <TabPanel value={activeTab} index={3}>
               <Grid2 container spacing={3}>
                 <Grid2 size={{ xs: 12, md: 6 }}>
-                  <Paper
-                    variant="outlined"
-                    sx={{ p: 2, borderRadius: 2, height: "100%" }}
-                  >
+                  <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, height: '100%' }}>
                     <Typography variant="h6" fontWeight="bold">
                       Embudo de Operaciones
                     </Typography>
@@ -459,17 +449,11 @@ const SellerDashboard: React.FC = () => {
                   </Paper>
                 </Grid2>
                 <Grid2 size={{ xs: 12, md: 6 }}>
-                  <Paper
-                    variant="outlined"
-                    sx={{ p: 2, borderRadius: 2, height: "100%" }}
-                  >
+                  <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, height: '100%' }}>
                     <Typography variant="h6" fontWeight="bold">
                       Tiempo Promedio por Etapa
                     </Typography>
-                    <CycleTimeChart
-                      cycleTimeData={cycleTimeAnalytics}
-                      loading={isRefetching}
-                    />
+                    <CycleTimeChart cycleTimeData={cycleTimeAnalytics} loading={isRefetching} />
                   </Paper>
                 </Grid2>
                 <Grid2 size={12}>
@@ -490,8 +474,8 @@ const SellerDashboard: React.FC = () => {
                       p: 2,
                       borderRadius: 2,
                       height: 450,
-                      display: "flex",
-                      flexDirection: "column",
+                      display: 'flex',
+                      flexDirection: 'column',
                     }}
                   >
                     <PaymentStatusPieChart
@@ -508,14 +492,11 @@ const SellerDashboard: React.FC = () => {
                       p: 2,
                       borderRadius: 2,
                       height: 450,
-                      display: "flex",
-                      flexDirection: "column",
+                      display: 'flex',
+                      flexDirection: 'column',
                     }}
                   >
-                    <PaymentMethodChart
-                      orders={allOrders}
-                      loading={isRefetching}
-                    />
+                    <PaymentMethodChart orders={allOrders} loading={isRefetching} />
                   </Paper>
                 </Grid2>
                 <Grid2 size={12}>
@@ -540,7 +521,7 @@ const SellerDashboard: React.FC = () => {
                       orders={pendingPaymentOrders}
                       loading={isRefetching}
                       onViewOrder={handleViewOrder}
-                      onViewAll={() => handleViewAllOrders("Pendiente")}
+                      onViewAll={() => handleViewAllOrders('Pendiente')}
                       emptyMessage="No hay órdenes pendientes de pago."
                     />
                   </Paper>
@@ -565,7 +546,7 @@ const SellerDashboard: React.FC = () => {
         </>
       )}
     </Container>
-  )
-}
+  );
+};
 
-export default SellerDashboard
+export default SellerDashboard;

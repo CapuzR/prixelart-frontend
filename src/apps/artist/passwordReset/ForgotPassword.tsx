@@ -18,6 +18,7 @@ import { Theme } from "@mui/material"
 import { makeStyles } from "tss-react/mui"
 
 import { useSnackBar } from "context/GlobalContext"
+import { isAValidEmail } from "@utils/validations"
 
 const useStyles = makeStyles()((theme: Theme) => {
   return {
@@ -116,8 +117,9 @@ export default function ForgotPassword() {
             color="primary"
             className={classes.submit}
             value="submit"
+            disabled={!isAValidEmail(email)}
           >
-            Recuperar acceso
+            {!isAValidEmail(email) ?  "Introduce tu correo" : "Recuperar acceso"}
           </Button>
         </form>
       </div>

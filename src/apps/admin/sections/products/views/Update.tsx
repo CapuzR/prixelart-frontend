@@ -1376,7 +1376,7 @@ const UpdateProduct: React.FC = () => {
       } = formVariant;
       return {
         ...restOfVariant,
-        _id: formVariant._id,
+        _id: formVariant._id || uuidv4(),
         name: formVariant.name,
         publicPrice: String(formVariant.publicPrice),
         prixerPrice: String(formVariant.prixerPrice),

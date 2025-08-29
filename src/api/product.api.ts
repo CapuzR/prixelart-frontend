@@ -95,13 +95,14 @@ export const fetchActiveProductDetails = async (
 
 export const fetchVariantPrice = async (
   variantId: String,
-  productId: String
+  productId: String,
+  artId?: string
 ): Promise<[number, number]> => {
   try {
     const response = await axios.get<PrixResponse>(
       `${BACKEND_URL}/product/getVariantPrice`,
       {
-        params: { variantId, productId: productId || null },
+        params: { variantId, productId: productId || null, artId },
       }
     )
 
@@ -218,7 +219,7 @@ export const updateManyProduct = async (
       throw new Error(response.data.message || `Failed to update products`)
     }
 
-    if (!response.data.details) {
+    if (!response.data.result) {
       console.error(
         `Backend reported success but no product data returned after update.`
       )

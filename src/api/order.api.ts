@@ -565,6 +565,7 @@ export interface GlobalDashboardStatsData {
   prevPeriodTotalOrders: number
   totalOrdersAmount: number
   totalPaidAmount: number
+  totalPendingAmount: number
   totalFinalizedAmount: number
 }
 

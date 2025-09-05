@@ -62,7 +62,7 @@ import {
 } from "types/order.types"
 import Title from "@apps/admin/components/Title"
 import ConfirmationDialog from "@components/ConfirmationDialog/ConfirmationDialog"
-import { deleteOrder, getOrders } from "@api/order.api"
+import { deleteOrder, getOrders, updateOrder } from "@api/order.api"
 import excelJS from "exceljs"
 import "moment/locale/es"
 import { format, parseISO, isValid } from "date-fns"
@@ -175,6 +175,7 @@ const ReadOrders: React.FC = () => {
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [searchTerm, setSearchTerm] = useState("")
+  const [updatingOrderId, setUpdatingOrderId] = useState<string | null>(null)
   const [isFilteringLoading, setIsFilteringLoading] = useState<boolean>(false)
 
   const parseDateParam = (param: string | null): Date | null => {
@@ -409,6 +410,7 @@ const ReadOrders: React.FC = () => {
     setDialogOpen(false)
     setOrderToDelete(null)
   }
+
   const handleConfirmDelete = async () => {
     if (!orderToDelete?._id) {
       showSnackBar("Error.")
@@ -438,6 +440,7 @@ const ReadOrders: React.FC = () => {
     }
     navigate(`/admin/orders/update/${orderId}`)
   }
+
   const handleCreate = () => {
     navigate("/admin/orders/create")
   }
@@ -539,22 +542,74 @@ const ReadOrders: React.FC = () => {
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Chip
-                        icon={statusProps.icon}
-                        label={statusProps.label}
-                        color={statusProps.color}
-                        size="small"
-                        variant="outlined"
-                      />
-                    </TableCell>{" "}
+                      {updatingOrderId === order._id ? (
+                        <CircularProgress size={24} />
+                      ) : permissions?.orders?.updateGeneralStatus ? (
+                        <FormControl fullWidth size="small" variant="outlined">
+                          <Select
+                            value={order.primaryStatus ?? OrderStatus.Pending}
+                            onChange={(e) =>
+                              handleStatusChange(order._id, e.target.value as OrderStatus)
+                            }
+                            sx={{ fontSize: "0.875rem" }}
+                          >
+                            {/* Mapeamos el Enum OrderStatus para crear los MenuItems */}
+                            {Object.keys(OrderStatus)
+                              .filter((key) => !isNaN(Number(key)))
+                              .map((key) => (
+                                <MenuItem key={key} value={key}>
+                                  {getStatusChipProps(Number(key) as OrderStatus).label}
+                                </MenuItem>
+                              ))}
+                          </Select>
+                        </FormControl>
+                      ) : (
+                        <Chip
+                          icon={statusProps.icon}
+                          label={statusProps.label}
+                          color={statusProps.color}
+                          size="small"
+                          variant="outlined"
+                        />
+                      )}
+                    </TableCell>
                     <TableCell>
-                      <Chip
-                        icon={payStatusProps.icon}
-                        label={payStatusProps.label}
-                        color={payStatusProps.color}
-                        size="small"
-                        variant="outlined"
-                      />
+                      {updatingOrderId === order._id ? (
+                        <CircularProgress size={24} />
+                      ) : permissions?.orders?.updatePayStatus ? (
+                        <FormControl fullWidth size="small" variant="outlined">
+                          <Select
+                            value={order.payStatus ?? GlobalPaymentStatus.Pending}
+                            onChange={(e) =>
+                              handlePayStatusChange(
+                                order._id,
+                                e.target.value as GlobalPaymentStatus
+                              )
+                            }
+                            sx={{ fontSize: "0.875rem" }}
+                          >
+                            {Object.keys(GlobalPaymentStatus)
+                              .filter((key) => !isNaN(Number(key)))
+                              .map((key) => (
+                                <MenuItem key={key} value={key}>
+                                  {
+                                    getpayStatusChipProps(
+                                      Number(key) as GlobalPaymentStatus
+                                    ).label
+                                  }
+                                </MenuItem>
+                              ))}
+                          </Select>
+                        </FormControl>
+                      ) : (
+                        <Chip
+                          icon={payStatusProps.icon}
+                          label={payStatusProps.label}
+                          color={payStatusProps.color}
+                          size="small"
+                          variant="outlined"
+                        />
+                      )}
                     </TableCell>
                     <TableCell>{order.shippingMethodName || "N/A"}</TableCell>
                     <TableCell>{order?.createdBy}</TableCell>
@@ -792,6 +847,86 @@ const ReadOrders: React.FC = () => {
     link.download = `Pedidos ${date}.xlsx`
     link.click()
   }
+
+  const handleStatusChange = async (orderId: string, newStatus: OrderStatus) => {
+    setUpdatingOrderId(orderId);
+    try {
+      const orderToUpdate = rawOrders.find((o) => o._id?.toString() === orderId);
+      if (!orderToUpdate) {
+        showSnackBar("No se pudo encontrar la orden localmente.");
+      }
+  
+      const currentStatusHistory: [OrderStatus, Date][] = orderToUpdate?.status || [];
+      const newStatusHistory: [OrderStatus, Date][] = [...currentStatusHistory, [newStatus, new Date()]];  
+      const updatePayload: Partial<Order> = {
+        status: newStatusHistory,
+      };
+  
+      await updateOrder(orderId, updatePayload);
+  
+      const updatedOrders = allOrders.map((o) =>
+        o._id === orderId
+          ? {
+              ...o,
+              primaryStatus: newStatus,
+              status: newStatusHistory,
+            }
+          : o
+      );
+      setAllOrders(updatedOrders);
+      setFilteredOrders(updatedOrders);
+  
+      showSnackBar("Estado de la orden actualizado con éxito.");
+    } catch (err: any) {
+      console.error("Error updating order status:", err);
+      showSnackBar(err.message || "No se pudo actualizar el estado.");
+    } finally {
+      setUpdatingOrderId(null);
+    }
+  };
+
+  const handlePayStatusChange = async (
+    orderId: string,
+    newPayStatus: GlobalPaymentStatus
+  ) => {
+    setUpdatingOrderId(orderId);
+    try {
+      const orderToUpdate = rawOrders.find((o) => o._id?.toString() === orderId);
+      if (!orderToUpdate) {
+        throw new Error("No se pudo encontrar la orden localmente.");
+      }
+      
+      const currentPayStatusHistory = orderToUpdate.payment?.status || [];
+      const newPayStatusHistory = [...currentPayStatusHistory, [newPayStatus, new Date()]];
+  
+      const updatePayload = {
+        "payment.status": newPayStatusHistory,
+      } as any;
+  
+      await updateOrder(orderId, updatePayload);
+  
+      const updatedOrders = rawOrders.map((o) =>
+        o._id?.toString() === orderId
+          ? {
+              ...o,
+              payStatus: newPayStatus,
+              payment: { ...o.payment, status: newPayStatusHistory },
+            }
+          : o
+      );
+      // setAllOrders(updatedOrders);
+      // setFilteredOrders(updatedOrders);
+      loadOrders()
+  
+      showSnackBar("Estado de pago actualizado con éxito.");
+    } catch (err: any) {
+      console.error("Error updating payment status:", err);
+      showSnackBar(err.message || "No se pudo actualizar el estado de pago.");
+    } finally {
+      setUpdatingOrderId(null);
+    }
+  };
+
 
   return (
     <>

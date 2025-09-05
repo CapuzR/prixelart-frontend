@@ -54,10 +54,10 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking }) => {
 
   useEffect(() => {
     const subscription = methods.watch((currentValues) => {
-      console.log(
-        "Form data (potential handleSubmit data) changed:",
-        currentValues
-      )
+      // console.log(
+      //   "Form data (potential handleSubmit data) changed:",
+      //   currentValues
+      // )
     })
 
     return () => {

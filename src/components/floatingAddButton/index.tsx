@@ -1,73 +1,68 @@
-import React from "react"
-import Fab from "@mui/material/Fab"
+import React, { useState } from "react"
+import Backdrop from "@mui/material/Backdrop"
+import SpeedDial from "@mui/material/SpeedDial"
+import SpeedDialIcon from "@mui/material/SpeedDialIcon"
+import SpeedDialAction from "@mui/material/SpeedDialAction"
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate"
 import LocalActivityIcon from "@mui/icons-material/LocalActivity"
-import Tooltip from "@mui/material/Tooltip"
 import { usePrixerCreator } from "@context/GlobalContext"
-
-// Interface for the component props
-
-// Interface for the token data structure
-interface Token {
-  username: string
-  // Add other token properties if they exist
-}
-
-// Define base styles for the Floating Action Buttons (FABs)
-const fabBaseStyle: React.CSSProperties = {
-  position: "fixed",
-  right: 10,
-  margin: "8px",
-}
-
-// Styles for the "Add Service" FAB
-const serviceFabStyle: React.CSSProperties = {
-  ...fabBaseStyle, // Inherit base FAB styles
-  bottom: 80, // Specific bottom position for this FAB
-}
-
-// Styles for the "Add Art" FAB
-const artFabStyle: React.CSSProperties = {
-  ...fabBaseStyle, // Inherit base FAB styles
-  bottom: 10, // Specific bottom position for this FAB
-}
 
 const FloatingAddButton: React.FC = () => {
   const { setArtModal, setServiceModal } = usePrixerCreator()
+  const [open, setOpen] = useState(false)
 
-  // WAR TODO: use Menu from MaterialUI for a general button with animation of 180,
-  // will look great! when receive onClick event the TWO upload buttons will grow up,
-  // thinking about it maybe show them only doing hover (on desktop obviously)
+  const actions = [
+    {
+      icon: <AddPhotoAlternateIcon />,
+      name: "Agregar Arte",
+      onClick: () => setArtModal(true),
+    },
+    {
+      icon: <LocalActivityIcon />,
+      name: "Agregar Servicio",
+      onClick: () => setServiceModal(true),
+    },
+  ]
+
+  const handleOpen = () => setOpen(true)
+  const handleClose = () => setOpen(false)
 
   return (
-    // This div is a wrapper for the conditionally rendered FABs.
-    // It no longer has specific styles applied to it directly.
-    <div>
-      {/* {tokenData && tokenData.username && ( */}
-      <div style={fabBaseStyle}>
-        <Tooltip title="Agregar Servicio" placement="left">
-          <Fab
-            color="primary"
-            aria-label="add service"
-            onClick={() => setServiceModal(true)}
-            style={serviceFabStyle}
-          >
-            <LocalActivityIcon />
-          </Fab>
-        </Tooltip>
-        <Tooltip title="Agregar Arte" placement="left">
-          <Fab
-            color="primary"
-            aria-label="add art"
-            onClick={() => setArtModal(true)}
-            style={artFabStyle}
-          >
-            <AddPhotoAlternateIcon />
-          </Fab>
-        </Tooltip>
-      </div>
-      {/* )} */}
-    </div>
+    <>
+      <Backdrop open={open} />
+
+      <SpeedDial
+        ariaLabel="Menú de acciones rápidas"
+        sx={{ position: "fixed", bottom: 24, right: 24 }}
+        icon={<SpeedDialIcon />}
+        onClose={handleClose}
+        onOpen={handleOpen}
+        open={open}
+        direction="up"
+      >
+        {actions.map((action) => (
+          <SpeedDialAction
+            key={action.name}
+            icon={action.icon}
+            slotProps={{
+              tooltip: {
+                open: true,
+                title: action.name,
+              },
+            }}
+            onClick={() => {
+              action.onClick()
+              handleClose()
+            }}
+            sx={{
+              '& .MuiSpeedDialAction-staticTooltipLabel': {
+                whiteSpace: 'nowrap',
+              },
+            }}
+          />
+        ))}
+      </SpeedDial>
+    </>
   )
 }
 

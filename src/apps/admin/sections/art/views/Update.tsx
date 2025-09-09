@@ -240,14 +240,14 @@ const UpdateArt: React.FC = () => {
     // else if (!/^https?:\/\/.+\..+/.test(formData.imageUrl))
     //   errors.imageUrl = 'Formato de URL inválido.';
 
-    // if (
-    //   isNaN(Number(formData.comission)) ||
-    //   Number(formData.comission) < 0 ||
-    //   Number(formData.comission) > 1
-    // )
-    //   errors.comission = 'La comisión debe ser un número entre 0 y 1.';
-    // if (!formData.status) errors.status = 'El estado es obligatorio.';
-    // if (!formData.exclusive) errors.exclusive = 'Debe indicar si es exclusivo.';
+    if (
+      isNaN(Number(formData.comission)) ||
+      Number(formData.comission) < 10 ||
+      Number(formData.comission) > 50
+    )
+      errors.comission = 'La comisión debe ser un número entre 50 y 10.';
+    if (!formData.status) errors.status = 'El estado es obligatorio.';
+    if (!formData.exclusive) errors.exclusive = 'Debe indicar si es exclusivo.';
 
     // Optional fields validation (points) - CORRECTED LOGIC
     const pointsValue = formData.points; // Store value to avoid repeating formData.points

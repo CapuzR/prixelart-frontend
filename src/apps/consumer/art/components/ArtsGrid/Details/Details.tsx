@@ -125,17 +125,6 @@ const ArtDetail: React.FC = () => {
     loadArt();
   }, [artId, setLoading]);
 
-  useEffect(() => {
-    if (art && artId) {
-      const timer = setTimeout(() => {
-        document
-          .getElementById(`art-detail-${artId}`)
-          ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 500);
-      return () => clearTimeout(timer);
-    }
-  }, [art, artId]);
-
   console.log(art);
 
   if (loading && !art && !artLoadingError) {
@@ -200,7 +189,7 @@ const ArtDetail: React.FC = () => {
 
   return (
     <>
-      <Container maxWidth="lg" sx={{ py: 4, mt: { xs: 8, md: 10 } }} id={`art-detail-${art.artId}`}>
+      <Container maxWidth="lg" sx={{ py: 4, mt: { xs: 0, md: 2 } }} >
         <Paper elevation={3} sx={{ overflow: 'hidden' }}>
           <Grid2 container spacing={{ xs: 0, md: 0 }}>
             <Grid2
@@ -212,6 +201,7 @@ const ArtDetail: React.FC = () => {
                 alignItems: 'center',
                 display: 'flex',
               }}
+              id={`art-detail-${art.artId}`}
             >
               {art.exclusive === 'exclusive' && (
                 <Tooltip title="Arte Exclusivo">

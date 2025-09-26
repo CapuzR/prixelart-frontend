@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -49,6 +49,7 @@ const ArtDetail: React.FC = () => {
   const [formData, setFormData] = useState<Art | null>(null);
 
   const preTags: string[] = ['arte', 'fotografia', 'pintura', 'diseño', 'abstracto'];
+  const [showAllTags, setShowAllTags] = useState(false);
 
   const handleTagsChange = (event: React.SyntheticEvent, newValue: string[]) => {
     setFormData((prev) => (prev ? { ...prev, tags: newValue } : null));
@@ -125,17 +126,6 @@ const ArtDetail: React.FC = () => {
     loadArt();
   }, [artId, setLoading]);
 
-  useEffect(() => {
-    if (art && artId) {
-      const timer = setTimeout(() => {
-        document
-          .getElementById(`art-detail-${artId}`)
-          ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 500);
-      return () => clearTimeout(timer);
-    }
-  }, [art, artId]);
-
   console.log(art);
 
   if (loading && !art && !artLoadingError) {
@@ -200,7 +190,7 @@ const ArtDetail: React.FC = () => {
 
   return (
     <>
-      <Container maxWidth="lg" sx={{ py: 4, mt: { xs: 8, md: 10 } }} id={`art-detail-${art.artId}`}>
+      <Container maxWidth="lg" sx={{ py: 4, mt: { xs: 0, md: 2 } }}>
         <Paper elevation={3} sx={{ overflow: 'hidden' }}>
           <Grid2 container spacing={{ xs: 0, md: 0 }}>
             <Grid2
@@ -212,6 +202,7 @@ const ArtDetail: React.FC = () => {
                 alignItems: 'center',
                 display: 'flex',
               }}
+              id={`art-detail-${art.artId}`}
             >
               {art.exclusive === 'exclusive' && (
                 <Tooltip title="Arte Exclusivo">
@@ -379,7 +370,13 @@ const ArtDetail: React.FC = () => {
                       component="p"
                       variant="subtitle1"
                       color="text.secondary"
-                      sx={{ whiteSpace: 'pre-line', mb: 3, fontSize: '1rem' }}
+                      sx={{
+                        whiteSpace: 'pre-line',
+                        mb: 3,
+                        fontSize: '1rem',
+                        maxHeight: '200px',
+                        overflowY: 'auto',
+                      }}
                     >
                       {art.description}
                     </Typography>
@@ -493,21 +490,65 @@ const ArtDetail: React.FC = () => {
                   />
                 ) : (
                   art.tags &&
-                  art.tags.length > 0 && (
-                    <Box sx={{ mb: 3, display: 'flex' }}>
-                      <LabelIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                        {art.tags.map((tag) => (
-                          <Chip
-                            key={tag}
-                            label={tag}
-                            size="small"
-                            sx={{ color: 'text.secondary' }}
-                          />
-                        ))}
+                  art.tags.length > 0 &&
+                  (() => {
+                    const cleanTags = art.tags
+                      .flatMap((tag) => tag.split(','))
+                      .map((tag) => tag.trim())
+                      .filter(Boolean);
+
+                    const limit = 4;
+
+                    const tagsToShow = showAllTags ? cleanTags : cleanTags.slice(0, limit);
+                    const remainingTags = cleanTags.length - limit;
+
+                    return (
+                      <Box sx={{ mb: 3, display: 'flex' }}>
+                        <LabelIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                        <Box
+                          sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center' }}
+                        >
+                          {tagsToShow.map((tag) => (
+                            <Chip
+                              key={tag}
+                              label={tag}
+                              size="small"
+                              component={Link}
+                              to={`/galeria?name=${encodeURIComponent(tag)}`}
+                              clickable
+                              sx={{ cursor: 'pointer', color: 'text.secondary' }}
+                            />
+                          ))}
+
+                          {!showAllTags && remainingTags > 0 && (
+                            <Chip
+                              label={`+${remainingTags}`}
+                              size="small"
+                              onClick={() => setShowAllTags(true)}
+                              sx={{
+                                cursor: 'pointer',
+                                color: 'text.secondary',
+                                backgroundColor: 'action.hover',
+                              }}
+                            />
+                          )}
+
+                          {showAllTags && cleanTags.length > limit && (
+                            <Chip
+                              label="Ver menos"
+                              size="small"
+                              onClick={() => setShowAllTags(false)}
+                              sx={{
+                                cursor: 'pointer',
+                                color: 'text.secondary',
+                                backgroundColor: 'action.hover',
+                              }}
+                            />
+                          )}
+                        </Box>
                       </Box>
-                    </Box>
-                  )
+                    );
+                  })()
                 )}
                 <Box
                   sx={{

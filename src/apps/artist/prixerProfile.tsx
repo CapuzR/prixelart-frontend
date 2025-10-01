@@ -1,13 +1,8 @@
 import React, { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import FloatingAddButton from "@components/floatingAddButton"
-import CreateService from "@components/createService"
 import UserData from "./userData/userData"
-// import PrixerOptions
 import Container from "@mui/material/Container"
 import CssBaseline from "@mui/material/CssBaseline"
-import Grid2 from "@mui/material/Grid"
-// import ArtUploader from 'components/artUploader/artUploader';
 import { useTheme } from "@mui/styles"
 import Biography from "./prixerService/biography"
 import useStyles from "./prixerProfile.styles"
@@ -16,8 +11,6 @@ import ArtsGrid from "@apps/consumer/art/components/ArtsGrid/ArtsGrid"
 
 const PrixerProfile: React.FC = () => {
   const classes = useStyles()
-  const navigate = useNavigate()
-  const theme = useTheme()
 
   const globalParams = getUrlParams()
   const username: string | null = window.location.pathname.includes("org")

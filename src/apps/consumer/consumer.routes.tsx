@@ -1,20 +1,21 @@
-import React, { useState } from "react"
-import { Route, Routes } from "react-router-dom"
+import React, { useState } from 'react';
+import { Route, Routes } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
-import ArtDetail from "@apps/consumer/art/components/ArtsGrid/Details/Details"
-import Home from "apps/consumer/home/home"
-import Catalog from "@apps/consumer/art/catalog/Catalog"
-import Products from "apps/consumer/products/Catalog"
-import Cart from "@apps/consumer/cart"
-import Prixers from "apps/consumer/prixers/prixersGrid"
-import OrgGrid from "apps/consumer/components/orgGrid/orgGrid"
-import PrixersService from "apps/consumer/prixerServices/prixerService"
-import TestimonialsGrid from "apps/consumer/testimonials/testimonialsGrid"
-import ProductDetails from "apps/consumer/products/Details/Details"
-import Flow from "apps/consumer/flow/Flow"
-import PrixerProfile from "apps/artist/profile"
-import Login from "@apps/consumer/login"
-import PasswordChange from "@apps/artist/passwordChange/passwordChange"
+import ArtDetail from '@apps/consumer/art/components/ArtsGrid/Details/Details';
+import Home from 'apps/consumer/home/home';
+import Catalog from '@apps/consumer/art/catalog/Catalog';
+import Products from 'apps/consumer/products/Catalog';
+import Cart from '@apps/consumer/cart';
+import Prixers from 'apps/consumer/prixers/prixersGrid';
+import OrgGrid from 'apps/consumer/components/orgGrid/orgGrid';
+import PrixersService from 'apps/consumer/prixerServices/prixerService';
+import TestimonialsGrid from 'apps/consumer/testimonials/testimonialsGrid';
+import ProductDetails from 'apps/consumer/products/Details/Details';
+import Flow from 'apps/consumer/flow/Flow';
+import PrixerProfile from 'apps/artist/profile';
+import Login from '@apps/consumer/login';
+import PasswordChange from '@apps/artist/passwordChange/passwordChange';
 
 import SignUp from "@apps/consumer/signup/SignUp"
 import TrackOrder from "./trackOrder/TrackOrder"
@@ -25,13 +26,14 @@ import CreateService from "@components/createService"
 import ForgotPassword from "@apps/artist/passwordReset/ForgotPassword"
 import PasswordReset from "@apps/artist/passwordReset/PasswordReset" 
 import PrixerStats from "@apps/artist/profile/Stats"
+import LegacyOrProfileRoute from './LegacyArtLink.routes';
 import PrixItem from "./products/PrixItem/index"
 
 import { usePrixerCreator } from "@context/GlobalContext"
 
 const ConsumerRoutes: React.FC = () => {
+  const { uploadArt, setArtModal } = usePrixerCreator();
 
-const {uploadArt, setArtModal} = usePrixerCreator()
   return (
     <>
       <Routes>
@@ -53,27 +55,30 @@ const {uploadArt, setArtModal} = usePrixerCreator()
         <Route path="/testimonios" element={<TestimonialsGrid />} />
         <Route path="/arte/:artId" element={<ArtDetail />} />
         <Route path="/prixer/:username" element={<PrixerProfile />} />
-        <Route path="/prixer/:username" element={<PrixerProfile />} />
-        <Route path="/:username" element={<PrixerProfile />} />
+        <Route path="/:slug" element={<LegacyOrProfileRoute />} /> 
 
         <Route path="/prixer/:username/stats" element={<PrixerStats />} />
-        <Route path="/org/:username" element={<PrixerProfile />} />
+        {/* <Route path="/org/:username" element={<PrixerProfile />} /> */}
         <Route path="/crear-prix" element={<Flow />} />
         <Route path="/producto/:id" element={<ProductDetails />} />
         <Route path="/prix-item" element={<PrixItem />} />
 
         <Route path="/" element={<Home />} />
-        <Route path="*" element={<div><h1>404 - No Encontrado</h1></div>} />
+        <Route
+          path="*"
+          element={
+            <div>
+              <h1>404 - No Encontrado</h1>
+            </div>
+          }
+        />
       </Routes>
 
       <ConditionalFB />
-      <ArtUploader
-        openArtFormDialog={uploadArt}
-        setOpenArtFormDialog={setArtModal}
-      />
+      <ArtUploader openArtFormDialog={uploadArt} setOpenArtFormDialog={setArtModal} />
       <CreateService />
     </>
-  )
-}
+  );
+};
 
-export default ConsumerRoutes
+export default ConsumerRoutes;

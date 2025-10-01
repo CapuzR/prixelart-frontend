@@ -20,6 +20,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import SaveAsIcon from '@mui/icons-material/SaveAs';
 import CloseIcon from '@mui/icons-material/Close';
 import StarIcon from '@mui/icons-material/Star';
+import TagIcon from '@mui/icons-material/Tag';
 
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
@@ -35,6 +36,7 @@ import { Art } from '../../../../../../types/art.types';
 import { fetchArt, updateArt } from '@api/art.api';
 
 const ArtDetail: React.FC = () => {
+  console.log("Componente ArtDetail se montó. ¡La ruta /arte/:artId funciona!");
   const { artId } = useParams<{ artId: string }>();
   const navigate = useNavigate();
   const { setLoading, loading } = useLoading();
@@ -50,6 +52,19 @@ const ArtDetail: React.FC = () => {
 
   const preTags: string[] = ['arte', 'fotografia', 'pintura', 'diseño', 'abstracto'];
   const [showAllTags, setShowAllTags] = useState(false);
+  const [tooltipTitle, setTooltipTitle] = useState('Copiar ID');
+
+  const handleCopyToClipboard = (text: string) => {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        setTooltipTitle('¡ID copiado!');
+      })
+      .catch((err) => {
+        console.error('Error al copiar: ', err);
+        setTooltipTitle('Error al copiar');
+      });
+  };
 
   const handleTagsChange = (event: React.SyntheticEvent, newValue: string[]) => {
     setFormData((prev) => (prev ? { ...prev, tags: newValue } : null));
@@ -183,7 +198,7 @@ const ArtDetail: React.FC = () => {
   if (!art) {
     return (
       <Container sx={{ py: 4, mt: { xs: 2, md: 4 }, textAlign: 'center' }}>
-        <Typography>No art data available.</Typography>
+        <Typography>No encontramos el arte que indicas, intenta volver a la Galería.</Typography>
       </Container>
     );
   }
@@ -382,7 +397,7 @@ const ArtDetail: React.FC = () => {
                     </Typography>
                   )
                 )}
-                <Box sx={{ mb: 3 }}>
+                <Box sx={{ mb: 1 }}>
                   {isEditing ? (
                     <TextField
                       fullWidth
@@ -391,7 +406,6 @@ const ArtDetail: React.FC = () => {
                       name="artLocation"
                       value={formData?.artLocation || ''}
                       onChange={handleInputChange}
-                      sx={{ mb: 2 }}
                     />
                   ) : (
                     art.artLocation && (
@@ -457,8 +471,10 @@ const ArtDetail: React.FC = () => {
                             </Typography>
                           </Box>
                         )}
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                        <StarIcon sx={{ mr: 1.5, color: 'text.secondary' }} />
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Tooltip title="Este porcentaje representa la ganancia de nuestro prixer al venderse su arte. ¡Apoya a tu artista favorito!">
+                          <StarIcon sx={{ mr: 1.5, color: 'text.secondary' }} />
+                        </Tooltip>
                         <Typography variant="body2" color="text.secondary">
                           Este arte tiene una comisión de {art.comission}%
                         </Typography>
@@ -504,7 +520,10 @@ const ArtDetail: React.FC = () => {
 
                     return (
                       <Box sx={{ mb: 3, display: 'flex' }}>
-                        <LabelIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                        <Tooltip title="Los tags son usados por los prixers para destacar un tópico, úsalos para navegar entre temas de tu interés.">
+                          <LabelIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                        </Tooltip>
+
                         <Box
                           sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center' }}
                         >
@@ -560,7 +579,9 @@ const ArtDetail: React.FC = () => {
                 >
                   {art?.createdOn && (
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <CalendarTodayIcon sx={{ mr: 1.5, color: 'text.disabled' }} />
+                      <Tooltip title="Esta es la fecha en que el prixer publicó este arte, es posible que el material se haya creado antes y lo publicó tiempo después.">
+                        <CalendarTodayIcon sx={{ mr: 1.5, color: 'text.disabled' }} />
+                      </Tooltip>
                       <Typography variant="body2" color="text.disabled">
                         {` Arte publicado el 
                         ${new Date(art?.createdOn).toLocaleDateString('es-ES', {
@@ -571,14 +592,29 @@ const ArtDetail: React.FC = () => {
                       </Typography>
                     </Box>
                   )}
-                  <Typography
-                    variant="caption"
-                    color="text.disabled"
-                    component="p"
-                    sx={{ textAlign: 'right' }}
+                  <Tooltip
+                    title={tooltipTitle}
+                    onMouseLeave={() => setTooltipTitle('Copiar ID')}
                   >
-                    ID: {art.artId}
-                  </Typography>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        cursor: 'pointer',
+                      }}
+                      onClick={() => handleCopyToClipboard(art.artId)}
+                    >
+                      <TagIcon sx={{ mr: 1.5, color: 'text.disabled' }} />
+                      <Typography
+                        variant="caption"
+                        color="text.disabled"
+                        component="p"
+                        sx={{ textAlign: 'right' }}
+                      >
+                        {art.artId}
+                      </Typography>
+                    </Box>
+                  </Tooltip>
                 </Box>
               </CardContent>
             </Grid2>

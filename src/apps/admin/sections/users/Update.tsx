@@ -93,7 +93,10 @@ const AVAILABLE_SPECIALTIES = [
 type Sort = "asc" | "desc"
 const formatCurrency = (value: number): string => `$${value.toFixed(2)}`
 const formatDate = (date?: Date): string =>
-  date ? new Date(date).toLocaleString() : "N/A"
+  date ? 
+   dayjs(date).format("DD/MM/YYYY")
+// new Date(date).toLocaleString()
+ : "N/A"
 
 interface UserBaseValidationErrors {
   firstName?: string

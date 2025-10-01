@@ -2017,8 +2017,7 @@ export default function UpdateOrder() {
               >
                 <CalendarToday fontSize="small" sx={{ mr: 0.5 }} /> Creada el:{" "}
                 {formatDate(order.createdOn)}
-                {permissions?.area !== "Master" &&
-                  order.seller &&
+                {order.seller &&
                   " por " + order.seller}
               </Typography>
             </Box>

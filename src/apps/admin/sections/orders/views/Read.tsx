@@ -68,7 +68,7 @@ import "moment/locale/es"
 import { format, parseISO, isValid } from "date-fns"
 import { PermissionsV2 } from "types/permissions.types"
 import { getPermissions } from "@api/admin.api"
-import dayjs, { Dayjs } from "dayjs"
+import dayjs from "dayjs"
 
 interface OrderSummary {
   _id: string

@@ -50,6 +50,7 @@ export const Track: React.FC<TrackProps> = ({
           maxHeight: '100%',
           width: `${trackWidthPercentage}%`, // Use new width calculation
           display: 'flex',
+          gap: 0
         }}
       >
         {flattenedChildren.map((child, index) => {
@@ -70,7 +71,7 @@ export const Track: React.FC<TrackProps> = ({
                   spacing === 'none'
                     ? '0'
                     : spacing === 'sm'
-                      ? '5px'
+                      ? '0'
                       : spacing === 'md'
                         ? '10px'
                         : '15px',

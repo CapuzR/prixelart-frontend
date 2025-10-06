@@ -36,7 +36,6 @@ import { Art } from '../../../../../../types/art.types';
 import { fetchArt, updateArt } from '@api/art.api';
 
 const ArtDetail: React.FC = () => {
-  console.log("Componente ArtDetail se montó. ¡La ruta /arte/:artId funciona!");
   const { artId } = useParams<{ artId: string }>();
   const navigate = useNavigate();
   const { setLoading, loading } = useLoading();

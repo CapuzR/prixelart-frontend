@@ -39,8 +39,8 @@ const ProductElement: React.FC<ProductElementProps> = ({
       <Box
         sx={{
           position: 'relative',
-          width: isMobile ? '28.5%' : '100%',
-          height: isMobile ? '240px' : '440px',
+          width: '100%',
+          height:  '440px',
           display: 'flex',
           alignItems: 'end',
           background: `url(${src}) center / cover no-repeat transparent`,

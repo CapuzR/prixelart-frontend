@@ -48,9 +48,9 @@ export const Track: React.FC<TrackProps> = ({
           transform: isSlidingActive ? `translateX(-${currentIndex * (100 / qtyPerSlide)}%)` : 'translateX(0%)',
           transition: isSlidingActive ? `transform ${speed}ms ease-in-out` : 'none',
           maxHeight: '100%',
-          width: `${trackWidthPercentage}%`, // Use new width calculation
+          width: `${trackWidthPercentage}%`,
           display: 'flex',
-          gap: 0
+          gap: '1rem'
         }}
       >
         {flattenedChildren.map((child, index) => {

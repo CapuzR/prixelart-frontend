@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb"
 import { PickedArt } from "./art.types"
 import { PickedProduct } from "./product.types"
-
+import { UserRoles } from "./user.types"
 export interface Order {
   _id?: ObjectId
   number?: number
@@ -39,7 +39,7 @@ export interface ConsumerDetails {
   selectedAddress: BasicAddress
   addresses: Address[]
   paymentMethods: PaymentMethod[]
-  // add consumerType
+  consumerType?: UserRoles[]
 }
 
 export interface Payment {

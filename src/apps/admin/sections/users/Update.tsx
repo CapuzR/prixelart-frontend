@@ -11,9 +11,8 @@ import React, {
 import { useParams, useNavigate } from "react-router-dom"
 
 import { useSnackBar } from "context/GlobalContext"
-import { User } from "types/user.types"
+import { User, USER_ROLE_OPTIONS } from "types/user.types"
 import { Prixer } from "types/prixer.types"
-import { PermissionsV2 } from "types/permissions.types"
 
 import {
   getUserById,
@@ -79,7 +78,6 @@ import {
 } from "@api/movement.api"
 import DeleteIcon from "@mui/icons-material/Delete"
 
-const AVAILABLE_ROLES = ["consumer", "prixer", "seller", "admin"]
 const AVAILABLE_GENDERS = ["Masculino", "Femenino", "Otro", "Prefiero no decir"]
 const AVAILABLE_SPECIALTIES = [
   "Ilustración",
@@ -95,7 +93,6 @@ const formatCurrency = (value: number): string => `$${value.toFixed(2)}`
 const formatDate = (date?: Date): string =>
   date ? 
    dayjs(date).format("DD/MM/YYYY")
-// new Date(date).toLocaleString()
  : "N/A"
 
 interface UserBaseValidationErrors {
@@ -152,12 +149,11 @@ interface UserValidationErrors extends UserBaseValidationErrors {
 
 // --- Initial State (Aligned with CreateUser structure) ---
 const initialUserFormState: Partial<User> = {
-  // Exclude username (fetched separately), password
   firstName: "",
   lastName: "",
   email: "",
   active: true,
-  role: ["consumer"], // Default role array
+  role: ["consumer"],
   avatar: "",
   phone: "",
   country: "",
@@ -516,12 +512,13 @@ const UpdateUser: React.FC = () => {
     }
   }
 
-  // Handler for Role Autocomplete (allows multiple) - CRITICAL for Prixer logic
-  const handleRolesChange = (event: SyntheticEvent, newValue: string[]) => {
+  type RoleOptionType = typeof USER_ROLE_OPTIONS[number];
+  const handleRolesChange = (event: SyntheticEvent,   newValue: RoleOptionType[]) => {
+    const roleValues = newValue.map(option => option.value);
     const hadPrixerBefore = userFormData.role?.includes("prixer")
-    const hasPrixerNow = newValue.includes("prixer")
+    const hasPrixerNow = roleValues.includes("prixer")
 
-    setUserFormData((prev) => ({ ...prev, role: newValue }))
+    setUserFormData((prev) => ({ ...prev, role: roleValues }))
 
     // Reset Prixer form AND clear its validation errors ONLY if the 'prixer' role was just removed
     if (hadPrixerBefore && !hasPrixerNow) {
@@ -1073,19 +1070,18 @@ const UpdateUser: React.FC = () => {
                     <Autocomplete
                       multiple
                       id="user-roles-select"
-                      options={AVAILABLE_ROLES}
-                      value={userFormData.role || []} // Ensure value is always an array
+                      options={USER_ROLE_OPTIONS}
+                      value={USER_ROLE_OPTIONS.filter(option => 
+                        (userFormData.role || []).includes(option.value)
+                      )}
                       onChange={handleRolesChange}
                       disableCloseOnSelect
-                      getOptionLabel={(option) =>
-                        option.charAt(0).toUpperCase() + option.slice(1)
-                      } // Capitalize display
-                      renderTags={(value: readonly string[], getTagProps) =>
-                        value.map((option: string, index: number) => (
+                      getOptionLabel={(option) => option.label}
+                      isOptionEqualToValue={(option, value) => option.value === value.value}
+                      renderTags={(value, getTagProps) =>
+                        value.map((option, index) => (
                           <Chip
-                            label={
-                              option.charAt(0).toUpperCase() + option.slice(1)
-                            }
+                            label={option.label}
                             size="small"
                             {...getTagProps({ index })}
                           />
@@ -1095,13 +1091,11 @@ const UpdateUser: React.FC = () => {
                         <TextField
                           {...params}
                           label="Rol(es)"
-                          required // Make roles field required visually/semantically
                           error={!!validationErrors?.role}
                           helperText={validationErrors?.role}
                         />
                       )}
                       disabled={isSubmitting}
-                      isOptionEqualToValue={(option, value) => option === value} // Important for object/string comparison
                     />
                   </Grid2>
                   <Grid2

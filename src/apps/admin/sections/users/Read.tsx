@@ -286,7 +286,7 @@ const ReadUsers: React.FC = () => {
   }
   const handleConfirmDelete = async () => {
     if (!userToDelete?._id || !userToDelete?.username) {
-      /* ... error handling ... */ showSnackBar(
+      showSnackBar(
         "Error: Usuario no seleccionado."
       )
       setIsDeleting(false)
@@ -295,14 +295,11 @@ const ReadUsers: React.FC = () => {
     }
     setIsDeleting(true)
     try {
-      // NOTE: Using username for deletion. Verify if API expects _id instead.
       await deleteUser(userToDelete.username)
       showSnackBar(`Usuario "${userToDelete.username}" eliminado.`)
-      // Important: Update the *original* users list state
       setUsers((prev) => prev.filter((u) => u._id !== userToDelete._id))
       handleCloseDialog()
     } catch (err: any) {
-      /* ... error handling ... */
       console.error("Error deleting:", err)
       showSnackBar(err.message || "Error al eliminar.")
       handleCloseDialog()

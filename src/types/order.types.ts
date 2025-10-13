@@ -31,7 +31,7 @@ export interface Order {
 
 export interface HistoryEntry {
   timestamp: Date;
-  user: string;
+  user?: string;
   description: string;
 }
 export interface ConsumerDetails {
@@ -108,8 +108,8 @@ export interface ShippingMethod {
 
 export enum OrderStatus {
   Pending = 0,
-  Impression = 1,
-  Production = 2,
+  Production = 1,
+  Impression = 2,
   ReadyToShip = 3,
   Delivered = 4,
   Finished = 5,
@@ -121,7 +121,6 @@ export enum GlobalPaymentStatus {
   Pending = 0,
   Credited = 2,
   Paid = 1,
-
   Cancelled = 3,
   // Giftcard = 3,
   // Gift = 4,

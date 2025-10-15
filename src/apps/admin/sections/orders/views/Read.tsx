@@ -858,16 +858,11 @@ const ReadOrders: React.FC = () => {
         [Number(newStatus), new Date()],
       ];
 
-      const currentHistory: HistoryEntry[] = orderToUpdate?.history || [];
-      const newHistoryEntry: HistoryEntry = {
-        timestamp: new Date(),
-        description: `El estado del pedido cambió a "${getOrderStatusText(newStatus)}"`,
-      };
-      const newHistory = [...currentHistory, newHistoryEntry];
+      const description = `El estado del pedido cambió a "${getOrderStatusText(newStatus)}"`;
 
       const updatePayload: Partial<Order> = {
         status: newStatusHistory,
-        history: newHistory,
+        changeDescriptions: [description],
       };
 
       await updateOrder(orderId, updatePayload);
@@ -878,10 +873,10 @@ const ReadOrders: React.FC = () => {
               ...o,
               primaryStatus: Number(newStatus),
               status: newStatusHistory,
-              history: newHistory,
             }
           : o
       );
+
       setAllOrders(updatedOrders);
       setFilteredOrders(updatedOrders);
 
@@ -905,16 +900,11 @@ const ReadOrders: React.FC = () => {
       const currentPayStatusHistory = orderToUpdate.payment?.status || [];
       const newPayStatusHistory = [...currentPayStatusHistory, [Number(newPayStatus), new Date()]];
 
-      const currentHistory: HistoryEntry[] = orderToUpdate?.history || [];
-      const newHistoryEntry: HistoryEntry = {
-        timestamp: new Date(),
-        description: `El estado de pago del pedido cambió a "${getOrderPayStatusText(newPayStatus)}"`,
-      };
-      const newHistory = [...currentHistory, newHistoryEntry];
+      const description = `El estado de pago del pedido cambió a "${getOrderPayStatusText(newPayStatus)}"`;
 
       const updatePayload = {
         'payment.status': newPayStatusHistory,
-        history: newHistory,
+        changeDescriptions: [description],
       } as any;
 
       await updateOrder(orderId, updatePayload);

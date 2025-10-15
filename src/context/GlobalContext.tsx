@@ -97,21 +97,11 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
     setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"))
   }
 
-  // const showSnackBar = (message: string) => {
-  //   console.log("Snackbar triggered with message: ", message)
-  //   setSnackbarOpen(true)
-  //   setSnackbarMessage(message)
-  // }
-
   const showSnackBar = useCallback((message: string) => {
     console.log("Snackbar triggered with message: ", message)
     setSnackbarMessage(message)
     setSnackbarOpen(true)
   }, [])
-
-  // const closeSnackBar = () => {
-  //   setSnackbarOpen(false)
-  // }
 
   const closeSnackBar = useCallback(() => {
     setSnackbarOpen(false)
@@ -133,7 +123,6 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
     setUploadService(value)
   }
 
-  // Memoize the context value to avoid unnecessary re-renders
   const value = useMemo(
     () => ({
       currency,
@@ -183,7 +172,6 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
   )
 }
 
-// Custom hooks to access parts of the global context
 export const useCurrency = () => {
   const context = useContext(GlobalContext)
   if (!context) {

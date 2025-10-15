@@ -27,6 +27,7 @@ export interface Order {
 
   seller?: string
   observations?: string
+  changeDescriptions?: string[]
 }
 
 export interface HistoryEntry {

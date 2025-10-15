@@ -2733,9 +2733,16 @@ export default function UpdateOrder() {
                       gutterBottom
                       sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
                     >
-                      {`${editableClientInfo.name} ${editableClientInfo.lastName}`}
+                      {`Nombre: ${editableClientInfo.name} ${editableClientInfo.lastName}`}
                     </Typography>
                   )}
+                  <Typography
+                    variant="h6"
+                    gutterBottom
+                    sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
+                  >
+                  {`Método de entrega: ${order.shipping.method.name}`}
+                  </Typography>
                 </Paper>
               )}
               <Paper elevation={1} sx={{ p: { xs: 2, md: 2.5 }, mb: 2.5, borderRadius: 2 }}>

@@ -385,6 +385,10 @@ interface TabPanelProps {
   value: number;
 }
 
+interface statusGroup {
+  status: number;
+  payStatus: number;
+}
 function CustomTabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
 
@@ -412,11 +416,10 @@ export default function UpdateOrder() {
     showSnackBarRef.current = showSnackBarFromContext;
   }, [showSnackBarFromContext]);
 
-  const theme = useTheme();
   const { classes } = useStyles();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [order, setOrder] = useState<Order | null>(null);
+  const [prevStatus, setPrevStatus] = useState<statusGroup>({ status: 0, payStatus: 0 });
   const [observations, setObservations] = useState<string>('');
   const [selectedShippingMethod, setSelectedShippingMethod] = useState<MethodOption | null>(null);
   const [editableClientInfo, setEditableClientInfo] = useState<BasicInfo | null>(null);
@@ -535,6 +538,10 @@ export default function UpdateOrder() {
         );
       }
       setOrder(orderData);
+      setPrevStatus({
+        status: orderData?.status[orderData.status.length - 1][0] || 0,
+        payStatus: orderData?.payment.status[orderData.payment.status.length - 1][0] || 0,
+      });
       setObservations(orderData.observations || '');
       if (orderData.consumerDetails?.basic) {
         setEditableClientInfo(JSON.parse(JSON.stringify(orderData.consumerDetails.basic)));
@@ -1262,10 +1269,6 @@ export default function UpdateOrder() {
       showSnackBar('Método de envío es requerido.');
       return false;
     }
-    // if (!selectedPaymentMethod) {
-    //   showSnackBar("Método de pago es requerido.")
-    //   return false
-    // }
     return true;
   };
 
@@ -1355,6 +1358,44 @@ export default function UpdateOrder() {
     }
   };
 
+  const getOrderStatusText = (status: OrderStatus): string => {
+    switch (Number(status)) {
+      case OrderStatus.Pending:
+        return 'Pendiente';
+      case OrderStatus.Production:
+        return 'En producción';
+      case OrderStatus.Impression:
+        return 'En impresión';
+      case OrderStatus.ReadyToShip:
+        return 'Listo para enviar';
+      case OrderStatus.Delivered:
+        return 'Entregado';
+      case OrderStatus.Finished:
+        return 'Concretado';
+      case OrderStatus.Paused:
+        return 'Detenido';
+      case OrderStatus.Canceled:
+        return 'Cancelado';
+      default:
+        return 'Pendiente';
+    }
+  };
+
+  const getOrderPayStatusText = (status: GlobalPaymentStatus): string => {
+    switch (Number(status)) {
+      case GlobalPaymentStatus.Pending:
+        return 'Pendiente';
+      case GlobalPaymentStatus.Credited:
+        return 'Abonado';
+      case GlobalPaymentStatus.Paid:
+        return 'Pagado';
+      case OrderStatus.Canceled:
+        return 'Cancelado';
+      default:
+        return 'Pendiente';
+    }
+  };
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const showSnackBar = showSnackBarRef.current;
@@ -1393,16 +1434,6 @@ export default function UpdateOrder() {
       setIsSubmitting(false);
       return;
     }
-    // if (!isPickupSelected && !editableShippingAddress?.address?.line1) {
-    //   setErrorSubmit("Dirección de envío no seleccionada o inválida.")
-    //   setIsSubmitting(false)
-    //   return
-    // }
-    // if (!editableBillingAddress?.address?.line1 && !useShippingForBilling) {
-    //   setErrorSubmit("Dirección de facturación no seleccionada o inválida.")
-    //   setIsSubmitting(false)
-    //   return
-    // }
 
     const shippingAddr = isPickupSelected
       ? createBlankAddress()
@@ -1410,6 +1441,9 @@ export default function UpdateOrder() {
     const billingAddr = useShippingForBilling
       ? shippingAddr
       : editableBillingAddress || createBlankAddress();
+
+    const descriptions: string[] = [];
+
     const finalOrderLines: OrderLine[] = editableOrderLines.map((lineState) => {
       if (!lineState.selectedProduct) throw new Error('Producto no seleccionado en una línea.');
       const pricePerUnit = parseFloat(
@@ -1459,6 +1493,69 @@ export default function UpdateOrder() {
         surcharge: lineState.surcharge,
       };
     });
+
+    if (
+      editableClientInfo &&
+      JSON.stringify(editableClientInfo) !== JSON.stringify(order.consumerDetails?.basic)
+    ) {
+      descriptions.push(
+        `Se actualizó la información del cliente a: ${editableClientInfo.name} ${editableClientInfo.lastName}.`
+      );
+    }
+
+    const originalShippingMethodId = order.shipping?.method?._id?.toString();
+    if (selectedShippingMethod && selectedShippingMethod.id !== originalShippingMethodId) {
+      descriptions.push(`El método de envío cambió a: "${selectedShippingMethod.label}".`);
+    }
+
+    const originalPaymentMethodId = order.payment?.payment?.[0]?.method.name?.toString();
+    if (selectedPaymentMethod && selectedPaymentMethod.label !== originalPaymentMethodId) {
+      descriptions.push(`El método de pago cambió a: "${selectedPaymentMethod.label}".`);
+    }
+
+    if ((observations || '') !== (order.observations || '')) {
+      descriptions.push('Se modificaron las observaciones de la orden.');
+    }
+
+    const newLatestStatus =
+      order.status && order.status.length > 0 ? order.status[order.status.length - 1][0] : 0;
+
+    const newLatestPayStatus =
+      order.payment.status && order.payment.status.length > 0
+        ? order.payment.status[order.payment.status.length - 1][0]
+        : 0;
+
+    if (newLatestStatus !== undefined && prevStatus.status !== newLatestStatus) {
+      const oldStatusText = getOrderStatusText(prevStatus.status as OrderStatus);
+      const newStatusText = getOrderStatusText(newLatestStatus as OrderStatus);
+      descriptions.push(`El estado del pedido cambió de "${oldStatusText}" a "${newStatusText}".`);
+    }
+
+    if (newLatestPayStatus !== undefined && prevStatus.payStatus !== newLatestPayStatus) {
+      const oldPayStatusText = getOrderPayStatusText(prevStatus.payStatus as GlobalPaymentStatus);
+      const newPayStatusText = getOrderPayStatusText(newLatestPayStatus as GlobalPaymentStatus);
+      descriptions.push(
+        `El estado de pago cambió de "${oldPayStatusText}" a "${newPayStatusText}".`
+      );
+    }
+
+    const originalLinesSimplified = (order.lines || [])
+      .map((l) => ({ sku: l.item.sku, item: l.item, qty: l.quantity, price: l.pricePerUnit }))
+      .sort((a, b) => a.sku.localeCompare(b.sku));
+    const finalLinesSimplified = (finalOrderLines || [])
+      .map((l) => ({ sku: l.item.sku, item: l.item, qty: l.quantity, price: l.pricePerUnit }))
+      .sort((a, b) => a.sku.localeCompare(b.sku));
+
+    if (JSON.stringify(originalLinesSimplified) !== JSON.stringify(finalLinesSimplified)) {
+      descriptions.push('Se modificaron los productos de la orden.');
+    }
+
+    if (descriptions.length === 0) {
+      descriptions.push(
+        'Se guardaron cambios en la orden (sin cambios significativos detectados).'
+      );
+    }
+
     const finalSubTotal = finalOrderLines.reduce((sum, line) => sum + line.subtotal, 0);
     const finalTotalUnits = finalOrderLines.reduce((sum, line) => sum + line.quantity, 0);
     const finalShippingCost = selectedShippingMethod
@@ -1488,51 +1585,9 @@ export default function UpdateOrder() {
       finalBillToInfo = shippingAddr.recepient;
     }
 
-    // const voucherPaymentObjects: Payment[] = paymentVouchers
-    //   .filter((imgState) => imgState.url && !imgState.error)
-    //   .map((imgState) => {
-    //     let description = `Comprobante`
-    //     if (imgState.file?.name) {
-    //       description = imgState.file.name
-    //     } else if (imgState.url) {
-    //       try {
-    //         const urlParts = imgState.url.split("/")
-    //         const lastPart = urlParts[urlParts.length - 1]
-    //         description = decodeURIComponent(lastPart.split("?")[0])
-    //       } catch (e) {
-    //         console.warn(
-    //           "No se pudo generar descripción desde la URL del voucher:",
-    //           imgState.url
-    //         )
-    //         description = `Comprobante ${imgState.id.substring(0, 8)}`
-    //       }
-    //     }
-
-    //     // if (!selectedPaymentMethod) {
-    //     //   console.error(
-    //     //     "Cannot create voucher payment entry without a selectedPaymentMethod."
-    //     //   )
-    //     //   showSnackBar(
-    //     //     "Error: Se necesita un método de pago principal para asociar los comprobantes."
-    //     //   )
-    //     //   return null
-    //     // }
-
-    //     return {
-    //       id: imgState.isExisting
-    //         ? imgState.id.split("-voucher-")[0].replace("payments-", "")
-    //         : uuidv4(),
-    //       description: description,
-    //       voucher: imgState.url,
-    //       method: selectedPaymentMethod.fullMethod as PaymentMethod,
-    //       amount: "0",
-    //       metadata: `Voucher linked to ${selectedPaymentMethod.label}`,
-    //     }
-    //   })
-    //   .filter(Boolean) as Payment[]
-
     const productionStatus = order.status;
     const paymentStatus = order.payment.status;
+    const finalPayments = prevPayments;
 
     const payload: Partial<Order> = {
       observations: observations || undefined,
@@ -1555,11 +1610,12 @@ export default function UpdateOrder() {
           }
         : undefined,
       payment: {
-        ...order.payment,
+        ...(order.payment || {}),
         ...(selectedPaymentMethod && {
           method: [selectedPaymentMethod.fullMethod as PaymentMethod],
           status: paymentStatus,
         }),
+        payment: finalPayments,
         total: finalTotal,
       },
       billing: billingAddr
@@ -1577,18 +1633,10 @@ export default function UpdateOrder() {
       totalWithoutTax: finalSubTotal - orderDiscount,
       total: finalTotal,
       discount: orderDiscount,
-      updates: [
-        ...(order?.updates || []),
-        [new Date(), 'Order updated via admin panel (v2 UI - with TUS vouchers)'],
-      ],
+      updates: [...(order?.updates || [])],
       seller: order.seller,
-    };
-    const finalPayments = prevPayments;
 
-    payload.payment = {
-      ...(order.payment || {}),
-      total: finalTotal,
-      payment: finalPayments,
+      changeDescriptions: descriptions,
     };
 
     try {
@@ -1642,31 +1690,6 @@ export default function UpdateOrder() {
       </ListItem>
     ) : null;
 
-  const renderVariantAttributes = (selection: VariantAttribute[] | undefined) => {
-    if (!selection || selection.length === 0) return null;
-    return (
-      <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
-        <PaletteOutlined fontSize="small" sx={{ mr: 0.5, color: 'text.secondary' }} />
-        <Typography variant="caption" color="textSecondary">
-          Variante:
-          {selection.map((attr) => `${attr.name}: ${attr.value}`).join(', ')}
-        </Typography>
-      </Box>
-    );
-  };
-
-  const renderArtDetails = (art: PickedArt | undefined) => {
-    if (!art) return null;
-    return (
-      <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
-        <CollectionsOutlined fontSize="small" sx={{ mr: 0.5, color: 'text.secondary' }} />
-        <Typography variant="caption" color="textSecondary">
-          Arte: "{art.title}" por {art.prixerUsername}
-        </Typography>
-      </Box>
-    );
-  };
-
   const getOverallOrderStatus = (orderLines: OrderLineFormState[]): OrderStatus => {
     if (!orderLines || orderLines.length === 0) return OrderStatus.Pending;
     const statuses = orderLines.map((line) => getLatestStatus(line.status));
@@ -1706,8 +1729,7 @@ export default function UpdateOrder() {
       </Alert>
     );
   }
-
-  const overallStatusChipProps = getStatusChipProps(getOverallOrderStatus(editableOrderLines));
+  // const overallStatusChipProps = getStatusChipProps(getOverallOrderStatus(editableOrderLines));
 
   const handlePricePerUnitChange = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -1864,15 +1886,15 @@ export default function UpdateOrder() {
           aria-label="basic tabs example"
         >
           <Tab label="Detalles" {...a11yProps(0)} />
-          <Tab label="Pago" {...a11yProps(1)} />
-          <Tab label="Historial" {...a11yProps(2)} />
+          {permissions?.orders.readPayDetails && <Tab label="Pago" {...a11yProps(1)} />}
+          {permissions?.orders.readHistory && <Tab label="Historial" {...a11yProps(2)} />}
         </Tabs>
 
         <CustomTabPanel value={activeStep} index={0}>
           <Grid2 container spacing={{ xs: 2, md: 3 }}>
             <Grid2 size={{ xs: 12 }} sx={{ mt: 2 }}>
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                {permissions?.area === 'Master' && (
+                {permissions?.orders.updateSeller ? (
                   <FormControl size="small" disabled={isSubmitting} sx={{ minWidth: 200 }}>
                     <InputLabel>Vendedor</InputLabel>
                     <Select
@@ -1888,85 +1910,166 @@ export default function UpdateOrder() {
                       ))}
                     </Select>
                   </FormControl>
+                ) : (
+                  <Typography variant="body2" color="textSecondary">
+                    Vendedor: {order.seller}
+                  </Typography>
                 )}
-                <FormControl size="small" disabled={isSubmitting}>
-                  <InputLabel>Estado</InputLabel>
-                  <Select
-                    value={getLatestOrderStatus(order)}
-                    label="Estado"
-                    onChange={(e) =>
-                      handleOrderStatusChange(e as SelectChangeEvent<OrderStatus>, order)
-                    }
+                {permissions?.orders.updateGeneralStatus ? (
+                  <FormControl size="small" disabled={isSubmitting}>
+                    <InputLabel>Estado</InputLabel>
+                    <Select
+                      value={getLatestOrderStatus(order)}
+                      label="Estado"
+                      onChange={(e) =>
+                        handleOrderStatusChange(e as SelectChangeEvent<OrderStatus>, order)
+                      }
+                    >
+                      {Object.values(OrderStatus)
+                        .filter((v) => typeof v === 'number')
+                        .map((statusValue) => {
+                          const props = getStatusChipProps(statusValue as OrderStatus);
+                          return (
+                            <MenuItem key={statusValue} value={statusValue}>
+                              <Chip
+                                icon={props.icon}
+                                label={props.label}
+                                color={props.color as any}
+                                size="small"
+                                variant="outlined"
+                                sx={{
+                                  mr: 1,
+                                  borderRadius: '4px',
+                                  fontSize: '0.75rem',
+                                }}
+                              />
+                              {/* {props.label} */}
+                            </MenuItem>
+                          );
+                        })}
+                    </Select>
+                    {order.status && order.status.length > 0 && (
+                      <FormHelperText sx={{ textAlign: 'right' }}>
+                        Últ. act:
+                        {formatDate(order.status[order.status.length - 1][1])}
+                      </FormHelperText>
+                    )}
+                  </FormControl>
+                ) : (
+                  <Grid2
+                    sx={{
+                      display: 'flex',
+                      marginLeft: '1rem',
+                      gap: '0.5rem',
+                      justifyContent: 'center',
+                      alignItems: 'top',
+                    }}
                   >
+                    <Typography variant="body2" color="textSecondary">
+                      Estado:{' '}
+                    </Typography>
+
                     {Object.values(OrderStatus)
-                      .filter((v) => typeof v === 'number')
-                      .map((statusValue) => {
-                        const props = getStatusChipProps(statusValue as OrderStatus);
+                      .filter((v) => v === getLatestOrderStatus(order))
+                      .map(() => {
+                        const last = getLatestOrderStatus(order);
+                        const props = getStatusChipProps(last as OrderStatus);
                         return (
-                          <MenuItem key={statusValue} value={statusValue}>
-                            <Chip
-                              icon={props.icon}
-                              label={props.label}
-                              color={props.color as any}
-                              size="small"
-                              variant="outlined"
-                              sx={{
-                                mr: 1,
-                                borderRadius: '4px',
-                                fontSize: '0.75rem',
-                              }}
-                            />
-                            {/* {props.label} */}
-                          </MenuItem>
+                          <Chip
+                            icon={props.icon}
+                            label={props.label}
+                            color={props.color as any}
+                            size="small"
+                            variant="outlined"
+                            sx={{
+                              mr: 1,
+                              borderRadius: '4px',
+                              fontSize: '0.75rem',
+                            }}
+                          />
                         );
                       })}
-                  </Select>
-                  {order.status && order.status.length > 0 && (
-                    <FormHelperText sx={{ textAlign: 'right' }}>
-                      Últ. act:
-                      {formatDate(order.status[order.status.length - 1][1])}
-                    </FormHelperText>
-                  )}
-                </FormControl>
-                <FormControl size="small" disabled={isSubmitting}>
-                  <InputLabel>Estado de Pago</InputLabel>
-                  <Select
-                    label="Estado de pago"
-                    disabled={!permissions?.orders.updatePayStatus}
-                    value={getLatestpayOrderStatus(order)}
-                    onChange={(e) =>
-                      handleOrderPayStatusChange(e as SelectChangeEvent<GlobalPaymentStatus>, order)
-                    }
+                  </Grid2>
+                )}
+                {permissions?.orders.updatePayStatus ? (
+                  <FormControl size="small" disabled={isSubmitting}>
+                    <InputLabel>Estado de Pago</InputLabel>
+                    <Select
+                      label="Estado de pago"
+                      disabled={!permissions?.orders.updatePayStatus}
+                      value={getLatestpayOrderStatus(order)}
+                      onChange={(e) =>
+                        handleOrderPayStatusChange(
+                          e as SelectChangeEvent<GlobalPaymentStatus>,
+                          order
+                        )
+                      }
+                    >
+                      {Object.values(GlobalPaymentStatus)
+                        .filter((v) => typeof v === 'number')
+                        .map((statusValue) => {
+                          const props = getPayStatusChipProps(statusValue as GlobalPaymentStatus);
+                          return (
+                            <MenuItem key={statusValue} value={statusValue}>
+                              <Chip
+                                icon={props.icon}
+                                label={props.label}
+                                color={props.color as any}
+                                size="small"
+                                variant="outlined"
+                                sx={{
+                                  mr: 1,
+                                  borderRadius: '4px',
+                                  fontSize: '0.75rem',
+                                }}
+                              />
+                            </MenuItem>
+                          );
+                        })}
+                    </Select>
+                    {order.status && order.status.length > 0 && (
+                      <FormHelperText sx={{ textAlign: 'right' }}>
+                        Últ. act:
+                        {formatDate(order.status[order.status.length - 1][1])}
+                      </FormHelperText>
+                    )}
+                  </FormControl>
+                ) : (
+                  <Grid2
+                    sx={{
+                      display: 'flex',
+                      marginLeft: '1rem',
+                      gap: '0.5rem',
+                      justifyContent: 'center',
+                      alignItems: 'top',
+                    }}
                   >
+                    <Typography variant="body2" color="textSecondary">
+                      Estado de pago:{' '}
+                    </Typography>
+
                     {Object.values(GlobalPaymentStatus)
-                      .filter((v) => typeof v === 'number')
-                      .map((statusValue) => {
-                        const props = getPayStatusChipProps(statusValue as GlobalPaymentStatus);
+                      .filter((v) => v === getLatestpayOrderStatus(order))
+                      .map(() => {
+                        const last = getLatestpayOrderStatus(order);
+                        const props = getPayStatusChipProps(last as GlobalPaymentStatus);
                         return (
-                          <MenuItem key={statusValue} value={statusValue}>
-                            <Chip
-                              icon={props.icon}
-                              label={props.label}
-                              color={props.color as any}
-                              size="small"
-                              variant="outlined"
-                              sx={{
-                                mr: 1,
-                                borderRadius: '4px',
-                                fontSize: '0.75rem',
-                              }}
-                            />
-                          </MenuItem>
+                          <Chip
+                            icon={props.icon}
+                            label={props.label}
+                            color={props.color as any}
+                            size="small"
+                            variant="outlined"
+                            sx={{
+                              mr: 1,
+                              borderRadius: '4px',
+                              fontSize: '0.75rem',
+                            }}
+                          />
                         );
                       })}
-                  </Select>
-                  {order.status && order.status.length > 0 && (
-                    <FormHelperText sx={{ textAlign: 'right' }}>
-                      Últ. act:
-                      {formatDate(order.status[order.status.length - 1][1])}
-                    </FormHelperText>
-                  )}
-                </FormControl>
+                  </Grid2>
+                )}
               </Stack>
             </Grid2>
             <Grid2 size={{ xs: 12, lg: 7 }}>
@@ -1979,7 +2082,7 @@ export default function UpdateOrder() {
                 return (
                   <Card key={line.tempId} sx={{ mb: 2.5, borderRadius: 2, boxShadow: 2 }}>
                     <CardHeader
-                      title={`Item #${index+1}: ${line.selectedProduct?.label || 'Seleccionar Producto'}`}
+                      title={`Item #${index + 1}: ${line.selectedProduct?.label || 'Seleccionar Producto'}`}
                       action={
                         <IconButton
                           onClick={() => handleRemoveOrderLine(line.tempId)}
@@ -2008,103 +2111,146 @@ export default function UpdateOrder() {
                         <Grid2 size={{ xs: 12 }}>
                           <Grid2 container spacing={1.5} alignItems="center">
                             <Grid2 size={{ xs: 12, md: 6 }}>
-                              <Autocomplete
-                                fullWidth
-                                options={artOptions}
-                                value={line.selectedArt ? line.selectedArt : line.item?.art?.title}
-                                onChange={(e, v) => handleArtSelection(line.tempId, v as ArtOption)}
-                                disabled={isSubmitting}
-                                renderOption={(props, option) => (
-                                  <Box
-                                    component="li"
-                                    sx={{ '& > img': { mr: 2, flexShrink: 0 } }}
-                                    {...props}
-                                    key={typeof option === 'object' ? option.id : index + 1000}
-                                  >
-                                    <Avatar
-                                      variant="rounded"
-                                      src={typeof option === 'object' ? option.thumb : favicon}
-                                      sx={{
-                                        width: 24,
-                                        height: 24,
-                                        mr: 1,
-                                        border: '1px solid lightgrey',
-                                      }}
+                              {permissions?.orders.updateItem ? (
+                                <Autocomplete
+                                  fullWidth
+                                  options={artOptions}
+                                  value={
+                                    line.selectedArt ? line.selectedArt : line.item?.art?.title
+                                  }
+                                  onChange={(e, v) =>
+                                    handleArtSelection(line.tempId, v as ArtOption)
+                                  }
+                                  disabled={isSubmitting}
+                                  renderOption={(props, option) => (
+                                    <Box
+                                      component="li"
+                                      sx={{ '& > img': { mr: 2, flexShrink: 0 } }}
+                                      {...props}
+                                      key={typeof option === 'object' ? option.id : index + 1000}
+                                    >
+                                      <Avatar
+                                        variant="rounded"
+                                        src={typeof option === 'object' ? option.thumb : favicon}
+                                        sx={{
+                                          width: 24,
+                                          height: 24,
+                                          mr: 1,
+                                          border: '1px solid lightgrey',
+                                        }}
+                                      />
+                                      {typeof option === 'object' ? option.label : option}
+                                    </Box>
+                                  )}
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      size="small"
+                                      label="Arte"
+                                      helperText={
+                                        line.selectedArt?.fullArt.prixerUsername
+                                          ? `Artista: ${line.selectedArt.fullArt.prixerUsername}`
+                                          : ''
+                                      }
                                     />
-                                    {typeof option === 'object' ? option.label : option}
-                                  </Box>
-                                )}
-                                renderInput={(params) => (
-                                  <TextField
-                                    {...params}
-                                    size="small"
-                                    label="Arte"
-                                    helperText={
-                                      line.selectedArt?.fullArt.prixerUsername
-                                        ? `Artista: ${line.selectedArt.fullArt.prixerUsername}`
-                                        : ''
-                                    }
-                                  />
-                                )}
-                              />
+                                  )}
+                                />
+                              ) : (
+                                <>
+                                  <Typography variant="h6">
+                                    {`Arte: ${line.item?.art?.title}`}
+                                  </Typography>
+                                  <Typography variant="h6">
+                                    {`Prixer: ${line.item?.art?.prixerUsername}`}
+                                  </Typography>
+                                </>
+                              )}
                             </Grid2>
                             <Grid2 size={{ xs: 12, md: 6 }}>
-                              <Autocomplete
-                                fullWidth
-                                options={productOptions}
-                                value={line.selectedProduct}
-                                onChange={(e, v) => handleProductSelection(line.tempId, v)}
-                                disabled={isSubmitting}
-                                renderInput={(params) => (
-                                  <TextField {...params} size="small" label="Producto *" required />
-                                )}
-                              />
+                              {permissions?.orders.updateItem ? (
+                                <Autocomplete
+                                  fullWidth
+                                  options={productOptions}
+                                  value={line.selectedProduct}
+                                  onChange={(e, v) => handleProductSelection(line.tempId, v)}
+                                  disabled={isSubmitting}
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      size="small"
+                                      label="Producto *"
+                                      required
+                                    />
+                                  )}
+                                />
+                              ) : (
+                                <>
+                                  <Typography variant="h6">
+                                    {`Producto: ${line.item?.product.name}`}
+                                  </Typography>
+                                  <Typography variant="h6">
+                                    {`Variante: ${
+                                      line.item?.product?.selection
+                                        ?.map((c) => `${c.name}: ${c.value}`)
+                                        .join(', ') || 'N/A'
+                                    }`}
+                                  </Typography>
+                                </>
+                              )}
                             </Grid2>
                           </Grid2>
                           <Grid2 container spacing={1.5} alignItems="center" sx={{ mt: 1 }}>
-                            <Grid2 size={{ xs: 12, md: 6 }}>
-                              <Autocomplete
-                                fullWidth
-                                options={line.availableVariants}
-                                value={line.selectedVariant}
-                                onChange={(e, v) => handleVariantSelection(line.tempId, v)}
-                                disabled={
-                                  isSubmitting ||
-                                  !line.selectedProduct ||
-                                  !line.availableVariants.length
-                                }
-                                renderInput={(params) => (
-                                  <TextField
-                                    {...params}
-                                    size="small"
-                                    label="Variante *"
-                                    required={
-                                      !!(line.selectedProduct && line.availableVariants.length > 0)
-                                    }
-                                    helperText={
-                                      line.availableVariants.length === 0 && line.selectedProduct
-                                        ? 'Sin variantes'
-                                        : ''
-                                    }
-                                  />
-                                )}
-                              />
-                            </Grid2>
+                            {permissions?.orders.updateItem && (
+                              <Grid2 size={{ xs: 12, md: 6 }}>
+                                <Autocomplete
+                                  fullWidth
+                                  options={line.availableVariants}
+                                  value={line.selectedVariant}
+                                  onChange={(e, v) => handleVariantSelection(line.tempId, v)}
+                                  disabled={
+                                    isSubmitting ||
+                                    !line.selectedProduct ||
+                                    !line.availableVariants.length
+                                  }
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      size="small"
+                                      label="Variante *"
+                                      required={
+                                        !!(
+                                          line.selectedProduct && line.availableVariants.length > 0
+                                        )
+                                      }
+                                      helperText={
+                                        line.availableVariants.length === 0 && line.selectedProduct
+                                          ? 'Sin variantes'
+                                          : ''
+                                      }
+                                    />
+                                  )}
+                                />
+                              </Grid2>
+                            )}
                             <Grid2 size={{ xs: 6, md: 3 }}>
-                              <TextField
-                                label="Cant."
-                                type="number"
-                                value={line.quantity || 1}
-                                onChange={(e) => handleQuantityChange(line.tempId, e)}
-                                required
-                                fullWidth
-                                size="small"
-                                disabled={isSubmitting}
-                                inputProps={{ min: 1 }}
-                              />
+                              {permissions?.orders.updateItem ? (
+                                <TextField
+                                  label="Cant."
+                                  type="number"
+                                  value={line.quantity || 1}
+                                  onChange={(e) => handleQuantityChange(line.tempId, e)}
+                                  required
+                                  fullWidth
+                                  size="small"
+                                  disabled={isSubmitting}
+                                  inputProps={{ min: 1 }}
+                                />
+                              ) : (
+                                <Typography variant="h6">{`Producto: ${line.quantity}`}</Typography>
+                              )}
                             </Grid2>
                             <Grid2 size={{ xs: 6, md: 3 }} sx={{ textAlign: 'right' }}>
-                              {permissions?.area === 'Master' ? (
+                              {permissions?.area !== 'Master' ? (
                                 <TextField
                                   fullWidth
                                   variant="outlined"
@@ -2130,18 +2276,23 @@ export default function UpdateOrder() {
                                   }}
                                 />
                               ) : (
-                                <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-                                  ${(line?.item?.price ? Number(line?.item?.price) : 0).toFixed(2)}{' '}
-                                  c/u
+                                permissions?.orders.readPayDetails && (
+                                  <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                                    $
+                                    {(line?.item?.price ? Number(line?.item?.price) : 0).toFixed(2)}{' '}
+                                    c/u
+                                  </Typography>
+                                )
+                              )}
+                              {permissions?.orders.readPayDetails && (
+                                <Typography variant="subtitle2" color="primary.main">
+                                  $
+                                  {(
+                                    (line.quantity || 0) *
+                                    (line?.pricePerUnit ? Number(line?.pricePerUnit) : 0)
+                                  ).toFixed(2)}
                                 </Typography>
                               )}
-                              <Typography variant="subtitle2" color="primary.main">
-                                $
-                                {(
-                                  (line.quantity || 0) *
-                                  (line?.pricePerUnit ? Number(line?.pricePerUnit) : 0)
-                                ).toFixed(2)}
-                              </Typography>
                             </Grid2>
                           </Grid2>
                         </Grid2>
@@ -2259,79 +2410,311 @@ export default function UpdateOrder() {
                   </Card>
                 );
               })}
-              <Button
-                type="button"
-                variant="outlined"
-                onClick={handleAddOrderLine}
-                disabled={isSubmitting}
-                sx={{ mt: 1, mb: 2 }}
-              >
-                Agregar Item
-              </Button>
-            </Grid2>
-
-            <Grid2 size={{ xs: 12, lg: 5 }}>
-              <Paper elevation={1} sx={{ p: { xs: 2, md: 2.5 }, mb: 2.5, borderRadius: 2 }}>
-                <Typography
-                  variant="h6"
-                  gutterBottom
-                  sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}
+              {permissions?.area !== 'Master' && (
+                <Button
+                  type="button"
+                  variant="outlined"
+                  onClick={handleAddOrderLine}
+                  disabled={isSubmitting}
+                  sx={{ mt: 1, mb: 2 }}
                 >
-                  <ReceiptOutlined sx={{ mr: 1, color: 'primary.main' }} />
-                  Resumen del Pedido
-                </Typography>
-                <List dense disablePadding>
-                  {renderBasicInfoItem(
-                    'summary-subtotal',
-                    null,
-                    'Subtotal:',
-                    `$${(displayTotals?.subTotal ?? order.subTotal).toFixed(2)}`
-                  )}
-                  {(displayTotals?.discount ?? order.discount)
-                    ? renderBasicInfoItem(
-                        'summary-discount',
-                        null,
-                        'Descuento:',
-                        <Typography color="error.main">
-                          -$
-                          {(displayTotals?.discount ?? order.discount)?.toFixed(2)}
-                        </Typography>
-                      )
-                    : null}
-                  {(displayTotals?.shippingCost ?? order.shippingCost)
-                    ? renderBasicInfoItem(
-                        'summary-shipping',
-                        null,
-                        'Costo de Envío:',
-                        `$${(displayTotals?.shippingCost ?? order.shippingCost)?.toFixed(2)}`
-                      )
-                    : null}
-                  {(displayTotals?.taxes ?? order.tax).map((t, idx) =>
-                    renderBasicInfoItem(
-                      `summary-tax-${idx}`,
+                  Agregar Item
+                </Button>
+              )}
+            </Grid2>
+            <Grid2 size={{ xs: 12, lg: 5 }}>
+              {permissions?.orders.readPayDetails && (
+                <Paper elevation={1} sx={{ p: { xs: 2, md: 2.5 }, mb: 2.5, borderRadius: 2 }}>
+                  <Typography
+                    variant="h6"
+                    gutterBottom
+                    sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}
+                  >
+                    <ReceiptOutlined sx={{ mr: 1, color: 'primary.main' }} />
+                    Resumen del Pedido
+                  </Typography>
+                  <List dense disablePadding>
+                    {renderBasicInfoItem(
+                      'summary-subtotal',
                       null,
-                      `${t.name} (${t.value}%):`,
-                      `$${t.amount.toFixed(2)}`
-                    )
+                      'Subtotal:',
+                      `$${(displayTotals?.subTotal ?? order.subTotal).toFixed(2)}`
+                    )}
+                    {(displayTotals?.discount ?? order.discount)
+                      ? renderBasicInfoItem(
+                          'summary-discount',
+                          null,
+                          'Descuento:',
+                          <Typography color="error.main">
+                            -$
+                            {(displayTotals?.discount ?? order.discount)?.toFixed(2)}
+                          </Typography>
+                        )
+                      : null}
+                    {(displayTotals?.shippingCost ?? order.shippingCost)
+                      ? renderBasicInfoItem(
+                          'summary-shipping',
+                          null,
+                          'Costo de Envío:',
+                          `$${(displayTotals?.shippingCost ?? order.shippingCost)?.toFixed(2)}`
+                        )
+                      : null}
+                    {(displayTotals?.taxes ?? order.tax).map((t, idx) =>
+                      renderBasicInfoItem(
+                        `summary-tax-${idx}`,
+                        null,
+                        `${t.name} (${t.value}%):`,
+                        `$${t.amount.toFixed(2)}`
+                      )
+                    )}
+                    <Divider sx={{ my: 1 }} />
+                    <ListItem sx={{ py: 1, px: 0, justifyContent: 'space-between' }}>
+                      <Typography variant="h6" fontWeight="bold">
+                        Total:
+                      </Typography>
+                      <Typography variant="h6" fontWeight="bold">
+                        ${(displayTotals?.total ?? order.total).toFixed(2)}
+                      </Typography>
+                    </ListItem>
+                    <ListItem sx={{ px: 0, justifyContent: 'space-between' }}>
+                      <Typography variant="body2">Items Totales:</Typography>
+                      <Typography variant="body2">
+                        {displayTotals?.totalUnits ?? order.totalUnits}
+                      </Typography>
+                    </ListItem>
+                  </List>
+                </Paper>
+              )}
+              {permissions?.orders.readOrderDetails ? (
+                <>
+                  {order.consumerDetails && (
+                    <Paper
+                      elevation={1}
+                      sx={{ p: { xs: 2, md: 2.5 }, mb: 2.5, borderRadius: 2 }}
+                      id="client-details-section"
+                    >
+                      <Typography
+                        variant="h6"
+                        gutterBottom
+                        sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
+                      >
+                        <PersonOutline sx={{ mr: 1, color: 'primary.main' }} />
+                        Detalles del Cliente
+                      </Typography>
+                      {editableClientInfo && (
+                        <Stack spacing={2}>
+                          <Grid2 container spacing={2}>
+                            <Grid2 size={{ xs: 12, md: 6 }}>
+                              <TextField
+                                name="name"
+                                label="Nombre Cliente"
+                                value={editableClientInfo.name}
+                                onChange={handleClientInfoChange}
+                                variant="outlined"
+                                size="small"
+                                fullWidth
+                                disabled={isSubmitting}
+                                required
+                              />
+                            </Grid2>
+                            <Grid2 size={{ xs: 12, md: 6 }}>
+                              <TextField
+                                name="lastName"
+                                label="Apellido Cliente"
+                                value={editableClientInfo.lastName}
+                                onChange={handleClientInfoChange}
+                                variant="outlined"
+                                size="small"
+                                fullWidth
+                                disabled={isSubmitting}
+                                required
+                              />
+                            </Grid2>
+                          </Grid2>
+                          <TextField
+                            name="email"
+                            label="Email Cliente"
+                            type="email"
+                            value={editableClientInfo.email || ''}
+                            onChange={handleClientInfoChange}
+                            variant="outlined"
+                            size="small"
+                            fullWidth
+                            disabled={isSubmitting}
+                          />
+                          <TextField
+                            name="phone"
+                            label="Teléfono Cliente"
+                            value={editableClientInfo.phone}
+                            onChange={handleClientInfoChange}
+                            variant="outlined"
+                            size="small"
+                            fullWidth
+                            disabled={isSubmitting}
+                            required
+                          />
+                        </Stack>
+                      )}
+                    </Paper>
                   )}
-                  <Divider sx={{ my: 1 }} />
-                  <ListItem sx={{ py: 1, px: 0, justifyContent: 'space-between' }}>
-                    <Typography variant="h6" fontWeight="bold">
-                      Total:
+                  <Paper elevation={1} sx={{ p: { xs: 2, md: 2.5 }, mb: 2.5, borderRadius: 2 }}>
+                    <Typography
+                      variant="h6"
+                      gutterBottom
+                      sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}
+                    >
+                      <LocalShippingOutlined sx={{ mr: 1, color: 'primary.main' }} />
+                      Envío y Facturación
                     </Typography>
-                    <Typography variant="h6" fontWeight="bold">
-                      ${(displayTotals?.total ?? order.total).toFixed(2)}
-                    </Typography>
-                  </ListItem>
-                  <ListItem sx={{ px: 0, justifyContent: 'space-between' }}>
-                    <Typography variant="body2">Items Totales:</Typography>
-                    <Typography variant="body2">
-                      {displayTotals?.totalUnits ?? order.totalUnits}
-                    </Typography>
-                  </ListItem>
-                </List>
-              </Paper>
-              {order.consumerDetails && (
+                    <Autocomplete
+                      fullWidth
+                      sx={{ mb: 2 }}
+                      options={shippingMethodOptions}
+                      value={selectedShippingMethod}
+                      onChange={handleShippingChange}
+                      getOptionLabel={(o) => o.label}
+                      isOptionEqualToValue={(o, v) => o.id === v.id}
+                      loading={isLoading && shippingMethodOptions.length === 0}
+                      disabled={isSubmitting}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Método de Envío *"
+                          required
+                          InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                              <>
+                                {isLoading && !shippingMethodOptions.length ? (
+                                  <CircularProgress size={20} />
+                                ) : null}
+                                {params.InputProps.endAdornment}
+                              </>
+                            ),
+                          }}
+                        />
+                      )}
+                    />
+                    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
+                      <DatePicker
+                        sx={{ width: '100%' }}
+                        label="Fecha estimada de entrega"
+                        value={prefDate}
+                        format="DD/MM/YYYY"
+                        onChange={(newValue) => setPrefDate(dayjs(newValue))}
+                      />
+                    </LocalizationProvider>
+                    {!isPickupSelected && (
+                      <>
+                        <Typography
+                          variant="subtitle1"
+                          gutterBottom
+                          sx={{ fontWeight: 500, mt: 1, mb: 1 }}
+                        >
+                          Dirección de Envío *
+                        </Typography>
+                        {editableShippingAddress && (
+                          <EditableAddressForm
+                            address={editableShippingAddress}
+                            onAddressChange={handleShippingAddressChange}
+                            isDisabled={isSubmitting}
+                          />
+                        )}
+                        {!editableShippingAddress?.address?.line1 && !isPickupSelected && (
+                          <FormHelperText error sx={{ mb: 1 }}>
+                            La dirección de envío es requerida y debe estar completa.
+                          </FormHelperText>
+                        )}
+                      </>
+                    )}
+                    {isPickupSelected && (
+                      <Alert severity="info" sx={{ mb: 2 }}>
+                        El método de envío seleccionado es Recogida en Tienda. No se requiere
+                        dirección de envío.
+                      </Alert>
+                    )}
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={useShippingForBilling}
+                          onChange={handleUseShippingForBillingChange}
+                          name="useShippingForBilling"
+                          disabled={
+                            isSubmitting ||
+                            isPickupSelected ||
+                            !editableShippingAddress?.address?.line1
+                          }
+                        />
+                      }
+                      label="Usar para Facturación"
+                      sx={{ mt: 1, mb: useShippingForBilling ? 0 : 1 }}
+                    />
+                    {!useShippingForBilling && (
+                      <>
+                        <Typography
+                          variant="subtitle1"
+                          gutterBottom
+                          sx={{ fontWeight: 500, mt: 2, mb: 1 }}
+                        >
+                          Dirección de Facturación *
+                        </Typography>
+                        {editableBillingAddress && (
+                          <EditableAddressForm
+                            address={editableBillingAddress}
+                            onAddressChange={handleBillingAddressChange}
+                            isDisabled={isSubmitting}
+                          />
+                        )}
+                        {!editableBillingAddress?.address?.line1 && (
+                          <FormHelperText error>
+                            La dirección de facturación es requerida y debe estar completa.
+                          </FormHelperText>
+                        )}
+                      </>
+                    )}
+                    <Divider sx={{ my: 2 }} />
+                    <Autocomplete
+                      fullWidth
+                      sx={{ mb: 1 }}
+                      options={paymentMethodOptions}
+                      value={selectedPaymentMethod}
+                      onChange={handlePaymentChange}
+                      getOptionLabel={(o) => o.label}
+                      isOptionEqualToValue={(o, v) => o.id === v.id}
+                      loading={isLoading && paymentMethodOptions.length === 0}
+                      disabled={isSubmitting}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Método de Pago"
+                          InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                              <>
+                                {isLoading && !paymentMethodOptions.length ? (
+                                  <CircularProgress size={20} />
+                                ) : null}
+                                {params.InputProps.endAdornment}
+                              </>
+                            ),
+                          }}
+                        />
+                      )}
+                    />
+                    {selectedPaymentMethod &&
+                      (selectedPaymentMethod.fullMethod as PaymentMethod).instructions && (
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          display="block"
+                          sx={{ ml: 0.5, mb: 1 }}
+                        >
+                          {(selectedPaymentMethod.fullMethod as PaymentMethod).instructions}
+                        </Typography>
+                      )}
+                  </Paper>
+                </>
+              ) : (
                 <Paper
                   elevation={1}
                   sx={{ p: { xs: 2, md: 2.5 }, mb: 2.5, borderRadius: 2 }}
@@ -2346,216 +2729,16 @@ export default function UpdateOrder() {
                     Detalles del Cliente
                   </Typography>
                   {editableClientInfo && (
-                    <Stack spacing={2}>
-                      <Grid2 container spacing={2}>
-                        <Grid2 size={{ xs: 12, md: 6 }}>
-                          <TextField
-                            name="name"
-                            label="Nombre Cliente"
-                            value={editableClientInfo.name}
-                            onChange={handleClientInfoChange}
-                            variant="outlined"
-                            size="small"
-                            fullWidth
-                            disabled={isSubmitting}
-                            required
-                          />
-                        </Grid2>
-                        <Grid2 size={{ xs: 12, md: 6 }}>
-                          <TextField
-                            name="lastName"
-                            label="Apellido Cliente"
-                            value={editableClientInfo.lastName}
-                            onChange={handleClientInfoChange}
-                            variant="outlined"
-                            size="small"
-                            fullWidth
-                            disabled={isSubmitting}
-                            required
-                          />
-                        </Grid2>
-                      </Grid2>
-                      <TextField
-                        name="email"
-                        label="Email Cliente"
-                        type="email"
-                        value={editableClientInfo.email || ''}
-                        onChange={handleClientInfoChange}
-                        variant="outlined"
-                        size="small"
-                        fullWidth
-                        disabled={isSubmitting}
-                      />
-                      <TextField
-                        name="phone"
-                        label="Teléfono Cliente"
-                        value={editableClientInfo.phone}
-                        onChange={handleClientInfoChange}
-                        variant="outlined"
-                        size="small"
-                        fullWidth
-                        disabled={isSubmitting}
-                        required
-                      />
-                    </Stack>
+                    <Typography
+                      variant="h6"
+                      gutterBottom
+                      sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
+                    >
+                      {`${editableClientInfo.name} ${editableClientInfo.lastName}`}
+                    </Typography>
                   )}
                 </Paper>
               )}
-              <Paper elevation={1} sx={{ p: { xs: 2, md: 2.5 }, mb: 2.5, borderRadius: 2 }}>
-                <Typography
-                  variant="h6"
-                  gutterBottom
-                  sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}
-                >
-                  <LocalShippingOutlined sx={{ mr: 1, color: 'primary.main' }} />
-                  Envío y Facturación
-                </Typography>
-                <Autocomplete
-                  fullWidth
-                  sx={{ mb: 2 }}
-                  options={shippingMethodOptions}
-                  value={selectedShippingMethod}
-                  onChange={handleShippingChange}
-                  getOptionLabel={(o) => o.label}
-                  isOptionEqualToValue={(o, v) => o.id === v.id}
-                  loading={isLoading && shippingMethodOptions.length === 0}
-                  disabled={isSubmitting}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Método de Envío *"
-                      required
-                      InputProps={{
-                        ...params.InputProps,
-                        endAdornment: (
-                          <>
-                            {isLoading && !shippingMethodOptions.length ? (
-                              <CircularProgress size={20} />
-                            ) : null}
-                            {params.InputProps.endAdornment}
-                          </>
-                        ),
-                      }}
-                    />
-                  )}
-                />
-                <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
-                  <DatePicker
-                    sx={{ width: '100%' }}
-                    label="Fecha estimada de entrega"
-                    value={prefDate}
-                    format="DD/MM/YYYY"
-                    onChange={(newValue) => setPrefDate(dayjs(newValue))}
-                  />
-                </LocalizationProvider>
-                {!isPickupSelected && (
-                  <>
-                    <Typography
-                      variant="subtitle1"
-                      gutterBottom
-                      sx={{ fontWeight: 500, mt: 1, mb: 1 }}
-                    >
-                      Dirección de Envío *
-                    </Typography>
-                    {editableShippingAddress && (
-                      <EditableAddressForm
-                        address={editableShippingAddress}
-                        onAddressChange={handleShippingAddressChange}
-                        isDisabled={isSubmitting}
-                      />
-                    )}
-                    {!editableShippingAddress?.address?.line1 && !isPickupSelected && (
-                      <FormHelperText error sx={{ mb: 1 }}>
-                        La dirección de envío es requerida y debe estar completa.
-                      </FormHelperText>
-                    )}
-                  </>
-                )}
-                {isPickupSelected && (
-                  <Alert severity="info" sx={{ mb: 2 }}>
-                    El método de envío seleccionado es Recogida en Tienda. No se requiere dirección
-                    de envío.
-                  </Alert>
-                )}
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={useShippingForBilling}
-                      onChange={handleUseShippingForBillingChange}
-                      name="useShippingForBilling"
-                      disabled={
-                        isSubmitting || isPickupSelected || !editableShippingAddress?.address?.line1
-                      }
-                    />
-                  }
-                  label="Usar para Facturación"
-                  sx={{ mt: 1, mb: useShippingForBilling ? 0 : 1 }}
-                />
-                {!useShippingForBilling && (
-                  <>
-                    <Typography
-                      variant="subtitle1"
-                      gutterBottom
-                      sx={{ fontWeight: 500, mt: 2, mb: 1 }}
-                    >
-                      Dirección de Facturación *
-                    </Typography>
-                    {editableBillingAddress && (
-                      <EditableAddressForm
-                        address={editableBillingAddress}
-                        onAddressChange={handleBillingAddressChange}
-                        isDisabled={isSubmitting}
-                      />
-                    )}
-                    {!editableBillingAddress?.address?.line1 && (
-                      <FormHelperText error>
-                        La dirección de facturación es requerida y debe estar completa.
-                      </FormHelperText>
-                    )}
-                  </>
-                )}
-                <Divider sx={{ my: 2 }} />
-                <Autocomplete
-                  fullWidth
-                  sx={{ mb: 1 }}
-                  options={paymentMethodOptions}
-                  value={selectedPaymentMethod}
-                  onChange={handlePaymentChange}
-                  getOptionLabel={(o) => o.label}
-                  isOptionEqualToValue={(o, v) => o.id === v.id}
-                  loading={isLoading && paymentMethodOptions.length === 0}
-                  disabled={isSubmitting}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Método de Pago"
-                      InputProps={{
-                        ...params.InputProps,
-                        endAdornment: (
-                          <>
-                            {isLoading && !paymentMethodOptions.length ? (
-                              <CircularProgress size={20} />
-                            ) : null}
-                            {params.InputProps.endAdornment}
-                          </>
-                        ),
-                      }}
-                    />
-                  )}
-                />
-                {selectedPaymentMethod &&
-                  (selectedPaymentMethod.fullMethod as PaymentMethod).instructions && (
-                    <Typography
-                      variant="caption"
-                      color="text.secondary"
-                      display="block"
-                      sx={{ ml: 0.5, mb: 1 }}
-                    >
-                      {(selectedPaymentMethod.fullMethod as PaymentMethod).instructions}
-                    </Typography>
-                  )}
-              </Paper>
-
               <Paper elevation={1} sx={{ p: { xs: 2, md: 2.5 }, mb: 2.5, borderRadius: 2 }}>
                 <Typography
                   variant="h6"
@@ -2595,178 +2778,179 @@ export default function UpdateOrder() {
             </Grid2>
           </Grid2>
         </CustomTabPanel>
-        <CustomTabPanel value={activeStep} index={1}>
-          <Box sx={{ mt: 3 }}>
-            <Grid2 container spacing={2}>
-              <Grid2 size={{ xs: 12 }}>
-                <Paper
-                  variant="outlined"
-                  sx={{
-                    p: prevPayments.length > 0 ? 1 : 2,
-                    minHeight: prevPayments.length > 0 ? 'auto' : 100,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: prevPayments.length > 0 ? 'flex-start' : 'center',
-                    flexWrap: 'wrap',
-                    gap: 1,
-                  }}
-                >
-                  {prevPayments.length > 0 ? (
-                    prevPayments.map((pay) => (
-                      <Box key={pay.id} className={classes.imageGridItem}>
-                        <Box className={classes.imagePreviewItem}>
-                          {pay.voucher ? (
-                            <img src={pay.voucher} alt="Comprobante" />
-                          ) : (
-                            <Box
-                              sx={{
-                                width: '100%',
-                                height: '100%',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                bgcolor: 'grey.200',
-                              }}
-                            >
-                              <BrokenImageIcon sx={{ fontSize: 30, color: 'grey.400' }} />
-                            </Box>
-                          )}
-                          <IconButton
-                            size="small"
-                            onClick={() => handleRemoveVoucherImage(pay.id)}
-                            disabled={isSubmitting}
-                            sx={{
-                              position: 'absolute',
-                              top: 6,
-                              right: 6,
-                              backgroundColor: 'rgba(255,255,255,0.8)',
-                              '&:hover': {
-                                backgroundColor: 'rgba(255,255,255,1)',
-                              },
-                              p: 0.2,
-                            }}
-                            color="error"
-                          >
-                            <DeleteIcon sx={{ fontSize: '1rem' }} />
-                          </IconButton>
-                          <Grid2 size={{ xs: 12 }}>
-                            <Typography color="secondary">
-                              Método de pago: {pay.method?.label}
-                            </Typography>
-                            <Typography color="secondary">Monto: ${pay.amount}</Typography>
-                            <Typography color="secondary">
-                              Descripción: {pay.description}
-                            </Typography>
-                          </Grid2>
-                        </Box>
-                      </Box>
-                    ))
-                  ) : (
-                    <Typography sx={{ color: 'text.secondary', fontStyle: 'italic' }}>
-                      No se han cargado comprobantes de pago aún.
-                    </Typography>
-                  )}
-                </Paper>
-                <Button
-                  sx={{ margin: '2rem auto', width: '100%' }}
-                  onClick={() => setOpenNewPay(true)}
-                  variant="outlined"
-                  startIcon={<AddCircleOutline />}
-                  disabled={paymentVouchers.length >= 6 || isSubmitting}
-                >
-                  Registrar pago
-                </Button>
-                <Modal
-                  open={openNewPay}
-                  onClose={() => setOpenNewPay(false)}
-                  aria-labelledby="modal-modal-title"
-                  aria-describedby="modal-modal-description"
-                >
-                  <Box
+        {permissions?.orders.readPayDetails && (
+          <CustomTabPanel value={activeStep} index={1}>
+            <Box sx={{ mt: 3 }}>
+              <Grid2 container spacing={2}>
+                <Grid2 size={{ xs: 12 }}>
+                  <Paper
+                    variant="outlined"
                     sx={{
-                      position: 'absolute',
-                      top: '50%',
-                      left: '50%',
-                      transform: 'translate(-50%, -50%)',
-                      width: 800,
-                      bgcolor: 'background.paper',
-                      boxShadow: 24,
-                      borderRadius: 2,
-                      pt: 2,
-                      px: 4,
-                      pb: 3,
+                      p: prevPayments.length > 0 ? 1 : 2,
+                      minHeight: prevPayments.length > 0 ? 'auto' : 100,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: prevPayments.length > 0 ? 'flex-start' : 'center',
+                      flexWrap: 'wrap',
+                      gap: 1,
                     }}
                   >
-                    <Typography
-                      variant="h5"
-                      gutterBottom
-                      sx={{ margin: 2, textAlign: 'center' }}
-                      color="secondary"
-                    >
-                      Registrar nuevo pago
-                    </Typography>
-                    <Grid2 container spacing={3}>
-                      <Grid2 size={{ xs: 12, md: 4 }}>
-                        <Paper
-                          variant="outlined"
-                          sx={{
-                            p: 2,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            height: '100%',
-                            minHeight: 200,
-                          }}
-                        >
-                          {currentVoucherImage ? (
-                            <Box sx={{ mb: 2, width: '100%', textAlign: 'center' }}>
-                              <img
-                                src={currentVoucherImage.url}
-                                alt="Previsualización"
-                                style={{
-                                  maxWidth: '100%',
-                                  maxHeight: 150,
-                                  objectFit: 'contain',
+                    {prevPayments.length > 0 ? (
+                      prevPayments.map((pay) => (
+                        <Box key={pay.id} className={classes.imageGridItem}>
+                          <Box className={classes.imagePreviewItem}>
+                            {pay.voucher ? (
+                              <img src={pay.voucher} alt="Comprobante" />
+                            ) : (
+                              <Box
+                                sx={{
+                                  width: '100%',
+                                  height: '100%',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  bgcolor: 'grey.200',
                                 }}
-                              />
-                              <Typography variant="caption" display="block" sx={{ mt: 0.5 }}>
-                                {currentVoucherImage?.file?.name.slice(12)}
-                              </Typography>
-                            </Box>
-                          ) : (
-                            <Typography
-                              sx={{
-                                color: 'text.secondary',
-                                fontStyle: 'italic',
-                                mb: 2,
-                              }}
-                            >
-                              Sube una imagen del comprobante.
-                            </Typography>
-                          )}
-                          <Grid2 size={{ xs: 12 }} sx={{ margin: '40px auto' }}>
-                            <input
-                              type="file"
-                              accept="image/png, image/jpeg, image/webp"
-                              onChange={handleVoucherImageSelect}
-                              style={{ display: 'none' }}
-                              id="voucher-image-input"
-                              disabled={isSubmitting || paymentVouchers.length >= 6}
-                            />
-                            <label htmlFor="voucher-image-input">
-                              <Button
-                                variant="outlined"
-                                component="span"
-                                startIcon={<PhotoCameraBackIcon />}
-                                disabled={isSubmitting || paymentVouchers.length >= 6}
-                                fullWidth
                               >
-                                Añadir Comprobante
-                              </Button>
-                            </label>
-                          </Grid2>
-                          {/* <input
+                                <BrokenImageIcon sx={{ fontSize: 30, color: 'grey.400' }} />
+                              </Box>
+                            )}
+                            <IconButton
+                              size="small"
+                              onClick={() => handleRemoveVoucherImage(pay.id)}
+                              disabled={isSubmitting}
+                              sx={{
+                                position: 'absolute',
+                                top: 6,
+                                right: 6,
+                                backgroundColor: 'rgba(255,255,255,0.8)',
+                                '&:hover': {
+                                  backgroundColor: 'rgba(255,255,255,1)',
+                                },
+                                p: 0.2,
+                              }}
+                              color="error"
+                            >
+                              <DeleteIcon sx={{ fontSize: '1rem' }} />
+                            </IconButton>
+                            <Grid2 size={{ xs: 12 }}>
+                              <Typography color="secondary">
+                                Método de pago: {pay.method?.label}
+                              </Typography>
+                              <Typography color="secondary">Monto: ${pay.amount}</Typography>
+                              <Typography color="secondary">
+                                Descripción: {pay.description}
+                              </Typography>
+                            </Grid2>
+                          </Box>
+                        </Box>
+                      ))
+                    ) : (
+                      <Typography sx={{ color: 'text.secondary', fontStyle: 'italic' }}>
+                        No se han cargado comprobantes de pago aún.
+                      </Typography>
+                    )}
+                  </Paper>
+                  <Button
+                    sx={{ margin: '2rem auto', width: '100%' }}
+                    onClick={() => setOpenNewPay(true)}
+                    variant="outlined"
+                    startIcon={<AddCircleOutline />}
+                    disabled={paymentVouchers.length >= 6 || isSubmitting}
+                  >
+                    Registrar pago
+                  </Button>
+                  <Modal
+                    open={openNewPay}
+                    onClose={() => setOpenNewPay(false)}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                  >
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: 800,
+                        bgcolor: 'background.paper',
+                        boxShadow: 24,
+                        borderRadius: 2,
+                        pt: 2,
+                        px: 4,
+                        pb: 3,
+                      }}
+                    >
+                      <Typography
+                        variant="h5"
+                        gutterBottom
+                        sx={{ margin: 2, textAlign: 'center' }}
+                        color="secondary"
+                      >
+                        Registrar nuevo pago
+                      </Typography>
+                      <Grid2 container spacing={3}>
+                        <Grid2 size={{ xs: 12, md: 4 }}>
+                          <Paper
+                            variant="outlined"
+                            sx={{
+                              p: 2,
+                              display: 'flex',
+                              flexDirection: 'column',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              height: '100%',
+                              minHeight: 200,
+                            }}
+                          >
+                            {currentVoucherImage ? (
+                              <Box sx={{ mb: 2, width: '100%', textAlign: 'center' }}>
+                                <img
+                                  src={currentVoucherImage.url}
+                                  alt="Previsualización"
+                                  style={{
+                                    maxWidth: '100%',
+                                    maxHeight: 150,
+                                    objectFit: 'contain',
+                                  }}
+                                />
+                                <Typography variant="caption" display="block" sx={{ mt: 0.5 }}>
+                                  {currentVoucherImage?.file?.name.slice(12)}
+                                </Typography>
+                              </Box>
+                            ) : (
+                              <Typography
+                                sx={{
+                                  color: 'text.secondary',
+                                  fontStyle: 'italic',
+                                  mb: 2,
+                                }}
+                              >
+                                Sube una imagen del comprobante.
+                              </Typography>
+                            )}
+                            <Grid2 size={{ xs: 12 }} sx={{ margin: '40px auto' }}>
+                              <input
+                                type="file"
+                                accept="image/png, image/jpeg, image/webp"
+                                onChange={handleVoucherImageSelect}
+                                style={{ display: 'none' }}
+                                id="voucher-image-input"
+                                disabled={isSubmitting || paymentVouchers.length >= 6}
+                              />
+                              <label htmlFor="voucher-image-input">
+                                <Button
+                                  variant="outlined"
+                                  component="span"
+                                  startIcon={<PhotoCameraBackIcon />}
+                                  disabled={isSubmitting || paymentVouchers.length >= 6}
+                                  fullWidth
+                                >
+                                  Añadir Comprobante
+                                </Button>
+                              </label>
+                            </Grid2>
+                            {/* <input
                 type="file"
                 accept="image/png, image/jpeg, image/webp"
                 onChange={handleNewVoucherImageSelect} // Nueva función para la imagen actual
@@ -2785,173 +2969,118 @@ export default function UpdateOrder() {
                   {currentVoucherImage ? 'Cambiar Imagen' : 'Seleccionar Imagen'}
                 </Button>
               </label> */}
-                        </Paper>
-                      </Grid2>
+                          </Paper>
+                        </Grid2>
 
-                      <Grid2 size={{ xs: 12, md: 8 }}>
-                        <Stack spacing={2}>
-                          <FormControl fullWidth variant="outlined" disabled={isSubmitting}>
-                            <InputLabel id="payment-method-label">Método de Pago</InputLabel>
-                            <Select
-                              labelId="payment-method-label"
-                              value={currentMethod?.label}
-                              onChange={(e) => handleSelectedMethod(e.target.value)}
-                              label="Método de Pago"
+                        <Grid2 size={{ xs: 12, md: 8 }}>
+                          <Stack spacing={2}>
+                            <FormControl fullWidth variant="outlined" disabled={isSubmitting}>
+                              <InputLabel id="payment-method-label">Método de Pago</InputLabel>
+                              <Select
+                                labelId="payment-method-label"
+                                value={currentMethod?.label}
+                                onChange={(e) => handleSelectedMethod(e.target.value)}
+                                label="Método de Pago"
+                              >
+                                {paymentMethodOptions.map((method) => (
+                                  <MenuItem key={method.id} value={method.id}>
+                                    {method.label}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            </FormControl>
+                            <TextField
+                              label="Monto (ej. 150.00)"
+                              variant="outlined"
+                              fullWidth
+                              required
+                              type="number"
+                              value={currentAmount}
+                              onChange={(e) => setCurrentAmount(Number(e.target.value))}
+                              disabled={isSubmitting}
+                              InputProps={{
+                                startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                              }}
+                            />
+
+                            <TextField
+                              label="Descripción"
+                              variant="outlined"
+                              fullWidth
+                              value={currentDescription}
+                              onChange={(e) => setCurrentDescription(e.target.value)}
+                              disabled={isSubmitting}
+                            />
+                            <Button
+                              variant="contained"
+                              color="primary"
+                              startIcon={<SaveIcon />}
+                              onClick={handleAddPaymentVoucher}
+                              disabled={isSubmitting || !currentAmount || !currentMethod}
+                              sx={{ alignSelf: 'flex-start' }}
                             >
-                              {paymentMethodOptions.map((method) => (
-                                <MenuItem key={method.id} value={method.id}>
-                                  {method.label}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
-                          <TextField
-                            label="Monto (ej. 150.00)"
-                            variant="outlined"
-                            fullWidth
-                            required
-                            type="number"
-                            value={currentAmount}
-                            onChange={(e) => setCurrentAmount(Number(e.target.value))}
-                            disabled={isSubmitting}
-                            InputProps={{
-                              startAdornment: <InputAdornment position="start">$</InputAdornment>,
-                            }}
-                          />
-
-                          <TextField
-                            label="Descripción"
-                            variant="outlined"
-                            fullWidth
-                            value={currentDescription}
-                            onChange={(e) => setCurrentDescription(e.target.value)}
-                            disabled={isSubmitting}
-                          />
-                          <Button
-                            variant="contained"
-                            color="primary"
-                            startIcon={<SaveIcon />}
-                            onClick={handleAddPaymentVoucher}
-                            disabled={isSubmitting || !currentAmount || !currentMethod}
-                            sx={{ alignSelf: 'flex-start' }}
-                          >
-                            Guardar registro de Pago
-                          </Button>
-                        </Stack>
+                              Guardar registro de Pago
+                            </Button>
+                          </Stack>
+                        </Grid2>
                       </Grid2>
-                    </Grid2>
-                  </Box>
-                </Modal>
+                    </Box>
+                  </Modal>
+                </Grid2>
               </Grid2>
-            </Grid2>
-          </Box>
-        </CustomTabPanel>
-        <CustomTabPanel value={activeStep} index={2}>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead sx={{ backgroundColor: (theme) => theme.palette.action.hover }}>
-                <TableRow>
-                  <TableCell align="center">Fecha</TableCell>
-                  <TableCell align="center">Descripción</TableCell>
-                  <TableCell align="center">Autor</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {order?.history &&
-                  order?.history.length > 0 &&
-                  order.history.map((mov) => (
-                    <TableRow
-                    // style={{
-                    //   display: "flex",
-                    //   justifyContent: "space-between",
-                    // }}
-                    >
-                      <TableCell align="center">
-                        <Typography style={{ fontSize: '14px' }}>
-                          {new Date(mov.timestamp)
-                            .toLocaleString('en-GB', {
-                              timeZone: 'UTC',
-                            })
-                            .slice(0, 10)}
-                        </Typography>
-                      </TableCell>
+            </Box>
+          </CustomTabPanel>
+        )}
+        {permissions?.orders.readHistory && (
+          <CustomTabPanel value={activeStep} index={2}>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead sx={{ backgroundColor: (theme) => theme.palette.action.hover }}>
+                  <TableRow>
+                    <TableCell align="center">Fecha</TableCell>
+                    <TableCell align="center">Descripción</TableCell>
+                    <TableCell align="center">Autor</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {order?.history &&
+                    order?.history.length > 0 &&
+                    order.history.map((mov) => (
+                      <TableRow>
+                        <TableCell align="center">
+                          <Typography style={{ fontSize: '14px' }}>
+                            {new Date(mov.timestamp)
+                              .toLocaleString('en-GB', {
+                                timeZone: 'UTC',
+                              })
+                              .slice(0, 10)}
+                          </Typography>
+                        </TableCell>
 
-                      <TableCell align="center">
-                        <Typography style={{ fontSize: '14px' }}>
-                          <div data-color-mode="light">
-                            <MDEditor.Markdown source={mov.description} />
-                          </div>
-                        </Typography>
-                      </TableCell>
+                        <TableCell align="center">
+                          <Typography style={{ fontSize: '14px' }}>
+                            <div data-color-mode="light">
+                              <MDEditor.Markdown source={mov.description} />
+                            </div>
+                          </Typography>
+                        </TableCell>
 
-                      <TableCell align="center">
-                        <Typography
-                          style={{
-                            fontSize: '14px',
-                          }}
-                        >
-                          {mov.user}
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </CustomTabPanel>
-        <CustomTabPanel value={activeStep} index={2}>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead sx={{ backgroundColor: (theme) => theme.palette.action.hover }}>
-                <TableRow>
-                  <TableCell align="center">Fecha</TableCell>
-                  <TableCell align="center">Descripción</TableCell>
-                  <TableCell align="center">Autor</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {order?.history &&
-                  order?.history.length > 0 &&
-                  order.history.map((mov) => (
-                    <TableRow
-                    // style={{
-                    //   display: "flex",
-                    //   justifyContent: "space-between",
-                    // }}
-                    >
-                      <TableCell align="center">
-                        <Typography style={{ fontSize: '14px' }}>
-                          {new Date(mov.timestamp)
-                            .toLocaleString('en-GB', {
-                              timeZone: 'UTC',
-                            })
-                            .slice(0, 10)}
-                        </Typography>
-                      </TableCell>
-
-                      <TableCell align="center">
-                        <Typography style={{ fontSize: '14px' }}>
-                          <div data-color-mode="light">
-                            <MDEditor.Markdown source={mov.description} />
-                          </div>
-                        </Typography>
-                      </TableCell>
-
-                      <TableCell align="center">
-                        <Typography
-                          style={{
-                            fontSize: '14px',
-                          }}
-                        >
-                          {mov.user}
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </CustomTabPanel>
+                        <TableCell align="center">
+                          <Typography
+                            style={{
+                              fontSize: '14px',
+                            }}
+                          >
+                            {mov.user}
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </CustomTabPanel>
+        )}
 
         {errorSubmit && (
           <Alert severity="error" sx={{ mt: 1 }}>

@@ -10,7 +10,7 @@ import React, {
 } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
-import { useSnackBar } from 'context/GlobalContext';
+import { useAdminPermissions, useSnackBar } from 'context/GlobalContext';
 import { User, USER_ROLE_OPTIONS } from 'types/user.types';
 import { Prixer } from 'types/prixer.types';
 
@@ -209,7 +209,7 @@ const UpdateUser: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { showSnackBar } = useSnackBar();
-  // const [permissions, setPermissions] = useState<PermissionsV2 | null>(null)
+  const { permissions } = useAdminPermissions();
 
   const [userFormData, setUserFormData] = useState<Partial<User>>(initialUserFormState);
   const [prixerFormData, setPrixerFormData] = useState<Partial<Prixer>>(initialPrixerFormState);
@@ -221,8 +221,6 @@ const UpdateUser: React.FC = () => {
   const [validationErrors, setValidationErrors] = useState<UserValidationErrors | null>(null);
   const [balance, setBalance] = useState<number>(0);
   const [modal, setModal] = useState<boolean>(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [newPassword, setNewPassword] = useState('');
   const [value, setValue] = useState(0);
   type MovementType = 'Depósito' | 'Retiro';
   const movementTypeOptions: MovementType[] = ['Depósito', 'Retiro'];

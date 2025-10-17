@@ -40,9 +40,8 @@ import { LocalShippingOutlined, PauseCircleFilled, GetApp } from '@mui/icons-mat
 import { PickerChangeHandlerContext, DateValidationError } from '@mui/x-date-pickers';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
-import { useSnackBar } from 'context/GlobalContext';
+import { useAdminPermissions, useSnackBar } from 'context/GlobalContext';
 import {
-  HistoryEntry,
   Order,
   OrderStatus,
   GlobalPaymentStatus,
@@ -54,7 +53,6 @@ import { deleteOrder, getOrders, updateOrder } from '@api/order.api';
 import excelJS from 'exceljs';
 import 'moment/locale/es';
 import { format, parseISO, isValid } from 'date-fns';
-import { PermissionsV2 } from 'types/permissions.types';
 import { getPermissions } from '@api/admin.api';
 import dayjs from 'dayjs';
 
@@ -150,7 +148,7 @@ const ReadOrders: React.FC = () => {
   const navigate = useNavigate();
   const { showSnackBar } = useSnackBar();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [permissions, setPermissions] = useState<PermissionsV2 | null>(null);
+  const { permissions } = useAdminPermissions();
 
   const [rawOrders, setRawOrders] = useState<Order[]>([]);
   const [allOrders, setAllOrders] = useState<OrderSummary[]>([]);
@@ -263,10 +261,6 @@ const ReadOrders: React.FC = () => {
     [showSnackBar]
   );
 
-  const readPermissions = async () => {
-    const response = await getPermissions();
-    setPermissions(response);
-  };
   const ALL_STATUSES = [
     'Por producir',
     'En impresión',
@@ -282,7 +276,6 @@ const ReadOrders: React.FC = () => {
 
   useEffect(() => {
     loadOrders();
-    readPermissions();
   }, [loadOrders]);
 
   useEffect(() => {

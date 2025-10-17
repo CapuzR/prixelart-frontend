@@ -15,7 +15,7 @@ import { v4 as uuidv4 } from 'uuid';
 import favicon from '../../../../../images/favicon.png';
 
 // Hooks, Types, Context, API
-import { useSnackBar, usePrixerCreator, useUser } from 'context/GlobalContext'; // useLoading no se usa directamente aquí
+import { useSnackBar, usePrixerCreator, useUser, useAdminPermissions } from 'context/GlobalContext'; // useLoading no se usa directamente aquí
 import {
   Address,
   BasicInfo,
@@ -408,7 +408,7 @@ function CustomTabPanel(props: TabPanelProps) {
 export default function UpdateOrder() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [permissions, setPermissions] = useState<PermissionsV2 | null>(null);
+  const { permissions } = useAdminPermissions();
   const { showSnackBar: showSnackBarFromContext, showSnackBar } = useSnackBar();
   const showSnackBarRef = useRef(showSnackBarFromContext);
 
@@ -498,11 +498,6 @@ export default function UpdateOrder() {
       },
     };
   }, []);
-
-  const readPermissions = async () => {
-    const response = await getPermissions();
-    setPermissions(response);
-  };
 
   const readSellers = async () => {
     const response = await fetchSellers();
@@ -736,7 +731,6 @@ export default function UpdateOrder() {
 
   useEffect(() => {
     loadData();
-    readPermissions();
     readSellers();
   }, []);
 

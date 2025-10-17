@@ -49,8 +49,7 @@ import {
   CustomerAnalyticsData,
   CycleTimeData,
 } from '@api/order.api';
-import { getPermissions } from '@api/admin.api';
-import { PermissionsV2 } from 'types/permissions.types';
+import { useAdminPermissions } from '@context/GlobalContext';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -91,7 +90,7 @@ const getStartOfMonth = (): Date => {
 
 const SellerDashboard: React.FC = () => {
   const navigate = useNavigate();
-  const [permissions, setPermissions] = useState<PermissionsV2 | null>(null);
+  const { permissions } = useAdminPermissions();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState(0);
@@ -136,7 +135,6 @@ const SellerDashboard: React.FC = () => {
         artsData,
         customerData,
         cycleTimeData,
-        userPermissions,
       ] = await Promise.all([
         fetchGlobalOrdersList(filters),
         fetchGlobalDashboardStats(filters),
@@ -147,7 +145,6 @@ const SellerDashboard: React.FC = () => {
         fetchArtPerformance(filters),
         fetchCustomerAnalytics(filters),
         fetchCycleTimeAnalytics(filters),
-        getPermissions(),
       ]);
 
       setAllOrders(ordersData);
@@ -159,7 +156,6 @@ const SellerDashboard: React.FC = () => {
       setArtPerformance(artsData);
       setCustomerAnalytics(customerData);
       setCycleTimeAnalytics(cycleTimeData);
-      setPermissions(userPermissions);
     } catch (err) {
       console.error('Failed to load dashboard data:', err);
       setError(err instanceof Error ? err.message : 'An unknown error occurred.');

@@ -59,6 +59,7 @@
     "remark-gfm": "^4.0.1",
     "sass": "^1.85.1",
     "slick-carousel": "^1.8.1",
+    "socket.io-client": "^4.8.1",
     "ts-prune": "^0.10.3",
     "tss-react": "^4.9.15",
     "tus-js-client": "^4.3.1",

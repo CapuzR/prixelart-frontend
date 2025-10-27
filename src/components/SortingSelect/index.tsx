@@ -14,6 +14,7 @@ const SortingSelect: React.FC<SortingSelectProps> = ({ sort, handleChange, optio
         Ordenar
       </InputLabel>
       <Select
+      label="Ordenar"
         variant="outlined"
         labelId="sorting-select-label"
         id="sorting-select"

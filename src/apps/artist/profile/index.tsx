@@ -316,7 +316,6 @@ export default function PrixerProfileCard() {
   const [userName, setUserName] = useState<string | undefined>(undefined)
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
-
   const [arts, setArts] = useState<Art[]>([])
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [artsLoading, setArtsLoading] = useState<boolean>(false)

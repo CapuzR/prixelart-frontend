@@ -52,7 +52,7 @@ import { visuallyHidden } from "@mui/utils"
 import Grid2 from "@mui/material/Grid"
 
 // Hooks, Types, Context, API
-import { useSnackBar } from "context/GlobalContext"
+import { useAdminPermissions, useSnackBar } from "context/GlobalContext"
 import { Product, Variant, VariantAttribute } from "types/product.types"
 import { PermissionsV2 } from "types/permissions.types"
 
@@ -68,7 +68,6 @@ import ConfirmationDialog from "@components/ConfirmationDialog/ConfirmationDialo
 
 import ExcelJS from "exceljs"
 import * as XLSX from "xlsx"
-// // Interface for Product data from API
 
 const VariantDetailsTable: React.FC<{ variants: Variant[] }> = ({
   variants,
@@ -169,7 +168,7 @@ type ProductSortKeys =
 const ReadProducts: React.FC = () => {
   const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
-  const [permissions, setPermissions] = useState<PermissionsV2 | null>(null)
+  const { permissions } = useAdminPermissions();
 
   // --- State ---
   const [products, setProducts] = useState<Product[]>([]) // Original data
@@ -230,28 +229,8 @@ const ReadProducts: React.FC = () => {
     [showSnackBar]
   )
 
-  const checkAuthAndPermissions = async () => {
-    setError(null)
-    try {
-      const fetchedPermissions = await getPermissions()
-      setPermissions(fetchedPermissions)
-    } catch (err: any) {
-      console.error("Permission check failed in Layout:", err)
-      if (err.message === "Unauthorized") {
-        setError("Unauthorized access. Redirecting to login...")
-        setTimeout(() => navigate("/admin/inicio", { replace: true }), 1500)
-      } else {
-        setError(err.message || "Failed to load permissions. Please try again.")
-        navigate("/admin/inicio", { replace: true })
-      }
-      setPermissions(null)
-    } finally {
-    }
-  }
-
   useEffect(() => {
     loadProducts()
-    checkAuthAndPermissions()
   }, [loadProducts])
 
   // --- Event Handlers ---

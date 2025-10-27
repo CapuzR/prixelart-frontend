@@ -56,6 +56,7 @@ import {
   ReceiptOutlined,
   StorefrontOutlined,
 } from "@mui/icons-material"
+import dayjs from "dayjs"
 
 import { getOrderById } from "@api/order.api"
 
@@ -79,7 +80,10 @@ interface UserAccountMap {
 
 const formatCurrency = (value: number): string => `$${value.toFixed(2)}`
 const formatDate = (date?: Date): string =>
-  date ? new Date(date).toLocaleString() : "N/A"
+  date ? 
+   dayjs(date).format("DD/MM/YYYY")
+// new Date(date).toLocaleString()
+   : "N/A"
 
 interface HeadCell {
   id: keyof Movement | "actions"
@@ -110,12 +114,6 @@ interface OrderLineFormState extends Partial<OrderLine> {
   selectedProduct: ProductOption | null
   selectedVariant: VariantOption | null
   availableVariants: VariantOption[]
-}
-
-interface TabPanelProps {
-  children?: React.ReactNode
-  index: number
-  value: number
 }
 
 const headCells: readonly HeadCell[] = [
@@ -150,7 +148,8 @@ const ReadMovements: React.FC = () => {
   const [filterType, setFilterType] = useState<string>("")
   const [startDate, setStartDate] = useState<Date | null>(null)
   const [endDate, setEndDate] = useState<Date | null>(null)
-  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>("")
+  // const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const [modal, setModal] = useState<boolean>(false)
   const [delMovModal, setdelMovModal] = useState<boolean>(false)
@@ -163,49 +162,12 @@ const ReadMovements: React.FC = () => {
 
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>()
 
-  const [editableOrderLines, setEditableOrderLines] = useState<
-    OrderLineFormState[]
-  >([])
-
   const openModal = () => {
     setModal(!modal)
   }
 
   const openDelMovModal = () => {
     setdelMovModal(!delMovModal)
-  }
-
-  const getOverallOrderStatus = (
-    orderLines: OrderLineFormState[]
-  ): OrderStatus => {
-    if (!orderLines || orderLines.length === 0) return OrderStatus.Pending
-    const statuses = orderLines.map((line) => getLatestStatus(line.status))
-    if (statuses.every((s) => s === OrderStatus.Delivered))
-      return OrderStatus.Delivered
-    if (statuses.every((s) => s === OrderStatus.Canceled))
-      return OrderStatus.Canceled
-    if (statuses.some((s) => s === OrderStatus.Delivered))
-      return OrderStatus.Delivered
-    if (statuses.some((s) => s === OrderStatus.ReadyToShip))
-      return OrderStatus.ReadyToShip
-    if (statuses.some((s) => s === OrderStatus.Pending))
-      return OrderStatus.Pending
-    if (statuses.some((s) => s === OrderStatus.Impression))
-      return OrderStatus.Impression
-    if (statuses.some((s) => s === OrderStatus.Production))
-      return OrderStatus.Production
-    if (statuses.some((s) => s === OrderStatus.Finished))
-      return OrderStatus.Finished
-    if (statuses.some((s) => s === OrderStatus.Pending))
-      return OrderStatus.Pending
-    return OrderStatus.Pending
-  }
-
-  const getLatestStatus = (
-    statusHistory?: [OrderStatus, Date][]
-  ): OrderStatus => {
-    if (!statusHistory || statusHistory.length === 0) return OrderStatus.Pending
-    return statusHistory[statusHistory.length - 1][0]
   }
 
   const renderBasicInfoItem = (
@@ -254,7 +216,7 @@ const ReadMovements: React.FC = () => {
           limit: rowsPerPage,
           sortBy: orderBy,
           sortOrder: order,
-          search: searchQuery,
+          search: debouncedSearchQuery,
           type: filterType,
           dateFrom: startDate?.toISOString(),
           dateTo: endDate?.toISOString(),
@@ -264,37 +226,6 @@ const ReadMovements: React.FC = () => {
         setTotalMovements(response.totalCount)
         setError(null)
 
-        const accountIds = [
-          ...new Set(
-            response.data.map((m) => m.destinatary).filter((id) => !!id)
-          ),
-        ] as string[]
-
-        if (accountIds.length > 0) {
-          const idsToFetch = accountIds.filter((id) => !ownerInfoMap[id])
-          if (idsToFetch.length > 0) {
-            const allUsers = (await getUsers()) as User[]
-            const relevantUsers = allUsers.filter(
-              (user) => user.account && idsToFetch.includes(user.account)
-            )
-
-            setOwnerInfoMap((prevMap) => {
-              const newMap = { ...prevMap }
-              relevantUsers.forEach((user) => {
-                if (user?.account) {
-                  newMap[user.account] = {
-                    name:
-                      `${user.firstName || ""} ${user.lastName || ""}`.trim() ||
-                      user.username ||
-                      "Usuario Desconocido",
-                    avatar: user?.avatar || user.prixer?.avatar,
-                  }
-                }
-              })
-              return newMap
-            })
-          }
-        }
       } catch (err: any) {
         const message = err.message || "Error al cargar movimientos."
         setError(message)
@@ -316,13 +247,65 @@ const ReadMovements: React.FC = () => {
       order,
       orderBy,
       showSnackBar,
-      searchQuery,
+      debouncedSearchQuery,
       filterType,
       startDate,
-      endDate,
-      ownerInfoMap,
+      endDate
     ]
   )
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+      setPage(0);
+    }, 500);
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const fetchMissingUsers = async () => {
+      if (movements.length === 0) return;
+  
+      const accountIds = [
+        ...new Set(
+          movements.map((m) => m.destinatary).filter((id) => !!id)
+        ),
+      ] as string[];
+  
+      const idsToFetch = accountIds.filter((id) => !ownerInfoMap[id]);
+  
+      if (idsToFetch.length > 0) {
+        try {
+          const allUsers = (await getUsers()) as User[];
+          const relevantUsers = allUsers.filter(
+            (user) => user.account && idsToFetch.includes(user.account)
+          );
+  
+          setOwnerInfoMap((prevMap) => {
+            const newMap = { ...prevMap };
+            relevantUsers.forEach((user) => {
+              if (user?.account) {
+                newMap[user.account] = {
+                  name:
+                    `${user.firstName || ""} ${user.lastName || ""}`.trim() ||
+                    user.username ||
+                    "Usuario Desconocido",
+                  avatar: user?.avatar || user.prixer?.avatar,
+                };
+              }
+            });
+            return newMap;
+          });
+        } catch (err) {
+          console.error("Error fetching user details:", err);
+        }
+      }
+    };
+  
+    fetchMissingUsers();
+  }, [movements])
 
   const loadOrder = async () => {
     // const showSnackBar = showSnackBarRef.current
@@ -416,11 +399,6 @@ const ReadMovements: React.FC = () => {
     loadMovementsAndUsers()
   }, [loadMovementsAndUsers])
 
-  const triggerSearch = useCallback(() => {
-    setPage(0)
-    loadMovementsAndUsers(false)
-  }, [loadMovementsAndUsers])
-
   const handleCreate = () => navigate("/admin/movements/create")
 
   const handleDelete = (movement: Movement) => {
@@ -475,24 +453,14 @@ const ReadMovements: React.FC = () => {
   }
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value
-    setSearchQuery(value)
-
-    if (debounceTimeoutRef.current) {
-      clearTimeout(debounceTimeoutRef.current)
-    }
-
-    debounceTimeoutRef.current = setTimeout(() => {
-      triggerSearch()
-    }, 500)
+    setSearchQuery(event.target.value);
   }
 
   const handleFilterChange =
     (setter: React.Dispatch<React.SetStateAction<any>>) => (event: any) => {
-      const value = event?.target?.value ?? event // Handle both event types
+      const value = event?.target?.value ?? event
       setter(value)
-      setPage(0) // Reset page on filter change
-      // loadMovementsAndUsers(false); // Let useEffect handle the refetch triggered by state change
+      setPage(0)
     }
 
   const handleClearFilters = () => {
@@ -500,12 +468,7 @@ const ReadMovements: React.FC = () => {
     setFilterType("")
     setStartDate(null)
     setEndDate(null)
-    setPage(0) // Reset page
-    // Clear debounce timeout if a search was pending
-    if (debounceTimeoutRef.current) {
-      clearTimeout(debounceTimeoutRef.current)
-    }
-    // loadMovementsAndUsers(false); // Let useEffect handle the refetch
+    setPage(0)
   }
 
   const getLatestOrderStatus = (currentOrder: Order): OrderStatus => {
@@ -513,17 +476,6 @@ const ReadMovements: React.FC = () => {
       return currentOrder.status[currentOrder.status.length - 1][0]
     }
     return OrderStatus.Pending
-  }
-
-  const getLatestpayOrderStatus = (
-    currentOrder: Order
-  ): GlobalPaymentStatus => {
-    if (currentOrder.payment.status && currentOrder.payment.status.length > 0) {
-      return currentOrder.payment.status[
-        currentOrder.payment.status.length - 1
-      ][0]
-    }
-    return GlobalPaymentStatus.Pending
   }
 
   // --- Enhanced Table Head ---

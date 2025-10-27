@@ -84,22 +84,22 @@ export interface PermissionsV2 {
     updateMovement: boolean
   }
   orders: {
-    archiveOrder: boolean
-    create: boolean
-    deleteOrder: boolean
-    downloadData: boolean
-    readAllOrders: boolean
-    readHistory: boolean
-    readOrderDetails: boolean
-    readPayDetails: boolean // read prices and vouchers register
+    archiveOrder: boolean // can archive order
+    create: boolean // can create a new order
+    deleteOrder: boolean // can delete a order
+    downloadData: boolean // can download the xlsx file with orders of the last 5 months
+    readAllOrders: boolean // can read all the orders
+    readHistory: boolean // can read the changes inner record of changes of an order 
+    readOrderDetails: boolean // can read client info
+    readPayDetails: boolean // read prices, total, subtotal, etc and vouchers register
     updateDetails: boolean // basicInfo: client data, billing or shipping data
-    updateGeneralStatus: boolean
+    updateGeneralStatus: boolean //can update the general status of the order
     updateItem: boolean // after creation can change the Item, WARNING: this will change price, subtotal, taxs, total costs, etc
-    updateItemPrice: boolean
-    updateItemStatus: boolean
-    updatePayDetails: boolean
-    updatePayStatus: boolean
-    updateSeller: boolean
+    updateItemPrice: boolean  // after creation can change the item price, WARNING: this will change price, subtotal, taxs, total, costs, etc
+    updateItemStatus: boolean // can update the specific production status of an item
+    updatePayDetails: boolean // can update the payment record: add, remove or update payments
+    updatePayStatus: boolean // can update the payment status, obviusly the general of the order cause is the only one
+    updateSeller: boolean //  can update the seller data, this is the person who was supposed to serve the costumer
   }
   paymentMethods: {
     createPaymentMethod: boolean

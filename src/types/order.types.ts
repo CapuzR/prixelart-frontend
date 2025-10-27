@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb"
 import { PickedArt } from "./art.types"
 import { PickedProduct } from "./product.types"
-
+import { UserRoles } from "./user.types"
 export interface Order {
   _id?: ObjectId
   number?: number
@@ -27,11 +27,12 @@ export interface Order {
 
   seller?: string
   observations?: string
+  changeDescriptions?: string[]
 }
 
 export interface HistoryEntry {
   timestamp: Date;
-  user: string;
+  user?: string;
   description: string;
 }
 export interface ConsumerDetails {
@@ -39,7 +40,7 @@ export interface ConsumerDetails {
   selectedAddress: BasicAddress
   addresses: Address[]
   paymentMethods: PaymentMethod[]
-  // add consumerType
+  consumerType?: UserRoles[]
 }
 
 export interface Payment {
@@ -108,8 +109,8 @@ export interface ShippingMethod {
 
 export enum OrderStatus {
   Pending = 0,
-  Impression = 1,
-  Production = 2,
+  Production = 1,
+  Impression = 2,
   ReadyToShip = 3,
   Delivered = 4,
   Finished = 5,
@@ -121,7 +122,6 @@ export enum GlobalPaymentStatus {
   Pending = 0,
   Credited = 2,
   Paid = 1,
-
   Cancelled = 3,
   // Giftcard = 3,
   // Gift = 4,

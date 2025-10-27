@@ -43,19 +43,16 @@ import { visuallyHidden } from "@mui/utils"
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import EditIcon from "@mui/icons-material/Edit"
-import { useSnackBar } from "context/GlobalContext"
+import { useAdminPermissions, useSnackBar } from "context/GlobalContext"
 import Title from "@apps/admin/components/Title"
 import {
   OrderArchive,
   Status as OrderStatus,
   PayStatus as OrderPayStatus,
-  Status,
-  SelectionClass,
-  AttributeName,
+  Status
 } from "types/orderArchive.types"
 import { getOrderArchives, updateOrderArchive } from "@api/orderArchive.api"
 import {
-  formatCurrency,
   formatDate,
   getCustomerName,
   getPayStatusColor,
@@ -70,7 +67,6 @@ import {
 import Grid2 from "@mui/material/Grid"
 import excelJS from "exceljs"
 import { getPermissions } from "@api/admin.api"
-import { PermissionsV2 } from "types/permissions.types"
 
 const ALL_STATUSES: OrderStatus[] = [
   "Anulado",
@@ -193,7 +189,7 @@ const ReadOrderArchives: React.FC = () => {
   const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
   const [searchParams, setSearchParams] = useSearchParams()
-  const [permissions, setPermissions] = useState<PermissionsV2 | null>(null)
+  const { permissions } = useAdminPermissions();
 
   // --- State ---
   const [orders, setOrders] = useState<OrderArchive[]>([])
@@ -248,11 +244,6 @@ const ReadOrderArchives: React.FC = () => {
 
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const isInitialMount = useRef(true)
-
-  const readPermissions = async () => {
-    const response = await getPermissions()
-    setPermissions(response)
-  }
 
   const loadOrders = useCallback(
     async (showInitialLoadingIndicator = true) => {
@@ -362,7 +353,6 @@ const ReadOrderArchives: React.FC = () => {
   ])
 
   useEffect(() => {
-    readPermissions()
     loadOrders(!orders.length)
   }, [loadOrders])
 

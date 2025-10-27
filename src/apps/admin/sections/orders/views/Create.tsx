@@ -144,16 +144,6 @@ const initialLine: Omit<OrderLineFormState, "tempId"> = {
   pricePerUnit: 0,
 }
 
-// const getStatusChipProps = (status?: OrderStatus) => {
-//   const s = status ?? OrderStatus.Pending;
-//   switch (s) {
-//     case OrderStatus.Pending: return { label: 'En espera', color: 'warning', icon: <InfoOutlined /> };
-//     case OrderStatus.Impression: return { label: 'En impresión', color: 'error', icon: <CancelIcon /> };
-//     case OrderStatus.PaymentConfirmed: return { label: 'Pago Confirmado', color: 'info', icon: <CheckCircleIcon /> };
-//     default: return { label: 'Pendiente Pago', color: 'warning', icon: <InfoOutlined /> };
-//   }
-// };
-
 const formatDate = (
   date: Date | string | undefined,
   includeTime: boolean = true
@@ -203,7 +193,6 @@ const CreateOrder: React.FC = () => {
   const [artOptions, setArtOptions] = useState<ArtOption[]>([])
   const [prixerOptions, setPrixerOptions] = useState<PrixerOption[]>([])
   const [userOptions, setUserOptions] = useState<UserOptions[]>([])
-  const [selectedUser, setSelectedUser] = useState<UserOptions | null>(null)
   const [orderLines, setOrderLines] = useState<OrderLineFormState[]>([
     { ...initialLine, tempId: uuidv4() },
   ])
@@ -213,10 +202,6 @@ const CreateOrder: React.FC = () => {
     useState<Address | null>(null)
   const [editableBillingAddress, setEditableBillingAddress] =
     useState<Address | null>(null)
-
-  // const handlePrefDate = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   setPrefDate(event.target.value)
-  // }
 
   const [displayTotals, setDisplayTotals] = useState<{
     subTotal: number
@@ -243,8 +228,6 @@ const CreateOrder: React.FC = () => {
         email: "",
         phone: "",
       })
-      // setEditableShippingAddress(createBlankAddress())
-      // setEditableBillingAddress(createBlankAddress())
     } else if (newValue) {
       setEditableClientInfo({
         name: newValue.firstName || "",
@@ -294,14 +277,12 @@ const CreateOrder: React.FC = () => {
 
       setEditableShippingAddress(shippingAddr)
       setEditableBillingAddress(billingAddr)
-      console.log(editableShippingAddress)
     } else {
       setEditableClientInfo({ name: "", lastName: "", email: "", phone: "" })
       setEditableShippingAddress(createBlankAddress())
       setEditableBillingAddress(createBlankAddress())
     }
   }
-  console.log(editableShippingAddress)
 
   const filter = createFilterOptions<UserOptions>()
 
@@ -422,8 +403,7 @@ const CreateOrder: React.FC = () => {
       )
 
       const genericCustom: ArtOption = {
-        // Explicitly type it for clarity
-        id: "custom-image-without-prixer", // Use the artId from fullArt here
+        id: "custom-image-without-prixer",
         label: `Personalizado`,
         thumb: favicon,
         fullArt: {
@@ -503,8 +483,6 @@ const CreateOrder: React.FC = () => {
     })
 
     const maxProductionTime = Math.max(...productionTimesInDays)
-
-    // return today.add(maxProductionTime, 'day');
 
     let deliveryDate = dayjs()
     let daysAdded = 0
@@ -735,9 +713,7 @@ const CreateOrder: React.FC = () => {
     e.preventDefault()
     if (!validateForm()) return
     setIsSubmitting(true)
-    setErrorSubmit(null) // Limpiar errores anteriores
-
-    // Asegurarse de que los datos necesarios existen
+    setErrorSubmit(null)
     if (
       !editableClientInfo ||
       !shippingMethod ||

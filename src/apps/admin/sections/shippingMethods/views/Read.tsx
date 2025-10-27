@@ -17,7 +17,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import RefreshIcon from '@mui/icons-material/Refresh'; // Added
 
 // Hooks and Context
-import { useSnackBar } from 'context/GlobalContext';
+import { useSnackBar } from '@context/UIContext';
 import { ShippingMethod } from 'types/order.types'; 
 import { fetchShippingMethods, deleteShippingMethod } from '@api/order.api';
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, ChangeEvent, FormEvent, MouseE
 import { useNavigate } from 'react-router-dom';
 
 // Hooks, Context, Types, API 
-import { useSnackBar } from 'context/GlobalContext';
+import { useSnackBar } from '@context/UIContext';
 import { Admin } from 'types/admin.types'; // Assuming this path
 import { PermissionsV2 } from 'types/permissions.types'; // To get Role type  for fetching
 import { getRoles, createAdmin /*, checkUsernameExists, checkEmailExists */ } from '@api/admin.api'; // Adjust API functions

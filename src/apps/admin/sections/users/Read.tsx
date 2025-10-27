@@ -45,7 +45,7 @@ import PersonIcon from "@mui/icons-material/Person" // User icon
 import StorefrontIcon from "@mui/icons-material/Storefront" // Example Prixer icon
 
 // Hooks, Types, Context, API
-import { useSnackBar } from "context/GlobalContext"
+import { useSnackBar } from "@context/UIContext"
 import { User } from "types/user.types" // Keep Prixer nested within User type
 import { getUsers, deleteUser } from "@api/user.api"
 

@@ -49,7 +49,7 @@ import {
   CustomerAnalyticsData,
   CycleTimeData,
 } from '@api/order.api';
-import { useAdminPermissions } from '@context/GlobalContext';
+import { useAuth } from '@context/AuthContext';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -90,7 +90,7 @@ const getStartOfMonth = (): Date => {
 
 const SellerDashboard: React.FC = () => {
   const navigate = useNavigate();
-  const { permissions } = useAdminPermissions();
+  const { permissions } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState(0);

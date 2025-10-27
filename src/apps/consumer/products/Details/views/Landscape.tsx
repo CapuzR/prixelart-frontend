@@ -20,13 +20,12 @@ import Button from "components/Button"
 
 import { generateWaProductMessage } from "utils/utils"
 import { formatRange, formatSinglePrice } from "utils/formats"
-import { useConversionRate } from "context/GlobalContext"
 
 import styles from "./Landscape.module.scss"
 
 import { getFilteredOptions } from "apps/consumer/products/services"
 
-import { useCurrency } from "context/GlobalContext"
+import { useCurrency } from "@context/CurrencyContext"
 import { Slider } from "components/Slider"
 import { Image } from "components/Image"
 import CurrencySwitch from "components/CurrencySwitch"
@@ -53,8 +52,7 @@ interface LandscapeProps {
 }
 
 const Landscape: React.FC<LandscapeProps> = (props) => {
-  const { currency } = useCurrency()
-  const { conversionRate } = useConversionRate()
+  const { currency, conversionRate } = useCurrency()
 
   const RenderHTML: React.FC<{ htmlString: string }> = ({ htmlString }) => {
     return (

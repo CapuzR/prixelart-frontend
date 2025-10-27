@@ -7,7 +7,7 @@ import OrderForm from './Order';
 import styles from './styles.module.scss';
 import { isAValidEmail, isAValidCi, isAValidPhoneNum, isAValidName } from 'utils/validations';
 import { nanoid } from 'nanoid';
-import { useConversionRate, useCurrency, useSnackBar } from 'context/GlobalContext';
+import { useConversionRate, useCurrency, useSnackBar } from '@context/UIContext';
 import { Cart } from 'apps/consumer/cart/interfaces';
 
 //Order: { id: id, lines: line[],  }

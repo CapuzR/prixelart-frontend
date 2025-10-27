@@ -10,7 +10,7 @@ import React, {
 } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
-import { useAdminPermissions, useSnackBar } from 'context/GlobalContext';
+import { useSnackBar } from '@context/UIContext';
 import { User, USER_ROLE_OPTIONS } from 'types/user.types';
 import { Prixer } from 'types/prixer.types';
 
@@ -65,6 +65,7 @@ import { PickerChangeHandlerContext, DateValidationError } from '@mui/x-date-pic
 import { Movement } from 'types/movement.types';
 import { createMovement, getMovements, reverseMovement } from '@api/movement.api';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useAuth } from '@context/AuthContext';
 
 const AVAILABLE_GENDERS = ['Masculino', 'Femenino', 'Otro', 'Prefiero no decir'];
 const AVAILABLE_SPECIALTIES = [
@@ -209,7 +210,7 @@ const UpdateUser: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { showSnackBar } = useSnackBar();
-  const { permissions } = useAdminPermissions();
+  const { permissions } = useAuth();
 
   const [userFormData, setUserFormData] = useState<Partial<User>>(initialUserFormState);
   const [prixerFormData, setPrixerFormData] = useState<Partial<Prixer>>(initialPrixerFormState);

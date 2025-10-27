@@ -1,6 +1,6 @@
 import React from 'react';
 import Switch from 'components/Switch';
-import { useCurrency } from 'context/GlobalContext';
+import { useCurrency } from '@context/UIContext';
 
 const CurrencySwitch: React.FC = () => {
   const { currency, toggleCurrency } = useCurrency();

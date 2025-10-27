@@ -9,7 +9,7 @@ import React, {
   SetStateAction,
 } from "react"
 
-import { useSnackBar, usePrixerCreator, useUser } from "context/GlobalContext"
+import { useSnackBar } from "@context/UIContext"
 import { Art } from "../../../types/art.types"
 
 import {
@@ -67,6 +67,7 @@ import { BACKEND_URL } from "@api/utils.api"
 import PhotoCameraBackIcon from "@mui/icons-material/PhotoCameraBack"
 import util from "@utils/utils"
 import { nanoid } from "nanoid"
+import { useAuth } from "@context/AuthContext"
 interface ImageUploadState {
   id: string
   url: string
@@ -278,8 +279,7 @@ export default function ArtUploader({
 }: ArtUploaderProps) {
   const { showSnackBar: showSnackBarFromContext } = useSnackBar()
   const showSnackBarRef = useRef(showSnackBarFromContext)
-  // const { setArtModal, uploadArt } = usePrixerCreator()
-  const { user } = useUser()
+  const { user } = useAuth()
 
   useEffect(() => {
     showSnackBarRef.current = showSnackBarFromContext

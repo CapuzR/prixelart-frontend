@@ -3,7 +3,7 @@ import ItemPlayground from "components/ItemPlayground"
 import ItemContent from "components/ItemContent"
 // import Typography from "components/Typography"
 import { formatNumberString, formatSinglePrice } from "utils/formats"
-import { useConversionRate, useCurrency } from "context/GlobalContext"
+import { useCurrency } from "@context/CurrencyContext"
 import { CartLine } from "../../types/cart.types"
 import { Item } from "types/order.types"
 import useMediaQuery from "@mui/material/useMediaQuery"
@@ -30,8 +30,7 @@ export default function ItemCard({
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
 
-  const { currency } = useCurrency()
-  const { conversionRate } = useConversionRate()
+  const { currency, conversionRate } = useCurrency()
   let finalPriceStrToFormat: string | null | undefined = item.price
   let originalPriceStrToFormat: string | null | undefined = undefined
   if (

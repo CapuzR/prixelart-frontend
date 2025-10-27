@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import Grid2 from '@mui/material/Grid';
 // Hooks, Types, Context, API
-import { useSnackBar } from 'context/GlobalContext';
+import { useSnackBar } from '@context/UIContext';
 import { AdjustmentMethod, ApplicableEntity, Discount, Entity } from 'types/discount.types';
 import { Product, Variant } from 'types/product.types';
 import { createDiscount } from '@api/discount.api';

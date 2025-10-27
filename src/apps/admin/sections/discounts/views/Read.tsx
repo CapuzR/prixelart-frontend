@@ -19,7 +19,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'; // For override
 
 
 // Hooks, Types, Context, API
-import { useSnackBar } from 'context/GlobalContext';
+import { useSnackBar } from '@context/UIContext';
 import { Discount, AdjustmentMethod } from 'types/discount.types';
 import { getDiscounts, deleteDiscount } from '@api/discount.api';
 import Title from '@apps/admin/components/Title';

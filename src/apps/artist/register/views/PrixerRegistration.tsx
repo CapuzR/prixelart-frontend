@@ -23,7 +23,7 @@ import { Theme, useTheme } from "@mui/material/styles"
 import { makeStyles } from "tss-react/mui"
 import dayjs, { Dayjs } from "dayjs"
 
-import { useSnackBar, useLoading } from "@context/GlobalContext"
+import { useSnackBar, useLoading } from "@context/UIContext"
 import Copyright from "@components/Copyright/copyright"
 import { createPrixer } from "../api"
 

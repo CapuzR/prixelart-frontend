@@ -8,7 +8,7 @@ import React, {
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry"
 import SearchBar from "components/searchBar/searchBar"
 import ArtThumbnail from "../ArtThumbnail"
-import { useLoading } from "context/GlobalContext"
+// import { useLoading } from "@context/UIContext"
 import { useNavigate, useLocation } from "react-router-dom"
 import { Art } from "../../../../../types/art.types"
 import { fetchGallery } from "@api/art.api"
@@ -36,7 +36,7 @@ interface ArtsGridProps {
 }
 
 const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
-  const { loading, setLoading } = useLoading()
+  // const { loading, setLoading } = useLoading()
   const navigate = useNavigate()
   const location = useLocation()
   const theme = useTheme<Theme>()
@@ -100,7 +100,7 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
 
   // Effect for fetching data
   useEffect(() => {
-    setLoading(true)
+    // setLoading(true)
     if (fetchMoreError) setFetchMoreError(null)
 
     const fetchData = async () => {
@@ -145,7 +145,7 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
           }
         }
       } finally {
-        setLoading(false)
+        // setLoading(false)
       }
     }
 
@@ -156,7 +156,7 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
   const observer = useRef<IntersectionObserver | null>(null)
   const lastArtElementRef = useCallback(
     (node: HTMLElement | null) => {
-      if (loading) return
+      // if (loading) return
       if (observer.current) observer.current.disconnect()
 
       observer.current = new IntersectionObserver((entries) => {
@@ -167,7 +167,7 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
 
       if (node) observer.current.observe(node)
     },
-    [loading, hasMore, fetchMoreError]
+    [ hasMore, fetchMoreError]
   )
 
   const handleFullImageClickEvent = (e: MouseEvent<HTMLElement>, tile: Art) => {
@@ -188,7 +188,7 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
 
   const renderStatusMessages = () => {
     // Skeletons for initial load
-    if (loading && pageNumber === 1 && tiles.length === 0) {
+    if ( pageNumber === 1 && tiles.length === 0) {
       const skeletonCount = itemsPerPage / 2 > 10 ? 10 : itemsPerPage / 2
       return (
         <ResponsiveMasonry
@@ -210,7 +210,7 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
       )
     }
     // Initial load failed
-    if (!loading && pageNumber === 1 && tiles.length === 0 && fetchMoreError) {
+    if ( pageNumber === 1 && tiles.length === 0 && fetchMoreError) {
       return (
         <Box textAlign="center" p={3}>
           <Typography variant="h6" color="error" gutterBottom>
@@ -226,7 +226,7 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
       )
     }
     // No results found
-    if (!loading && tiles.length === 0 && !fetchMoreError) {
+    if ( tiles.length === 0 && !fetchMoreError) {
       return (
         <Box textAlign="center" p={3}>
           <Typography variant="h6" gutterBottom>
@@ -239,7 +239,7 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
       )
     }
     // Loading more items
-    if (loading && tiles.length > 0) {
+    if ( tiles.length > 0) {
       return (
         <Box display="flex" justifyContent="center" alignItems="center" p={2}>
           <CircularProgress size={24} sx={{ mr: 1 }} />
@@ -261,7 +261,7 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
       )
     }
     // End of gallery
-    if (!loading && !hasMore && tiles.length > 0 && !fetchMoreError) {
+    if ( !hasMore && tiles.length > 0 && !fetchMoreError) {
       return (
         <Typography
           variant="caption"

@@ -2,7 +2,7 @@ import React, { useState, ChangeEvent, FormEvent, SyntheticEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Hooks, Types, Context, API
-import { useSnackBar } from 'context/GlobalContext';
+import { useSnackBar } from '@context/UIContext';
 import { User, USER_ROLE_OPTIONS } from 'types/user.types'; // Assuming Prixer is also in user.types or imported separately
 import { createUser } from '@api/user.api';
 import { isAValidUsername } from 'utils/validations';

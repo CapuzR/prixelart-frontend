@@ -12,14 +12,14 @@ import {
   VictoryTheme,
 } from "victory"
 import ArtsGrid from "@apps/consumer/art/components/ArtsGrid/ArtsGrid"
-import { useSnackBar, useLoading } from "@context/GlobalContext"
+import { useSnackBar } from "@context/UIContext"
 import { Art } from "../../../../../types/art.types"
 import { getArtBestSellers, getArtBestSellers2, getArts } from "../api"
 import { ObjectId } from "mongodb"
 
 export default function ArtBestSellers() {
   const { showSnackBar } = useSnackBar()
-  const { setLoading } = useLoading()
+  // const { setLoading } = useLoading()
 
   const [arts, setArts] = useState<Art[]>([])
   const [bestSellers, setBestSellers] = useState<Art[]>([])
@@ -82,7 +82,7 @@ export default function ArtBestSellers() {
     let isMounted = true; // Flag to check if component is still mounted
 
     const fetchData = async () => {
-      setLoading(true);
+      // setLoading(true);
       try {
         // Perform all fetches concurrently
         await Promise.all([getAllArts(), getMostSellers(), getBestSellers()]);
@@ -91,7 +91,7 @@ export default function ArtBestSellers() {
         // Optionally show a snackbar message for general fetch errors
       } finally {
         if (isMounted) {
-          setLoading(false);
+          // setLoading(false);
         }
       }
     };
@@ -101,12 +101,12 @@ export default function ArtBestSellers() {
     return () => {
       isMounted = false; // Cleanup function to set flag to false when component unmounts
     };
-  }, [setLoading]); // Added setLoading to dependency array as it's used
+  }, []); // Added setLoading to dependency array as it's used
   // Consider if getAllArts, getMostSellers, getBestSellers should be memoized with useCallback
   // if they were defined inside the component and used in deps. Here they are stable.
 
   const updateBestSellers = async () => {
-    setLoading(true); // Indicate loading state
+    // setLoading(true); // Indicate loading state
     let data: ObjectId[] = []
     bestSellers.forEach(art => {
       if (art._id) {
@@ -122,7 +122,7 @@ export default function ArtBestSellers() {
       console.error("Error updating best sellers:", error);
       showSnackBar("Error al actualizar. Intente de nuevo.");
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   }
 

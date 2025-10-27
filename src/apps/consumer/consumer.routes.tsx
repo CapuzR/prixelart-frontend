@@ -27,10 +27,12 @@ import ForgotPassword from '@apps/artist/passwordReset/ForgotPassword';
 import PasswordReset from '@apps/artist/passwordReset/PasswordReset';
 import PrixerStats from '@apps/artist/profile/Stats';
 import LegacyOrProfileRoute from './LegacyArtLink.routes';
-import { usePrixerCreator } from '@context/GlobalContext';
+
+import { useModals } from 'context/ModalContext';
 
 const ConsumerRoutes: React.FC = () => {
-  const { uploadArt, setArtModal } = usePrixerCreator();
+  const { state, closeUploadArtModal } = useModals();
+  const isModalOpen = state.isUploadArtModalOpen;
 
   return (
     <>
@@ -71,7 +73,7 @@ const ConsumerRoutes: React.FC = () => {
       </Routes>
 
       <ConditionalFB />
-      <ArtUploader openArtFormDialog={uploadArt} setOpenArtFormDialog={setArtModal} />
+      <ArtUploader openArtFormDialog={isModalOpen} setOpenArtFormDialog={closeUploadArtModal} />
       <CreateService />
     </>
   );

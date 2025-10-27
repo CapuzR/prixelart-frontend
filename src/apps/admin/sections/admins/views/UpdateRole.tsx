@@ -8,7 +8,7 @@ import React, {
 import { useParams, useNavigate } from "react-router-dom"
 
 // Hooks and Context
-import { useSnackBar } from "context/GlobalContext"
+import { useSnackBar } from "@context/UIContext"
 import { PermissionsV2 } from "types/permissions.types"
 import { createRole, getRoleById, updateRole } from "@api/admin.api"
 

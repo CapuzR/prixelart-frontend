@@ -21,11 +21,12 @@ import Grid2 from "@mui/material/Grid"
 import { isAValidEmail, isAValidPassword } from "utils/validations"
 import { getRandomArt } from "@api/art.api"
 import { login } from "@api/utils.api"
-import { useSnackBar, useUser } from "context/GlobalContext"
+import { useSnackBar } from "@context/UIContext"
 import Copyright from "@components/Copyright/copyright"
 import { Art } from "types/art.types"
 import { User } from "types/user.types"
 import { jwtDecode } from 'jwt-decode';
+import { useAuth } from "@context/AuthContext"
 const ensureHttps = (url: string): string => {
   let fullUrl = url.trim()
   if (!/^https?:\/\//i.test(fullUrl) && !fullUrl.startsWith("/")) {
@@ -80,7 +81,7 @@ const AdminLogin: React.FC = () => {
   const [bgUrl, setBgUrl] = useState<string | null>(null)
   const [loadingBg, setLoadingBg] = useState(true)
   const [retryCount, setRetryCount] = useState(0)
-  const { user, setUser } = useUser()
+  const { user, setUser } = useAuth()
 
   useEffect(() => {
     let mounted = true

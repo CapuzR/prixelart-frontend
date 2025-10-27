@@ -9,7 +9,7 @@ import Collapse from '@mui/material/Collapse';
 import Divider from '@mui/material/Divider';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useState } from 'react';
-import { useConversionRate, useCurrency } from 'context/GlobalContext';
+import { useCurrency } from '@context/CurrencyContext';
 
 import useStyles from './order.styles.js';
 import { CheckoutState, OrderLine, Tax } from '../../../../types/order.types';
@@ -20,8 +20,7 @@ interface OrderSummaryProps {
 
 const Order: React.FC<OrderSummaryProps> = ({ checkoutState }) => {
   const classes = useStyles();
-  const { currency } = useCurrency();
-  const { conversionRate } = useConversionRate();
+  const { currency, conversionRate } = useCurrency();
   const isMobile = useMediaQuery('(max-width:768px)');
   const [balance, setBalance] = useState(0);
 

@@ -9,7 +9,7 @@ import React, {
 import { useParams, useNavigate } from 'react-router-dom';
 
 // Hooks, Types, Context, API
-import { useSnackBar } from 'context/GlobalContext';
+import { useSnackBar } from '@context/UIContext';
 import { Art } from 'types/art.types';
 import { User } from 'types/user.types';
 import { fetchAllPrixers } from '@api/prixer.api';

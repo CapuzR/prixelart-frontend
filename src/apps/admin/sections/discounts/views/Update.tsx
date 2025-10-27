@@ -11,7 +11,7 @@ import { useParams, useNavigate } from "react-router-dom"
 import { v4 as uuidv4 } from "uuid"
 
 // Hooks, Types, Context, API
-import { useSnackBar } from "context/GlobalContext"
+import { useSnackBar } from "@context/UIContext"
 import {
   AdjustmentMethod,
   ApplicableEntity,

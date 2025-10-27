@@ -20,7 +20,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'; // For override
 import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined'; // For recipients indicator
 
 // Hooks, Types, Context, API 
-import { useSnackBar } from 'context/GlobalContext';
+import { useSnackBar } from '@context/UIContext';
 // Make sure Surcharge type includes ObjectId if it comes from MongoDB
 import { Surcharge, AdjustmentMethod, ApplicableEntity } from 'types/surcharge.types'; // Use Surcharge type & related types
 import { getSurcharges, deleteSurcharge } from '@api/surcharge.api'; // Use Surcharge API functions

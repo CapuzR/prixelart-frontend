@@ -22,7 +22,7 @@ import CancelIcon from '@mui/icons-material/Cancel'; // Example for Rejected sta
 
 
 // Hooks, Types, Context, API
-import { useSnackBar } from 'context/GlobalContext';
+import { useSnackBar } from '@context/UIContext';
 import { Art } from 'types/art.types';
 import { getArts, deleteArt } from '@api/art.api';
 import Title from '@apps/admin/components/Title';

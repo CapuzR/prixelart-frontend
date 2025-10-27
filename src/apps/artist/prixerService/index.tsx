@@ -32,7 +32,7 @@ import FloatingAddButton from "@components/floatingAddButton"
 import ArtUploader from "@apps/artist/artUploader"
 import CreateService from "@components/createService"
 import { makeStyles } from "tss-react/mui"
-import { useLoading, useSnackBar } from "@context/GlobalContext"
+import { useLoading, useSnackBar } from "@context/UIContext"
 import { getServicesByPrixer } from "./api"
 import { getPermissions } from "@api/admin.api"
 

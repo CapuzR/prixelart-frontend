@@ -12,7 +12,7 @@ import Grid2 from "@mui/material/Grid"
 import { v4 as uuidv4 } from "uuid"
 import favicon from "../../../../../images/favicon.png"
 
-import { useSnackBar } from "context/GlobalContext"
+import { useSnackBar } from "@context/UIContext"
 import {
   fetchShippingMethods,
   readAllPaymentMethods,

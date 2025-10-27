@@ -17,17 +17,14 @@ import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
 import ButtonGroup from "@mui/material/ButtonGroup"
 
-import MenuIcon from "@mui/icons-material/Menu"
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft"
 import ChevronRightIcon from "@mui/icons-material/ChevronRight"
-import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined"
-import AttachMoneyIcon from "@mui/icons-material/AttachMoney"
 
 import logo from "./Logotipo_Prixelart_H2.png"
 import anom from "../../assets/images/anom-user.png"
 import bag from "../../assets/images/shop-bag.png"
 
-import { useCurrency, useUser } from "context/GlobalContext"
+import { useAuth } from "@context/AuthContext"
 import { useCart } from "context/CartContext"
 
 const drawerWidth = 240
@@ -94,7 +91,7 @@ const MenuAppBar: React.FC = () => {
   const isHome = location.pathname === "/"
   const isMobile = useMediaQuery(theme.breakpoints.down("md"))
   const { cart } = useCart()
-  const { user, setUser } = useUser()
+  const { user, setUser } = useAuth()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [userMenuAnchorEl, setUserMenuAnchorEl] = useState<null | HTMLElement>(
     null

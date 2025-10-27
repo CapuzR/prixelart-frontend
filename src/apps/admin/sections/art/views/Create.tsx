@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback, ChangeEvent, FormEvent, Synthe
 import { useNavigate } from 'react-router-dom';
 
 // Hooks, Types, Context, API
-import { useSnackBar } from 'context/GlobalContext';
+import { useSnackBar } from '@context/UIContext';
 import { Art } from 'types/art.types';
 import { createArt } from '@api/art.api';
 import { fetchAllPrixers } from '@api/prixer.api';

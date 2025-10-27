@@ -47,7 +47,7 @@ import { visuallyHidden } from '@mui/utils';
 import Grid2 from '@mui/material/Grid';
 
 // Hooks and Context 
-import { useSnackBar } from 'context/GlobalContext';
+import { useSnackBar } from '@context/UIContext';
 import { PermissionsV2 } from 'types/permissions.types';
 import { getRoles, deleteRole } from '@api/admin.api';
 

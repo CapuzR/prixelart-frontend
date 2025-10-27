@@ -2,7 +2,7 @@ import { Item } from 'types/order.types';
 import { Cart, CartLine } from '../types/cart.types';
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { useUser } from './GlobalContext';
+import { useAuth } from './AuthContext';
 import { Variant, VariantAttribute } from 'types/product.types';
 import { fetchVariantPrice } from '@api/product.api';
 import { User } from 'types/user.types';
@@ -31,7 +31,7 @@ interface MyComponentProps {
 }
 
 export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
-  const { user } = useUser() as { user: User | null | undefined }; // Cast if useUser() has a generic return
+  const { user } = useAuth() as { user: User | null | undefined }; // Cast if useUser() has a generic return
 
   const [cart, setCart] = useState<Cart>(() => {
     const storedCart = localStorage.getItem('cart');

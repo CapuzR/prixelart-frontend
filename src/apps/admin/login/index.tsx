@@ -29,9 +29,12 @@ import { isAValidEmail, isAValidPassword } from "utils/validations";
 
 import Copyright from "@components/Copyright/copyright";
 import { Art } from "../../../types/art.types"; // Ensure this Art type is compatible with findValidWebpUrl
-import { useSnackBar } from "context/GlobalContext";
+import { useAuth } from "@context/AuthContext";
+import { useSnackBar } from "@context/UIContext";
+
 import { getRandomArt } from "@api/art.api";
 import { adminLogin } from "@api/utils.api";
+import { PermissionsV2 } from "types/permissions.types";
 
 // Helper functions and const for background fetching
 const MAX_RETRIES = 3;
@@ -71,6 +74,7 @@ const findValidWebpUrl = (art?: Art): string | null => {
 
 export default function AdminLogin() {
   const { showSnackBar } = useSnackBar();
+  const {permissions, setPermissions} = useAuth()
   const isMobile = useMediaQuery("(max-width:480px)");
   const isTab = useMediaQuery("(max-width: 900px)");
   const theme = useTheme(); // Initialize theme
@@ -91,8 +95,9 @@ export default function AdminLogin() {
       showSnackBar("Por favor completa todos los campos requeridos.");
     } else {
       const resp = await adminLogin(email, password);
-      if (resp.success) {
+      if (resp.success ) {
         showSnackBar("Inicio de sesión completado.");
+        setPermissions(resp.result as PermissionsV2)
         navigate("/admin/dashboard");
       } else {
         showSnackBar(resp.message);

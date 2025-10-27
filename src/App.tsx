@@ -1,14 +1,17 @@
-import React, { useEffect } from "react"
-import Routes from "./routes"
-import { GlobalProvider, useTheme } from "context/GlobalContext"
+import React from 'react';
+import Routes from './routes';
+import { UIProvider, useTheme } from '@context/UIContext';
 // import ReactGA from 'react-ga';
-import Utility from "@components/Utility"
-import { CartProvider } from "context/CartContext"
-import { LocalizationProvider } from "@mui/x-date-pickers"
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
+import Utility from '@components/Utility';
+import { CartProvider } from 'context/CartContext';
+import { AuthProvider } from '@context/AuthContext';
+import { CurrencyProvider } from '@context/CurrencyContext';
+import { ModalProvider } from '@context/ModalContext';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 const ThemedApp: React.FC = () => {
-  const { theme } = useTheme()
+  const { theme } = useTheme();
 
   return (
     <div className={`${theme} app`}>
@@ -17,8 +20,8 @@ const ThemedApp: React.FC = () => {
         <Routes />
       </div>
     </div>
-  )
-}
+  );
+};
 
 const App: React.FC = () => {
   // useEffect(() => {
@@ -27,14 +30,20 @@ const App: React.FC = () => {
   // }, []);
 
   return (
-    <GlobalProvider>
-      <CartProvider>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <ThemedApp />
-        </LocalizationProvider>
-      </CartProvider>
-    </GlobalProvider>
-  )
-}
+    <AuthProvider>
+      <CurrencyProvider>
+        <UIProvider>
+          <ModalProvider>
+            <CartProvider>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <ThemedApp />
+              </LocalizationProvider>
+            </CartProvider>
+          </ModalProvider>
+        </UIProvider>
+      </CurrencyProvider>
+    </AuthProvider>
+  );
+};
 
-export default App
+export default App;

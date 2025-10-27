@@ -7,7 +7,7 @@ import React, {
 } from "react"
 import axios from "axios"
 
-import { useSnackBar, usePrixerCreator, useUser } from "context/GlobalContext"
+import { useSnackBar } from "@context/UIContext"
 import { Service } from "../../types/service.types"
 import { PrixResponse } from "../../types/prixResponse.types"
 
@@ -69,6 +69,8 @@ import { v4 as uuidv4 } from "uuid"
 import ReactQuill from "react-quill-new"
 import "react-quill-new/dist/quill.snow.css"
 import Copyright from "@components/Copyright/copyright"
+import { useAuth } from "@context/AuthContext"
+import { useModals } from "@context/ModalContext"
 interface ImageUploadState {
   id: string
   url: string
@@ -90,8 +92,9 @@ const Transition = React.forwardRef(function Transition(
 
 export default function CreateService() {
   const theme = useTheme()
-  const { uploadService, setServiceModal } = usePrixerCreator()
-  const { user } = useUser()
+  const { state, closeUploadServiceModal } = useModals()
+  const {isUploadServiceModalOpen} = state
+  const { user } = useAuth()
   const formRef = useRef<HTMLFormElement>(null);
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
 
@@ -126,7 +129,7 @@ export default function CreateService() {
   const { showSnackBar } = useSnackBar()
 
   useEffect(() => {
-    if (uploadService) {
+    if (isUploadServiceModalOpen) {
       setTitle("")
       setDescription("")
       setServiceArea("")
@@ -139,7 +142,7 @@ export default function CreateService() {
       setActive(true)
       setServiceImages([])
     }
-  }, [uploadService])
+  }, [isUploadServiceModalOpen])
 
   function centerAspectCrop(
     mediaWidth: number,
@@ -385,7 +388,7 @@ export default function CreateService() {
     setServiceArea(e.target.value)
   }
   const handleClose = () => {
-    setServiceModal(false)
+    closeUploadServiceModal()
   }
   const handleActive = () => {
     setActive(!active)
@@ -466,16 +469,16 @@ export default function CreateService() {
     }
   }
 
-  const onClose = () => setServiceModal(false)
+  const onClose = () => closeUploadServiceModal()
 
-  if (!uploadService) {
+  if (!isUploadServiceModalOpen) {
     return null
   }
 
   return (
     <div>
       <Dialog
-        open={uploadService}
+        open={isUploadServiceModalOpen}
         onClose={handleClose}
         TransitionComponent={Transition}
       >

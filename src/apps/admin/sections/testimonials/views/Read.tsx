@@ -36,7 +36,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator'; // Icon for drag handle
 
 // Hooks, Types, API 
-import { useSnackBar } from 'context/GlobalContext';
+import { useSnackBar } from '@context/UIContext';
 import { Testimonial } from 'types/testimonial.types';
 // --- API: Assume a new function exists to update order ---
 import { readAllTestimonial, deleteTestimonial, updateTestimonialOrder } from '@api/testimonial.api';

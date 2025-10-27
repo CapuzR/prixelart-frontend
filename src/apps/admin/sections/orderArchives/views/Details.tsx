@@ -37,7 +37,7 @@ import Title from '@apps/admin/components/Title';
 import InfoItem from '../components/InfoItem';
 import SectionCard from '../components/SectionCard';
 import { formatCurrency, formatDate, getCustomerName, getPayStatusColor, getStatusColor } from '../helpers/orderArchiveHelpers';
-import { useSnackBar } from 'context/GlobalContext'; // For notifications
+import { useSnackBar } from '@context/UIContext'; // For notifications
 
 // --- Constants for Modal (can be imported from a shared file if available) ---
 // Using explicit OrderStatus and OrderPayStatus types for clarity

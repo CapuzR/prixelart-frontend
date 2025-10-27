@@ -15,7 +15,7 @@ import { v4 as uuidv4 } from 'uuid';
 import favicon from '../../../../../images/favicon.png';
 
 // Hooks, Types, Context, API
-import { useSnackBar, usePrixerCreator, useUser, useAdminPermissions } from 'context/GlobalContext'; // useLoading no se usa directamente aquí
+import { useSnackBar } from '@context/UIContext'; // useLoading no se usa directamente aquí
 import {
   Address,
   BasicInfo,
@@ -142,6 +142,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import MDEditor from '@uiw/react-md-editor';
+import { useAuth } from '@context/AuthContext';
 
 interface MethodOption {
   id: string;
@@ -408,7 +409,7 @@ function CustomTabPanel(props: TabPanelProps) {
 export default function UpdateOrder() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { permissions } = useAdminPermissions();
+  const { permissions } = useAuth();
   const { showSnackBar: showSnackBarFromContext, showSnackBar } = useSnackBar();
   const showSnackBarRef = useRef(showSnackBarFromContext);
 

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { useAdminPermissions } from '@context/GlobalContext';
+import { useAuth } from '@context/AuthContext';
 import { Box, CircularProgress, Typography, CssBaseline, Button, useTheme } from '@mui/material';
-import { getPermissions } from '@api/admin.api';
 import Sidebar, { SectionState } from './SideBar';
-import { useSnackBar } from '@context/GlobalContext';
+import { useSnackBar } from '@context/UIContext';
 
 const EXPANDED_DRAWER_WIDTH = 300;
 
@@ -27,8 +26,8 @@ const initialSectionState: SectionState = {
 
 const AdminLayout: React.FC = () => {
   const theme = useTheme();
+  const { permissions, loading, error } = useAuth();
   const { showSnackBar } = useSnackBar();
-  const { permissions, setPermissions } = useAdminPermissions();
   const COLLAPSED_DRAWER_WIDTH = Number(theme.spacing(7).replace('px', '')); // Standard MUI icon size + padding
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [openSections, setOpenSections] = useState<SectionState>(initialSectionState);
@@ -49,46 +48,22 @@ const AdminLayout: React.FC = () => {
   };
 
   const currentDrawerWidth = isSidebarOpen ? EXPANDED_DRAWER_WIDTH : COLLAPSED_DRAWER_WIDTH;
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (location.pathname === '/admin/inicio') {
-      setLoading(false);
-      setPermissions(null);
-      setError(null);
-      return;
-    }
-
-    const checkAuthAndPermissions = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const fetchedPermissions = await getPermissions();
-        setPermissions(fetchedPermissions);
-      } catch (err: any) {
-        console.error('Permission check failed in Layout:', err);
-        if (err.message === 'Unauthorized') {
-          setError('Unauthorized access. Redirecting to login...');
-          setTimeout(() => navigate('/admin/inicio', { replace: true }), 1500);
-        } else {
-          setError(err.message || 'Failed to load permissions. Please try again.');
-          navigate('/admin/inicio', { replace: true });
-        }
-        setPermissions(null);
-      } finally {
-        setLoading(false);
+    if (!loading) {
+      if (!permissions && location.pathname !== '/admin/inicio') {
+        showSnackBar('No estás autenticado. Redireccionando...');
+        navigate('/admin/inicio', { replace: true });
+        return;
       }
-    };
 
-    checkAuthAndPermissions();
-  }, [location.pathname, navigate]);
-
-  useEffect(() => {
-    if (permissions && !loading) {
-      if (location.pathname === '/admin/dashboard' && permissions.area !== 'Master') {
+      if (
+        permissions &&
+        location.pathname === '/admin/dashboard' &&
+        permissions.area !== 'Master'
+      ) {
         showSnackBar('El dashboard es solo para administradores Master.');
         navigate('/admin/orders/read', { replace: true });
       }

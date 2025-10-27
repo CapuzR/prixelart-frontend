@@ -34,7 +34,7 @@ import { visuallyHidden } from '@mui/utils';
 
 import { Admin } from 'types/admin.types';
 import { PermissionsV2 } from 'types/permissions.types';
-import { useSnackBar } from 'context/GlobalContext';
+import { useSnackBar } from '@context/UIContext';
 import Title from '@apps/admin/components/Title';
 import ConfirmationDialog from '@components/ConfirmationDialog/ConfirmationDialog';
 import { deleteAdmin, getAdmins } from '@api/admin.api';

@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom"
 import ReactGA from "react-ga"
 import "slick-carousel/slick/slick.css"
 import "slick-carousel/slick/slick-theme.css"
-import { useLoading, useSnackBar, useUser } from "context/GlobalContext"
+import { useSnackBar } from "@context/UIContext"
 import { getSelectedVariant } from "apps/consumer/products/services"
 
 import Landscape from "apps/consumer/flow/views/Landscape"
@@ -23,6 +23,8 @@ import { fetchActiveProductDetails, fetchVariantPrice } from "@api/product.api"
 import { Item } from "types/order.types"
 import { useTheme } from "@mui/material"
 import { useMediaQuery } from "@mui/material"
+import { useAuth } from "@context/AuthContext"
+
 ReactGA.initialize("G-0RWP9B33D8")
 
 const Flow = () => {
@@ -32,10 +34,9 @@ const Flow = () => {
   const [selectedProductId, setSelectedProductId] = useState<string | null>(
     null
   )
-  const { user } = useUser()
+  const { user } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  const { setLoading } = useLoading()
   const { showSnackBar } = useSnackBar()
   const { addOrUpdateItemInCart } = useCart()
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
@@ -84,7 +85,7 @@ const Flow = () => {
       // Only fetch if params exist
       if (!urlParams.producto && !urlParams.arte) return
 
-      setLoading(true)
+      // setLoading(true)
       try {
         let selectedProduct: Product | undefined = undefined // Use new Product type
         let selectedArt: Art | undefined = undefined
@@ -136,7 +137,7 @@ const Flow = () => {
         // Optional: navigate away or clear state on error
         // navigate('/');
       } finally {
-        setLoading(false)
+        // setLoading(false)
       }
     }
 

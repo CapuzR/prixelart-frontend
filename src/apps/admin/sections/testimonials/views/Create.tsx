@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, ChangeEvent, FormEvent } from 
 import { useNavigate } from 'react-router-dom';
 
 // Hooks and Context 
-import { useSnackBar } from 'context/GlobalContext';
+import { useSnackBar } from '@context/UIContext';
 import { Testimonial } from 'types/testimonial.types';
 import { createTestimonial, readAllTestimonial } from '@api/testimonial.api';
 import Grid2 from '@mui/material/Grid';

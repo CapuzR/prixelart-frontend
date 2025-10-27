@@ -52,7 +52,7 @@ import { visuallyHidden } from "@mui/utils"
 import Grid2 from "@mui/material/Grid"
 
 // Hooks, Types, Context, API
-import { useAdminPermissions, useSnackBar } from "context/GlobalContext"
+import { useSnackBar } from "@context/UIContext"
 import { Product, Variant, VariantAttribute } from "types/product.types"
 import { PermissionsV2 } from "types/permissions.types"
 
@@ -61,13 +61,13 @@ import {
   updateManyProduct,
   deleteProduct,
 } from "@api/product.api"
-import { getPermissions } from "@api/admin.api"
 
 import Title from "@apps/admin/components/Title"
 import ConfirmationDialog from "@components/ConfirmationDialog/ConfirmationDialog"
 
 import ExcelJS from "exceljs"
 import * as XLSX from "xlsx"
+import { useAuth } from "@context/AuthContext"
 
 const VariantDetailsTable: React.FC<{ variants: Variant[] }> = ({
   variants,
@@ -168,7 +168,7 @@ type ProductSortKeys =
 const ReadProducts: React.FC = () => {
   const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
-  const { permissions } = useAdminPermissions();
+  const { permissions } = useAuth();
 
   // --- State ---
   const [products, setProducts] = useState<Product[]>([]) // Original data

@@ -3,7 +3,7 @@ import React, { useState, ChangeEvent, FormEvent } from "react"
 import { useNavigate } from "react-router-dom"
 
 // Hooks and Context
-import { useSnackBar } from "context/GlobalContext"
+import { useSnackBar } from "@context/UIContext"
 import { ShippingMethod } from "types/order.types"
 import { createShippingMethod } from "@api/order.api"
 

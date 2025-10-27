@@ -2,7 +2,7 @@ import React, { useState, ChangeEvent, FormEvent } from "react"
 import { useNavigate } from "react-router-dom"
 
 // Hooks and Context
-import { useSnackBar } from "context/GlobalContext"
+import { useSnackBar } from "@context/UIContext"
 import { PermissionsV2 } from "types/permissions.types"
 import { createRole } from "@api/admin.api"
 

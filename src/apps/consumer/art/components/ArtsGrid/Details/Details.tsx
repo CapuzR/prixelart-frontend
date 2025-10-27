@@ -29,7 +29,8 @@ import { Autocomplete } from '@mui/material';
 import Img from 'react-cool-img';
 import dayjs from 'dayjs';
 
-import { useLoading, useSnackBar, useUser } from 'context/GlobalContext';
+import { useSnackBar } from '@context/UIContext';
+import { useAuth } from '@context/AuthContext';
 
 import utils from 'utils/utils.js';
 import { Art } from '../../../../../../types/art.types';
@@ -38,8 +39,8 @@ import { fetchArt, updateArt } from '@api/art.api';
 const ArtDetail: React.FC = () => {
   const { artId } = useParams<{ artId: string }>();
   const navigate = useNavigate();
-  const { setLoading, loading } = useLoading();
-  const { user } = useUser();
+  // const { setLoading, loading } = useLoading();
+  const { user } = useAuth();
   const { showSnackBar } = useSnackBar();
 
   const [art, setArt] = useState<Art | null>(null);
@@ -76,7 +77,7 @@ const ArtDetail: React.FC = () => {
 
   const handleSaveChanges = async () => {
     if (!formData || !formData._id) return;
-    setLoading(true);
+    // setLoading(true);
     try {
       const updatedArt = await updateArt(formData._id.toString(), formData);
       if (updatedArt.success) {
@@ -88,7 +89,7 @@ const ArtDetail: React.FC = () => {
     } catch (error) {
       console.error('Error al actualizar el arte:', error);
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
@@ -112,7 +113,7 @@ const ArtDetail: React.FC = () => {
 
   const loadArt = async () => {
     if (artId) {
-      setLoading(true);
+      // setLoading(true);
       setArtLoadingError(null);
       try {
         const data = await fetchArt(artId);
@@ -128,21 +129,21 @@ const ArtDetail: React.FC = () => {
         );
         setArt(null);
       } finally {
-        setLoading(false);
+        // setLoading(false);
       }
     } else {
       setArtLoadingError('No Art ID provided.');
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
   useEffect(() => {
     loadArt();
-  }, [artId, setLoading]);
+  }, [artId]);
 
   console.log(art);
 
-  if (loading && !art && !artLoadingError) {
+  if ( !art && !artLoadingError) {
     return (
       <Container maxWidth="lg" sx={{ py: 4, mt: { xs: 2, md: 4 } }}>
         <Grid2 container spacing={4}>

@@ -2,7 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import ReactGA from 'react-ga';
-import { useLoading, useUser } from 'context/GlobalContext';
+// import { useUser } from '@context/UIContext';
+import { useAuth } from '@context/AuthContext';
 import { getSelectedVariant } from '../services';
 import { splitDescription } from '../helpers';
 
@@ -37,8 +38,8 @@ export interface DisplayPriceInfo {
 
 const Details: React.FC<DetailsProps> = ({ productId }) => {
   const navigate = useNavigate();
-  const { setLoading } = useLoading();
-  const { user } = useUser();
+  // const { setLoading } = useLoading();
+  const { user } = useAuth();
   const { id: routeId } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -94,11 +95,11 @@ const Details: React.FC<DetailsProps> = ({ productId }) => {
   useEffect(() => {
     if (!id) {
       setProduct(undefined);
-      setLoading(false);
+      // setLoading(false);
       return;
     }
     const fetchProduct = async () => {
-      setLoading(true);
+      // setLoading(true);
       setProduct(undefined);
       setSelectedVariant(undefined);
       setCalculatedRangeInfo({ baseMin: null, baseMax: null, finalMin: null, finalMax: null, isLoading: true, error: null });
@@ -112,11 +113,11 @@ const Details: React.FC<DetailsProps> = ({ productId }) => {
         setProduct(undefined);
         setCalculatedRangeInfo({ baseMin: null, baseMax: null, finalMin: null, finalMax: null, isLoading: false, error: 'Error al cargar producto.' });
       } finally {
-        setLoading(false);
+        // setLoading(false);
       }
     };
     fetchProduct();
-  }, [id, setLoading]);
+  }, [id]);
 
   useEffect(() => {
     if (!product?._id || !product.variants || product.variants.length === 0) {

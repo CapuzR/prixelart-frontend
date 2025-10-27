@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { use, useState } from "react"
 import { Link as RouterLink, useLocation } from "react-router-dom"
 import { PermissionsV2 } from "types/permissions.types"
 
@@ -39,7 +39,7 @@ import BrushIcon from "@mui/icons-material/Brush"
 import ManageSearchIcon from "@mui/icons-material/ManageSearch"
 import GavelIcon from "@mui/icons-material/Gavel"
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney"
-import { useAdminPermissions } from "@context/GlobalContext"
+import { useAuth } from "@context/AuthContext"
 
 interface SidebarProps {
   drawerWidth: number
@@ -80,7 +80,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const theme = useTheme()
   const location = useLocation()
-  const { permissions } = useAdminPermissions();
+  const { permissions } = useAuth();
 
   const isSelected = (path: string): boolean => {
     // Check for exact match or if the current path starts with the item's path

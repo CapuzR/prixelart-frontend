@@ -10,7 +10,7 @@ import React, {
 import { useParams, useNavigate } from "react-router-dom"
 
 // Hooks, Context, Types, API
-import { useSnackBar } from "context/GlobalContext"
+import { useSnackBar } from "@context/UIContext"
 import { Admin } from "types/admin.types"
 import { PermissionsV2 } from "types/permissions.types"
 import {

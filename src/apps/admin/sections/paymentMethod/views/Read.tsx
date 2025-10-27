@@ -17,7 +17,7 @@ import RefreshIcon from '@mui/icons-material/Refresh'; // Added
 import { visuallyHidden } from '@mui/utils'; // For sorting accessibility
 
 // Hooks, Types, Context, API
-import { useSnackBar } from 'context/GlobalContext'; 
+import { useSnackBar } from '@context/UIContext'; 
 import { PaymentMethod } from 'types/order.types'; 
 import { readAllPaymentMethods, deletePaymentMethod } from '@api/order.api'; 
 

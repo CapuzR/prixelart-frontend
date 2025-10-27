@@ -7,6 +7,8 @@ import React, {
 } from "react"
 
 export interface ModalState {
+  isUploadArtModalOpen: boolean;
+  isUploadServiceModalOpen: boolean;
 }
 
 export type ModalAction =

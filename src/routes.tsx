@@ -9,12 +9,11 @@ import AdminLayout from '@apps/admin/components/AdminLayout';
 import AdminLogin from '@apps/admin/login';
 import AdminNestedRoutes from '@apps/admin/admin.routes';
 import { isAuth } from '@api/utils.api';
-import { useUser } from '@context/GlobalContext';
 import { User } from 'types/user.types';
+import { useAuth } from '@context/AuthContext';
 
 const MainLayout = () => {
-  const location = useLocation();
-  const { user, setUser } = useUser();
+  const { setUser } = useAuth();
 
   useEffect(() => {
     const checkAuthStatus = async () => {

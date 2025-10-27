@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom"
 import { v4 as uuidv4 } from "uuid"
 
 // Hooks, Types, Context, API
-import { useSnackBar } from "context/GlobalContext" // Asegúrate que la ruta sea correcta
+import { useSnackBar } from "@context/UIContext" // Asegúrate que la ruta sea correcta
 import { Product, Variant, VariantAttribute } from "types/product.types" // Asegúrate que la ruta sea correcta
 import { createProduct, fetchUniqueProductionLines } from "@api/product.api" // Asegúrate que la ruta sea correcta
 

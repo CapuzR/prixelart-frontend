@@ -54,7 +54,7 @@ import DragIndicatorIcon from "@mui/icons-material/DragIndicator"
 import CropIcon from "@mui/icons-material/Crop"
 
 // Hooks, Types, Context, API
-import { useSnackBar } from "context/GlobalContext" // Asegúrate que la ruta sea correcta
+import { useSnackBar } from "@context/UIContext" // Asegúrate que la ruta sea correcta
 import { CarouselItem } from "types/preference.types" // Asegúrate que la ruta sea correcta
 import {
   fetchCarouselImages,

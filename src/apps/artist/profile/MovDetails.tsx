@@ -12,7 +12,7 @@ import axios from "axios"
 import { makeStyles } from "tss-react/mui"
 import { ObjectId } from "mongodb"
 import { Order } from "types/order.types"
-import { useUser } from "@context/GlobalContext"
+import { useAuth } from "@context/AuthContext"
 
 import favicon from "../../../images/favicon.png"
 
@@ -45,7 +45,7 @@ interface MovDetailsProps {
 export default function MovOrder(props: MovDetailsProps) {
   const { classes } = useStyles()
   const theme = useTheme()
-  const { user } = useUser()
+  const { user } = useAuth()
   const [order, setOrder] = useState<Order>()
   const [discountList, setDiscountList] = useState([])
   const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"))

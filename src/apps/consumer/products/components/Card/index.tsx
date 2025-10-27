@@ -13,8 +13,9 @@ import { queryCreator } from "@apps/consumer/flow/helpers"
 import { useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { fetchVariantPrice } from "@api/product.api"
-import { useUser } from "@context/GlobalContext"
+// import { useUser } from "@context/UIContext"
 import MDEditor from "@uiw/react-md-editor"
+import { useAuth } from "@context/AuthContext"
 
 interface CardProps {
   product: Product
@@ -35,7 +36,7 @@ export default function Card({
   isMobile,
 }: CardProps) {
   const navigate = useNavigate()
-  const { user } = useUser()
+  const { user } = useAuth()
 
   const [priceInfo, setPriceInfo] = useState<{
     baseMin: number | null

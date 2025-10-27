@@ -22,7 +22,7 @@ import ShareIcon from "@mui/icons-material/Share" // Import ShareIcon
 
 import { getFilteredOptions } from "apps/consumer/products/services"
 
-import { useConversionRate, useCurrency } from "context/GlobalContext"
+import { useCurrency } from "@context/CurrencyContext"
 import { Slider } from "components/Slider"
 import { Image } from "components/Image"
 import CurrencySwitch from "components/CurrencySwitch"
@@ -45,8 +45,7 @@ interface PortraitProps {
 }
 
 const Portrait: React.FC<PortraitProps> = (props) => {
-  const { currency } = useCurrency()
-  const { conversionRate } = useConversionRate()
+  const { currency, conversionRate } = useCurrency()
 
   const uniqueAttributes = useMemo(() => {
     const attributesMap = new Map<string, Set<string>>()

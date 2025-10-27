@@ -2,7 +2,7 @@ import React, { useState, ChangeEvent, FormEvent } from "react"
 import { useNavigate } from "react-router-dom"
 
 // Hooks, Types, Context, API
-import { useSnackBar } from "context/GlobalContext"
+import { useSnackBar } from "@context/UIContext"
 import { PaymentMethod } from "types/order.types"
 import { createPaymentMethod } from "@api/order.api"
 

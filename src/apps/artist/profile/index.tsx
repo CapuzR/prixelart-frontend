@@ -71,7 +71,7 @@ import { getArtsByPrixer, PaginatedArtsResult } from "@api/art.api"
 import { Art } from "types/art.types"
 import { Service } from "types/service.types"
 import { fetchServicesByUser } from "@api/service.api"
-import { useLoading, useSnackBar, useUser } from "@context/GlobalContext"
+import { useSnackBar } from "@context/UIContext"
 import ReactCrop, {
   centerCrop,
   Crop,
@@ -81,6 +81,7 @@ import ReactCrop, {
 import { BACKEND_URL } from "@api/utils.api"
 import * as tus from "tus-js-client"
 import ScrollToTopButton from "@components/ScrollToTop"
+import { useAuth } from "@context/AuthContext"
 
 const ARTS_PER_PAGE = 12
 const availableSpecialties = [
@@ -339,9 +340,9 @@ export default function PrixerProfileCard() {
 
   const { username: routeUsername } = useParams<{ username: string }>()
   const navigate = useNavigate()
-  const { user } = useUser()
+  const { user } = useAuth()
   const { showSnackBar } = useSnackBar()
-  const { loading: isSaving, setLoading: setIsSaving } = useLoading()
+  // const { loading: isSaving, setLoading: setIsSaving } = useLoading()
   const isOwner = user?.username === routeUsername
 
   const [isEditMode, setIsEditMode] = useState(false)
@@ -554,7 +555,7 @@ export default function PrixerProfileCard() {
       return
     }
 
-    setIsSaving(true)
+    // setIsSaving(true)
     try {
       const dataToUpdate: Partial<Prixer> = {
         ...formData,
@@ -578,7 +579,7 @@ export default function PrixerProfileCard() {
       console.error("Save failed:", err)
       showSnackBar("An unexpected error occurred.")
     } finally {
-      setIsSaving(false)
+      // setIsSaving(false)
     }
   }
 
@@ -1014,17 +1015,17 @@ export default function PrixerProfileCard() {
                         <Button
                           variant="contained"
                           onClick={handleSave}
-                          disabled={isSaving}
+                          // disabled={isSaving}
                           sx={{
                             bgcolor: "success.main",
                             "&:hover": { bgcolor: "success.dark" },
                           }}
                         >
-                          {isSaving ? (
+                          {/* {isSaving ? (
                             <CircularProgress size={24} color="inherit" />
-                          ) : (
-                            "Save"
-                          )}
+                          ) : ( */}
+                            Save
+                          
                         </Button>
                         <Button
                           variant="outlined"

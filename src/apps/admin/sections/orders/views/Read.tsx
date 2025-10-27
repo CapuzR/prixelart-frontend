@@ -40,7 +40,7 @@ import { LocalShippingOutlined, PauseCircleFilled, GetApp } from '@mui/icons-mat
 import { PickerChangeHandlerContext, DateValidationError } from '@mui/x-date-pickers';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
-import { useAdminPermissions, useSnackBar } from 'context/GlobalContext';
+import { useSnackBar } from '@context/UIContext';
 import {
   Order,
   OrderStatus,
@@ -55,6 +55,7 @@ import 'moment/locale/es';
 import { format, parseISO, isValid } from 'date-fns';
 import { getPermissions } from '@api/admin.api';
 import dayjs from 'dayjs';
+import { useAuth } from '@context/AuthContext';
 
 interface OrderSummary {
   _id: string;
@@ -148,7 +149,7 @@ const ReadOrders: React.FC = () => {
   const navigate = useNavigate();
   const { showSnackBar } = useSnackBar();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { permissions } = useAdminPermissions();
+  const { permissions } = useAuth();
 
   const [rawOrders, setRawOrders] = useState<Order[]>([]);
   const [allOrders, setAllOrders] = useState<OrderSummary[]>([]);

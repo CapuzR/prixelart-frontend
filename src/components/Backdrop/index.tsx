@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useBackdrop } from 'context/GlobalContext';
+import { useBackdrop } from '@context/UIContext';
 import styles from './styles.module.scss';
 
 interface BackdropProps {

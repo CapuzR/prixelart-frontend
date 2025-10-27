@@ -5,22 +5,23 @@ import SpeedDialIcon from "@mui/material/SpeedDialIcon"
 import SpeedDialAction from "@mui/material/SpeedDialAction"
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate"
 import LocalActivityIcon from "@mui/icons-material/LocalActivity"
-import { usePrixerCreator } from "@context/GlobalContext"
+// import { usePrixerCreator } from "@context/UIContext"
+import { useModals } from "@context/ModalContext"
 
 const FloatingAddButton: React.FC = () => {
-  const { setArtModal, setServiceModal } = usePrixerCreator()
+  const { openUploadArtModal, openUploadServiceModal } = useModals()
   const [open, setOpen] = useState(false)
 
   const actions = [
     {
       icon: <AddPhotoAlternateIcon />,
       name: "Agregar Arte",
-      onClick: () => setArtModal(true),
+      onClick: () => openUploadArtModal(),
     },
     {
       icon: <LocalActivityIcon />,
       name: "Agregar Servicio",
-      onClick: () => setServiceModal(true),
+      onClick: () => openUploadServiceModal(),
     },
   ]
 

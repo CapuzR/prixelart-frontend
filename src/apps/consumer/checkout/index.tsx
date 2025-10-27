@@ -22,7 +22,7 @@ import { parseOrder } from "./parseApi"
 import { useNavigate } from "react-router-dom"
 import { CartLine } from "../../../types/cart.types"
 import { CheckoutState, DataLists, Tax } from "../../../types/order.types"
-import { useSnackBar } from "context/GlobalContext"
+import { useSnackBar } from "@context/UIContext"
 import useMediaQuery from "@mui/material/useMediaQuery"
 import { useTheme } from "@mui/material/styles"
 

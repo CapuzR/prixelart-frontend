@@ -8,7 +8,7 @@ import ItemCard from "components/ItemCard"
 import Grid2 from "@mui/material/Grid"
 
 import { formatNumberString, formatSinglePrice } from "utils/formats"
-import { useConversionRate, useCurrency } from "context/GlobalContext"
+import { useCurrency } from "@context/CurrencyContext"
 import { CartLine } from "../../../../types/cart.types"
 import { Item } from "types/order.types"
 import useMediaQuery from "@mui/material/useMediaQuery"
@@ -32,8 +32,7 @@ export default function LineCard({
   checking,
 }: LineCardProps) {
   const { deleteLineInCart, updateCartLine } = useCart()
-  const { currency } = useCurrency()
-  const { conversionRate } = useConversionRate()
+  const { currency, conversionRate } = useCurrency()
   const [quantity, setQuantity] = useState<string | number>(line.quantity)
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))

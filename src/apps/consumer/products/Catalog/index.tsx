@@ -16,7 +16,7 @@ import Card from 'apps/consumer/products/components/Card';
 import ReactGA from 'react-ga';
 
 import styles from './styles.module.scss';
-import { useConversionRate, useCurrency } from 'context/GlobalContext';
+import { useCurrency } from '@context/CurrencyContext';
 import { useNavigate } from 'react-router-dom';
 import { SelectChangeEvent } from '@mui/material';
 import SearchBar from '@components/searchBar/searchBar';
@@ -34,8 +34,7 @@ interface ProductsCatalogProps {
 const ProductsCatalog: React.FC<ProductsCatalogProps> = ({ onProductSelect }) => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { currency } = useCurrency();
-  const { conversionRate } = useConversionRate();
+  const { currency, conversionRate } = useCurrency();
 
   const isDesktop = useMediaQuery(theme.breakpoints.up('lg'));
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, ChangeEvent, FormEvent } from 
 import { useParams, useNavigate } from 'react-router-dom';
 
 // Hooks and Context
-import { useSnackBar } from 'context/GlobalContext';
+import { useSnackBar } from '@context/UIContext';
 import { ShippingMethod } from 'types/order.types';
 import { getShippingMethodById, updateShippingMethod } from '@api/order.api';
 

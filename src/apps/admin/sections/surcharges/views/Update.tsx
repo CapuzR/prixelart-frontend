@@ -2,7 +2,7 @@ import React, { useState, useEffect, ChangeEvent, FormEvent, SyntheticEvent, use
 import { useParams, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
-import { useSnackBar } from 'context/GlobalContext';
+import { useSnackBar } from '@context/UIContext';
 import { AdjustmentMethod, ApplicableEntity, Surcharge, Entity } from 'types/surcharge.types';
 import { Product } from 'types/product.types';
 import { fetchSurchargeById, updateSurcharge } from '@api/surcharge.api';

@@ -5,7 +5,7 @@ import RemarkGfm from 'remark-gfm';
 import ReactMde from 'react-mde';
 import "react-mde/lib/styles/css/react-mde-all.css";
 
-import { useSnackBar } from 'context/GlobalContext';
+import { useSnackBar } from '@context/UIContext';
 import { TermsAndConditions } from 'types/preference.types';
 
 import {

@@ -43,7 +43,7 @@ import { visuallyHidden } from "@mui/utils"
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import EditIcon from "@mui/icons-material/Edit"
-import { useAdminPermissions, useSnackBar } from "context/GlobalContext"
+import { useSnackBar } from "@context/UIContext"
 import Title from "@apps/admin/components/Title"
 import {
   OrderArchive,
@@ -67,6 +67,7 @@ import {
 import Grid2 from "@mui/material/Grid"
 import excelJS from "exceljs"
 import { getPermissions } from "@api/admin.api"
+import { useAuth } from "@context/AuthContext"
 
 const ALL_STATUSES: OrderStatus[] = [
   "Anulado",
@@ -189,7 +190,7 @@ const ReadOrderArchives: React.FC = () => {
   const navigate = useNavigate()
   const { showSnackBar } = useSnackBar()
   const [searchParams, setSearchParams] = useSearchParams()
-  const { permissions } = useAdminPermissions();
+  const { permissions } = useAuth();
 
   // --- State ---
   const [orders, setOrders] = useState<OrderArchive[]>([])

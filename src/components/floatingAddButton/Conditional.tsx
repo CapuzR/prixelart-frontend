@@ -1,12 +1,12 @@
 import React from "react"
 import { useLocation, matchPath } from "react-router-dom"
 import FloatingAddButton from "./index"
-import { useUser } from "@context/GlobalContext"
+import { useAuth } from "@context/AuthContext"
 
 const ConditionalFB = () => {
   const location = useLocation()
   const { pathname } = location
-    const { user } = useUser()
+    const { user } = useAuth()
 const isCreator = user?.prixer?.status
 
   const routes = [

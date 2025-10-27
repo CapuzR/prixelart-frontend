@@ -16,13 +16,14 @@ import Modal from '@mui/material/Modal';
 
 import { Theme, useTheme } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
-import { useSnackBar, useUser } from '@context/GlobalContext';
+import { useSnackBar } from '@context/UIContext';
 import { Movement } from 'types/movement.types';
 import { Order, OrderStatus } from 'types/order.types';
 import { ObjectId } from 'mongodb';
 import CountUp from 'react-countup';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { Art } from '../../../types/art.types';
+import { useAuth } from '@context/AuthContext';
 
 export interface TopCategoryStat {
   category: string;
@@ -58,7 +59,7 @@ export default function PrixerProfile() {
   const { classes } = useStyles();
   const theme = useTheme();
   const isDeskTop = useMediaQuery(theme.breakpoints.up('sm'));
-  const { user } = useUser();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { showSnackBar } = useSnackBar();

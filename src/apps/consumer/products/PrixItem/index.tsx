@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import Grid2 from '@mui/material/Grid';
-import { Card, CardMedia, CardContent, Typography, Box, Button } from '@mui/material';
+import { Typography, Box, Button } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
@@ -12,9 +12,9 @@ import { fetchArt } from '../../../../api/art.api';
 import { useCart } from 'context/CartContext';
 import { useSnackBar } from 'context/GlobalContext';
 
-import banner1 from '@assets/images/prix-item-bg1.jpg';
-import banner2 from '@assets/images/prix-item-bg2.jpg';
-import banner3 from '@assets/images/prix-item-bg3.jpg';
+import banner1 from '@assets/images/prix-item-bg1.webp';
+import banner2 from '@assets/images/prix-item-bg2.webp';
+import banner3 from '@assets/images/prix-item-bg3.webp';
 
 import item1 from '@assets/images/prix-item1.png';
 import item2 from '@assets/images/prix-item2.png';
@@ -187,7 +187,6 @@ export default function PrixItem() {
           sx={{
             display: 'flex',
             flexDirection: 'column',
-            // height: '100px',
             justifyContent: 'center',
             alignItems: 'center',
             position: 'relative',

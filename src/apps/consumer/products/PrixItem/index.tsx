@@ -1,351 +1,377 @@
-import { useState, useRef, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
+import { useState, useRef, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import "slick-carousel/slick/slick.css"
-import "slick-carousel/slick/slick-theme.css"
-import Grid2 from "@mui/material/Grid"
-import Slider from "react-slick"
-import {
-  Card,
-  CardMedia,
-  CardContent,
-  Typography,
-  Box,
-  Button,
-} from "@mui/material"
-import { useTheme } from "@mui/material/styles"
-import useMediaQuery from "@mui/material/useMediaQuery"
+import Grid2 from '@mui/material/Grid';
+import { Card, CardMedia, CardContent, Typography, Box, Button } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
-import banner from "@assets/images/prixItem.png"
-import banner2 from "@assets/images/prixItem2.png"
-import Copyright from "@components/Copyright/copyright"
+import Copyright from '@components/Copyright/copyright';
+import { fetchActiveProductDetails } from '../../../../api/product.api';
+import { fetchArt } from '../../../../api/art.api';
+import { useCart } from 'context/CartContext';
+import { useSnackBar } from 'context/GlobalContext';
 
-import { fetchActiveProductDetails } from "../../../../api/product.api"
-import { fetchArt } from "../../../../api/art.api"
-import { Item } from "../../../../types/order.types"
-import { useCart } from "context/CartContext"
-import { useSnackBar } from "context/GlobalContext"
-import React from "react"
+import banner1 from '@assets/images/prix-item-bg1.jpg';
+import banner2 from '@assets/images/prix-item-bg2.jpg';
+import banner3 from '@assets/images/prix-item-bg3.jpg';
+
+import item1 from '@assets/images/prix-item1.png';
+import item2 from '@assets/images/prix-item2.png';
+import item3 from '@assets/images/prix-item3.png';
+
+const items = [
+  {
+    productId: '649ec9521d692e001182512d',
+    artId: 'DynYqTt',
+    price: '72',
+    title: 'X-Lona X Ávila y Esfera de Soto',
+  },
+
+  {
+    productId: '649ec9521d692e001182512d',
+    artId: 'NQZSJpd',
+    price: '72',
+    title: 'X-Lona X Ávila desde Chuao',
+  },
+
+  {
+    productId: '649ec9521d692e001182512d',
+    artId: 'bwBVDIK',
+    price: '72',
+    title: 'X-Lona X Ávila en Colores fondo negro ',
+  },
+];
+
+const BANNERS = [banner1, banner2, banner3];
+
+const SLIDER_ITEMS = [
+  {
+    title: 'Ávila y Esfera de Soto',
+    text: 'Cuadro X-Lona, de 150 x 50 cm',
+    sub: 'Prixer: dhenriquez',
+    imageUrl: item1,
+  },
+  {
+    title: 'Ávila Chuao',
+    text: 'Cuadro X-Lona, de 150 x 50 cm',
+    sub: 'Prixer: dhenriquez',
+    imageUrl: item2,
+  },
+  {
+    title: 'Ávila en colores',
+    text: 'Cuadro X-Lona, de 150 x 50 cm',
+    sub: 'Prixer: antuangio',
+    imageUrl: item3,
+  },
+];
+
+type Item = {
+  sku: string;
+  art: any;
+  product: any;
+  price: string;
+  quantity: number;
+};
 
 export default function PrixItem() {
-  const { addOrUpdateItemInCart } = useCart()
-  const { showSnackBar } = useSnackBar()
-  const navigate = useNavigate()
+  const { addOrUpdateItemInCart } = useCart();
+  const { showSnackBar } = useSnackBar();
+  const navigate = useNavigate();
   const theme = useTheme();
 
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
-  const [isParentInView, setIsParentInView] = useState(true)
-  const [activeSlide, setActiveSlide] = useState<number>(0)
-  const sliderRef = useRef<any>(null)
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
-  const parentRef = useRef(null)
-  const basicItem = {
-    productId: "6657f83b7a000200122b54de",
-    artId: "qLJw_NI",
-    price: "23",
-    quantity: 1,
-    title: "TOTE BAG X JOSY THOMAS",
-  }
-  // discount
-  // id
-  // item
-  // quantity
-  // subtotal
-  const [item, setItem] = useState<Partial<Item>>({})
 
-  const buildPredefinedItem = async () => {
-    try {
-      const productResponse = await fetchActiveProductDetails(
-        basicItem.productId
-      )
-      const artResponse = await fetchArt(basicItem.artId)
+  const ctaRef = useRef<HTMLDivElement>(null);
 
-      if (!productResponse || !artResponse) {
-        console.error("No se pudo cargar el producto o el arte.")
-        return
-      }
-
-      const completeItem: Partial<Item> = {
-        sku: productResponse._id?.toString(),
-        art: artResponse,
-        product: {
-          ...productResponse,
-          selection: [{ name: "General", value: "General" }],
-        },
-        price: basicItem.price,
-      }
-
-      setItem(completeItem)
-    } catch (error) {
-      console.error("Error al construir el item predefinido:", error)
-    }
-  }
+  const [item, setItem] = useState<Partial<Item>>({});
+  const [activeSlide, setActiveSlide] = useState<number>(0);
+  const [isProductLoading, setIsProductLoading] = useState(true);
 
   useEffect(() => {
-    buildPredefinedItem()
-  }, [])
+    const currentItemData = items[activeSlide];
+    if (!currentItemData) return;
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsParentInView(entry.isIntersecting)
-      },
-      { threshold: 0 }
-    )
+    const buildPredefinedItem = async () => {
+      setIsProductLoading(true);
+      setItem({});
+      try {
+        const productResponse = await fetchActiveProductDetails(currentItemData.productId);
+        const artResponse = await fetchArt(currentItemData.artId);
 
-    if (parentRef.current) {
-      observer.observe(parentRef.current)
-    }
+        if (!productResponse || !artResponse) {
+          console.error('No se pudo cargar el producto o el arte.');
+          setItem({ price: 'Error' });
+          return;
+        }
 
-    return () => {
-      if (parentRef.current) {
-        observer.unobserve(parentRef.current)
+        const completeItem: Partial<Item> = {
+          sku: productResponse._id?.toString(),
+          art: artResponse,
+          product: {
+            ...productResponse,
+            selection: [{ name: 'Medida', value: '150x50cm' }],
+          },
+          price: currentItemData.price,
+        };
+        setItem(completeItem);
+      } catch (error) {
+        console.error('Error al construir el item predefinido:', error);
+        setItem({ price: 'Error' });
+      } finally {
+        setIsProductLoading(false);
       }
-    }
-  }, [])
+    };
+
+    buildPredefinedItem();
+  }, [activeSlide]);
 
   const handleAddToCart = () => {
-    if (!item.price || item.price === "Error") {
-      showSnackBar("El producto se está cargando, por favor espera.")
-      return
+    if (isProductLoading || !item.price || item.price === 'Error') {
+      showSnackBar('El producto se está cargando, por favor espera.');
+      return;
     }
 
-    addOrUpdateItemInCart(item as Item, 1)
-    showSnackBar("¡Producto agregado al carrito!")
-    navigate("/carrito")
-  }
+    addOrUpdateItemInCart(item as Item, 1);
+    showSnackBar('¡Producto agregado al carrito!');
+    navigate('/carrito');
+  };
 
-  const banners = [banner, banner2]
+  const handleSlideClick = (index: number) => {
+    setActiveSlide(index);
+  };
 
-  const items = [
-    {
-      title: "Descripción 1",
-      imageUrl: item.product?.sources.images[0].url,
-    },
-    {
-      title: "Descripción 2",
-      imageUrl: item.product?.sources.images[1].url,
-    },
-    {
-      title: "Descripción 3",
-      imageUrl: item.product?.sources.images[2].url,
-    },
-  ]
-
-  const settings = {
-    dots: true,
-    infinite: false,
-    speed: 500,
-    slidesToShow: isMobile ? 1.5 : 3,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 3000,
-    afterChange: (current: any) => setActiveSlide(current),
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 2.5,
-        },
-      },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 1.5,
-        },
-      },
-    ],
-  }
+  const currentSlideData = SLIDER_ITEMS[activeSlide];
 
   return (
     <Grid2
       container
       sx={{
-        marginTop: "-64px",
-        background:
-          "linear-gradient(to top, #404e5c 30%, rgba(64, 78, 92, 0) 100%)",
+        marginTop: '-64px',
+        background: '#565C66',
+        color: 'white',
+        overflow: 'hidden',
       }}
     >
       <Grid2
         size={{ xs: 12 }}
         sx={{
-          position: "relative",
-          height: "70vh",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "end",
-          alignItems: "center",
+          position: 'relative',
+          height: '61vh',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'end',
+          alignItems: 'center',
         }}
       >
-        <Grid2
-          sx={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundImage: `url(${banners[0]})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            opacity: activeSlide % 2 === 0 ? 1 : 0,
-            transition: "opacity 0.25s ease-in-out",
-          }}
-        />
-
-        <Grid2
-          sx={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundImage: `url(${banners[1]})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            opacity: activeSlide % 2 !== 0 ? 1 : 0,
-            transition: "opacity 0.25s ease-in-out",
-          }}
-        />
-        {basicItem.title && (
-          <Typography
-            gutterBottom
-            variant="h4"
-            component="div"
+        {BANNERS.map((bannerUrl, index) => (
+          <Box
+            key={index}
             sx={{
-              position: "relative",
-              // bottom: 0,
-              // left: 0,
-              fontFamily: "Futura, sans-serif",
-              fontStyle: "italic",
-              fontWeight: "700",
-              color: "white",
-              paddingBottom: "4rem",
-               // marginLeft: 1,
-              marginBottom: 0,
-              textShadow: "-3px 8px 22px rgba(0,0,0,0.7)",
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              backgroundImage: `url(${bannerUrl})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'bottom',
+              opacity: activeSlide === index ? 1 : 0,
+              transition: 'opacity 0.5s ease-in-out',
             }}
-          >
-            {basicItem.title}
-          </Typography>
-        )}
-      </Grid2>
-      <Grid2 size={{ xs: 12 }} sx={{ marginTop: "-6rem" }}>
-        <Box p={5} sx={{ backgroundColor: "transparent" }}>
-          <Slider {...settings} ref={sliderRef}>
-            {items.map((item, index) => (
-              <Box
-                key={index}
-                sx={{ padding: "10px" }}
-                onClick={() =>
-                  sliderRef && sliderRef?.current?.slickGoTo(index)
-                }
-              >
-                <Grid2
-                  sx={{
-                    background: `url(${item.imageUrl})`,
-                    width: "100%",
-                    height: "auto",
-                    minHeight: isDesktop ? "55vh" : "45vw",
-                    backgroundSize: "cover",
-                    backgroundRepeat: "no-repeat",
-                    backgroundPosition: "center",
-                    display: "flex",
-                    justifyContent: "left",
-                    alignItems: "end",
-                    borderRadius: 3,
-                    boxShadow: "0px 1px 8px 4px rgba(0,0,0,0.15)",
-                    position: "relative",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      bottom: 0,
-                      left: 0,
-                      width: "100%",
-                      height: "60%", // Cubre el 60% inferior
-                      background:
-                        "linear-gradient(to top, rgba(0,0,0,0.8), transparent)",
-                      borderRadius: 3, // Si tu card tiene bordes redondeados
-                    }}
-                  />
-                  <Typography
-                    gutterBottom
-                    variant="h6"
-                    component="div"
-                    sx={{
-                      position: "absolute",
-                      bottom: 0,
-                      left: 0,
-                      fontFamily: "Ubuntu, sans-serif",
-                      // fontFamily: "Futura, sans-serif",
-                      // fontStyle: "italic",
-                      fontWeight: "400",
-                      color: "white",
-                      marginLeft: 1,
-                      marginBottom: 0.25,
-                      //  textShadow: '0px 2px 8px rgba(0,0,0,0.7)'
-                    }}
-                  >
-                    {item.title}
-                  </Typography>
-                </Grid2>
-              </Box>
-            ))}
-          </Slider>
-        </Box>
+          />
+        ))}
         <Grid2
+          ref={ctaRef}
           size={{ xs: 12 }}
-          // ref={parentRef}
           sx={{
-            display: "flex",
-            height: "50px",
-            justifyContent: "center",
-            position: "relative",
-            // bottom: 0,
-            // left: "50%",
-            // transform: "translateX(-50%)",
-            zIndex: 1000,
-            marginBottom: "-1.5rem",
+            display: 'flex',
+            flexDirection: 'column',
+            // height: '100px',
+            justifyContent: 'center',
+            alignItems: 'center',
+            position: 'relative',
+            zIndex: 10,
+            padding: '10px 0 18px',
+            maxWidth: '340px',
+            backdropFilter: 'blur(10px)',
+            backgroundColor: '#3333335e',
+            borderRadius: '40px 40px 0 0',
+            border: '1px solid #FFF',
+            borderBottom: 'none',
           }}
         >
-          {/* CTA */}
+          <Typography
+            variant="h5"
+            fontWeight="bold"
+            sx={{
+              fontFamily: 'Roboto, sans-serif',
+              fontWeight: 600,
+              fontSize: '25px',
+              lineHeight: '100%',
+              color: 'rgba(255, 255, 255, 0.7)',
+            }}
+          >
+            DECORA TU HOGAR{' '}
+          </Typography>
+          <Typography
+            variant="body1"
+            sx={{
+              fontFamily: 'Roboto, sans-serif',
+              fontWeight: 400,
+              fontSize: '13px',
+              lineHeight: '100%',
+              color: '#B8B8B8',
+              margin: ' 6px 0 20px',
+            }}
+          >
+            Con Nosotros{' '}
+          </Typography>
           <Button
             variant="outlined"
             size="large"
-            sx={{
-              color: "#fff",
-              width: "max-content",
-              textAlign: "center",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              borderColor: "white",
-              fontFamily: "Futura, sans-serif",
-              fontStyle: "italic",
-              fontWeight: "700",
-              backdropFilter: "blur(10px)",
-              // ...(!isParentInView && {
-              //   position: "fixed",
-              //   bottom: "2rem",
-              //   left: "50%",
-              //   transform: "translateX(-50%)",
-              //   zIndex: 1000,
-
-              // }),
-            }}
             onClick={handleAddToCart}
-            // disabled={isSubmitting}
+            disabled={isProductLoading}
+            sx={{
+              padding: '10px 94px',
+              color: 'rgba(245, 246, 246, 1)',
+              width: 'max-content',
+              fontFamily: 'Roboto, sans-serif',
+              fontWeight: '400',
+              fontSize: '8.52px',
+              lineHeight: '100%',
+              transition: 'all 0.3s ease-in-out',
+              backgroundColor: 'rgba(210, 63, 73, 1)',
+              textTransform: 'none',
+            }}
           >
-            Agregar al carrito
+            {isProductLoading ? 'Cargando producto...' : 'Comprar Ahora'}
           </Button>
         </Grid2>
       </Grid2>
 
-      <Copyright
-        sx={{ color: "white", width: "100%", margin: 4 }}
-        align="center"
-      />
+      <Grid2 size={{ xs: 12 }} sx={{ height: '40vh' }}>
+        <Box sx={{ padding: '1rem 0 0', textAlign: 'center' }}>
+          {currentSlideData && (
+            <>
+              <Typography
+                variant="h5"
+                fontWeight="bold"
+                sx={{
+                  fontFamily: 'Roboto, sans-serif',
+                  fontWeight: 700,
+                  fontSize: '21px',
+                  lineHeight: '100%',
+                  color: '#C1C1C1',
+                }}
+              >
+                {currentSlideData.title}
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{
+                  marginTop: '6px',
+                  fontFamily: 'Inter, sans-serif',
+                  fontWeight: 400,
+                  fontSize: '13px',
+                  lineHeight: '100%',
+                  color: '#B8B8B8',
+                }}
+              >
+                {currentSlideData.text}
+              </Typography>
+              <Typography
+                variant="caption"
+                sx={{
+                  fontFamily: 'Inter, sans-serif',
+                  fontWeight: 400,
+                  fontSize: '11px',
+                  lineHeight: '100%',
+                  color: '#B8B8B8',
+                }}
+              >
+                {currentSlideData.sub}
+              </Typography>
+            </>
+          )}
+        </Box>
+
+        <Box
+          p={{ xs: 0, sm: 5 }}
+          sx={{
+            backgroundColor: 'transparent',
+            display: 'flex',
+            overflowX: 'auto',
+            gap: '0px',
+            padding: '0 10px 0 15px !important',
+            '&::-webkit-scrollbar': {
+              height: '8px',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              backgroundColor: 'rgba(255,255,255,0.3)',
+              borderRadius: '4px',
+            },
+          }}
+        >
+          {SLIDER_ITEMS.map((item, index) => (
+            <Box
+              key={index}
+              sx={{
+                padding: '10px 5px',
+                cursor: 'pointer',
+                minWidth: { xs: '60vw', sm: '30vw', md: '25vw' },
+                flexShrink: 0,
+              }}
+              onClick={() => handleSlideClick(index)}
+            >
+              <Grid2
+                sx={{
+                  background: `url(${item.imageUrl})`,
+                  width: '100%',
+                  height: 'auto',
+                  minHeight: isDesktop ? '55vh' : '45vw',
+                  backgroundSize: 'cover',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'center',
+                  borderRadius: '5px',
+                  border: activeSlide === index ? '3px solid #FFF' : '3px solid transparent',
+                  transition: 'border 0.4s ease-in-out',
+                  boxSizing: 'border-box',
+                  position: 'relative',
+                }}
+              >
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '40%',
+                    borderRadius: '0 0 5px 5px',
+                  }}
+                />
+                <Typography
+                  variant="h6"
+                  component="div"
+                  sx={{
+                    position: 'absolute',
+                    bottom: '8px',
+                    left: '10px',
+                    fontFamily: 'Roboto, sans-serif',
+                    fontWeight: '400',
+                    color: 'white',
+                    fontSize: '11px',
+                  }}
+                >
+                  {item.title}
+                </Typography>
+              </Grid2>
+            </Box>
+          ))}
+        </Box>
+
+        <Copyright sx={{ color: 'white', margin: 2 }} align="center" />
+      </Grid2>
     </Grid2>
-  )
+  );
 }

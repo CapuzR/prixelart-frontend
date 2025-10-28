@@ -85,13 +85,12 @@ const ShoppingCartButton: React.FC<ShoppingCartButtonProps> = ({
     </Badge>
   </IconButton>
 )
-// --- Main Component ---
 
 const MenuAppBar: React.FC = () => {
   const theme = useTheme()
   const navigate = useNavigate()
   const location = useLocation()
-  const isHome = location.pathname === "/"
+  const isHome = location.pathname === "/" || location.pathname === "/prix-item"
   const isMobile = useMediaQuery(theme.breakpoints.down("md"))
   const { cart } = useCart()
   const { user, setUser } = useUser()
@@ -250,7 +249,7 @@ const MenuAppBar: React.FC = () => {
 
   const appBarSx: SxProps<Theme> = {
     background: isHome
-      ? "transparent"
+      ? "linear-gradient(to bottom,rgba(0, 0, 0, 0.51) 0%, rgba(64, 78, 92, 0) 100%)"
       : "linear-gradient(to bottom, #404e5c 80%, rgba(64, 78, 92, 0) 100%)",
     boxShadow: "none",
     position: "fixed",

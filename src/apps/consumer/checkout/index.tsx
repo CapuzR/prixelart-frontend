@@ -116,7 +116,7 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking }) => {
   return (
     <Container
       maxWidth="lg"
-      style={{ width: "100%" }}
+      style={{ width: "100%", maxWidth: '100vw' }}
       sx={{ padding: isMobile ? 0 : "0 16px" }}
     >
       <Box sx={{ mt: 4, mb: 4 }}>
@@ -131,7 +131,7 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking }) => {
       </Box>
       {/* )} */}
 
-      <Stepper activeStep={activeStep} alternativeLabel>
+      <Stepper activeStep={activeStep} alternativeLabel sx={{ maxWidth: '100vw'}}>
         {steps.map((label) => (
           <Step key={label}>
             <StepLabel>{label}</StepLabel>

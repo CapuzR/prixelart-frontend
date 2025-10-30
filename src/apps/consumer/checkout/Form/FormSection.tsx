@@ -84,7 +84,8 @@ const FormSection: React.FC<FormSectionProps> = ({ sectionConfig, sectionKey, is
           <InputAdornment position="start">{adornment}</InputAdornment>
         ) : null,
       },
-      value: field.value || "",
+      value: field.value || fieldConfig.defaultValue || "",
+      required: fieldConfig.required
     };
 
     switch (type) {
@@ -198,7 +199,7 @@ const FormSection: React.FC<FormSectionProps> = ({ sectionConfig, sectionKey, is
           const fieldConfig = fields[key];
           const {
             label,
-            required = true,
+            required,
             width = 6,
             helperText,
             errorCheck,
@@ -229,6 +230,10 @@ const FormSection: React.FC<FormSectionProps> = ({ sectionConfig, sectionKey, is
                 rules={{
                   required: required ? "Este campo es requerido" : false,
                   validate: (value) => {
+                    if (!required && !value) {
+                      return true;
+                    }
+                    
                     if (errorCheck && !errorCheck(value, formValues)) {
                       return helperText || "Formato no válido.";
                     }

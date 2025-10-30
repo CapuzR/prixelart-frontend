@@ -5,7 +5,6 @@ import PrixerProfile from '../artist/profile/index';
 export default function LegacyOrProfileRouter() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  console.log(slug);
 
   useEffect(() => {
     if (!slug) return;

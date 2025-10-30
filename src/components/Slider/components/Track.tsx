@@ -1,6 +1,8 @@
 import React from 'react';
 import styles from '../Styles.module.scss';
 import { helpers } from '../helpers';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 interface TrackProps {
   children: React.ReactNode;
@@ -26,8 +28,11 @@ export const Track: React.FC<TrackProps> = ({
   dotsPosition,
   dots,
   useThumbnails }) => {
+      const theme = useTheme();
+
   const flattenedChildren = React.Children.toArray(children);
   const numChildren = flattenedChildren.length;
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   //  const isSlidingActive = numChildren > qtyPerSlide;
   const isSlidingActive = numChildren > qtyPerSlide;
@@ -50,7 +55,7 @@ export const Track: React.FC<TrackProps> = ({
           maxHeight: '100%',
           width: `${trackWidthPercentage}%`,
           display: 'flex',
-          gap: '1rem'
+          gap: isMobile ? '0' : '1rem'
         }}
       >
         {flattenedChildren.map((child, index) => {

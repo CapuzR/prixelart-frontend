@@ -39,12 +39,12 @@ const ProductElement: React.FC<ProductElementProps> = ({
       <Box
         sx={{
           position: 'relative',
-          width: '100%',
-          height:  '440px',
+          width: isMobile ? '100vw' : '100%',
+          height: isMobile ? '370px' : '440px',
           display: 'flex',
           alignItems: 'end',
           background: `url(${src}) center / cover no-repeat transparent`,
-          padding: isMobile ? '1rem' : '2rem',
+          padding: isMobile ? '0' : '2rem',
         }}
       >
         <Typography

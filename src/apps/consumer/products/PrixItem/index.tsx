@@ -175,7 +175,7 @@ export default function PrixItem() {
               height: '100%',
               backgroundImage: `url(${bannerUrl})`,
               backgroundSize: 'cover',
-              backgroundPosition: 'bottom',
+              backgroundPosition: isDesktop ? "100% 20%" :'bottom',
               opacity: activeSlide === index ? 1 : 0,
               transition: 'opacity 0.5s ease-in-out',
             }}
@@ -183,7 +183,7 @@ export default function PrixItem() {
         ))}
         <Grid2
           ref={ctaRef}
-          size={{ xs: 12 }}
+          size={{ xs: 12, md: 6 }}
           sx={{
             display: 'flex',
             flexDirection: 'column',
@@ -192,7 +192,7 @@ export default function PrixItem() {
             position: 'relative',
             zIndex: 10,
             padding: '10px 0 18px',
-            maxWidth: '340px',
+            maxWidth: isDesktop ? '550px' : '340px',
             backdropFilter: 'blur(10px)',
             backgroundColor: '#3333335e',
             borderRadius: '40px 40px 0 0',
@@ -310,6 +310,7 @@ export default function PrixItem() {
               backgroundColor: 'rgba(255,255,255,0.3)',
               borderRadius: '4px',
             },
+            justifyContent:'center'
           }}
         >
           {SLIDER_ITEMS.map((item, index) => (
@@ -318,7 +319,7 @@ export default function PrixItem() {
               sx={{
                 padding: '10px 5px',
                 cursor: 'pointer',
-                minWidth: { xs: '60vw', sm: '30vw', md: '25vw' },
+                minWidth: { xs: '60vw', sm: '30vw', md: '15vw' },
                 flexShrink: 0,
               }}
               onClick={() => handleSlideClick(index)}
@@ -328,7 +329,7 @@ export default function PrixItem() {
                   background: `url(${item.imageUrl})`,
                   width: '100%',
                   height: 'auto',
-                  minHeight: isDesktop ? '55vh' : '45vw',
+                  minHeight: isDesktop ? '20vh' : '45vw',
                   backgroundSize: 'cover',
                   backgroundRepeat: 'no-repeat',
                   backgroundPosition: 'center',

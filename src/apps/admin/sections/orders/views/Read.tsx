@@ -661,7 +661,6 @@ const ReadOrders: React.FC = () => {
     }
     const st1 = statusHistory[statusHistory.length - 1][0];
     const st = GlobalPaymentStatus[st1 as GlobalPaymentStatus];
-    console.log(st);
 
     if (st === 'Pending') return 'Pendiente';
     else if (st === 'Credited') return 'Abonado';

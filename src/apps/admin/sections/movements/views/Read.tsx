@@ -61,9 +61,7 @@ import { getOrderById } from "@api/order.api"
 
 import {
   Order,
-  OrderLine,
   OrderStatus,
-  GlobalPaymentStatus,
   CustomImage,
 } from "../../../../../types/order.types"
 
@@ -104,19 +102,6 @@ interface VariantOption {
   label: string
   fullVariant: Variant
 }
-interface OrderLineFormState extends Partial<OrderLine> {
-  tempId: string
-  selectedArt: ArtOption | null
-  selectedProduct: ProductOption | null
-  selectedVariant: VariantOption | null
-  availableVariants: VariantOption[]
-}
-
-interface TabPanelProps {
-  children?: React.ReactNode
-  index: number
-  value: number
-}
 
 const headCells: readonly HeadCell[] = [
   { id: "date", numeric: false, label: "Fecha", sortable: true },
@@ -147,6 +132,7 @@ const ReadMovements: React.FC = () => {
   const [order, setOrder] = useState<Sort>("desc")
 
   const [searchQuery, setSearchQuery] = useState<string>("")
+  const [localSearch, setLocalSearch] = useState<string>("")
   const [filterType, setFilterType] = useState<string>("")
   const [startDate, setStartDate] = useState<Date | null>(null)
   const [endDate, setEndDate] = useState<Date | null>(null)
@@ -163,42 +149,12 @@ const ReadMovements: React.FC = () => {
 
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>()
 
-  const [editableOrderLines, setEditableOrderLines] = useState<
-    OrderLineFormState[]
-  >([])
-
   const openModal = () => {
     setModal(!modal)
   }
 
   const openDelMovModal = () => {
     setdelMovModal(!delMovModal)
-  }
-
-  const getOverallOrderStatus = (
-    orderLines: OrderLineFormState[]
-  ): OrderStatus => {
-    if (!orderLines || orderLines.length === 0) return OrderStatus.Pending
-    const statuses = orderLines.map((line) => getLatestStatus(line.status))
-    if (statuses.every((s) => s === OrderStatus.Delivered))
-      return OrderStatus.Delivered
-    if (statuses.every((s) => s === OrderStatus.Canceled))
-      return OrderStatus.Canceled
-    if (statuses.some((s) => s === OrderStatus.Delivered))
-      return OrderStatus.Delivered
-    if (statuses.some((s) => s === OrderStatus.ReadyToShip))
-      return OrderStatus.ReadyToShip
-    if (statuses.some((s) => s === OrderStatus.Pending))
-      return OrderStatus.Pending
-    if (statuses.some((s) => s === OrderStatus.Impression))
-      return OrderStatus.Impression
-    if (statuses.some((s) => s === OrderStatus.Production))
-      return OrderStatus.Production
-    if (statuses.some((s) => s === OrderStatus.Finished))
-      return OrderStatus.Finished
-    if (statuses.some((s) => s === OrderStatus.Pending))
-      return OrderStatus.Pending
-    return OrderStatus.Pending
   }
 
   const getLatestStatus = (
@@ -320,12 +276,10 @@ const ReadMovements: React.FC = () => {
       filterType,
       startDate,
       endDate,
-      ownerInfoMap,
     ]
   )
 
   const loadOrder = async () => {
-    // const showSnackBar = showSnackBarRef.current
     if (!selectedOrderId) {
       return
     }
@@ -346,59 +300,6 @@ const ReadMovements: React.FC = () => {
         )
       }
       setSelectedOrder(orderData)
-      //   if (orderData.consumerDetails?.basic) {
-      //     setEditableClientInfo(
-      //       JSON.parse(JSON.stringify(orderData.consumerDetails.basic))
-      //     )
-      //   } else {
-      //     setEditableClientInfo({ name: "", lastName: "", email: "", phone: "" })
-      //   }
-
-      //   const transformedLines: OrderLineFormState[] = orderData.lines.map(
-      //     (line) => {
-      //       const selectedProductOpt = productOpts.find(
-      //         (p) => p.id === line.item?.product?._id?.toString()
-      //       )
-      //       const variants = selectedProductOpt?.fullProduct.variants || []
-      //       const variantOptions = variants
-      //         .filter((v) => v._id)
-      //         .map((v) => ({ id: v._id!, label: v.name, fullVariant: v }))
-      //       const currentVariantOpt =
-      //         variantOptions.find(
-      //           (vo) =>
-      //             vo.fullVariant.attributes.length ===
-      //               (line.item?.product?.selection?.length || 0) &&
-      //             vo.fullVariant.attributes.every((attr) =>
-      //               line.item?.product?.selection?.find(
-      //                 (selAttr) =>
-      //                   selAttr.name === attr.name && selAttr.value === attr.value
-      //               )
-      //             )
-      //         ) || null
-
-      //       const artIdToFind = line.item?.art
-      //         ? "_id" in line.item.art
-      //           ? line.item.art._id?.toString()
-      //           : "id" in line.item.art && line.item.art.id
-      //         : undefined
-
-      //       return {
-      //         ...line,
-      //         tempId: line.id || uuidv4(),
-      //         selectedArt: artIdToFind
-      //           ? artOpts.find((a) => a.id === artIdToFind) || null // <-- ✨ ¡AÑADE ESTO!
-      //           : null,
-      //         selectedProduct: selectedProductOpt || null,
-      //         selectedVariant: currentVariantOpt,
-      //         availableVariants: variantOptions,
-      //         pricePerUnit: line.pricePerUnit,
-      //         quantity: line.quantity,
-      //       }
-      //     }
-      //   )
-
-      //   const orderShip = orderData.shipping?.method
-      //   const orderPay = orderData.payment?.payment[0]?.method
     } catch (err: any) {
       console.error("Failed to load data:", err)
       const errorMsg = err.message || "Error al cargar los datos."
@@ -414,11 +315,6 @@ const ReadMovements: React.FC = () => {
 
   useEffect(() => {
     loadMovementsAndUsers()
-  }, [loadMovementsAndUsers])
-
-  const triggerSearch = useCallback(() => {
-    setPage(0)
-    loadMovementsAndUsers(false)
   }, [loadMovementsAndUsers])
 
   const handleCreate = () => navigate("/admin/movements/create")
@@ -476,57 +372,36 @@ const ReadMovements: React.FC = () => {
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value
-    setSearchQuery(value)
+    setLocalSearch(value)
 
     if (debounceTimeoutRef.current) {
       clearTimeout(debounceTimeoutRef.current)
     }
 
     debounceTimeoutRef.current = setTimeout(() => {
-      triggerSearch()
-    }, 500)
+      setPage(0)
+      setSearchQuery(value)
+        }, 500)
   }
 
   const handleFilterChange =
     (setter: React.Dispatch<React.SetStateAction<any>>) => (event: any) => {
-      const value = event?.target?.value ?? event // Handle both event types
+      const value = event?.target?.value ?? event
       setter(value)
-      setPage(0) // Reset page on filter change
-      // loadMovementsAndUsers(false); // Let useEffect handle the refetch triggered by state change
+      setPage(0)
     }
 
   const handleClearFilters = () => {
     setSearchQuery("")
+    setLocalSearch("")
     setFilterType("")
     setStartDate(null)
     setEndDate(null)
-    setPage(0) // Reset page
-    // Clear debounce timeout if a search was pending
+    setPage(0)
     if (debounceTimeoutRef.current) {
       clearTimeout(debounceTimeoutRef.current)
     }
-    // loadMovementsAndUsers(false); // Let useEffect handle the refetch
   }
-
-  const getLatestOrderStatus = (currentOrder: Order): OrderStatus => {
-    if (currentOrder.status && currentOrder.status.length > 0) {
-      return currentOrder.status[currentOrder.status.length - 1][0]
-    }
-    return OrderStatus.Pending
-  }
-
-  const getLatestpayOrderStatus = (
-    currentOrder: Order
-  ): GlobalPaymentStatus => {
-    if (currentOrder.payment.status && currentOrder.payment.status.length > 0) {
-      return currentOrder.payment.status[
-        currentOrder.payment.status.length - 1
-      ][0]
-    }
-    return GlobalPaymentStatus.Pending
-  }
-
-  // --- Enhanced Table Head ---
   interface EnhancedTableProps {
     onRequestSort: (
       event: React.MouseEvent<unknown>,
@@ -786,7 +661,7 @@ const ReadMovements: React.FC = () => {
                 variant="outlined"
                 fullWidth
                 size="small"
-                value={searchQuery}
+                value={localSearch}
                 onChange={handleSearchChange}
               />
             </Grid2>

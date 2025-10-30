@@ -38,7 +38,7 @@ const Order: React.FC<OrderSummaryProps> = ({ checkoutState }) => {
   // };
 
   return (
-    <div style={{ width: '500px' }}>
+    <div style={{ width: isMobile ? '95vw' :'500px' }}>
       <form noValidate autoComplete="off">
         <Grid2 container>
           <Grid2 size={{ lg: 12, md: 12, sm: 12, xs: 12 }} className={classes.gridInput}>

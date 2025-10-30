@@ -122,10 +122,10 @@ function Form({ dataLists, setDataLists }: FormProps) {
           shippingMethod === "Pickup" &&
           fieldKey !== "method" &&
           fieldKey !== "date";
-        updatedShippingFields[fieldKey].required =
-          !(shippingMethod === "Pickup" &&
-            fieldKey !== "method" &&
-            fieldKey !== "date");
+        // updatedShippingFields[fieldKey].required =
+        //   !(shippingMethod === "Pickup" &&
+        //     fieldKey !== "method" &&
+        //     fieldKey !== "date");
       });
       return {
         ...prevConfig,

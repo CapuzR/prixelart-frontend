@@ -51,7 +51,6 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline"
 import DeleteIcon from "@mui/icons-material/Delete"
 import SaveIcon from "@mui/icons-material/Save"
 import CancelIcon from "@mui/icons-material/Cancel"
-import CheckCircleIcon from "@mui/icons-material/CheckCircle"
 import LocalShippingOutlined from "@mui/icons-material/LocalShippingOutlined"
 import ReceiptOutlined from "@mui/icons-material/ReceiptOutlined"
 import PersonOutline from "@mui/icons-material/PersonOutline"
@@ -79,7 +78,7 @@ import {
   Tax,
 } from "types/order.types"
 import { Product, Variant } from "types/product.types"
-import { Art, PickedArt } from "types/art.types"
+import { Art } from "types/art.types"
 import { UserOptions } from "types/user.types"
 import dayjs, { Dayjs } from "dayjs"
 import "dayjs/locale/es"
@@ -1177,6 +1176,10 @@ const CreateOrder: React.FC = () => {
                     <Typography>${t.amount.toFixed(2)}</Typography>
                   </ListItem>
                 ))}
+                <ListItem sx={{ px: 0 }}>
+                  <ListItemText primary="Envío:" />
+                  <Typography>${displayTotals?.shippingCost.toFixed(2)}</Typography>
+                </ListItem>
 
                 <Divider sx={{ my: 1 }} />
 

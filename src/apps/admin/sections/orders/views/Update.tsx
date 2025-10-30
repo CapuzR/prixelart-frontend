@@ -625,7 +625,7 @@ export default function UpdateOrder() {
           ...line,
           tempId: line.id || uuidv4(),
           selectedArt: artIdToFind
-            ? artOpts.find((a) => a.id === artIdToFind) || null // <-- ✨ ¡AÑADE ESTO!
+            ? artOpts.find((a) => a.id === artIdToFind) || null
             : null,
           selectedProduct: selectedProductOpt || null,
           selectedVariant: currentVariantOpt,

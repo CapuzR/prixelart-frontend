@@ -5,8 +5,8 @@ import React, {
   useEffect,
   useMemo,
   useState,
-} from "react"
-import { useNavigate } from "react-router-dom"
+} from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
   Alert,
@@ -34,28 +34,28 @@ import {
   Toolbar,
   Tooltip,
   Typography,
-} from "@mui/material"
-import EditIcon from "@mui/icons-material/Edit"
-import DeleteIcon from "@mui/icons-material/Delete"
-import AddIcon from "@mui/icons-material/Add"
-import CheckCircleIcon from "@mui/icons-material/CheckCircle"
-import CancelIcon from "@mui/icons-material/Cancel"
-import RefreshIcon from "@mui/icons-material/Refresh" // Added
-import PersonIcon from "@mui/icons-material/Person" // User icon
-import StorefrontIcon from "@mui/icons-material/Storefront" // Example Prixer icon
+} from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
+import RefreshIcon from "@mui/icons-material/Refresh"; // Added
+import PersonIcon from "@mui/icons-material/Person"; // User icon
+import StorefrontIcon from "@mui/icons-material/Storefront"; // Example Prixer icon
 
 // Hooks, Types, Context, API
-import { useSnackBar } from "context/GlobalContext"
-import { User } from "types/user.types" // Keep Prixer nested within User type
-import { getUsers, deleteUser } from "@api/user.api"
+import { useSnackBar } from "context/GlobalContext";
+import { User } from "types/user.types"; // Keep Prixer nested within User type
+import { getUsers, deleteUser } from "@api/user.api";
 
-import Title from "@apps/admin/components/Title"
-import ConfirmationDialog from "@components/ConfirmationDialog/ConfirmationDialog"
-import { visuallyHidden } from "@mui/utils" // For sorting accessibility
+import Title from "@apps/admin/components/Title";
+import ConfirmationDialog from "@components/ConfirmationDialog/ConfirmationDialog";
+import { visuallyHidden } from "@mui/utils"; // For sorting accessibility
 
 // --- Helper Types & Functions ---
 
-type Order = "asc" | "desc"
+type Order = "asc" | "desc";
 
 // Define sortable columns explicitly - 'type' is a derived field
 type UserSortableColumns =
@@ -63,108 +63,108 @@ type UserSortableColumns =
   | "firstName"
   | "email"
   | "active"
-  | "type"
+  | "type";
 
 interface FilterState {
-  status: "all" | "active" | "inactive"
-  type: "all" | "prixer" | "user"
+  status: "all" | "active" | "inactive";
+  type: "all" | "prixer" | "user";
 }
 
 // Sorting helper
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
-    return -1
+    return -1;
   }
   if (b[orderBy] > a[orderBy]) {
-    return 1
+    return 1;
   }
-  return 0
+  return 0;
 }
 
 // Stable sort helper
 function getComparator<Key extends UserSortableColumns>(
   order: Order,
-  orderBy: Key
+  orderBy: Key,
 ): (
   a: User & { type: string }, // Add derived 'type' for comparison
-  b: User & { type: string }
+  b: User & { type: string },
 ) => number {
   return order === "desc"
     ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy)
+    : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
 // --- Component ---
 
 const ReadUsers: React.FC = () => {
-  const navigate = useNavigate()
-  const { showSnackBar } = useSnackBar()
+  const navigate = useNavigate();
+  const { showSnackBar } = useSnackBar();
 
   // --- State ---
-  const [users, setUsers] = useState<User[]>([]) // Original fetched list
-  const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [error, setError] = useState<string | null>(null)
-  const [isDeleting, setIsDeleting] = useState<boolean>(false)
-  const [dialogOpen, setDialogOpen] = useState<boolean>(false)
-  const [userToDelete, setUserToDelete] = useState<User | null>(null)
+  const [users, setUsers] = useState<User[]>([]); // Original fetched list
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [userToDelete, setUserToDelete] = useState<User | null>(null);
 
   // State for Filtering, Sorting, Pagination
-  const [searchQuery, setSearchQuery] = useState<string>("")
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [filters, setFilters] = useState<FilterState>({
     status: "all",
     type: "all",
-  })
-  const [order, setOrder] = useState<Order>("asc")
-  const [orderBy, setOrderBy] = useState<UserSortableColumns>("username")
-  const [page, setPage] = useState<number>(0)
-  const [rowsPerPage, setRowsPerPage] = useState<number>(10) // Default rows per page
+  });
+  const [order, setOrder] = useState<Order>("asc");
+  const [orderBy, setOrderBy] = useState<UserSortableColumns>("username");
+  const [page, setPage] = useState<number>(0);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(10); // Default rows per page
 
   const loadUsers = useCallback(
     async (showLoading = true) => {
-      if (showLoading) setIsLoading(true)
-      setError(null)
+      if (showLoading) setIsLoading(true);
+      setError(null);
       try {
-        const fetchedUsers = (await getUsers()) as User[]
-        setUsers(fetchedUsers) // Set the original list
+        const fetchedUsers = (await getUsers()) as User[];
+        setUsers(fetchedUsers); // Set the original list
       } catch (err: any) {
-        const message = err.message || "Error al cargar."
-        setError(message)
-        showSnackBar(message)
-        console.error("Error fetching:", err)
+        const message = err.message || "Error al cargar.";
+        setError(message);
+        showSnackBar(message);
+        console.error("Error fetching:", err);
       } finally {
-        if (showLoading) setIsLoading(false)
+        if (showLoading) setIsLoading(false);
       }
     },
-    [showSnackBar]
-  )
+    [showSnackBar],
+  );
 
   useEffect(() => {
-    loadUsers()
-  }, [loadUsers])
+    loadUsers();
+  }, [loadUsers]);
 
   const processedUsers = useMemo(() => {
     const datav2 = users.map((user) => {
-        if (user.prixer && user.prixer._id === undefined) {
-          return {
-            ...user,
-            prixer: {
-              ...user.prixer,
-              _id: user._id,
-            },
-          }
-        } else return user
-      })
-    let filteredUsers = [...datav2]
+      if (user.prixer && user.prixer._id === undefined) {
+        return {
+          ...user,
+          prixer: {
+            ...user.prixer,
+            _id: user._id,
+          },
+        };
+      } else return user;
+    });
+    let filteredUsers = [...datav2];
 
     if (searchQuery) {
-      const lowerQuery = searchQuery.toLowerCase()
+      const lowerQuery = searchQuery.toLowerCase();
       filteredUsers = filteredUsers.filter(
         (user) =>
           user.username?.toLowerCase().includes(lowerQuery) ||
           user.firstName?.toLowerCase().includes(lowerQuery) ||
           user.lastName?.toLowerCase().includes(lowerQuery) ||
-          user.email?.toLowerCase().includes(lowerQuery)
-      )
+          user.email?.toLowerCase().includes(lowerQuery),
+      );
     }
 
     // Apply Filters
@@ -172,27 +172,29 @@ const ReadUsers: React.FC = () => {
       const statusMatch =
         filters.status === "all" ||
         (filters.status === "active" && user.active) ||
-        (filters.status === "inactive" && !user.active)
+        (filters.status === "inactive" && !user.active);
       const typeMatch =
         filters.type === "all" ||
         (filters.type === "prixer" && !!user.prixer) ||
-        (filters.type === "user" && !user.prixer)
-      return statusMatch && typeMatch
-    })
+        (filters.type === "user" && !user.prixer);
+      return statusMatch && typeMatch;
+    });
 
     // Apply Sorting (Add derived 'type' property for sorting)
     const usersWithDerivedType = filteredUsers.map((u) => ({
       ...u,
       type: !!u.prixer ? "Prixer" : "User",
-    }))
-    const sortedUsers = usersWithDerivedType.sort(getComparator(order, orderBy))
+    }));
+    const sortedUsers = usersWithDerivedType.sort(
+      getComparator(order, orderBy),
+    );
 
     // Apply Pagination (Done after filtering and sorting)
     return sortedUsers.slice(
       page * rowsPerPage,
-      page * rowsPerPage + rowsPerPage
-    )
-  }, [users, searchQuery, filters, order, orderBy, page, rowsPerPage])
+      page * rowsPerPage + rowsPerPage,
+    );
+  }, [users, searchQuery, filters, order, orderBy, page, rowsPerPage]);
 
   // Calculate total count *after* filtering for pagination
   const totalFilteredCount = useMemo(() => {
@@ -204,129 +206,127 @@ const ReadUsers: React.FC = () => {
             ...user.prixer,
             _id: user._id,
           },
-        }
-      } else return user
-    })
-    let filteredUsers = [...datav2]
+        };
+      } else return user;
+    });
+    let filteredUsers = [...datav2];
 
     if (searchQuery) {
-      const lowerQuery = searchQuery.toLowerCase()
+      const lowerQuery = searchQuery.toLowerCase();
       filteredUsers = filteredUsers.filter(
         (user) =>
           user.username?.toLowerCase().includes(lowerQuery) ||
           user.firstName?.toLowerCase().includes(lowerQuery) ||
           user.lastName?.toLowerCase().includes(lowerQuery) ||
-          user.email?.toLowerCase().includes(lowerQuery)
-      )
+          user.email?.toLowerCase().includes(lowerQuery),
+      );
     }
     filteredUsers = filteredUsers.filter((user) => {
       const statusMatch =
         filters.status === "all" ||
         (filters.status === "active" && user.active) ||
-        (filters.status === "inactive" && !user.active)
+        (filters.status === "inactive" && !user.active);
       const typeMatch =
         filters.type === "all" ||
         (filters.type === "prixer" && !!user.prixer) ||
-        (filters.type === "user" && !user.prixer)
-      return statusMatch && typeMatch
-    })
-    return filteredUsers.length
-  }, [users, searchQuery, filters])
+        (filters.type === "user" && !user.prixer);
+      return statusMatch && typeMatch;
+    });
+    return filteredUsers.length;
+  }, [users, searchQuery, filters]);
   // --- Handlers ---
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(event.target.value)
-    setPage(0) // Reset page when search changes
-  }
+    setSearchQuery(event.target.value);
+    setPage(0); // Reset page when search changes
+  };
 
   const handleFilterChange = (
-    event: ChangeEvent<{ name?: string | undefined; value: unknown }>
+    event: ChangeEvent<{ name?: string | undefined; value: unknown }>,
   ) => {
-    const { name, value } = event.target
+    const { name, value } = event.target;
     if (name) {
       setFilters((prev) => ({
         ...prev,
         [name]: value as FilterState[keyof FilterState],
-      }))
-      setPage(0) // Reset page when filters change
+      }));
+      setPage(0); // Reset page when filters change
     }
-  }
+  };
 
   const handleRequestSort = (property: UserSortableColumns) => {
-    const isAsc = orderBy === property && order === "asc"
-    setOrder(isAsc ? "desc" : "asc")
-    setOrderBy(property)
-  }
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(property);
+  };
 
   const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage)
-  }
+    setPage(newPage);
+  };
 
   const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10))
-    setPage(0)
-  }
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   const handleRefresh = () => {
-    loadUsers(false) // Fetch without setting global loading true
-  }
+    loadUsers(false); // Fetch without setting global loading true
+  };
 
   // --- Delete Handling ---
   const handleOpenDeleteDialog = (user: User) => {
     if (!user._id) {
-      showSnackBar("Falta ID.")
-      return
+      showSnackBar("Falta ID.");
+      return;
     }
-    setUserToDelete(user)
-    setDialogOpen(true)
-  }
+    setUserToDelete(user);
+    setDialogOpen(true);
+  };
   const handleCloseDialog = () => {
-    if (isDeleting) return
-    setDialogOpen(false)
-    setUserToDelete(null)
-  }
+    if (isDeleting) return;
+    setDialogOpen(false);
+    setUserToDelete(null);
+  };
   const handleConfirmDelete = async () => {
     if (!userToDelete?._id || !userToDelete?.username) {
-      showSnackBar(
-        "Error: Usuario no seleccionado."
-      )
-      setIsDeleting(false)
-      handleCloseDialog()
-      return
+      showSnackBar("Error: Usuario no seleccionado.");
+      setIsDeleting(false);
+      handleCloseDialog();
+      return;
     }
-    setIsDeleting(true)
+    setIsDeleting(true);
     try {
-      await deleteUser(userToDelete.username)
-      showSnackBar(`Usuario "${userToDelete.username}" eliminado.`)
-      setUsers((prev) => prev.filter((u) => u._id !== userToDelete._id))
-      handleCloseDialog()
+      await deleteUser(userToDelete.username);
+      showSnackBar(`Usuario "${userToDelete.username}" eliminado.`);
+      setUsers((prev) => prev.filter((u) => u._id !== userToDelete._id));
+      handleCloseDialog();
     } catch (err: any) {
-      console.error("Error deleting:", err)
-      showSnackBar(err.message || "Error al eliminar.")
-      handleCloseDialog()
+      console.error("Error deleting:", err);
+      showSnackBar(err.message || "Error al eliminar.");
+      handleCloseDialog();
     } finally {
-      setIsDeleting(false)
+      setIsDeleting(false);
     }
-  }
+  };
 
   // --- Update & Create Handling ---
   const handleUpdate = (userId: string) => {
     if (!userId) {
-      showSnackBar("Falta ID.")
-      return
+      showSnackBar("Falta ID.");
+      return;
     }
-    navigate(`/admin/users/update/${userId}`)
-  }
+    navigate(`/admin/users/update/${userId}`);
+  };
   const handleCreate = () => {
-    navigate("/admin/users/create")
-  }
+    navigate("/admin/users/create");
+  };
 
   // --- Table Head Configuration ---
   interface HeadCell {
-    id: UserSortableColumns
-    label: string
-    numeric: boolean
-    disablePadding: boolean
-    width?: string
+    id: UserSortableColumns;
+    label: string;
+    numeric: boolean;
+    disablePadding: boolean;
+    width?: string;
   }
   const headCells: readonly HeadCell[] = [
     // Avatar is not sortable
@@ -367,7 +367,7 @@ const ReadUsers: React.FC = () => {
       width: "10%",
     },
     // Actions are not sortable
-  ]
+  ];
 
   // --- Render Logic ---
   return (
@@ -655,7 +655,7 @@ const ReadUsers: React.FC = () => {
         isPerformingAction={isDeleting}
       />
     </>
-  )
-}
+  );
+};
 
-export default ReadUsers
+export default ReadUsers;

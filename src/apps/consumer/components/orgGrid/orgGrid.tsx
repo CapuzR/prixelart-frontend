@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import Grid2 from '@mui/material/Grid';
-import Backdrop from '@mui/material/Backdrop';
-import CircularProgress from '@mui/material/CircularProgress';
-import utils from 'utils/utils';
-import Paper from '@mui/material/Paper';
-import { Container, CssBaseline } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import useStyles from './orgGrid.styles';
-import { fetchAllOrgs } from '@api/organization.api';
+import React, { useState, useEffect } from "react";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import Grid2 from "@mui/material/Grid";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
+import utils from "utils/utils";
+import Paper from "@mui/material/Paper";
+import { Container, CssBaseline } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import useStyles from "./orgGrid.styles";
+import { fetchAllOrgs } from "@api/organization.api";
 
 interface Organization {
   _id: string;
@@ -49,8 +49,18 @@ const OrgGrid: React.FC = () => {
           </Backdrop>
           {tiles.length > 0 && (
             <>
-              <Grid2 style={{ justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
-                <Typography variant="h4" style={{ color: '#404e5c' }} fontWeight="bold">
+              <Grid2
+                style={{
+                  justifyContent: "center",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <Typography
+                  variant="h4"
+                  style={{ color: "#404e5c" }}
+                  fontWeight="bold"
+                >
                   <strong>Organizaciones</strong>
                 </Typography>
 
@@ -68,17 +78,27 @@ const OrgGrid: React.FC = () => {
                                 title={tile.title}
                               />
                               <CardContent className={classes.cardContent}>
-                                <Typography gutterBottom variant="h5" component="h2">
+                                <Typography
+                                  gutterBottom
+                                  variant="h5"
+                                  component="h2"
+                                >
                                   {tile.firstName} {tile.lastName}
                                 </Typography>
-                                <Typography gutterBottom variant="h6" component="h6" style={{ fontSize: 16 }}>
-                                  {tile.username} -{' '}
+                                <Typography
+                                  gutterBottom
+                                  variant="h6"
+                                  component="h6"
+                                  style={{ fontSize: 16 }}
+                                >
+                                  {tile.username} -{" "}
                                   {tile.specialty ||
-                                    tile.specialtyArt?.map((specialty, index) =>
-                                      specialty !== '' &&
-                                      (tile.specialtyArt?.length === index + 1
-                                        ? specialty
-                                        : `${specialty}, `)
+                                    tile.specialtyArt?.map(
+                                      (specialty, index) =>
+                                        specialty !== "" &&
+                                        (tile.specialtyArt?.length === index + 1
+                                          ? specialty
+                                          : `${specialty}, `),
                                     )}
                                 </Typography>
                               </CardContent>
@@ -87,7 +107,7 @@ const OrgGrid: React.FC = () => {
                                   size="small"
                                   color="primary"
                                   onClick={() =>
-                                    navigate('/org/' + tile.username)
+                                    navigate("/org/" + tile.username)
                                   }
                                 >
                                   Explorar
@@ -95,7 +115,7 @@ const OrgGrid: React.FC = () => {
                               </CardActions>
                             </Paper>
                           </Grid2>
-                        )
+                        ),
                     )}
                 </Grid2>
               </Grid2>

@@ -1,25 +1,25 @@
-import React, { useEffect, useState, useCallback } from "react"
-import { makeStyles } from "tss-react/mui"
+import React, { useEffect, useState, useCallback } from "react";
+import { makeStyles } from "tss-react/mui";
 
-import EasyCropper from "./easyCropper"
-import Tabs from "@mui/material/Tabs"
-import Tab from "@mui/material/Tab"
-import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary"
-import Paper from "@mui/material/Paper"
-import Grid2 from "@mui/material/Grid"
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline"
-import Tooltip from "@mui/material/Tooltip"
-import FormControlLabel from "@mui/material/FormControlLabel"
-import Checkbox from "@mui/material/Checkbox"
-import { Theme, Typography } from "@mui/material"
-import IconButton from "@mui/material/IconButton"
-import getCroppedImg from "../../../utils/cropImage"
-import CropIcon from "@mui/icons-material/Crop"
+import EasyCropper from "./easyCropper";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
+import Paper from "@mui/material/Paper";
+import Grid2 from "@mui/material/Grid";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import Tooltip from "@mui/material/Tooltip";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import { Theme, Typography } from "@mui/material";
+import IconButton from "@mui/material/IconButton";
+import getCroppedImg from "../../../utils/cropImage";
+import CropIcon from "@mui/icons-material/Crop";
 
 interface ARprops {
-  art: string
-  croppedArt: any
-  setCroppedArt: (x: any) => void
+  art: string;
+  croppedArt: any;
+  setCroppedArt: (x: any) => void;
 }
 
 const useStyles = makeStyles()((theme: Theme) => {
@@ -48,59 +48,59 @@ const useStyles = makeStyles()((theme: Theme) => {
     tab: {
       minWidth: 100,
     },
-  }
-})
+  };
+});
 
 export default function AspectRatioSelector({
   art,
   croppedArt,
   setCroppedArt,
 }: ARprops) {
-  const { classes } = useStyles()
-  const [tabValue, setTabValue] = useState(1)
-  const croppedArtTemp = croppedArt
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState()
+  const { classes } = useStyles();
+  const [tabValue, setTabValue] = useState(1);
+  const croppedArtTemp = croppedArt;
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState();
   const [state, setState] = React.useState({
     checkedA: false,
-  })
+  });
   //Error states.
   // const [errorMessage, setErrorMessage] = useState();
   // const [snackBarAction, setSnackBarAction] = useState();
   // const [snackBarError, setSnackBarError] = useState(false);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setTabValue(newValue)
-  }
+    setTabValue(newValue);
+  };
 
   const updateCrop = (i: number) => {
-    croppedArtTemp[i].thumb = ""
-    croppedArtTemp[i].cropped = false
-    setCroppedArt([...croppedArtTemp])
-  }
+    croppedArtTemp[i].thumb = "";
+    croppedArtTemp[i].cropped = false;
+    setCroppedArt([...croppedArtTemp]);
+  };
 
   const handleCrop = useCallback(
     async (i: number) => {
       try {
-        if (!croppedAreaPixels) return
+        if (!croppedAreaPixels) return;
         const { croppedImg, croppedImgFile } = await getCroppedImg(
           art,
-          croppedAreaPixels
-        )
-        croppedArtTemp[i].thumb = croppedImg
-        croppedArtTemp[i].thumbFile = croppedImgFile
-        croppedArtTemp[i].cropped = true
-        croppedArtTemp[i].croppedAreaPixels = croppedAreaPixels
-        setCroppedArt([...croppedArtTemp])
+          croppedAreaPixels,
+        );
+        croppedArtTemp[i].thumb = croppedImg;
+        croppedArtTemp[i].thumbFile = croppedImgFile;
+        croppedArtTemp[i].cropped = true;
+        croppedArtTemp[i].croppedAreaPixels = croppedAreaPixels;
+        setCroppedArt([...croppedArtTemp]);
       } catch (e) {
-        console.error(e)
+        console.error(e);
       }
     },
-    [croppedAreaPixels]
-  )
+    [croppedAreaPixels],
+  );
 
   const handleChangeCheck = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setState({ ...state, [event.target.name]: event.target.checked })
-  }
+    setState({ ...state, [event.target.name]: event.target.checked });
+  };
 
   return (
     <div className={classes.root}>
@@ -179,7 +179,7 @@ export default function AspectRatioSelector({
                       aria-label="add an alarm"
                       style={{ padding: 0 }}
                       onClick={() => {
-                        updateCrop(index)
+                        updateCrop(index);
                       }}
                     >
                       <Typography>Recortar</Typography>
@@ -200,7 +200,7 @@ export default function AspectRatioSelector({
                       aria-label="add an alarm"
                       style={{ padding: 0 }}
                       onClick={() => {
-                        handleCrop(index)
+                        handleCrop(index);
                       }}
                     >
                       <Typography>Listo</Typography>
@@ -209,7 +209,7 @@ export default function AspectRatioSelector({
                   </Grid2>
                 )}
               </Grid2>
-            )
+            ),
         )
       )}
 
@@ -266,5 +266,5 @@ export default function AspectRatioSelector({
         </Grid2>
       </Grid2>
     </div>
-  )
+  );
 }

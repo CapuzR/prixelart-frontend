@@ -11,29 +11,29 @@ import {
   IconButton,
   Stack,
   Typography,
-} from "@mui/material"
-import { useNavigate } from "react-router-dom"
-import { Service } from "types/service.types"
-import Grid2 from "@mui/material/Grid"
-import CloseIcon from "@mui/icons-material/Close"
-import LocationOnIcon from "@mui/icons-material/LocationOn"
-import LanguageIcon from "@mui/icons-material/Language"
-import BusinessIcon from "@mui/icons-material/Business"
-import ScheduleIcon from "@mui/icons-material/Schedule"
-import ImageNotSupportedIcon from "@mui/icons-material/ImageNotSupported"
-import StorefrontIcon from "@mui/icons-material/Storefront"
-import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew"
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos"
-import { useEffect, useState } from "react"
-import useMediaQuery from "@mui/material/useMediaQuery"
-import { useTheme } from "@mui/material/styles"
-import util from "@utils/utils"
+} from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { Service } from "types/service.types";
+import Grid2 from "@mui/material/Grid";
+import CloseIcon from "@mui/icons-material/Close";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import LanguageIcon from "@mui/icons-material/Language";
+import BusinessIcon from "@mui/icons-material/Business";
+import ScheduleIcon from "@mui/icons-material/Schedule";
+import ImageNotSupportedIcon from "@mui/icons-material/ImageNotSupported";
+import StorefrontIcon from "@mui/icons-material/Storefront";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import { useEffect, useState } from "react";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
+import util from "@utils/utils";
 interface ServiceDetailsModalProps {
-  open: boolean
-  onClose: () => void
-  service: Service | null
-  prixerUsername?: string
-  prixerAvatar?: string
+  open: boolean;
+  onClose: () => void;
+  service: Service | null;
+  prixerUsername?: string;
+  prixerAvatar?: string;
 }
 
 const ServiceDetailsModal: React.FC<ServiceDetailsModalProps> = ({
@@ -43,48 +43,48 @@ const ServiceDetailsModal: React.FC<ServiceDetailsModalProps> = ({
   prixerUsername,
   prixerAvatar,
 }) => {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const navigate = useNavigate()
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     if (open && service) {
-      setCurrentImageIndex(0)
+      setCurrentImageIndex(0);
     }
-  }, [open, service])
+  }, [open, service]);
 
-  if (!service) return null
+  if (!service) return null;
 
-  const images = service.sources.images || []
-  const hasImages = images.length > 0
-  const hasMultipleImages = images.length > 1
+  const images = service.sources.images || [];
+  const hasImages = images.length > 0;
+  const hasMultipleImages = images.length > 1;
 
   const priceString =
     service.publicPrice.to &&
     service.publicPrice.from !== service.publicPrice.to
       ? `$${service.publicPrice.from.toFixed(2)} - $${service.publicPrice.to.toFixed(2)}`
-      : `$${service.publicPrice.from.toFixed(2)}`
+      : `$${service.publicPrice.from.toFixed(2)}`;
 
   const goToPrixerPage = (e: React.MouseEvent) => {
-    e.stopPropagation()
+    e.stopPropagation();
     if (prixerUsername) {
-      navigate(`/prixer/${prixerUsername}`)
-      onClose()
+      navigate(`/prixer/${prixerUsername}`);
+      onClose();
     }
-  }
+  };
 
   const handleNextImage = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length)
-  }
+    e.stopPropagation();
+    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+  };
 
   const handlePrevImage = (e: React.MouseEvent) => {
-    e.stopPropagation()
+    e.stopPropagation();
     setCurrentImageIndex(
-      (prevIndex) => (prevIndex - 1 + images.length) % images.length
-    )
-  }
+      (prevIndex) => (prevIndex - 1 + images.length) % images.length,
+    );
+  };
 
   return (
     <Dialog
@@ -340,9 +340,9 @@ const ServiceDetailsModal: React.FC<ServiceDetailsModalProps> = ({
         </Grid2>
       </DialogContent>
       <DialogActions sx={{ p: 2, justifyContent: "flex-end" }}>
-        <Button 
+        <Button
           onClick={() => {
-            window.open(util.generateLikeServiceMessage(service), "_blank")
+            window.open(util.generateLikeServiceMessage(service), "_blank");
           }}
           color="primary"
           variant="contained"
@@ -352,7 +352,7 @@ const ServiceDetailsModal: React.FC<ServiceDetailsModalProps> = ({
         </Button>
       </DialogActions>
     </Dialog>
-  )
-}
+  );
+};
 
-export default ServiceDetailsModal
+export default ServiceDetailsModal;

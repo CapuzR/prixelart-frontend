@@ -1,24 +1,24 @@
-import styles from "./styles.module.scss"
-import ItemPlayground from "components/ItemPlayground"
-import ItemContent from "components/ItemContent"
+import styles from "./styles.module.scss";
+import ItemPlayground from "components/ItemPlayground";
+import ItemContent from "components/ItemContent";
 // import Typography from "components/Typography"
-import { formatNumberString, formatSinglePrice } from "utils/formats"
-import { useConversionRate, useCurrency } from "context/GlobalContext"
-import { CartLine } from "../../types/cart.types"
-import { Item } from "types/order.types"
-import useMediaQuery from "@mui/material/useMediaQuery"
-import { useTheme } from "@mui/material/styles"
-import Grid2 from "@mui/material/Grid"
-import { Typography } from "@mui/material"
+import { formatNumberString, formatSinglePrice } from "utils/formats";
+import { useConversionRate, useCurrency } from "context/GlobalContext";
+import { CartLine } from "../../types/cart.types";
+import { Item } from "types/order.types";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
+import Grid2 from "@mui/material/Grid";
+import { Typography } from "@mui/material";
 export interface ItemCardProps {
-  item: Item
-  direction?: "row" | "column"
+  item: Item;
+  direction?: "row" | "column";
   handleChangeElement?: (
     type: "producto" | "arte",
     item: Item,
-    lineId?: string
-  ) => void
-  line?: CartLine
+    lineId?: string,
+  ) => void;
+  line?: CartLine;
 }
 
 export default function ItemCard({
@@ -27,29 +27,29 @@ export default function ItemCard({
   handleChangeElement,
   line,
 }: ItemCardProps) {
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const { currency } = useCurrency()
-  const { conversionRate } = useConversionRate()
-  let finalPriceStrToFormat: string | null | undefined = item.price
-  let originalPriceStrToFormat: string | null | undefined = undefined
+  const { currency } = useCurrency();
+  const { conversionRate } = useConversionRate();
+  let finalPriceStrToFormat: string | null | undefined = item.price;
+  let originalPriceStrToFormat: string | null | undefined = undefined;
   if (
     item.discount &&
     item.discount > 0 &&
     item.price &&
     item.price !== "Error"
   ) {
-    const originalPriceNum = formatNumberString(item.price)
+    const originalPriceNum = formatNumberString(item.price);
 
     if (!isNaN(originalPriceNum)) {
-      const discountMultiplier = 1 - item.discount / 100
-      const finalPriceNum = originalPriceNum * discountMultiplier
-      finalPriceStrToFormat = finalPriceNum.toString()
-      originalPriceStrToFormat = item.price
+      const discountMultiplier = 1 - item.discount / 100;
+      const finalPriceNum = originalPriceNum * discountMultiplier;
+      finalPriceStrToFormat = finalPriceNum.toString();
+      originalPriceStrToFormat = item.price;
     } else {
-      finalPriceStrToFormat = "Error"
-      originalPriceStrToFormat = undefined
+      finalPriceStrToFormat = "Error";
+      originalPriceStrToFormat = undefined;
     }
   }
 
@@ -57,8 +57,8 @@ export default function ItemCard({
     finalPriceStrToFormat,
     currency,
     conversionRate,
-    originalPriceStrToFormat
-  )
+    originalPriceStrToFormat,
+  );
 
   return (
     <Grid2
@@ -143,5 +143,5 @@ export default function ItemCard({
         </Grid2>
       )}
     </Grid2>
-  )
+  );
 }

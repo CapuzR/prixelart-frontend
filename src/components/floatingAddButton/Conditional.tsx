@@ -1,13 +1,13 @@
-import React from "react"
-import { useLocation, matchPath } from "react-router-dom"
-import FloatingAddButton from "./index"
-import { useUser } from "@context/GlobalContext"
+import React from "react";
+import { useLocation, matchPath } from "react-router-dom";
+import FloatingAddButton from "./index";
+import { useUser } from "@context/GlobalContext";
 
 const ConditionalFB = () => {
-  const location = useLocation()
-  const { pathname } = location
-    const { user } = useUser()
-const isCreator = user?.prixer?.status
+  const location = useLocation();
+  const { pathname } = location;
+  const { user } = useUser();
+  const isCreator = user?.prixer?.status;
 
   const routes = [
     "/productos",
@@ -23,17 +23,17 @@ const isCreator = user?.prixer?.status
     "/crear-prix",
     "/producto/:id",
     "/",
-  ]
+  ];
 
   const showMe = routes.some((path) => {
-    return matchPath(path, pathname) !== null
-  })
+    return matchPath(path, pathname) !== null;
+  });
 
   if (showMe && isCreator) {
-    return <FloatingAddButton />
+    return <FloatingAddButton />;
   }
 
-  return null
-}
+  return null;
+};
 
-export default ConditionalFB
+export default ConditionalFB;

@@ -1,5 +1,5 @@
-import React from 'react';
-import styles from './styles.module.scss';
+import React from "react";
+import styles from "./styles.module.scss";
 
 interface GridProps {
   children: React.ReactNode;
@@ -7,13 +7,17 @@ interface GridProps {
   className?: string;
 }
 
-const Grid: React.FC<GridProps> = ({ children, isParent = false, className = '' }) => {
+const Grid: React.FC<GridProps> = ({
+  children,
+  isParent = false,
+  className = "",
+}) => {
   return (
     <div
       className={
         isParent
-          ? `${styles['grid-container']} ${className}`
-          : `${styles['grid-item']} ${className}`
+          ? `${styles["grid-container"]} ${className}`
+          : `${styles["grid-item"]} ${className}`
       }
     >
       {children}

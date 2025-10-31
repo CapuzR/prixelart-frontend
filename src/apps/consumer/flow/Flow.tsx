@@ -1,103 +1,103 @@
-import React, { useState, useEffect, useMemo } from "react"
-import { useNavigate, useLocation } from "react-router-dom"
+import React, { useState, useEffect, useMemo } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
-import ReactGA from "react-ga"
-import "slick-carousel/slick/slick.css"
-import "slick-carousel/slick/slick-theme.css"
-import { useLoading, useSnackBar, useUser } from "context/GlobalContext"
-import { getSelectedVariant } from "apps/consumer/products/services"
+import ReactGA from "react-ga";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import { useLoading, useSnackBar, useUser } from "context/GlobalContext";
+import { getSelectedVariant } from "apps/consumer/products/services";
 
-import Landscape from "apps/consumer/flow/views/Landscape"
-import Portrait from "apps/consumer/flow/views/Portrait"
-import { queryCreator } from "./helpers"
-import { useCart } from "context/CartContext"
-import { getUrlParams } from "@utils/util"
+import Landscape from "apps/consumer/flow/views/Landscape";
+import Portrait from "apps/consumer/flow/views/Portrait";
+import { queryCreator } from "./helpers";
+import { useCart } from "context/CartContext";
+import { getUrlParams } from "@utils/util";
 import {
   PickedProduct,
   Product,
   VariantAttribute,
-} from "../../../types/product.types"
-import { Art } from "../../../types/art.types"
-import { fetchArt } from "@api/art.api"
-import { fetchActiveProductDetails, fetchVariantPrice } from "@api/product.api"
-import { Item } from "types/order.types"
-import { useTheme } from "@mui/material"
-import { useMediaQuery } from "@mui/material"
-ReactGA.initialize("G-0RWP9B33D8")
+} from "../../../types/product.types";
+import { Art } from "../../../types/art.types";
+import { fetchArt } from "@api/art.api";
+import { fetchActiveProductDetails, fetchVariantPrice } from "@api/product.api";
+import { Item } from "types/order.types";
+import { useTheme } from "@mui/material";
+import { useMediaQuery } from "@mui/material";
+ReactGA.initialize("G-0RWP9B33D8");
 
 const Flow = () => {
-  const theme = useTheme()
+  const theme = useTheme();
 
-  const [item, setItem] = useState<Partial<Item>>({})
+  const [item, setItem] = useState<Partial<Item>>({});
   const [selectedProductId, setSelectedProductId] = useState<string | null>(
-    null
-  )
-  const { user } = useUser()
-  const navigate = useNavigate()
-  const location = useLocation()
-  const { setLoading } = useLoading()
-  const { showSnackBar } = useSnackBar()
-  const { addOrUpdateItemInCart } = useCart()
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+    null,
+  );
+  const { user } = useUser();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { setLoading } = useLoading();
+  const { showSnackBar } = useSnackBar();
+  const { addOrUpdateItemInCart } = useCart();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const urlParams = Object.fromEntries(
-    new URLSearchParams(location.search).entries()
-  )
+    new URLSearchParams(location.search).entries(),
+  );
 
   const allAttributeNames = useMemo(() => {
     if (!item.product?.variants) {
-      return new Set<string>()
+      return new Set<string>();
     }
-    const names = new Set<string>()
+    const names = new Set<string>();
     item.product.variants.forEach((variant) => {
       variant.attributes.forEach((attr) => {
-        names.add(attr.name)
-      })
-    })
-    return names
-  }, [item.product?.variants])
+        names.add(attr.name);
+      });
+    });
+    return names;
+  }, [item.product?.variants]);
 
   // 2. Check if all derived attributes have a value in the URL params
   const isProductAttributesComplete = useMemo(() => {
     // Requires a product and defined attributes
     if (!item.product || allAttributeNames.size === 0) {
-      return false
+      return false;
     }
     // Check if every attribute name derived from variants exists in urlParams
     return Array.from(allAttributeNames).every((attributeName) => {
       // Ensure the param exists and is not empty/whitespace
-      return urlParams[attributeName] && urlParams[attributeName].trim() !== ""
-    })
-  }, [item.product, allAttributeNames, urlParams])
+      return urlParams[attributeName] && urlParams[attributeName].trim() !== "";
+    });
+  }, [item.product, allAttributeNames, urlParams]);
 
   // 3. Check if the core requirements (product, art, attributes) are met
   const isItemReady = Boolean(
-    urlParams.producto && urlParams.arte && isProductAttributesComplete
-  )
+    urlParams.producto && urlParams.arte && isProductAttributesComplete,
+  );
 
   useEffect(() => {
-    !urlParams.producto && !urlParams.arte && navigate("/")
-  }, [urlParams.producto, urlParams.arte, navigate])
+    !urlParams.producto && !urlParams.arte && navigate("/");
+  }, [urlParams.producto, urlParams.arte, navigate]);
 
   useEffect(() => {
     const fetchItem = async () => {
       // Only fetch if params exist
-      if (!urlParams.producto && !urlParams.arte) return
+      if (!urlParams.producto && !urlParams.arte) return;
 
-      setLoading(true)
+      setLoading(true);
       try {
-        let selectedProduct: Product | undefined = undefined // Use new Product type
-        let selectedArt: Art | undefined = undefined
+        let selectedProduct: Product | undefined = undefined; // Use new Product type
+        let selectedArt: Art | undefined = undefined;
 
         // Fetch product details if ID exists
         if (urlParams.producto) {
-          selectedProduct = await fetchActiveProductDetails(urlParams.producto)
+          selectedProduct = await fetchActiveProductDetails(urlParams.producto);
         }
 
         // Fetch art details if ID exists
         if (urlParams.arte) {
           // Assuming fetchArt returns the correct Art type
-          selectedArt = await fetchArt(urlParams.arte)
+          selectedArt = await fetchArt(urlParams.arte);
         }
 
         // Extract attribute selections from URL, excluding specific keys
@@ -108,13 +108,13 @@ const Flow = () => {
           "lineId",
           "name",
           "category",
-          "page"
-        ])
+          "page",
+        ]);
 
-        const atts: Record<string, string> = {}
+        const atts: Record<string, string> = {};
         Array.from(selectedAttributes.entries()).map(([key, value]) => {
-          atts[key] = value
-        })
+          atts[key] = value;
+        });
 
         // Update item state
         setItem((prevItem) => ({
@@ -130,27 +130,27 @@ const Flow = () => {
               } as PickedProduct) // Cast to PickedProduct
             : prevItem.product, // Keep previous product if fetch fails or no ID
           art: selectedArt || prevItem.art, // Update art or keep previous
-        }))
+        }));
       } catch (error) {
-        console.error("Error fetching item details:", error)
+        console.error("Error fetching item details:", error);
         // Optional: navigate away or clear state on error
         // navigate('/');
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchItem()
-  }, [location.search])
+    fetchItem();
+  }, [location.search]);
 
   // Effect to update selectedProductId state (used potentially for UI)
   useEffect(() => {
     if (urlParams.producto) {
-      setSelectedProductId(urlParams.producto)
+      setSelectedProductId(urlParams.producto);
     } else {
-      setSelectedProductId(null) // Clear if no product in URL
+      setSelectedProductId(null); // Clear if no product in URL
     }
-  }, [urlParams.producto])
+  }, [urlParams.producto]);
 
   // Effect to fetch and set the price based on the selected variant
   useEffect(() => {
@@ -167,49 +167,50 @@ const Flow = () => {
             ...prevItem,
             price: undefined,
             discount: undefined, // Also clear discount
-          }))
+          }));
         }
-        return
+        return;
       }
 
       const selectedVariant = getSelectedVariant(
         item.product.selection,
-        item.product.variants
-      )
+        item.product.variants,
+      );
 
       if (selectedVariant?._id) {
         try {
-          const artId = (item.art && '_id' in item.art) ? item.art._id : undefined;
+          const artId =
+            item.art && "_id" in item.art ? item.art._id : undefined;
 
           const priceResult = await fetchVariantPrice(
             selectedVariant._id,
             item.sku,
-            artId?.toString()
-          )
-          const originalPriceStr = priceResult[1].toString() // Assuming result format is [?, priceString]
+            artId?.toString(),
+          );
+          const originalPriceStr = priceResult[1].toString(); // Assuming result format is [?, priceString]
 
-          let discountValue: number | undefined = undefined
+          let discountValue: number | undefined = undefined;
 
           if (
             item.art?.prixerUsername &&
             user?.username &&
             item.art.prixerUsername === user.username
           ) {
-            discountValue = 15
+            discountValue = 15;
           }
           setItem((prevItem) => ({
             ...prevItem,
             price: originalPriceStr,
             discount: discountValue,
-          }))
+          }));
         } catch (error) {
-          console.error("Error fetching variant price:", error)
-          showSnackBar("Error obteniendo el prix.")
+          console.error("Error fetching variant price:", error);
+          showSnackBar("Error obteniendo el prix.");
           setItem((prevItem) => ({
             ...prevItem,
             price: "Error",
             discount: undefined,
-          }))
+          }));
         }
       } else {
         if (item.price !== undefined || item.discount !== undefined) {
@@ -217,12 +218,12 @@ const Flow = () => {
             ...prevItem,
             price: undefined,
             discount: undefined,
-          }))
+          }));
         }
       }
-    }
+    };
 
-    fetchAndSetPrice()
+    fetchAndSetPrice();
   }, [
     item.product?.variants,
     JSON.stringify(item.product?.selection),
@@ -230,123 +231,123 @@ const Flow = () => {
     item.art?.prixerUsername,
     user?.username,
     isProductAttributesComplete,
-  ])
+  ]);
 
   const handleArtSelect = (selectedArt: Art) => {
-    const excludedKeys = new Set(["producto", "arte", "lineId", "itemId"]) // Exclude core identifiers
+    const excludedKeys = new Set(["producto", "arte", "lineId", "itemId"]); // Exclude core identifiers
     const existingAttributes = Object.entries(urlParams).reduce(
       (acc, [key, value]) => {
         if (!excludedKeys.has(key)) {
-          acc[key] = value
+          acc[key] = value;
         }
-        return acc
+        return acc;
       },
-      {} as Record<string, string>
-    )
+      {} as Record<string, string>,
+    );
 
     const newQueryString = queryCreator(
       urlParams.lineId,
       urlParams.producto,
       selectedArt.artId?.toString(),
-      existingAttributes
-    )
-    navigate(`${location.pathname}?${newQueryString}`)
-    showSnackBar("¡Arte seleccionado! Puedes agregar el item al carrito")
-  }
+      existingAttributes,
+    );
+    navigate(`${location.pathname}?${newQueryString}`);
+    showSnackBar("¡Arte seleccionado! Puedes agregar el item al carrito");
+  };
 
   const handleProductSelect = (selectedProduct: Product) => {
-    const attributes = {}
+    const attributes = {};
 
     const newQueryString = queryCreator(
       urlParams.lineId,
       selectedProduct._id?.toString(),
       urlParams.arte,
-      attributes
-    )
-    navigate(`${location.pathname}?${newQueryString}`)
-    showSnackBar("¡Producto seleccionado! Elige las opciones.")
-  }
+      attributes,
+    );
+    navigate(`${location.pathname}?${newQueryString}`);
+    showSnackBar("¡Producto seleccionado! Elige las opciones.");
+  };
 
   const handleCart = (itemToAdd: Item) => {
     if (!isItemReady || !itemToAdd.price) {
       showSnackBar(
-        "Por favor completa la selección antes de añadir al carrito."
-      )
-      return
+        "Por favor completa la selección antes de añadir al carrito.",
+      );
+      return;
     }
 
-    addOrUpdateItemInCart(itemToAdd, 1, urlParams.lineId)
-    showSnackBar("Item agregado al carrito")
-    navigate("/carrito")
-  }
+    addOrUpdateItemInCart(itemToAdd, 1, urlParams.lineId);
+    showSnackBar("Item agregado al carrito");
+    navigate("/carrito");
+  };
 
   const handleChangeElement = (
     type: "producto" | "arte",
     currentItem: Item,
-    lineId?: string
+    lineId?: string,
   ) => {
-    let newProductId: string | undefined = currentItem.sku
-    let newArtId: string | undefined = currentItem.art?.artId
-    let selectionAsObject: Record<string, string> = {}
+    let newProductId: string | undefined = currentItem.sku;
+    let newArtId: string | undefined = currentItem.art?.artId;
+    let selectionAsObject: Record<string, string> = {};
 
     if (type === "arte") {
-      newArtId = undefined
+      newArtId = undefined;
       selectionAsObject = (currentItem.product?.selection || []).reduce(
         (acc, sel) => {
-          acc[sel.name] = sel.value
-          return acc
+          acc[sel.name] = sel.value;
+          return acc;
         },
-        {} as Record<string, string>
-      )
-      setItem((prev) => ({ ...prev, art: undefined, price: undefined }))
+        {} as Record<string, string>,
+      );
+      setItem((prev) => ({ ...prev, art: undefined, price: undefined }));
     } else if (type === "producto") {
-      newProductId = undefined
-      selectionAsObject = {}
+      newProductId = undefined;
+      selectionAsObject = {};
       setItem((prev) => ({
         ...prev,
         product: undefined,
         sku: undefined,
         price: undefined,
         selection: undefined,
-      }))
+      }));
     }
 
     const queryString = queryCreator(
       lineId ? lineId : urlParams.lineId,
       newProductId,
       newArtId,
-      selectionAsObject
-    )
+      selectionAsObject,
+    );
 
-    navigate({ pathname: location.pathname, search: queryString })
-  }
+    navigate({ pathname: location.pathname, search: queryString });
+  };
 
   const handleSelection = (
-    e: React.ChangeEvent<{ name: string; value: number }>
+    e: React.ChangeEvent<{ name: string; value: number }>,
   ) => {
     // Now value is a number
-    const { name, value } = e.target
+    const { name, value } = e.target;
 
-    const currentSelection = item.product?.selection || []
+    const currentSelection = item.product?.selection || [];
     const selectionAsObject = currentSelection.reduce(
       (acc, sel) => {
         if (sel.name !== name) {
-          acc[sel.name] = sel.value
+          acc[sel.name] = sel.value;
         }
-        return acc
+        return acc;
       },
-      {} as Record<string, string>
-    )
+      {} as Record<string, string>,
+    );
 
     const queryString = queryCreator(
       urlParams.lineId,
       item.sku,
       item.art?.artId?.toString(),
-      selectionAsObject
-    )
+      selectionAsObject,
+    );
 
-    navigate(`${location.pathname}?${queryString}`, { replace: true }) // Use replace to avoid history spam
-  }
+    navigate(`${location.pathname}?${queryString}`, { replace: true }); // Use replace to avoid history spam
+  };
 
   return (
     <>
@@ -377,7 +378,7 @@ const Flow = () => {
       />
       {/* )} */}
     </>
-  )
-}
+  );
+};
 
-export default Flow
+export default Flow;

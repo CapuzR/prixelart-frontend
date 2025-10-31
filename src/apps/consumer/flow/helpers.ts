@@ -11,15 +11,15 @@ export const queryCreator = (
   }
 
   if (lineId) {
-    searchParams.set('lineId', lineId);
+    searchParams.set("lineId", lineId);
   }
 
   if (productId) {
-    searchParams.set('producto', productId);
+    searchParams.set("producto", productId);
   }
 
   if (artId) {
-    searchParams.set('arte', artId);
+    searchParams.set("arte", artId);
   }
 
   attributes &&

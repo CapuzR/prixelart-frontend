@@ -1,8 +1,8 @@
-import React from 'react';
-import { Route, Switch } from 'react-router-dom';
-import ChiguireHome from 'apps/orgs/orgLanding/chiguireHome';
-import ProductDetail from 'apps/orgs/orgLanding/productDetail';
-import ShoppingCartCb from 'apps/orgs/orgLanding/ShoppingCartCb';
+import React from "react";
+import { Route, Switch } from "react-router-dom";
+import ChiguireHome from "apps/orgs/orgLanding/chiguireHome";
+import ProductDetail from "apps/orgs/orgLanding/productDetail";
+import ShoppingCartCb from "apps/orgs/orgLanding/ShoppingCartCb";
 
 const ArtistRoutes = ({}) => {
   return (

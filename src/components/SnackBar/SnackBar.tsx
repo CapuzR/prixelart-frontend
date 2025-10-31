@@ -1,5 +1,5 @@
-import { FC, useEffect, useState, useCallback } from 'react';
-import styles from './SnackBar.module.scss';
+import { FC, useEffect, useState, useCallback } from "react";
+import styles from "./SnackBar.module.scss";
 
 interface SnackbarProps {
   open: boolean;
@@ -7,7 +7,7 @@ interface SnackbarProps {
   onClose?: () => void;
 }
 
-const Snackbar: FC<SnackbarProps> = ({open, message, onClose }) => {
+const Snackbar: FC<SnackbarProps> = ({ open, message, onClose }) => {
   // const [visible, setVisible] = useState(true);
 
   const handleClose = useCallback(() => {
@@ -27,10 +27,10 @@ const Snackbar: FC<SnackbarProps> = ({open, message, onClose }) => {
   }, [open, handleClose]);
 
   if (!open) return null;
-  
+
   return (
     <div className={styles.snackbar}>
-      <div className={styles['snackbar-content']}>{message}</div>
+      <div className={styles["snackbar-content"]}>{message}</div>
     </div>
   );
 };

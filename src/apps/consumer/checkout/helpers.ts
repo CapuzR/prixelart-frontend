@@ -7,7 +7,7 @@ export const calculateEstimatedDeliveryDate = (lines: any[]): Date => {
 
   const orderedProdT = ProdTimes?.sort((a, b) => a - b);
   let readyDate = new Date(
-    today.setDate(today.getDate() + (orderedProdT?.[0] || 0))
+    today.setDate(today.getDate() + (orderedProdT?.[0] || 0)),
   );
 
   // Adjust for weekends

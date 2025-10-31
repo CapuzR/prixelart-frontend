@@ -1,10 +1,10 @@
-import React from 'react';
-import { Box } from '@mui/material';
+import React from "react";
+import { Box } from "@mui/material";
 
 interface ImageProps {
   src: string;
   alt?: string;
-  objectFit?: 'cover' | 'contain' | 'fill';
+  objectFit?: "cover" | "contain" | "fill";
   roundedCorner?: boolean;
   width?: string | number;
   height?: string | number;
@@ -12,11 +12,11 @@ interface ImageProps {
 
 export const Image: React.FC<ImageProps> = ({
   src,
-  alt = '',
-  objectFit = 'cover',
+  alt = "",
+  objectFit = "cover",
   roundedCorner = true,
-  width = '100%',
-  height = 'auto',
+  width = "100%",
+  height = "auto",
 }) => (
   <Box
     component="img"
@@ -27,7 +27,7 @@ export const Image: React.FC<ImageProps> = ({
       height,
       objectFit,
       borderRadius: roundedCorner ? 2 : 0,
-      display: 'block',
+      display: "block",
     }}
   />
 );

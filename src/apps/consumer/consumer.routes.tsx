@@ -1,35 +1,35 @@
-import React, { useState } from 'react';
-import { Route, Routes } from 'react-router-dom';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { Route, Routes } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
-import ArtDetail from '@apps/consumer/art/components/ArtsGrid/Details/Details';
-import Home from 'apps/consumer/home/home';
-import Catalog from '@apps/consumer/art/catalog/Catalog';
-import Products from 'apps/consumer/products/Catalog';
-import Cart from '@apps/consumer/cart';
-import Prixers from 'apps/consumer/prixers/prixersGrid';
-import OrgGrid from 'apps/consumer/components/orgGrid/orgGrid';
-import PrixersService from 'apps/consumer/prixerServices/prixerService';
-import TestimonialsGrid from 'apps/consumer/testimonials/testimonialsGrid';
-import ProductDetails from 'apps/consumer/products/Details/Details';
-import Flow from 'apps/consumer/flow/Flow';
-import PrixerProfile from 'apps/artist/profile';
-import Login from '@apps/consumer/login';
-import PasswordChange from '@apps/artist/passwordChange/passwordChange';
+import ArtDetail from "@apps/consumer/art/components/ArtsGrid/Details/Details";
+import Home from "apps/consumer/home/home";
+import Catalog from "@apps/consumer/art/catalog/Catalog";
+import Products from "apps/consumer/products/Catalog";
+import Cart from "@apps/consumer/cart";
+import Prixers from "apps/consumer/prixers/prixersGrid";
+import OrgGrid from "apps/consumer/components/orgGrid/orgGrid";
+import PrixersService from "apps/consumer/prixerServices/prixerService";
+import TestimonialsGrid from "apps/consumer/testimonials/testimonialsGrid";
+import ProductDetails from "apps/consumer/products/Details/Details";
+import Flow from "apps/consumer/flow/Flow";
+import PrixerProfile from "apps/artist/profile";
+import Login from "@apps/consumer/login";
+import PasswordChange from "@apps/artist/passwordChange/passwordChange";
 
-import SignUp from "@apps/consumer/signup/SignUp"
-import TrackOrder from "./trackOrder/TrackOrder"
-import OrderDetailsPage from "./trackOrder/OrderDetailsPage"
-import ConditionalFB from "@components/floatingAddButton/Conditional"
-import ArtUploader from "@apps/artist/artUploader"
-import CreateService from "@components/createService"
-import ForgotPassword from "@apps/artist/passwordReset/ForgotPassword"
-import PasswordReset from "@apps/artist/passwordReset/PasswordReset" 
-import PrixerStats from "@apps/artist/profile/Stats"
-import LegacyOrProfileRoute from './LegacyArtLink.routes';
-import PrixItem from "./products/PrixItem/index"
+import SignUp from "@apps/consumer/signup/SignUp";
+import TrackOrder from "./trackOrder/TrackOrder";
+import OrderDetailsPage from "./trackOrder/OrderDetailsPage";
+import ConditionalFB from "@components/floatingAddButton/Conditional";
+import ArtUploader from "@apps/artist/artUploader";
+import CreateService from "@components/createService";
+import ForgotPassword from "@apps/artist/passwordReset/ForgotPassword";
+import PasswordReset from "@apps/artist/passwordReset/PasswordReset";
+import PrixerStats from "@apps/artist/profile/Stats";
+import LegacyOrProfileRoute from "./LegacyArtLink.routes";
+import PrixItem from "./products/PrixItem/index";
 
-import { usePrixerCreator } from "@context/GlobalContext"
+import { usePrixerCreator } from "@context/GlobalContext";
 
 const ConsumerRoutes: React.FC = () => {
   const { uploadArt, setArtModal } = usePrixerCreator();
@@ -55,7 +55,7 @@ const ConsumerRoutes: React.FC = () => {
         <Route path="/testimonios" element={<TestimonialsGrid />} />
         <Route path="/arte/:artId" element={<ArtDetail />} />
         <Route path="/prixer/:username" element={<PrixerProfile />} />
-        <Route path="/:slug" element={<LegacyOrProfileRoute />} /> 
+        <Route path="/:slug" element={<LegacyOrProfileRoute />} />
 
         <Route path="/prixer/:username/stats" element={<PrixerStats />} />
         {/* <Route path="/org/:username" element={<PrixerProfile />} /> */}
@@ -75,7 +75,10 @@ const ConsumerRoutes: React.FC = () => {
       </Routes>
 
       <ConditionalFB />
-      <ArtUploader openArtFormDialog={uploadArt} setOpenArtFormDialog={setArtModal} />
+      <ArtUploader
+        openArtFormDialog={uploadArt}
+        setOpenArtFormDialog={setArtModal}
+      />
       <CreateService />
     </>
   );

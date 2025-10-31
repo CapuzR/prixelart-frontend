@@ -2,7 +2,7 @@ import { OnConditionChangeHandler } from "../../../../types/order.types";
 
 export const createMirrorHandler = (
   watchedField: string,
-  baseFields: string | string[] // Allow single or multiple base fields
+  baseFields: string | string[], // Allow single or multiple base fields
 ): OnConditionChangeHandler => {
   return (conditionValue, { getValues, setValue }) => {
     // Ensure baseFields is treated as an array
@@ -13,7 +13,7 @@ export const createMirrorHandler = (
 
     if (conditionValue) {
       // Combine values or use custom logic
-      const combinedValue = baseValues.join(" "); // Adjust this logic 
+      const combinedValue = baseValues.join(" "); // Adjust this logic
       setValue(watchedField, combinedValue); // Set the combined value in the watched field
       return { disabled: true }; // Disable the field when mirroring
     } else {
@@ -22,7 +22,6 @@ export const createMirrorHandler = (
   };
 };
 
-
 export const isPickup = (methodSelected: string): boolean => {
-  return methodSelected === 'Pickup';
+  return methodSelected === "Pickup";
 };

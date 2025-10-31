@@ -1,4 +1,3 @@
-
 export function isAValidEmail(email: string | undefined): boolean {
   if (email === undefined) {
     return true;
@@ -10,7 +9,8 @@ export function isAValidEmail(email: string | undefined): boolean {
 }
 
 export function isAValidPassword(password: string): boolean {
-  const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$/;
+  const re =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$/;
   return re.test(String(password));
 }
 
@@ -39,7 +39,7 @@ export const validatePasswordDetailed = (password: string) => {
     return "Debe incluir un símbolo (ej: @, $, !, %, *, ?, &).";
   }
 
-  return ""; 
+  return "";
 };
 
 export function isAValidPhoneNum(phoneNumber: string): boolean {

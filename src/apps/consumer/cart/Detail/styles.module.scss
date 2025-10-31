@@ -1,11 +1,16 @@
-@use '@/styles/theme.scss' as theme;
+@use "@/styles/theme.scss" as theme;
 
 .card-root {
   display: flex;
   overflow: hidden;
   align-content: space-between;
   height: auto;
-  @include theme.paper(undefined, theme.$box-shadow-heavy, theme.$border-radius-xl,undefined);
+  @include theme.paper(
+    undefined,
+    theme.$box-shadow-heavy,
+    theme.$border-radius-xl,
+    undefined
+  );
   margin: 25px;
   width: 100%;
   margin-bottom: theme.$spacing-lg;
@@ -91,6 +96,11 @@
 }
 
 .extra-padding {
-  @include theme.paper(undefined, theme.$box-shadow-medium, theme.$border-radius-lg, theme.$spacing-xl);
+  @include theme.paper(
+    undefined,
+    theme.$box-shadow-medium,
+    theme.$border-radius-lg,
+    theme.$spacing-xl
+  );
   padding: theme.$spacing-xl theme.$spacing-lg * 2;
 }

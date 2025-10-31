@@ -1,25 +1,25 @@
-import React from 'react';
-import classNames from 'classnames';
-import styles from './styles.module.scss';
+import React from "react";
+import classNames from "classnames";
+import styles from "./styles.module.scss";
 
 interface TypographyProps {
-  level: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p';
-  align?: 'left' | 'center' | 'right' | 'justify';
+  level: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p";
+  align?: "left" | "center" | "right" | "justify";
   color?: string;
-  leading?: 'tight' | 'normal' | 'loose';
-  tracking?: 'tight' | 'normal' | 'wide';
-  kerning?: 'tight' | 'normal' | 'wide';
+  leading?: "tight" | "normal" | "loose";
+  tracking?: "tight" | "normal" | "wide";
+  kerning?: "tight" | "normal" | "wide";
   children: React.ReactNode;
   className?: string;
 }
 
 const Typography: React.FC<TypographyProps> = ({
   level,
-  align = 'left',
+  align = "left",
   color,
-  leading = 'normal',
-  tracking = 'normal',
-  kerning = 'normal',
+  leading = "normal",
+  tracking = "normal",
+  kerning = "normal",
   children,
   className,
 }) => {
@@ -34,9 +34,9 @@ const Typography: React.FC<TypographyProps> = ({
         className,
         styles[`leading-${leading}`],
         styles[`tracking-${tracking}`],
-        styles[`kerning-${kerning}`]
+        styles[`kerning-${kerning}`],
       )}
-      style={{ color: color ? color : 'inherit' }}
+      style={{ color: color ? color : "inherit" }}
     >
       {children}
     </Tag>

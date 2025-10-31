@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import { useBackdrop } from 'context/GlobalContext';
-import styles from './styles.module.scss';
+import React, { useEffect } from "react";
+import { useBackdrop } from "context/GlobalContext";
+import styles from "./styles.module.scss";
 
 interface BackdropProps {
   disableCloseOnClick?: boolean;
@@ -38,7 +38,7 @@ const Backdrop: React.FC<BackdropProps> = ({
 
   return (
     <div
-      className={`${styles.backdrop} ${backdropOpen ? styles.visible : ''}`}
+      className={`${styles.backdrop} ${backdropOpen ? styles.visible : ""}`}
       onClick={handleClick} // Only closes if disableCloseOnClick is false
     />
   );

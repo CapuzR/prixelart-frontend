@@ -1,9 +1,9 @@
-@use '@/styles/theme.scss' as theme;
+@use "@/styles/theme.scss" as theme;
 $min-item-width: 600px;
 
 .grid-wrapper {
   width: 100%; // Ensure grid takes full width
-  margin: 0 auto; // Center grid wrapper 
+  margin: 0 auto; // Center grid wrapper
 }
 
 // Grid Container (Parent)

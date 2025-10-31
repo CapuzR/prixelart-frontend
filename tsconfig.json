@@ -3,9 +3,7 @@
     "baseUrl": "src",
     "skipLibCheck": true,
     "paths": {
-      "@*": [
-        "*"
-      ]
+      "@*": ["*"]
     },
     "jsx": "react-jsx",
     "allowJs": true,
@@ -21,16 +19,8 @@
     "outDir": "./dist",
     "typeRoots": ["./node_modules/@types", "./src/types"],
     "rootDir": "./src",
-    "types": [
-      "node",
-      "react"
-    ]
+    "types": ["node", "react"]
   },
-  "include": [
-    "src", "src/types/global.d.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "include": ["src", "src/types/global.d.ts"],
+  "exclude": ["node_modules", "dist"]
 }

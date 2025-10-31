@@ -1,11 +1,11 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import Typography from '@mui/material/Typography';
+import React from "react";
+import PropTypes from "prop-types";
+import Typography from "@mui/material/Typography";
 
 interface TitleProps {
   title: string;
 }
-export default function Title({title}: TitleProps) {
+export default function Title({ title }: TitleProps) {
   return (
     <Typography component="h2" variant="h5" color="primary" gutterBottom>
       {title}

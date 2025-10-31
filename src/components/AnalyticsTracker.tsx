@@ -1,12 +1,12 @@
-import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 declare global {
   interface Window {
     gtag: (
-      command: 'config',
+      command: "config",
       targetId: string,
-      config?: { page_path?: string }
+      config?: { page_path?: string },
     ) => void;
   }
 }
@@ -16,7 +16,7 @@ const AnalyticsTracker = () => {
 
   useEffect(() => {
     if (window.gtag) {
-      window.gtag('config', 'G-0RWP9B33D8', {
+      window.gtag("config", "G-0RWP9B33D8", {
         page_path: location.pathname + location.search,
       });
       console.log(`GA Pageview: ${location.pathname + location.search}`);

@@ -1,4 +1,4 @@
-@use '@/styles/theme.scss' as theme;
+@use "@/styles/theme.scss" as theme;
 
 .container {
   display: inline-flex;
@@ -25,7 +25,12 @@
   flex-direction: column;
   align-items: stretch;
   width: 50%;
-  @include theme.paper(undefined, theme.$box-shadow-medium, theme.$border-radius-lg, theme.$spacing-md);
+  @include theme.paper(
+    undefined,
+    theme.$box-shadow-medium,
+    theme.$border-radius-lg,
+    theme.$spacing-md
+  );
   padding: 0;
   height: auto;
   // min-height: 9rem;

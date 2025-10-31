@@ -1,10 +1,10 @@
-import { Theme } from "@mui/material"
-import React, { FormEvent, useState, useEffect } from "react"
-import { makeStyles } from "tss-react/mui"
-import MDEditor from "@uiw/react-md-editor"
-import Button from "@mui/material/Button"
+import { Theme } from "@mui/material";
+import React, { FormEvent, useState, useEffect } from "react";
+import { makeStyles } from "tss-react/mui";
+import MDEditor from "@uiw/react-md-editor";
+import Button from "@mui/material/Button";
 
-import { getTerms } from "@apps/artist/api"
+import { getTerms } from "@apps/artist/api";
 const useStyles = makeStyles()((theme: Theme) => {
   return {
     modal: {
@@ -22,25 +22,25 @@ const useStyles = makeStyles()((theme: Theme) => {
       textAlign: "justify",
       borderRadius: 16,
     },
-  }
-})
+  };
+});
 
 export default function InitialTerms({ setIsChecked, setModal }) {
-  const { classes } = useStyles()
-  const [value, setValue] = useState("")
+  const { classes } = useStyles();
+  const [value, setValue] = useState("");
 
   const terms = async () => {
     try {
-      const response = await getTerms()
-      setValue(response.data.terms.termsAndConditions)
+      const response = await getTerms();
+      setValue(response.data.terms.termsAndConditions);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   useEffect(() => {
-    terms()
-  }, [])
+    terms();
+  }, []);
 
   return (
     <div className={classes.modal}>
@@ -63,8 +63,8 @@ export default function InitialTerms({ setIsChecked, setModal }) {
         variant="contained"
         color="primary"
         onClick={() => {
-          setIsChecked(true)
-          setModal(false)
+          setIsChecked(true);
+          setModal(false);
         }}
         style={{
           fontWeight: "bold",
@@ -75,5 +75,5 @@ export default function InitialTerms({ setIsChecked, setModal }) {
         De acuerdo
       </Button>
     </div>
-  )
+  );
 }

@@ -1,10 +1,10 @@
-import React, { useMemo } from "react"
+import React, { useMemo } from "react";
 
-import MDEditor from "@uiw/react-md-editor"
-import Button from "components/Button"
-import { formatRange, formatSinglePrice } from "utils/formats"
-import { generateWaProductMessage } from "utils/utils"
-import styles from "./Portrait.module.scss"
+import MDEditor from "@uiw/react-md-editor";
+import Button from "components/Button";
+import { formatRange, formatSinglePrice } from "utils/formats";
+import { generateWaProductMessage } from "utils/utils";
+import styles from "./Portrait.module.scss";
 import {
   Typography,
   Accordion,
@@ -15,77 +15,78 @@ import {
   Select,
   InputLabel,
   SelectChangeEvent,
-} from "@mui/material"
-import Grid2 from "@mui/material/Grid"
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
-import ShareIcon from "@mui/icons-material/Share" // Import ShareIcon
+} from "@mui/material";
+import Grid2 from "@mui/material/Grid";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ShareIcon from "@mui/icons-material/Share"; // Import ShareIcon
 
-import { getFilteredOptions } from "apps/consumer/products/services"
+import { getFilteredOptions } from "apps/consumer/products/services";
 
-import { useConversionRate, useCurrency } from "context/GlobalContext"
-import { Slider } from "components/Slider"
-import { Image } from "components/Image"
-import CurrencySwitch from "components/CurrencySwitch"
-import { Product, Variant } from "../../../../../types/product.types"
-import { DisplayPriceInfo } from "../Details"
+import { useConversionRate, useCurrency } from "context/GlobalContext";
+import { Slider } from "components/Slider";
+import { Image } from "components/Image";
+import CurrencySwitch from "components/CurrencySwitch";
+import { Product, Variant } from "../../../../../types/product.types";
+import { DisplayPriceInfo } from "../Details";
 
 interface PortraitProps {
-  product: Product
-  expanded: string | false
-  description: { generalDescription: string; technicalSpecification: string }
-  handleArtSelection: () => void
-  handleSelection: (e: SelectChangeEvent<string>) => void
+  product: Product;
+  expanded: string | false;
+  description: { generalDescription: string; technicalSpecification: string };
+  handleArtSelection: () => void;
+  handleSelection: (e: SelectChangeEvent<string>) => void;
   handleChange: (
-    panel: string
-  ) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => void
-  flowProductId?: string
-  selectedVariant?: Variant // Add selected variant prop (copied from Landscape)
-  currentSelectionParams: { [key: string]: string } // Add current selection params prop
-  priceInfo: DisplayPriceInfo
+    panel: string,
+  ) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => void;
+  flowProductId?: string;
+  selectedVariant?: Variant; // Add selected variant prop (copied from Landscape)
+  currentSelectionParams: { [key: string]: string }; // Add current selection params prop
+  priceInfo: DisplayPriceInfo;
 }
 
 const Portrait: React.FC<PortraitProps> = (props) => {
-  const { currency } = useCurrency()
-  const { conversionRate } = useConversionRate()
+  const { currency } = useCurrency();
+  const { conversionRate } = useConversionRate();
 
   const uniqueAttributes = useMemo(() => {
-    const attributesMap = new Map<string, Set<string>>()
+    const attributesMap = new Map<string, Set<string>>();
 
     props.product?.variants?.forEach((variant) => {
       variant.attributes?.forEach((attr) => {
         if (!attributesMap.has(attr.name)) {
-          attributesMap.set(attr.name, new Set<string>())
+          attributesMap.set(attr.name, new Set<string>());
         }
-        attributesMap.get(attr.name)?.add(attr.value)
-      })
-    })
+        attributesMap.get(attr.name)?.add(attr.value);
+      });
+    });
 
     return Array.from(attributesMap.entries())
       .map(([name, values]) => ({
         name,
         value: Array.from(values).sort(),
       }))
-      .sort((a, b) => a.name.localeCompare(b.name))
-  }, [props.product?.variants])
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [props.product?.variants]);
 
   const allAttributesSelected = useMemo(() => {
     if (uniqueAttributes.length === 0) {
-      return true
+      return true;
     }
     return uniqueAttributes.every(
-      (attribute) => props.currentSelectionParams[attribute.name]?.trim() !== ""
-    )
-  }, [uniqueAttributes, props.currentSelectionParams])
+      (attribute) =>
+        props.currentSelectionParams[attribute.name]?.trim() !== "",
+    );
+  }, [uniqueAttributes, props.currentSelectionParams]);
 
   const renderPriceDisplay = () => {
-    const { priceInfo } = props
+    const { priceInfo } = props;
 
     switch (priceInfo.type) {
       case "loading":
-        return "Cargando precio..."
+        return "Cargando precio...";
       case "error":
         // Optionally show specific error: priceInfo.errorMessage
-        return "Precio no disponible"
+        return "Precio no disponible";
       case "single":
         // Use formatSinglePrice which handles potential strikethrough
         return (
@@ -100,26 +101,26 @@ const Portrait: React.FC<PortraitProps> = (props) => {
                 conversionRate,
                 priceInfo.originalPrice !== undefined
                   ? priceInfo.originalPrice.toString()
-                  : undefined
+                  : undefined,
               ),
             }}
           />
-        )
+        );
       case "range":
         // Format the final range
         const finalRangeString = formatRange(
           priceInfo.finalMin,
           priceInfo.finalMax,
           currency,
-          conversionRate
-        )
+          conversionRate,
+        );
 
         // Check if base range differs from final range (and base exists)
         const baseRangeDiffers =
           priceInfo.baseMin !== null &&
           priceInfo.baseMax !== null &&
           (priceInfo.baseMin !== priceInfo.finalMin ||
-            priceInfo.baseMax !== priceInfo.finalMax)
+            priceInfo.baseMax !== priceInfo.finalMax);
 
         if (baseRangeDiffers) {
           // Format the base range
@@ -127,8 +128,8 @@ const Portrait: React.FC<PortraitProps> = (props) => {
             priceInfo.baseMin, // Known not to be null here
             priceInfo.baseMax, // Known not to be null here
             currency,
-            conversionRate
-          )
+            conversionRate,
+          );
           // Render base with strikethrough + final range
           return (
             <span
@@ -143,22 +144,22 @@ const Portrait: React.FC<PortraitProps> = (props) => {
                     `,
               }}
             />
-          )
+          );
         } else {
           // Just render the final range
-          return <span>{finalRangeString}</span>
+          return <span>{finalRangeString}</span>;
         }
       case "none":
         // If attributes exist, prompt selection, otherwise show unavailable
         return uniqueAttributes.length > 0
           ? "Selecciona opciones para ver el precio"
-          : "Precio no disponible"
+          : "Precio no disponible";
       default:
         // Log error for unexpected priceInfo.type
-        console.error("Unhandled priceInfo type:", priceInfo)
-        return "Precio no disponible" // Fallback
+        console.error("Unhandled priceInfo type:", priceInfo);
+        return "Precio no disponible"; // Fallback
     }
-  }
+  };
 
   return (
     <Grid2 className={styles["prix-product-container"]}>
@@ -170,16 +171,20 @@ const Portrait: React.FC<PortraitProps> = (props) => {
 
       <div className={styles["carousel-wrapper"]}>
         <Slider
-          images={props.product?.sources?.images.filter(image => image?.url) || []}
+          images={
+            props.product?.sources?.images.filter((image) => image?.url) || []
+          }
           useIndicators={{
             type: "thumbnails",
             position: "over",
             color: { active: "primary", inactive: "secondary" },
           }}
         >
-          {props.product?.sources?.images?.filter(image => image?.url).map((image, i) => (
-            <Image key={i} src={image.url} alt={props.product?.name} />
-          ))}
+          {props.product?.sources?.images
+            ?.filter((image) => image?.url)
+            .map((image, i) => (
+              <Image key={i} src={image.url} alt={props.product?.name} />
+            ))}
         </Slider>
       </div>
 
@@ -190,13 +195,14 @@ const Portrait: React.FC<PortraitProps> = (props) => {
             className={`${styles["attributes-container"]} ${uniqueAttributes.length > 1 ? styles["space-between"] : styles["flex-start"]}`}
           >
             {uniqueAttributes.map((att, iAtt) => {
-              const selectedValue = props.currentSelectionParams[att.name] || ""
+              const selectedValue =
+                props.currentSelectionParams[att.name] || "";
               const filteredOptions =
                 getFilteredOptions(
                   props.product,
                   att,
-                  props.currentSelectionParams
-                ) || []
+                  props.currentSelectionParams,
+                ) || [];
 
               return (
                 <div key={iAtt} className={styles["attribute-select-wrapper"]}>
@@ -225,23 +231,25 @@ const Portrait: React.FC<PortraitProps> = (props) => {
                     </Select>
                   </FormControl>
                 </div>
-              )
+              );
             })}
           </div>
         </Grid2>
       )}
       <Grid2 className={styles["price-container"]}>
-        <Typography className={styles["price"]}>{renderPriceDisplay()}</Typography>
+        <Typography className={styles["price"]}>
+          {renderPriceDisplay()}
+        </Typography>
         <Button
           type="onlyText"
           color="primary"
           className={styles["share-button"]}
           onClick={() => {
-            const currentUrl = window.location.href
+            const currentUrl = window.location.href;
             window.open(
               generateWaProductMessage(props.product, currentUrl),
-              "_blank"
-            )
+              "_blank",
+            );
           }}
         >
           <ShareIcon className={styles["share-icon"]} />
@@ -301,7 +309,7 @@ const Portrait: React.FC<PortraitProps> = (props) => {
         )}
       </div>
     </Grid2>
-  )
-}
+  );
+};
 
-export default Portrait
+export default Portrait;

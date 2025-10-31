@@ -1,13 +1,13 @@
-import React, { ChangeEvent, MouseEvent } from 'react';
-import Paper from '@mui/material/Paper';
-import InputBase from '@mui/material/InputBase';
-import IconButton from '@mui/material/IconButton';
-import SearchIcon from '@mui/icons-material/Search';
-import MenuItem from '@mui/material/MenuItem';
-import TextField from '@mui/material/TextField';
-import CloseIcon from '@mui/icons-material/Close';
-import Tooltip from '@mui/material/Tooltip';
-import InputAdornment from '@mui/material/InputAdornment';
+import React, { ChangeEvent, MouseEvent } from "react";
+import Paper from "@mui/material/Paper";
+import InputBase from "@mui/material/InputBase";
+import IconButton from "@mui/material/IconButton";
+import SearchIcon from "@mui/icons-material/Search";
+import MenuItem from "@mui/material/MenuItem";
+import TextField from "@mui/material/TextField";
+import CloseIcon from "@mui/icons-material/Close";
+import Tooltip from "@mui/material/Tooltip";
+import InputAdornment from "@mui/material/InputAdornment";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 
@@ -34,10 +34,27 @@ const CustomizedInputBase: React.FC<SearchBarProps> = ({
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const defaultCategories: string[] = [
-    'Abstracto', 'Animales', 'Arquitectura', 'Atardecer', 'Cacao', 'Café',
-    'Carros', 'Ciudades', 'Comida', 'Edificios', 'Fauna', 'Flora',
-    'Lanchas, barcos o yates', 'Montañas', 'Naturaleza', 'Navidad',
-    'Playas', 'Puentes', 'Surrealista', 'Transportes', 'Vehículos',
+    "Abstracto",
+    "Animales",
+    "Arquitectura",
+    "Atardecer",
+    "Cacao",
+    "Café",
+    "Carros",
+    "Ciudades",
+    "Comida",
+    "Edificios",
+    "Fauna",
+    "Flora",
+    "Lanchas, barcos o yates",
+    "Montañas",
+    "Naturaleza",
+    "Navidad",
+    "Playas",
+    "Puentes",
+    "Surrealista",
+    "Transportes",
+    "Vehículos",
   ];
 
   const currentCategoriesList = categoriesList || defaultCategories;
@@ -59,10 +76,12 @@ const CustomizedInputBase: React.FC<SearchBarProps> = ({
   };
 
   const handleClearQuery = () => {
-    onQueryChange('');
+    onQueryChange("");
   };
 
-  const handleSearchSubmit = (e?: MouseEvent<HTMLButtonElement> | React.FormEvent<HTMLFormElement>) => {
+  const handleSearchSubmit = (
+    e?: MouseEvent<HTMLButtonElement> | React.FormEvent<HTMLFormElement>,
+  ) => {
     if (e) e.preventDefault();
     onSearchSubmit();
   };
@@ -75,8 +94,8 @@ const CustomizedInputBase: React.FC<SearchBarProps> = ({
   return (
     <div
       style={{
-        width: isMobile ? '100%' : '85%',
-        margin: 'auto',
+        width: isMobile ? "100%" : "85%",
+        margin: "auto",
         maxWidth: 700,
       }}
     >
@@ -84,23 +103,27 @@ const CustomizedInputBase: React.FC<SearchBarProps> = ({
         component="form"
         onSubmit={handleSearchSubmit}
         sx={{
-          display: 'flex',
-          alignItems: 'center',
-          borderRadius: '8px',
-          padding: '4px 8px',
+          display: "flex",
+          alignItems: "center",
+          borderRadius: "8px",
+          padding: "4px 8px",
           gap: 1,
         }}
         elevation={3}
       >
         <Tooltip title="Buscar">
-          <IconButton type="submit" sx={{ padding: '10px' }} aria-label="search">
+          <IconButton
+            type="submit"
+            sx={{ padding: "10px" }}
+            aria-label="search"
+          >
             <SearchIcon />
           </IconButton>
         </Tooltip>
         <InputBase
-          sx={{ marginLeft: '2px', flex: 1 }}
+          sx={{ marginLeft: "2px", flex: 1 }}
           placeholder={dynamicPlaceholderText}
-          inputProps={{ 'aria-label': dynamicPlaceholderText }}
+          inputProps={{ "aria-label": dynamicPlaceholderText }}
           value={queryValue}
           onChange={handleInputChange}
           endAdornment={
@@ -129,14 +152,14 @@ const CustomizedInputBase: React.FC<SearchBarProps> = ({
             InputLabelProps={{ shrink: true }}
             sx={{
               minWidth: 160,
-              textTransform: 'capitalize',
-              '& .MuiOutlinedInput-root': {
-                borderRadius: '8px',
+              textTransform: "capitalize",
+              "& .MuiOutlinedInput-root": {
+                borderRadius: "8px",
               },
-              '& .MuiSelect-select': {
-                paddingTop: '8.5px',
-                paddingBottom: '8.5px',
-              }
+              "& .MuiSelect-select": {
+                paddingTop: "8.5px",
+                paddingBottom: "8.5px",
+              },
             }}
             SelectProps={{
               MenuProps: MenuProps,
@@ -146,14 +169,18 @@ const CustomizedInputBase: React.FC<SearchBarProps> = ({
                   return <em>Todas</em>;
                 }
                 return selected as string;
-              }
+              },
             }}
           >
             <MenuItem value="">
               <em>Todas</em>
             </MenuItem>
             {currentCategoriesList.map((category) => (
-              <MenuItem key={category} value={category} sx={{ textTransform: 'capitalize' }}>
+              <MenuItem
+                key={category}
+                value={category}
+                sx={{ textTransform: "capitalize" }}
+              >
                 {category}
               </MenuItem>
             ))}

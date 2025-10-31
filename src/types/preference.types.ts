@@ -1,12 +1,12 @@
 import { ObjectId } from "mongodb";
 
 export interface TermsAndConditions {
-    termsAndConditions: string;
+  termsAndConditions: string;
 }
 
 export interface CarouselItem {
-    _id?: ObjectId;
-    position: number;
-    type: "desktop" | "mobile";
-    imageURL: string;
+  _id?: ObjectId;
+  position: number;
+  type: "desktop" | "mobile";
+  imageURL: string;
 }

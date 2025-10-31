@@ -7,18 +7,23 @@ import React, {
   useEffect,
   useRef,
   useState,
-} from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+} from "react";
+import { useParams, useNavigate } from "react-router-dom";
 
-import { useSnackBar } from 'context/GlobalContext';
-import { User, USER_ROLE_OPTIONS } from 'types/user.types';
-import { Prixer } from 'types/prixer.types';
+import { useSnackBar } from "context/GlobalContext";
+import { User, USER_ROLE_OPTIONS } from "types/user.types";
+import { Prixer } from "types/prixer.types";
 
-import { getUserById, updateUser, getBalance, createWallet } from '@api/user.api';
-import { isAValidEmail } from 'utils/validations';
-import Grid2 from '@mui/material/Grid';
-import { AddCircleOutline } from '@mui/icons-material';
-import SaveIcon from '@mui/icons-material/Save';
+import {
+  getUserById,
+  updateUser,
+  getBalance,
+  createWallet,
+} from "@api/user.api";
+import { isAValidEmail } from "utils/validations";
+import Grid2 from "@mui/material/Grid";
+import { AddCircleOutline } from "@mui/icons-material";
+import SaveIcon from "@mui/icons-material/Save";
 
 import {
   Alert,
@@ -56,29 +61,42 @@ import {
   TextField,
   Tooltip,
   Typography,
-} from '@mui/material';
-import { visuallyHidden } from '@mui/utils';
+} from "@mui/material";
+import { visuallyHidden } from "@mui/utils";
 
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import dayjs, { Dayjs } from 'dayjs';
-import { PickerChangeHandlerContext, DateValidationError } from '@mui/x-date-pickers';
-import { Movement } from 'types/movement.types';
-import { createMovement, getMovements, reverseMovement } from '@api/movement.api';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs, { Dayjs } from "dayjs";
+import {
+  PickerChangeHandlerContext,
+  DateValidationError,
+} from "@mui/x-date-pickers";
+import { Movement } from "types/movement.types";
+import {
+  createMovement,
+  getMovements,
+  reverseMovement,
+} from "@api/movement.api";
+import DeleteIcon from "@mui/icons-material/Delete";
 
-const AVAILABLE_GENDERS = ['Masculino', 'Femenino', 'Otro', 'Prefiero no decir'];
+const AVAILABLE_GENDERS = [
+  "Masculino",
+  "Femenino",
+  "Otro",
+  "Prefiero no decir",
+];
 const AVAILABLE_SPECIALTIES = [
-  'Ilustración',
-  'Diseño',
-  'Fotografía',
-  'Artes Plásticas',
-  'Música',
-  'Escritura',
+  "Ilustración",
+  "Diseño",
+  "Fotografía",
+  "Artes Plásticas",
+  "Música",
+  "Escritura",
 ];
 
-type Sort = 'asc' | 'desc';
+type Sort = "asc" | "desc";
 const formatCurrency = (value: number): string => `$${value.toFixed(2)}`;
-const formatDate = (date?: Date): string => (date ? dayjs(date).format('DD/MM/YYYY') : 'N/A');
+const formatDate = (date?: Date): string =>
+  date ? dayjs(date).format("DD/MM/YYYY") : "N/A";
 
 interface UserBaseValidationErrors {
   firstName?: string;
@@ -113,19 +131,19 @@ interface PrixerValidationErrors {
 }
 
 interface HeadCell {
-  id: keyof Movement | 'actions';
+  id: keyof Movement | "actions";
   label: string;
   numeric: boolean;
   sortable: boolean;
 }
 
 const headCells: readonly HeadCell[] = [
-  { id: 'date', numeric: false, label: 'Fecha', sortable: true },
-  { id: 'type', numeric: false, label: 'Tipo', sortable: true },
-  { id: 'description', numeric: false, label: 'Descripción', sortable: true },
-  { id: 'order', numeric: false, label: 'Orden Asociada', sortable: true },
-  { id: 'value', numeric: true, label: 'Valor', sortable: true },
-  { id: 'actions', numeric: false, label: 'Acciones', sortable: false },
+  { id: "date", numeric: false, label: "Fecha", sortable: true },
+  { id: "type", numeric: false, label: "Tipo", sortable: true },
+  { id: "description", numeric: false, label: "Descripción", sortable: true },
+  { id: "order", numeric: false, label: "Orden Asociada", sortable: true },
+  { id: "value", numeric: true, label: "Valor", sortable: true },
+  { id: "actions", numeric: false, label: "Acciones", sortable: false },
 ];
 
 interface UserValidationErrors extends UserBaseValidationErrors {
@@ -134,47 +152,49 @@ interface UserValidationErrors extends UserBaseValidationErrors {
 
 // --- Initial State (Aligned with CreateUser structure) ---
 const initialUserFormState: Partial<User> = {
-  firstName: '',
-  lastName: '',
-  email: '',
+  firstName: "",
+  lastName: "",
+  email: "",
   active: true,
-  role: ['consumer'],
-  avatar: '',
-  phone: '',
-  country: '',
-  city: '',
+  role: ["consumer"],
+  avatar: "",
+  phone: "",
+  country: "",
+  city: "",
   birthdate: undefined,
-  gender: '',
-  address: '',
-  billingAddress: '',
-  shippingAddress: '',
-  instagram: '',
-  facebook: '',
-  twitter: '',
-  ci: '',
-  account: '',
+  gender: "",
+  address: "",
+  billingAddress: "",
+  shippingAddress: "",
+  instagram: "",
+  facebook: "",
+  twitter: "",
+  ci: "",
+  account: "",
 };
 
 const initialPrixerFormState: Partial<Prixer> = {
   specialty: [],
-  description: '',
-  instagram: '',
-  twitter: '',
-  facebook: '',
-  phone: '',
-  avatar: '',
+  description: "",
+  instagram: "",
+  twitter: "",
+  facebook: "",
+  phone: "",
+  avatar: "",
   termsAgree: false,
   status: true,
 };
 
-const initialFormState: Pick<Movement, 'description' | 'type' | 'value' | 'destinatary' | 'order'> =
-  {
-    description: '',
-    type: 'Depósito',
-    value: 0,
-    destinatary: undefined,
-    order: undefined,
-  };
+const initialFormState: Pick<
+  Movement,
+  "description" | "type" | "value" | "destinatary" | "order"
+> = {
+  description: "",
+  type: "Depósito",
+  value: 0,
+  destinatary: undefined,
+  order: undefined,
+};
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -201,7 +221,7 @@ function CustomTabPanel(props: TabPanelProps) {
 function a11yProps(index: number) {
   return {
     id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`,
   };
 }
 
@@ -211,37 +231,43 @@ const UpdateUser: React.FC = () => {
   const { showSnackBar } = useSnackBar();
   // const [permissions, setPermissions] = useState<PermissionsV2 | null>(null)
 
-  const [userFormData, setUserFormData] = useState<Partial<User>>(initialUserFormState);
-  const [prixerFormData, setPrixerFormData] = useState<Partial<Prixer>>(initialPrixerFormState);
+  const [userFormData, setUserFormData] =
+    useState<Partial<User>>(initialUserFormState);
+  const [prixerFormData, setPrixerFormData] = useState<Partial<Prixer>>(
+    initialPrixerFormState,
+  );
   const [birthdateValue, setBirthdateValue] = useState<Dayjs | null>(null); // State for DatePicker
-  const [originalUsername, setOriginalUsername] = useState<string>(''); // To display read-only username
+  const [originalUsername, setOriginalUsername] = useState<string>(""); // To display read-only username
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [errorFetch, setErrorFetch] = useState<string | null>(null);
-  const [validationErrors, setValidationErrors] = useState<UserValidationErrors | null>(null);
+  const [validationErrors, setValidationErrors] =
+    useState<UserValidationErrors | null>(null);
   const [balance, setBalance] = useState<number>(0);
   const [modal, setModal] = useState<boolean>(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
-  const [newPassword, setNewPassword] = useState('');
+  const [newPassword, setNewPassword] = useState("");
   const [value, setValue] = useState(0);
-  type MovementType = 'Depósito' | 'Retiro';
-  const movementTypeOptions: MovementType[] = ['Depósito', 'Retiro'];
+  type MovementType = "Depósito" | "Retiro";
+  const movementTypeOptions: MovementType[] = ["Depósito", "Retiro"];
   const [movements, setMovements] = useState<Movement[]>([]);
   const [totalMovements, setTotalMovements] = useState<number>(0);
-  const [selectedMov, setSelectedMov] = useState<Movement | undefined>(undefined);
+  const [selectedMov, setSelectedMov] = useState<Movement | undefined>(
+    undefined,
+  );
 
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
-  const [order, setOrder] = useState<Sort>('desc');
-  const [orderBy, setOrderBy] = useState<keyof Movement>('date');
+  const [order, setOrder] = useState<Sort>("desc");
+  const [orderBy, setOrderBy] = useState<keyof Movement>("date");
   const [page, setPage] = useState<number>(0);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>();
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [filterType, setFilterType] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [filterType, setFilterType] = useState<string>("");
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
 
   const [formData, setFormData] = useState(initialFormState);
-  const [amount, setAmount] = useState('');
+  const [amount, setAmount] = useState("");
 
   const [openNewPay, setOpenNewPay] = useState<boolean>(false);
 
@@ -252,7 +278,7 @@ const UpdateUser: React.FC = () => {
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
-  const isPrixerRoleSelected = userFormData.role?.includes('prixer');
+  const isPrixerRoleSelected = userFormData.role?.includes("prixer");
 
   const loadUser = useCallback(async () => {
     abortControllerRef.current?.abort();
@@ -260,10 +286,10 @@ const UpdateUser: React.FC = () => {
     const signal = abortControllerRef.current.signal;
 
     if (!id) {
-      setErrorFetch('ID de usuario inválido.');
+      setErrorFetch("ID de usuario inválido.");
       setIsLoading(false);
-      showSnackBar('ID de usuario inválido.');
-      navigate('/admin/users/read');
+      showSnackBar("ID de usuario inválido.");
+      navigate("/admin/users/read");
       return;
     }
 
@@ -273,27 +299,27 @@ const UpdateUser: React.FC = () => {
 
     try {
       const userData = await getUserById(id, { signal });
-      setOriginalUsername(userData.username || 'N/A');
+      setOriginalUsername(userData.username || "N/A");
 
       setUserFormData({
-        firstName: userData.firstName || '',
-        lastName: userData.lastName || '',
-        email: userData.email || '',
+        firstName: userData.firstName || "",
+        lastName: userData.lastName || "",
+        email: userData.email || "",
         active: userData.active ?? true,
-        role: userData.role || ['consumer'],
-        avatar: userData.avatar || '',
-        phone: userData.phone || '',
-        country: userData.country || '',
-        city: userData.city || '',
-        gender: userData.gender || '',
-        address: userData.address || '',
-        billingAddress: userData.billingAddress || '',
-        shippingAddress: userData.shippingAddress || '',
-        instagram: userData.instagram || '',
-        facebook: userData.facebook || '',
-        twitter: userData.twitter || '',
-        ci: userData.ci || '',
-        account: userData.account || '',
+        role: userData.role || ["consumer"],
+        avatar: userData.avatar || "",
+        phone: userData.phone || "",
+        country: userData.country || "",
+        city: userData.city || "",
+        gender: userData.gender || "",
+        address: userData.address || "",
+        billingAddress: userData.billingAddress || "",
+        shippingAddress: userData.shippingAddress || "",
+        instagram: userData.instagram || "",
+        facebook: userData.facebook || "",
+        twitter: userData.twitter || "",
+        ci: userData.ci || "",
+        account: userData.account || "",
       });
 
       setBirthdateValue(userData.birthdate ? dayjs(userData.birthdate) : null);
@@ -301,20 +327,22 @@ const UpdateUser: React.FC = () => {
       if (userData.prixer) {
         setPrixerFormData({
           specialty: userData.prixer.specialty || [],
-          description: userData.prixer.description || '',
-          instagram: userData.prixer.instagram || '',
-          twitter: userData.prixer.twitter || '',
-          facebook: userData.prixer.facebook || '',
-          phone: userData.prixer.phone || '',
-          avatar: userData.prixer.avatar || '',
+          description: userData.prixer.description || "",
+          instagram: userData.prixer.instagram || "",
+          twitter: userData.prixer.twitter || "",
+          facebook: userData.prixer.facebook || "",
+          phone: userData.prixer.phone || "",
+          avatar: userData.prixer.avatar || "",
           termsAgree: userData.prixer.termsAgree ?? false,
         });
-        if (!userData.role?.includes('prixer')) {
+        if (!userData.role?.includes("prixer")) {
           setUserFormData((prev) => ({
             ...prev,
-            role: [...(prev.role || []), 'prixer'],
+            role: [...(prev.role || []), "prixer"],
           }));
-          console.warn("Prixer data found but role missing. Role 'prixer' added to form state.");
+          console.warn(
+            "Prixer data found but role missing. Role 'prixer' added to form state.",
+          );
         }
         if (userData.account !== undefined) {
           const fetchedBalance = await getBalance(userData.account, { signal });
@@ -324,22 +352,26 @@ const UpdateUser: React.FC = () => {
         }
       } else {
         setPrixerFormData(initialPrixerFormState);
-        if (userData.role?.includes('prixer')) {
+        if (userData.role?.includes("prixer")) {
           setUserFormData((prev) => ({
             ...prev,
-            role: prev.role?.filter((r) => r !== 'prixer') || [],
+            role: prev.role?.filter((r) => r !== "prixer") || [],
           }));
-          console.warn("Role 'prixer' found but no data. Role 'prixer' removed from form state.");
+          console.warn(
+            "Role 'prixer' found but no data. Role 'prixer' removed from form state.",
+          );
         }
       }
     } catch (err: any) {
-      if (err.name === 'CanceledError' || err.name === 'AbortError') {
-        console.log('Request successfully aborted.');
+      if (err.name === "CanceledError" || err.name === "AbortError") {
+        console.log("Request successfully aborted.");
         return;
       }
-      console.error('Failed to load user:', err);
+      console.error("Failed to load user:", err);
       const message =
-        err.response?.data?.message || err.message || 'Error al cargar datos del usuario.';
+        err.response?.data?.message ||
+        err.message ||
+        "Error al cargar datos del usuario.";
       setErrorFetch(message);
       showSnackBar(message);
     } finally {
@@ -376,12 +408,12 @@ const UpdateUser: React.FC = () => {
         setTotalMovements(response.totalCount);
         setErrorFetch(null);
       } catch (err: any) {
-        const message = err.message || 'Error al cargar movimientos.';
+        const message = err.message || "Error al cargar movimientos.";
         setErrorFetch(message);
         if (!showLoadingIndicator) {
           showSnackBar(`Error al actualizar: ${message}`);
         }
-        console.error('Error fetching filtered/paginated data:', err);
+        console.error("Error fetching filtered/paginated data:", err);
       } finally {
         if (showLoadingIndicator || movements.length === 0) {
           setIsLoading(false);
@@ -401,7 +433,7 @@ const UpdateUser: React.FC = () => {
       startDate,
       endDate,
       userFormData.account,
-    ]
+    ],
   );
 
   useEffect(() => {
@@ -413,9 +445,12 @@ const UpdateUser: React.FC = () => {
   //   loadMovements(false)
   // }, [loadMovements])
 
-  const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Movement) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
+  const handleRequestSort = (
+    event: React.MouseEvent<unknown>,
+    property: keyof Movement,
+  ) => {
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
     setPage(0);
   };
@@ -424,7 +459,9 @@ const UpdateUser: React.FC = () => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -442,16 +479,21 @@ const UpdateUser: React.FC = () => {
   // }
 
   const handleUserInputChange = (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | { name?: string; value: unknown }>
+    event: ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | { name?: string; value: unknown }
+    >,
   ) => {
     const target = event.target as any; // Need 'any' for Select compatibility
     const name = target.name as keyof User;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
+    const value = target.type === "checkbox" ? target.checked : target.value;
 
     setUserFormData((prevData) => ({ ...prevData, [name]: value }));
 
     // Clear validation error for this field
-    if (validationErrors && validationErrors[name as keyof UserBaseValidationErrors]) {
+    if (
+      validationErrors &&
+      validationErrors[name as keyof UserBaseValidationErrors]
+    ) {
       setValidationErrors((prevErrors) => {
         const updated = { ...prevErrors };
         delete updated[name as keyof UserBaseValidationErrors];
@@ -462,10 +504,13 @@ const UpdateUser: React.FC = () => {
   };
 
   type RoleOptionType = (typeof USER_ROLE_OPTIONS)[number];
-  const handleRolesChange = (event: SyntheticEvent, newValue: RoleOptionType[]) => {
+  const handleRolesChange = (
+    event: SyntheticEvent,
+    newValue: RoleOptionType[],
+  ) => {
     const roleValues = newValue.map((option) => option.value);
-    const hadPrixerBefore = userFormData.role?.includes('prixer');
-    const hasPrixerNow = roleValues.includes('prixer');
+    const hadPrixerBefore = userFormData.role?.includes("prixer");
+    const hasPrixerNow = roleValues.includes("prixer");
 
     setUserFormData((prev) => ({ ...prev, role: roleValues }));
 
@@ -490,14 +535,19 @@ const UpdateUser: React.FC = () => {
     }
   };
 
-  const handlePrixerInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handlePrixerInputChange = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const target = event.target as HTMLInputElement;
     const name = target.name as keyof Prixer;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
+    const value = target.type === "checkbox" ? target.checked : target.value;
 
     setPrixerFormData((prevData) => ({ ...prevData, [name]: value }));
 
-    if (validationErrors?.prixer && validationErrors.prixer[name as keyof PrixerValidationErrors]) {
+    if (
+      validationErrors?.prixer &&
+      validationErrors.prixer[name as keyof PrixerValidationErrors]
+    ) {
       setValidationErrors((prevErrors) => {
         // Create a new prixer errors object without the cleared error
         const updatedPrixerErrors = { ...(prevErrors?.prixer || {}) };
@@ -541,10 +591,12 @@ const UpdateUser: React.FC = () => {
   // Handler for Date Picker (Using the more robust version from CreateUser)
   const handleBirthdateChange = (
     newValue: unknown,
-    context: PickerChangeHandlerContext<DateValidationError>
+    context: PickerChangeHandlerContext<DateValidationError>,
   ) => {
     // Convert various possible inputs to Dayjs or null
-    const dayjsValue = newValue ? dayjs(newValue as Date | Dayjs | string) : null;
+    const dayjsValue = newValue
+      ? dayjs(newValue as Date | Dayjs | string)
+      : null;
 
     // Basic check if Dayjs could parse it
     if (dayjsValue && dayjsValue.isValid()) {
@@ -554,7 +606,7 @@ const UpdateUser: React.FC = () => {
       setBirthdateValue(null);
       if (newValue) {
         // Only log if there was an attempt to set an invalid date
-        console.error('Invalid date value received from DatePicker:', newValue);
+        console.error("Invalid date value received from DatePicker:", newValue);
       }
     }
 
@@ -574,16 +626,22 @@ const UpdateUser: React.FC = () => {
     const errors: UserValidationErrors = {};
 
     // --- User Validation ---
-    if (!userFormData.firstName?.trim()) errors.firstName = 'Nombre obligatorio.';
-    if (!userFormData.lastName?.trim()) errors.lastName = 'Apellido obligatorio.';
-    if (!userFormData.email?.trim()) errors.email = 'Email obligatorio.';
-    else if (!isAValidEmail(userFormData.email)) errors.email = 'Formato de Email inválido.';
+    if (!userFormData.firstName?.trim())
+      errors.firstName = "Nombre obligatorio.";
+    if (!userFormData.lastName?.trim())
+      errors.lastName = "Apellido obligatorio.";
+    if (!userFormData.email?.trim()) errors.email = "Email obligatorio.";
+    else if (!isAValidEmail(userFormData.email))
+      errors.email = "Formato de Email inválido.";
     if (!userFormData.role || userFormData.role.length === 0)
-      errors.role = 'Seleccione al menos un rol.';
+      errors.role = "Seleccione al menos un rol.";
 
     // Validate URL format for User avatar if provided
-    if (userFormData.avatar && !/^https?:\/\/.+\..+/.test(userFormData.avatar)) {
-      errors.avatar = 'Formato de URL inválido para avatar de usuario.';
+    if (
+      userFormData.avatar &&
+      !/^https?:\/\/.+\..+/.test(userFormData.avatar)
+    ) {
+      errors.avatar = "Formato de URL inválido para avatar de usuario.";
     }
     // Add other User field validations  (e.g., phone format)
 
@@ -591,14 +649,17 @@ const UpdateUser: React.FC = () => {
     if (isPrixerRoleSelected) {
       const prixerErrors: PrixerValidationErrors = {};
       if (!prixerFormData.description?.trim()) {
-        prixerErrors.description = 'Descripción de Prixer obligatoria.';
+        prixerErrors.description = "Descripción de Prixer obligatoria.";
       }
       if (!prixerFormData.specialty || prixerFormData.specialty.length === 0) {
-        prixerErrors.specialty = 'Seleccione al menos una especialidad.';
+        prixerErrors.specialty = "Seleccione al menos una especialidad.";
       }
       // Validate URL format for Prixer avatar if provided
-      if (prixerFormData.avatar && !/^https?:\/\/.+\..+/.test(prixerFormData.avatar)) {
-        prixerErrors.avatar = 'Formato de URL inválido para avatar de prixer.';
+      if (
+        prixerFormData.avatar &&
+        !/^https?:\/\/.+\..+/.test(prixerFormData.avatar)
+      ) {
+        prixerErrors.avatar = "Formato de URL inválido para avatar de prixer.";
       }
       // Add validation for other *required* Prixer fields here (e.g., phone)
       // if (!prixerFormData.phone?.trim()) prixerErrors.phone = "Teléfono de Prixer obligatorio.";
@@ -612,7 +673,7 @@ const UpdateUser: React.FC = () => {
 
     setValidationErrors(Object.keys(errors).length > 0 ? errors : null); // Set to null if no errors
     if (Object.keys(errors).length > 0) {
-      showSnackBar('Por favor, corrija los errores indicados.');
+      showSnackBar("Por favor, corrija los errores indicados.");
     }
     return Object.keys(errors).length === 0; // Return true if no errors
   };
@@ -651,7 +712,7 @@ const UpdateUser: React.FC = () => {
     if (isPrixerRoleSelected) {
       payload.prixer = {
         specialty: prixerFormData.specialty || [],
-        description: prixerFormData.description || '',
+        description: prixerFormData.description || "",
         termsAgree: prixerFormData.termsAgree ?? false,
         instagram: prixerFormData.instagram?.trim() || undefined,
         twitter: prixerFormData.twitter?.trim() || undefined,
@@ -665,20 +726,27 @@ const UpdateUser: React.FC = () => {
     }
 
     try {
-      console.log('Updating User Data for ID:', id, 'Payload:', payload);
+      console.log("Updating User Data for ID:", id, "Payload:", payload);
       const response = await updateUser(id, payload); // Use the updateUser API call
 
       if (response) {
         // Assuming updateUser returns the updated user or a success indicator
-        showSnackBar(`Usuario "${originalUsername}" actualizado correctamente.`);
-        navigate('/admin/users/read'); // Navigate back to the list on success
+        showSnackBar(
+          `Usuario "${originalUsername}" actualizado correctamente.`,
+        );
+        navigate("/admin/users/read"); // Navigate back to the list on success
       } else {
         // This case might occur if the API call resolves but indicates failure without throwing
-        throw new Error('La API indicó que la actualización falló, pero no arrojó un error.');
+        throw new Error(
+          "La API indicó que la actualización falló, pero no arrojó un error.",
+        );
       }
     } catch (err: any) {
-      console.error('Failed to update user:', err);
-      const message = err.response?.data?.message || err.message || 'Error al guardar los cambios.';
+      console.error("Failed to update user:", err);
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        "Error al guardar los cambios.";
       // Try to display error message more generically or associate with a primary field
       setValidationErrors((prev) => ({ ...(prev || {}), firstName: message })); // Example: show near firstName
       showSnackBar(message);
@@ -708,19 +776,21 @@ const UpdateUser: React.FC = () => {
       if (response?.success) {
         setFormData(initialFormState);
         showSnackBar(
-          `Movimiento "${formData.description.substring(0, 20)}..." creado exitosamente.`
+          `Movimiento "${formData.description.substring(0, 20)}..." creado exitosamente.`,
         );
         if (response?.success) {
           setOpenNewPay(false);
-          setAmount('');
+          setAmount("");
           await Promise.all([loadUser(), loadMovements()]);
         }
       } else {
-        throw new Error('La creación del movimiento no devolvió una respuesta esperada.');
+        throw new Error(
+          "La creación del movimiento no devolvió una respuesta esperada.",
+        );
       }
     } catch (err: any) {
-      console.error('Failed to create movement:', err);
-      const message = err.message || 'Error al crear el movimiento.';
+      console.error("Failed to create movement:", err);
+      const message = err.message || "Error al crear el movimiento.";
       showSnackBar(message);
     } finally {
       setIsSubmitting(false);
@@ -738,16 +808,20 @@ const UpdateUser: React.FC = () => {
       if (selectedMov && selectedMov._id) {
         const response = await reverseMovement(selectedMov?._id);
         if (response) {
-          showSnackBar(`Movimiento "${selectedMov?._id?.slice(-6)}..." revertido exitosamente.`);
+          showSnackBar(
+            `Movimiento "${selectedMov?._id?.slice(-6)}..." revertido exitosamente.`,
+          );
         } else {
-          throw new Error('La reversión del movimiento no devolvió una respuesta esperada.');
+          throw new Error(
+            "La reversión del movimiento no devolvió una respuesta esperada.",
+          );
         }
       } else {
-        console.error('No se pudo obtener el ID del movimiento seleccionado.');
+        console.error("No se pudo obtener el ID del movimiento seleccionado.");
       }
     } catch (err: any) {
-      console.error('Failed to load data:', err);
-      const errorMsg = err.message || 'Error al cargar los datos.';
+      console.error("Failed to load data:", err);
+      const errorMsg = err.message || "Error al cargar los datos.";
       showSnackBar(errorMsg);
     } finally {
       setIsLoading(false);
@@ -757,7 +831,7 @@ const UpdateUser: React.FC = () => {
   };
 
   const handleCancel = () => {
-    navigate('/admin/users/read');
+    navigate("/admin/users/read");
   };
 
   const handleTypeChange = (event: SelectChangeEvent<MovementType>) => {
@@ -769,7 +843,9 @@ const UpdateUser: React.FC = () => {
     if (errorSubmit) setErrorSubmit(null);
   };
 
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const { name, value } = event.target;
     setFormData((prevData) => ({
       ...prevData,
@@ -790,46 +866,54 @@ const UpdateUser: React.FC = () => {
   const newWallet = async () => {
     const response = await createWallet(userFormData?.email!);
     if (response.data.success) {
-      showSnackBar('Cartera creada y balance actualizado exitosamente.');
+      showSnackBar("Cartera creada y balance actualizado exitosamente.");
       await loadUser();
     } else {
-      showSnackBar('No fue posible crear la cartera, intente de nuevo');
+      showSnackBar("No fue posible crear la cartera, intente de nuevo");
     }
   };
 
   interface EnhancedTableProps {
-    onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Movement) => void;
+    onRequestSort: (
+      event: React.MouseEvent<unknown>,
+      property: keyof Movement,
+    ) => void;
     order: Sort;
     orderBy: string;
   }
 
   function EnhancedTableHead(props: EnhancedTableProps) {
     const { order, orderBy, onRequestSort } = props;
-    const createSortHandler = (property: keyof Movement) => (event: React.MouseEvent<unknown>) => {
-      onRequestSort(event, property);
-    };
+    const createSortHandler =
+      (property: keyof Movement) => (event: React.MouseEvent<unknown>) => {
+        onRequestSort(event, property);
+      };
 
     return (
-      <TableHead sx={{ backgroundColor: (theme) => theme.palette.action.hover }}>
+      <TableHead
+        sx={{ backgroundColor: (theme) => theme.palette.action.hover }}
+      >
         <TableRow>
           {headCells.map((headCell) => (
             <TableCell
               key={headCell.id}
-              align={headCell.numeric ? 'right' : 'left'}
-              padding={'normal'}
+              align={headCell.numeric ? "right" : "left"}
+              padding={"normal"}
               sortDirection={orderBy === headCell.id ? order : false}
-              sx={{ fontWeight: 'bold' }}
+              sx={{ fontWeight: "bold" }}
             >
               {headCell.sortable ? (
                 <TableSortLabel
                   active={orderBy === headCell.id}
-                  direction={orderBy === headCell.id ? order : 'asc'}
+                  direction={orderBy === headCell.id ? order : "asc"}
                   onClick={createSortHandler(headCell.id as keyof Movement)}
                 >
                   {headCell.label}
                   {orderBy === headCell.id ? (
                     <Box component="span" sx={visuallyHidden}>
-                      {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                      {order === "desc"
+                        ? "sorted descending"
+                        : "sorted ascending"}
                     </Box>
                   ) : null}
                 </TableSortLabel>
@@ -849,9 +933,9 @@ const UpdateUser: React.FC = () => {
         {isLoading && (
           <Box
             sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
               p: 5,
             }}
           >
@@ -883,35 +967,45 @@ const UpdateUser: React.FC = () => {
           <>
             <Box
               sx={{
-                display: 'flex',
-                alignItems: 'center',
+                display: "flex",
+                alignItems: "center",
                 gap: 3,
-                justifyContent: 'center',
+                justifyContent: "center",
               }}
             >
               <Avatar
-                src={userFormData?.avatar || prixerFormData?.avatar || undefined}
+                src={
+                  userFormData?.avatar || prixerFormData?.avatar || undefined
+                }
                 alt={userFormData.username}
                 sx={{ width: 56, height: 56 }}
-              />{' '}
+              />{" "}
               <Box
                 sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'start',
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "start",
                 }}
               >
                 <Typography
                   variant="h3"
                   color="secondary"
                 >{`${userFormData.firstName} ${userFormData.lastName}`}</Typography>
-                <Typography variant="h6" color="secondary" sx={{ lineHeight: '80%' }}>
-                  {userFormData?.role ? userFormData?.role[0] : 'Cliente'}
+                <Typography
+                  variant="h6"
+                  color="secondary"
+                  sx={{ lineHeight: "80%" }}
+                >
+                  {userFormData?.role ? userFormData?.role[0] : "Cliente"}
                 </Typography>
               </Box>
             </Box>
 
-            <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+            <Tabs
+              value={value}
+              onChange={handleChange}
+              aria-label="basic tabs example"
+            >
               <Tab label="Info" {...a11yProps(0)} />
               <Tab label="Balance" {...a11yProps(1)} />
             </Tabs>
@@ -919,7 +1013,9 @@ const UpdateUser: React.FC = () => {
               <form onSubmit={handleSubmit} noValidate>
                 <Grid2 container spacing={3}>
                   <Grid2 size={{ xs: 12 }}>
-                    <Typography variant="h6">Información del Usuario</Typography>
+                    <Typography variant="h6">
+                      Información del Usuario
+                    </Typography>
                   </Grid2>
                   <Grid2 size={{ xs: 12, sm: 6 }}>
                     <TextField
@@ -985,15 +1081,21 @@ const UpdateUser: React.FC = () => {
                       id="user-roles-select"
                       options={USER_ROLE_OPTIONS}
                       value={USER_ROLE_OPTIONS.filter((option) =>
-                        (userFormData.role || []).includes(option.value)
+                        (userFormData.role || []).includes(option.value),
                       )}
                       onChange={handleRolesChange}
                       disableCloseOnSelect
                       getOptionLabel={(option) => option.label}
-                      isOptionEqualToValue={(option, value) => option.value === value.value}
+                      isOptionEqualToValue={(option, value) =>
+                        option.value === value.value
+                      }
                       renderTags={(value, getTagProps) =>
                         value.map((option, index) => (
-                          <Chip label={option.label} size="small" {...getTagProps({ index })} />
+                          <Chip
+                            label={option.label}
+                            size="small"
+                            {...getTagProps({ index })}
+                          />
                         ))
                       }
                       renderInput={(params) => (
@@ -1007,7 +1109,10 @@ const UpdateUser: React.FC = () => {
                       disabled={isSubmitting}
                     />
                   </Grid2>
-                  <Grid2 size={{ xs: 12, sm: 6 }} sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Grid2
+                    size={{ xs: 12, sm: 6 }}
+                    sx={{ display: "flex", alignItems: "center" }}
+                  >
                     <FormControlLabel
                       control={
                         <Checkbox
@@ -1047,7 +1152,9 @@ const UpdateUser: React.FC = () => {
                   <Grid2 size={{ xs: 12, sm: 6 }}></Grid2> {/* Spacer */}
                   <Grid2 size={{ xs: 12 }}>
                     <Divider sx={{ my: 2 }}>
-                      <Typography variant="overline">Información Adicional (Opcional)</Typography>
+                      <Typography variant="overline">
+                        Información Adicional (Opcional)
+                      </Typography>
                     </Divider>
                   </Grid2>
                   <Grid2 size={{ xs: 12, sm: 3 }}>
@@ -1113,7 +1220,7 @@ const UpdateUser: React.FC = () => {
                       error={!!validationErrors?.billingAddress}
                       helperText={
                         validationErrors?.billingAddress ||
-                        'Opcional, si es diferente a la principal'
+                        "Opcional, si es diferente a la principal"
                       }
                     />
                   </Grid2>
@@ -1130,7 +1237,7 @@ const UpdateUser: React.FC = () => {
                       error={!!validationErrors?.shippingAddress}
                       helperText={
                         validationErrors?.shippingAddress ||
-                        'Opcional, si es diferente a la principal'
+                        "Opcional, si es diferente a la principal"
                       }
                     />
                   </Grid2>
@@ -1178,7 +1285,7 @@ const UpdateUser: React.FC = () => {
                       <InputLabel>Género</InputLabel>
                       <Select
                         name="gender"
-                        value={userFormData.gender || ''} // Ensure controlled component
+                        value={userFormData.gender || ""} // Ensure controlled component
                         label="Género"
                         onChange={handleUserInputChange as any} // Cast needed for Select onChange
                         disabled={isSubmitting}
@@ -1192,7 +1299,9 @@ const UpdateUser: React.FC = () => {
                           </MenuItem>
                         ))}
                       </Select>
-                      <FormHelperText>{validationErrors?.gender}</FormHelperText>
+                      <FormHelperText>
+                        {validationErrors?.gender}
+                      </FormHelperText>
                     </FormControl>
                   </Grid2>
                   <Grid2 size={{ xs: 12, sm: 4 }}>
@@ -1236,13 +1345,15 @@ const UpdateUser: React.FC = () => {
                       size={{ xs: 12 }}
                       component={Paper}
                       variant="outlined"
-                      sx={{ p: 2, mt: 3, mb: 1, borderStyle: 'dashed' }}
+                      sx={{ p: 2, mt: 3, mb: 1, borderStyle: "dashed" }}
                     >
-                      {' '}
+                      {" "}
                       {/* Visually group Prixer fields */}
                       <Grid2 container spacing={3}>
                         <Grid2 size={{ xs: 12 }}>
-                          <Typography variant="h6">Detalles del Prixer</Typography>
+                          <Typography variant="h6">
+                            Detalles del Prixer
+                          </Typography>
                         </Grid2>
 
                         <Grid2 size={{ xs: 12 }}>
@@ -1271,9 +1382,16 @@ const UpdateUser: React.FC = () => {
                             disableCloseOnSelect
                             freeSolo={false} // Set true if users can add custom specialties
                             getOptionLabel={(option) => option} // Simple string labels
-                            renderTags={(value: readonly string[], getTagProps) =>
+                            renderTags={(
+                              value: readonly string[],
+                              getTagProps,
+                            ) =>
                               value.map((option: string, index: number) => (
-                                <Chip label={option} size="small" {...getTagProps({ index })} />
+                                <Chip
+                                  label={option}
+                                  size="small"
+                                  {...getTagProps({ index })}
+                                />
                               ))
                             }
                             renderInput={(params) => (
@@ -1284,12 +1402,16 @@ const UpdateUser: React.FC = () => {
                                 error={!!validationErrors?.prixer?.specialty}
                                 helperText={
                                   validationErrors?.prixer?.specialty ||
-                                  (isPrixerRoleSelected ? 'Seleccione al menos una' : '')
+                                  (isPrixerRoleSelected
+                                    ? "Seleccione al menos una"
+                                    : "")
                                 }
                               />
                             )}
                             disabled={isSubmitting}
-                            isOptionEqualToValue={(option, value) => option === value}
+                            isOptionEqualToValue={(option, value) =>
+                              option === value
+                            }
                           />
                         </Grid2>
 
@@ -1319,26 +1441,29 @@ const UpdateUser: React.FC = () => {
                       />
                     </Grid2> */}
 
-                        {prixerFormData.avatar && !validationErrors?.prixer?.avatar && (
-                          <Grid2 size={{ xs: 12 }}>
-                            <Box
-                              sx={{
-                                mt: -2,
-                                mb: 1,
-                                display: 'flex',
-                                alignItems: 'center',
-                              }}
-                            >
-                              {' '}
-                              {/* Adjust spacing */}
-                              <Avatar
-                                src={prixerFormData.avatar}
-                                sx={{ width: 60, height: 60, mr: 1 }}
-                              />
-                              <Typography variant="caption">Vista Previa (Prixer)</Typography>
-                            </Box>
-                          </Grid2>
-                        )}
+                        {prixerFormData.avatar &&
+                          !validationErrors?.prixer?.avatar && (
+                            <Grid2 size={{ xs: 12 }}>
+                              <Box
+                                sx={{
+                                  mt: -2,
+                                  mb: 1,
+                                  display: "flex",
+                                  alignItems: "center",
+                                }}
+                              >
+                                {" "}
+                                {/* Adjust spacing */}
+                                <Avatar
+                                  src={prixerFormData.avatar}
+                                  sx={{ width: 60, height: 60, mr: 1 }}
+                                />
+                                <Typography variant="caption">
+                                  Vista Previa (Prixer)
+                                </Typography>
+                              </Box>
+                            </Grid2>
+                          )}
 
                         <Grid2 size={{ xs: 12, sm: 4 }}>
                           <TextField
@@ -1380,8 +1505,8 @@ const UpdateUser: React.FC = () => {
                         <Grid2
                           size={{ xs: 12 }}
                           sx={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
+                            display: "flex",
+                            justifyContent: "space-between",
                           }}
                         >
                           <FormControlLabel
@@ -1407,7 +1532,12 @@ const UpdateUser: React.FC = () => {
                     </Grid2>
                   )}
                   <Grid2 size={{ xs: 12 }}>
-                    <Stack direction="row" justifyContent="flex-end" spacing={2} sx={{ mt: 3 }}>
+                    <Stack
+                      direction="row"
+                      justifyContent="flex-end"
+                      spacing={2}
+                      sx={{ mt: 3 }}
+                    >
                       <Button
                         type="button"
                         variant="outlined"
@@ -1423,28 +1553,39 @@ const UpdateUser: React.FC = () => {
                         color="primary"
                         disabled={isSubmitting || isLoading}
                         startIcon={
-                          isSubmitting ? <CircularProgress size={20} color="inherit" /> : null
+                          isSubmitting ? (
+                            <CircularProgress size={20} color="inherit" />
+                          ) : null
                         }
                       >
-                        {isSubmitting ? 'Guardando...' : 'Guardar Cambios'}
+                        {isSubmitting ? "Guardando..." : "Guardar Cambios"}
                       </Button>
                     </Stack>
                   </Grid2>
                   {validationErrors &&
                     !Object.keys(validationErrors).some((key) =>
-                      ['firstName', 'lastName', 'email', 'role', 'prixer'].includes(key)
+                      [
+                        "firstName",
+                        "lastName",
+                        "email",
+                        "role",
+                        "prixer",
+                      ].includes(key),
                     ) && (
                       <Grid2 size={{ xs: 12 }}>
                         <Alert severity="warning" sx={{ mt: 2 }}>
-                          Se encontraron errores de validación generales no asociados a un campo
-                          específico. Por favor revise el formulario.
+                          Se encontraron errores de validación generales no
+                          asociados a un campo específico. Por favor revise el
+                          formulario.
                         </Alert>
                       </Grid2>
                     )}
                   {validationErrors &&
                     validationErrors.firstName &&
                     !validationErrors.lastName /* ... more specific checks maybe ... */ &&
-                    !['Nombre obligatorio.'].includes(validationErrors.firstName) && (
+                    !["Nombre obligatorio."].includes(
+                      validationErrors.firstName,
+                    ) && (
                       <Grid2 size={{ xs: 12 }}>
                         <Alert severity="error" sx={{ mt: 2 }}>
                           Error de la API: {validationErrors.firstName}
@@ -1461,17 +1602,21 @@ const UpdateUser: React.FC = () => {
                   size={{ xs: 12 }}
                   sx={{
                     mb: 6,
-                    display: 'flex',
-                    gap: '2rem',
-                    justifyContent: 'center',
-                    alignItems: 'center',
+                    display: "flex",
+                    gap: "2rem",
+                    justifyContent: "center",
+                    alignItems: "center",
                   }}
                 >
-                  <Typography color="secondary" variant="h4" sx={{ textAlign: 'center' }}>
-                    Balance:{' '}
+                  <Typography
+                    color="secondary"
+                    variant="h4"
+                    sx={{ textAlign: "center" }}
+                  >
+                    Balance:{" "}
                     {
-                      <strong style={{ color: balance > 0 ? 'green' : 'red' }}>
-                        {balance?.toLocaleString('de-DE', {
+                      <strong style={{ color: balance > 0 ? "green" : "red" }}>
+                        {balance?.toLocaleString("de-DE", {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         })}
@@ -1483,7 +1628,7 @@ const UpdateUser: React.FC = () => {
                   {userFormData.account ? (
                     <>
                       <Button
-                        sx={{ margin: '2rem 0' }}
+                        sx={{ margin: "2rem 0" }}
                         onClick={() => setOpenNewPay(true)}
                         variant="outlined"
                         startIcon={<AddCircleOutline />}
@@ -1499,12 +1644,12 @@ const UpdateUser: React.FC = () => {
                       >
                         <Box
                           sx={{
-                            position: 'absolute',
-                            top: '50%',
-                            left: '50%',
-                            transform: 'translate(-50%, -50%)',
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)",
                             width: 800,
-                            bgcolor: 'background.paper',
+                            bgcolor: "background.paper",
                             boxShadow: 24,
                             borderRadius: 2,
                             pt: 4,
@@ -1515,7 +1660,7 @@ const UpdateUser: React.FC = () => {
                           <Typography
                             color="secondary"
                             variant="h5"
-                            sx={{ mb: 3, textAlign: 'center' }}
+                            sx={{ mb: 3, textAlign: "center" }}
                           >
                             Registrar Movimiento
                           </Typography>
@@ -1539,7 +1684,10 @@ const UpdateUser: React.FC = () => {
                                     onChange={handleTypeChange}
                                   >
                                     {movementTypeOptions.map((typeOption) => (
-                                      <MenuItem key={typeOption} value={typeOption}>
+                                      <MenuItem
+                                        key={typeOption}
+                                        value={typeOption}
+                                      >
                                         {typeOption}
                                       </MenuItem>
                                     ))}
@@ -1558,7 +1706,7 @@ const UpdateUser: React.FC = () => {
                                   required
                                   fullWidth
                                   disabled={isSubmitting}
-                                  inputProps={{ step: '0.01' }}
+                                  inputProps={{ step: "0.01" }}
                                   error={!!errorSubmit && isNaN(formData.value)}
                                 />
                               </Grid2>
@@ -1574,14 +1722,17 @@ const UpdateUser: React.FC = () => {
                                   multiline
                                   rows={3}
                                   disabled={isSubmitting}
-                                  error={!!errorSubmit && !formData.description.trim()}
+                                  error={
+                                    !!errorSubmit &&
+                                    !formData.description.trim()
+                                  }
                                 />
                               </Grid2>
                               <Grid2 size={{ xs: 12, sm: 6 }}>
                                 <TextField
                                   label="ID de Orden (Opcional)"
                                   name="order"
-                                  value={formData.order || ''}
+                                  value={formData.order || ""}
                                   onChange={handleInputChange}
                                   fullWidth
                                   disabled={isSubmitting}
@@ -1612,13 +1763,18 @@ const UpdateUser: React.FC = () => {
                                     disabled={isSubmitting}
                                     startIcon={
                                       isSubmitting ? (
-                                        <CircularProgress size={20} color="inherit" />
+                                        <CircularProgress
+                                          size={20}
+                                          color="inherit"
+                                        />
                                       ) : (
                                         <SaveIcon color="inherit" />
                                       )
                                     }
                                   >
-                                    {isSubmitting ? 'Creando...' : 'Guardar Movimiento'}
+                                    {isSubmitting
+                                      ? "Creando..."
+                                      : "Guardar Movimiento"}
                                   </Button>
                                 </Stack>
                               </Grid2>
@@ -1639,7 +1795,7 @@ const UpdateUser: React.FC = () => {
                     <Box>
                       <Typography>Este prixer no tiene cartera aún.</Typography>
                       <Button
-                        sx={{ margin: '2rem auto', width: '100%' }}
+                        sx={{ margin: "2rem auto", width: "100%" }}
                         onClick={newWallet}
                         variant="outlined"
                         startIcon={<AddCircleOutline />}
@@ -1658,18 +1814,27 @@ const UpdateUser: React.FC = () => {
                   )}
                   {isLoading && movements.length > 0 ? (
                     Array.from(new Array(rowsPerPage)).map((_, index) => (
-                      <TableRow key={`skeleton-${index}`} style={{ height: 53 }}>
+                      <TableRow
+                        key={`skeleton-${index}`}
+                        style={{ height: 53 }}
+                      >
                         {headCells.map((cell) => (
-                          <TableCell key={cell.id} align={cell.numeric ? 'right' : 'left'}>
+                          <TableCell
+                            key={cell.id}
+                            align={cell.numeric ? "right" : "left"}
+                          >
                             <Skeleton animation="wave" />
                           </TableCell>
                         ))}
                       </TableRow>
                     ))
                   ) : (
-                    <Paper sx={{ width: '100%', mb: 2 }}>
+                    <Paper sx={{ width: "100%", mb: 2 }}>
                       <TableContainer>
-                        <Table sx={{ minWidth: 750 }} aria-label="movements table">
+                        <Table
+                          sx={{ minWidth: 750 }}
+                          aria-label="movements table"
+                        >
                           <EnhancedTableHead
                             order={order}
                             orderBy={orderBy}
@@ -1678,42 +1843,57 @@ const UpdateUser: React.FC = () => {
                           <TableBody>
                             {/* Show Skeletons OR Actual Data */}
                             {isLoading && movements.length > 0
-                              ? Array.from(new Array(rowsPerPage)).map((_, index) => (
-                                  <TableRow key={`skeleton-${index}`} style={{ height: 53 }}>
-                                    {headCells.map((cell) => (
-                                      <TableCell
-                                        key={cell.id}
-                                        align={cell.numeric ? 'right' : 'left'}
-                                      >
-                                        <Skeleton animation="wave" />
-                                      </TableCell>
-                                    ))}
-                                  </TableRow>
-                                ))
+                              ? Array.from(new Array(rowsPerPage)).map(
+                                  (_, index) => (
+                                    <TableRow
+                                      key={`skeleton-${index}`}
+                                      style={{ height: 53 }}
+                                    >
+                                      {headCells.map((cell) => (
+                                        <TableCell
+                                          key={cell.id}
+                                          align={
+                                            cell.numeric ? "right" : "left"
+                                          }
+                                        >
+                                          <Skeleton animation="wave" />
+                                        </TableCell>
+                                      ))}
+                                    </TableRow>
+                                  ),
+                                )
                               : movements.map((movement) => {
                                   return (
                                     <TableRow
                                       hover
                                       key={movement._id?.toString()}
                                       sx={{
-                                        '&:last-child td, &:last-child th': {
+                                        "&:last-child td, &:last-child th": {
                                           border: 0,
                                         },
                                       }}
                                     >
                                       {/* Apply responsive hiding here  */}
-                                      <TableCell>{formatDate(movement.date)}</TableCell>
+                                      <TableCell>
+                                        {formatDate(movement.date)}
+                                      </TableCell>
                                       <TableCell>{movement.type}</TableCell>
                                       <TableCell
                                         sx={{
-                                          display: { xs: 'none', md: 'table-cell' },
+                                          display: {
+                                            xs: "none",
+                                            md: "table-cell",
+                                          },
                                         }}
                                       >
                                         {movement.description}
                                       </TableCell>
                                       <TableCell
                                         sx={{
-                                          display: { xs: 'none', lg: 'table-cell' },
+                                          display: {
+                                            xs: "none",
+                                            lg: "table-cell",
+                                          },
                                         }}
                                       >
                                         {movement.order ? (
@@ -1722,38 +1902,40 @@ const UpdateUser: React.FC = () => {
                                             variant="body2"
                                             onClick={
                                               () => {
-                                                setSelectedOrderId(movement.order);
+                                                setSelectedOrderId(
+                                                  movement.order,
+                                                );
                                                 // openModal()
                                               }
                                               //     navigate(
                                               //       `/admin/order/detail/${movement.order}`
                                               //     )
                                             }
-                                            sx={{ textAlign: 'left' }}
+                                            sx={{ textAlign: "left" }}
                                           >
                                             {movement.order}
                                           </Link>
                                         ) : (
-                                          '-'
+                                          "-"
                                         )}
                                       </TableCell>
                                       <TableCell
                                         align="right"
                                         sx={{
                                           color:
-                                            movement.type === 'Depósito'
-                                              ? 'success.main'
-                                              : 'error.main',
-                                          fontWeight: 'medium',
+                                            movement.type === "Depósito"
+                                              ? "success.main"
+                                              : "error.main",
+                                          fontWeight: "medium",
                                         }}
                                       >
-                                        {`${movement.type === 'Retiro' ? '-' : ''} ${formatCurrency(movement.value)}`}
+                                        {`${movement.type === "Retiro" ? "-" : ""} ${formatCurrency(movement.value)}`}
                                       </TableCell>
                                       <TableCell align="right">
                                         <Box
                                           sx={{
-                                            display: 'flex',
-                                            justifyContent: 'flex-end',
+                                            display: "flex",
+                                            justifyContent: "flex-end",
                                             gap: 0.5,
                                           }}
                                         >
@@ -1761,8 +1943,12 @@ const UpdateUser: React.FC = () => {
                                             <IconButton
                                               aria-label="edit"
                                               color="primary"
-                                              onClick={() => handleDelete(movement)}
-                                              disabled={!movement._id || isLoading}
+                                              onClick={() =>
+                                                handleDelete(movement)
+                                              }
+                                              disabled={
+                                                !movement._id || isLoading
+                                              }
                                               size="small"
                                             >
                                               <DeleteIcon fontSize="small" />
@@ -1806,12 +1992,12 @@ const UpdateUser: React.FC = () => {
       >
         <Box
           sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
             width: 800,
-            bgcolor: 'background.paper',
+            bgcolor: "background.paper",
             // border: "2px solid #000",
             boxShadow: 24,
             borderRadius: 2,
@@ -1821,7 +2007,7 @@ const UpdateUser: React.FC = () => {
           }}
         >
           <Grid2>
-            <Typography variant="h5" sx={{ textAlign: 'center', mb: 2 }}>
+            <Typography variant="h5" sx={{ textAlign: "center", mb: 2 }}>
               ¿Seguro que quieres eliminar este movimiento?
             </Typography>
             <Typography>
@@ -1829,11 +2015,23 @@ const UpdateUser: React.FC = () => {
               revertirá su valor ($${selectedMov?.value}) del balance del prixer 
               ${userFormData.firstName} ${userFormData.lastName}.`}
             </Typography>
-            <Grid2 sx={{ mt: 2, justifyContent: 'center', gap: 2, display: 'flex' }}>
-              <Button color="secondary" onClick={() => openModal()} size="small" sx={{ ml: 1 }}>
+            <Grid2
+              sx={{ mt: 2, justifyContent: "center", gap: 2, display: "flex" }}
+            >
+              <Button
+                color="secondary"
+                onClick={() => openModal()}
+                size="small"
+                sx={{ ml: 1 }}
+              >
                 Cerrar
               </Button>
-              <Button color="primary" onClick={() => deleteMovement()} size="small" sx={{ ml: 1 }}>
+              <Button
+                color="primary"
+                onClick={() => deleteMovement()}
+                size="small"
+                sx={{ ml: 1 }}
+              >
                 Eliminar
               </Button>
             </Grid2>

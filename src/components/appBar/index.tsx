@@ -1,36 +1,36 @@
-import React, { useState, useEffect, useCallback } from "react"
-import axios from "axios"
-import { useNavigate, useLocation } from "react-router-dom"
-import { useTheme, SxProps, Theme } from "@mui/material/styles"
-import useMediaQuery from "@mui/material/useMediaQuery"
-import AppBar from "@mui/material/AppBar"
-import Toolbar from "@mui/material/Toolbar"
-import IconButton from "@mui/material/IconButton"
-import MenuItem from "@mui/material/MenuItem"
-import Menu from "@mui/material/Menu"
-import Tabs from "@mui/material/Tabs"
-import Tab from "@mui/material/Tab"
-import Drawer from "@mui/material/Drawer"
-import Divider from "@mui/material/Divider"
-import Badge from "@mui/material/Badge"
-import Box from "@mui/material/Box"
-import Button from "@mui/material/Button"
-import ButtonGroup from "@mui/material/ButtonGroup"
+import React, { useState, useEffect, useCallback } from "react";
+import axios from "axios";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useTheme, SxProps, Theme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import IconButton from "@mui/material/IconButton";
+import MenuItem from "@mui/material/MenuItem";
+import Menu from "@mui/material/Menu";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Drawer from "@mui/material/Drawer";
+import Divider from "@mui/material/Divider";
+import Badge from "@mui/material/Badge";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import ButtonGroup from "@mui/material/ButtonGroup";
 
-import MenuIcon from "@mui/icons-material/Menu"
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft"
-import ChevronRightIcon from "@mui/icons-material/ChevronRight"
-import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined"
-import AttachMoneyIcon from "@mui/icons-material/AttachMoney"
+import MenuIcon from "@mui/icons-material/Menu";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 
-import logo from "./Logotipo_Prixelart_H2.png"
-import anom from "../../assets/images/anom-user.png"
-import bag from "../../assets/images/shop-bag.png"
+import logo from "./Logotipo_Prixelart_H2.png";
+import anom from "../../assets/images/anom-user.png";
+import bag from "../../assets/images/shop-bag.png";
 
-import { useCurrency, useUser } from "context/GlobalContext"
-import { useCart } from "context/CartContext"
+import { useCurrency, useUser } from "context/GlobalContext";
+import { useCart } from "context/CartContext";
 
-const drawerWidth = 240
+const drawerWidth = 240;
 
 const NAV_ITEMS = [
   { label: "Home", value: "home", path: "/" },
@@ -41,10 +41,10 @@ const NAV_ITEMS = [
   { label: "Tracking", value: "tracking", path: "/track" },
   { label: "Testimonios", value: "testimonials", path: "/testimonios" },
   // { label: 'Organizaciones', value: 'organizaciones', path: '/organizaciones' },
-]
+];
 interface LogoButtonProps {
-  onClick: () => void
-  sx?: SxProps<Theme>
+  onClick: () => void;
+  sx?: SxProps<Theme>;
 }
 const LogoButton: React.FC<LogoButtonProps> = ({
   onClick,
@@ -60,11 +60,11 @@ const LogoButton: React.FC<LogoButtonProps> = ({
       style={{ width: 100, display: "block" }}
     />
   </IconButton>
-)
+);
 
 interface ShoppingCartButtonProps {
-  onClick: () => void
-  itemCount: number
+  onClick: () => void;
+  itemCount: number;
 }
 const ShoppingCartButton: React.FC<ShoppingCartButtonProps> = ({
   onClick,
@@ -84,100 +84,101 @@ const ShoppingCartButton: React.FC<ShoppingCartButtonProps> = ({
       />
     </Badge>
   </IconButton>
-)
+);
 
 const MenuAppBar: React.FC = () => {
-  const theme = useTheme()
-  const navigate = useNavigate()
-  const location = useLocation()
-  const isHome = location.pathname === "/" || location.pathname === "/prix-item"
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
-  const { cart } = useCart()
-  const { user, setUser } = useUser()
-  const [drawerOpen, setDrawerOpen] = useState(false)
+  const theme = useTheme();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isHome =
+    location.pathname === "/" || location.pathname === "/prix-item";
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const { cart } = useCart();
+  const { user, setUser } = useUser();
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [userMenuAnchorEl, setUserMenuAnchorEl] = useState<null | HTMLElement>(
-    null
-  )
-  const [avatar, setAvatar] = useState<string>("")
-  const [selectedTab, setSelectedTab] = useState<string | false>(false)
+    null,
+  );
+  const [avatar, setAvatar] = useState<string>("");
+  const [selectedTab, setSelectedTab] = useState<string | false>(false);
 
   // --- Effects ---
 
   useEffect(() => {
-    const currentPath = location.pathname
-    const currentTab = NAV_ITEMS.find((item) => item.path === currentPath)
-    setSelectedTab(currentTab ? currentTab.value : false)
-  }, [location.pathname])
+    const currentPath = location.pathname;
+    const currentTab = NAV_ITEMS.find((item) => item.path === currentPath);
+    setSelectedTab(currentTab ? currentTab.value : false);
+  }, [location.pathname]);
 
   useEffect(() => {
     const fetchAvatar = async () => {
       if (user) {
-        const base_url = `${import.meta.env.VITE_BACKEND_URL}/prixer/get/${user.username}`
+        const base_url = `${import.meta.env.VITE_BACKEND_URL}/prixer/get/${user.username}`;
         try {
-          const response = await axios.get(base_url)
-          console.log("Avatar response:", response.data)
-          setAvatar(response.data.result.prixer.avatar)
+          const response = await axios.get(base_url);
+          console.log("Avatar response:", response.data);
+          setAvatar(response.data.result.prixer.avatar);
         } catch (error) {
-          console.error("Failed to fetch avatar:", error)
-          setAvatar("")
+          console.error("Failed to fetch avatar:", error);
+          setAvatar("");
         }
       } else {
-        setAvatar("")
+        setAvatar("");
       }
-    }
-    fetchAvatar()
-  }, [user])
+    };
+    fetchAvatar();
+  }, [user]);
 
   // --- Handlers ---
 
   const handleNavigate = useCallback(
     (path: string) => {
-      navigate(path)
-      setUserMenuAnchorEl(null)
-      setDrawerOpen(false)
+      navigate(path);
+      setUserMenuAnchorEl(null);
+      setDrawerOpen(false);
     },
-    [navigate]
-  )
+    [navigate],
+  );
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
-    const navItem = NAV_ITEMS.find((item) => item.value === newValue)
+    const navItem = NAV_ITEMS.find((item) => item.value === newValue);
     if (navItem) {
-      handleNavigate(navItem.path)
+      handleNavigate(navItem.path);
     }
-  }
+  };
 
   const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setUserMenuAnchorEl(event.currentTarget)
-  }
+    setUserMenuAnchorEl(event.currentTarget);
+  };
 
   const handleUserMenuClose = () => {
-    setUserMenuAnchorEl(null)
-  }
+    setUserMenuAnchorEl(null);
+  };
 
   const handleDrawerToggle = () => {
-    setDrawerOpen(!drawerOpen)
-  }
+    setDrawerOpen(!drawerOpen);
+  };
 
   const handleLogout = async () => {
-    const base_url = `${import.meta.env.VITE_BACKEND_URL}/logout`
+    const base_url = `${import.meta.env.VITE_BACKEND_URL}/logout`;
     try {
-      await axios.post(base_url)
+      await axios.post(base_url);
     } catch (error) {
-      console.error("Logout failed:", error)
+      console.error("Logout failed:", error);
     } finally {
-      setUserMenuAnchorEl(null)
-      setDrawerOpen(false)
-      setAvatar("")
-      navigate("/")
-      setUser(null)
+      setUserMenuAnchorEl(null);
+      setDrawerOpen(false);
+      setAvatar("");
+      navigate("/");
+      setUser(null);
     }
-  }
+  };
 
   const handleExternalLink = (url: string) => {
-    window.open(url, "_blank")
-    setUserMenuAnchorEl(null)
-    setDrawerOpen(false)
-  }
+    window.open(url, "_blank");
+    setUserMenuAnchorEl(null);
+    setDrawerOpen(false);
+  };
 
   const commonMenuItems = [
     {
@@ -192,7 +193,7 @@ const MenuAppBar: React.FC = () => {
       label: "Contáctanos",
       onClick: () => handleExternalLink("https://linktr.ee/prixelart"),
     },
-  ]
+  ];
 
   const generalMenuItems = [
     {
@@ -215,7 +216,7 @@ const MenuAppBar: React.FC = () => {
       label: "Carrito",
       onClick: () => handleNavigate("/carrito"),
     },
-  ]
+  ];
   const loggedInUserMenuItems = [
     {
       label: "Mi Perfil",
@@ -228,11 +229,11 @@ const MenuAppBar: React.FC = () => {
     // { label: 'Cambiar contraseña', onClick: () => handleNavigate(`/prixer/${user!.username}`) },
 
     { label: "Cerrar Sesión", onClick: handleLogout },
-  ]
+  ];
 
   const loggedOutUserMenuItems = [
     { label: "Iniciar sesión", onClick: () => handleNavigate("/iniciar") },
-  ]
+  ];
 
   const tabSx: SxProps<Theme> = {
     minWidth: "0px",
@@ -240,12 +241,12 @@ const MenuAppBar: React.FC = () => {
     "&.Mui-selected": {
       color: "red !important",
     },
-  }
+  };
 
   const logoButtonOuterSx: SxProps<Theme> = {
     position: "relative",
     borderRadius: "30%",
-  }
+  };
 
   const appBarSx: SxProps<Theme> = {
     background: isHome
@@ -266,7 +267,7 @@ const MenuAppBar: React.FC = () => {
           duration: theme.transitions.duration.enteringScreen,
         }),
       }),
-  }
+  };
 
   const drawerHeaderSx: SxProps<Theme> = (currentTheme) => ({
     display: "flex",
@@ -274,12 +275,12 @@ const MenuAppBar: React.FC = () => {
     padding: currentTheme.spacing(0, 1),
     ...currentTheme.mixins.toolbar,
     justifyContent: "flex-end",
-  })
+  });
 
   // --- Rendering Logic ---
 
   const renderNavTabs = (
-    orientation: "horizontal" | "vertical" = "horizontal"
+    orientation: "horizontal" | "vertical" = "horizontal",
   ) => (
     <Tabs
       orientation={orientation}
@@ -304,20 +305,20 @@ const MenuAppBar: React.FC = () => {
             value={item.value}
             label={item.label}
           />
-        )
+        ),
       )}
     </Tabs>
-  )
+  );
 
   const renderMenuItems = (items: { label: string; onClick: () => void }[]) =>
     items.map((item) => (
       <MenuItem key={item.label} onClick={item.onClick}>
         {item.label}
       </MenuItem>
-    ))
+    ));
 
   const renderDrawerTabs = (
-    items: { label: string; onClick: () => void }[]
+    items: { label: string; onClick: () => void }[],
   ) => (
     <Tabs orientation="vertical" sx={{ display: "flex", width: "100%" }}>
       {" "}
@@ -331,14 +332,14 @@ const MenuAppBar: React.FC = () => {
         />
       ))}
     </Tabs>
-  )
+  );
 
   const buttons = [
     // { text: "Nosotros" },
     { text: "Galería", onClick: () => handleNavigate("/galeria") },
     { text: "Tienda", onClick: () => handleNavigate("/productos") },
     { text: "Contacto" },
-  ]
+  ];
   // --- Mobile Drawer ---
   const drawerContent = (
     <Box sx={{ width: drawerWidth }} role="presentation">
@@ -384,7 +385,7 @@ const MenuAppBar: React.FC = () => {
       <Divider />
       {renderDrawerTabs(commonMenuItems)}
     </Box>
-  )
+  );
 
   return (
     <Box sx={{ flexGrow: 1, minWidth: "100%", minHeight: "100%" }}>
@@ -510,7 +511,7 @@ const MenuAppBar: React.FC = () => {
         </Drawer>
       )}
     </Box>
-  )
-}
+  );
+};
 
-export default MenuAppBar
+export default MenuAppBar;

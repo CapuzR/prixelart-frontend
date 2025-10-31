@@ -1,5 +1,11 @@
-import React, { useRef, useState, useEffect, useCallback, ChangeEvent } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import React, {
+  useRef,
+  useState,
+  useEffect,
+  useCallback,
+  ChangeEvent,
+} from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 // MUI Components
 import {
@@ -28,35 +34,42 @@ import {
   Select,
   MenuItem,
   SelectChangeEvent,
-} from '@mui/material';
-import Grid2 from '@mui/material/Grid'; // Assuming this is Material UI's Unstable_Grid2 or similar
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/Add';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
-import FilterListOffIcon from '@mui/icons-material/FilterListOff';
-import { LocalShippingOutlined, PauseCircleFilled, GetApp } from '@mui/icons-material';
-import { PickerChangeHandlerContext, DateValidationError } from '@mui/x-date-pickers';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+} from "@mui/material";
+import Grid2 from "@mui/material/Grid"; // Assuming this is Material UI's Unstable_Grid2 or similar
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
+import FilterListOffIcon from "@mui/icons-material/FilterListOff";
+import {
+  LocalShippingOutlined,
+  PauseCircleFilled,
+  GetApp,
+} from "@mui/icons-material";
+import {
+  PickerChangeHandlerContext,
+  DateValidationError,
+} from "@mui/x-date-pickers";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
-import { useSnackBar } from 'context/GlobalContext';
+import { useSnackBar } from "context/GlobalContext";
 import {
   HistoryEntry,
   Order,
   OrderStatus,
   GlobalPaymentStatus,
   ShippingDetails,
-} from 'types/order.types';
-import Title from '@apps/admin/components/Title';
-import ConfirmationDialog from '@components/ConfirmationDialog/ConfirmationDialog';
-import { deleteOrder, getOrders, updateOrder } from '@api/order.api';
-import excelJS from 'exceljs';
-import 'moment/locale/es';
-import { format, parseISO, isValid } from 'date-fns';
-import { PermissionsV2 } from 'types/permissions.types';
-import { getPermissions } from '@api/admin.api';
-import dayjs from 'dayjs';
+} from "types/order.types";
+import Title from "@apps/admin/components/Title";
+import ConfirmationDialog from "@components/ConfirmationDialog/ConfirmationDialog";
+import { deleteOrder, getOrders, updateOrder } from "@api/order.api";
+import excelJS from "exceljs";
+import "moment/locale/es";
+import { format, parseISO, isValid } from "date-fns";
+import { PermissionsV2 } from "types/permissions.types";
+import { getPermissions } from "@api/admin.api";
+import dayjs from "dayjs";
 
 interface OrderSummary {
   _id: string;
@@ -76,74 +89,78 @@ interface OrderSummary {
 }
 
 const getStatusChipProps = (
-  status?: OrderStatus
+  status?: OrderStatus,
 ): { label: string; color: any; icon?: React.ReactElement } => {
   const s = status ?? OrderStatus.Pending;
   switch (s) {
     case OrderStatus.Pending:
-      return { label: 'Por producir', color: 'secondary' };
+      return { label: "Por producir", color: "secondary" };
     case OrderStatus.Impression:
-      return { label: 'En impresión', color: 'info', icon: <CheckCircleIcon /> };
+      return {
+        label: "En impresión",
+        color: "info",
+        icon: <CheckCircleIcon />,
+      };
     case OrderStatus.Production:
       return {
-        label: 'En producción',
-        color: 'info',
+        label: "En producción",
+        color: "info",
         icon: <CheckCircleIcon />,
       };
     case OrderStatus.ReadyToShip:
       return {
-        label: 'Por entregar',
-        color: 'primary',
+        label: "Por entregar",
+        color: "primary",
         icon: <LocalShippingOutlined />,
       };
     case OrderStatus.Delivered:
       return {
-        label: 'Entregado',
-        color: 'success',
+        label: "Entregado",
+        color: "success",
         icon: <LocalShippingOutlined />,
       };
     case OrderStatus.Finished:
       return {
-        label: 'Concretado',
-        color: 'success',
+        label: "Concretado",
+        color: "success",
         icon: <CheckCircleIcon />,
       };
     case OrderStatus.Paused:
       return {
-        label: 'Detenido',
-        color: 'warning',
+        label: "Detenido",
+        color: "warning",
         icon: <PauseCircleFilled />,
       };
     case OrderStatus.Canceled:
-      return { label: 'Anulado', color: 'error', icon: <CancelIcon /> };
+      return { label: "Anulado", color: "error", icon: <CancelIcon /> };
     default:
-      return { label: 'Desconocido', color: 'default' };
+      return { label: "Desconocido", color: "default" };
   }
 };
 
 const getpayStatusChipProps = (
-  status?: GlobalPaymentStatus
+  status?: GlobalPaymentStatus,
 ): { label: string; color: any; icon?: React.ReactElement } => {
   const s = status ?? GlobalPaymentStatus.Pending;
   switch (s) {
     case GlobalPaymentStatus.Pending:
-      return { label: 'Pendiente', color: 'secondary' };
+      return { label: "Pendiente", color: "secondary" };
     case GlobalPaymentStatus.Paid:
-      return { label: 'Pagado', color: 'success', icon: <CheckCircleIcon /> };
+      return { label: "Pagado", color: "success", icon: <CheckCircleIcon /> };
     case GlobalPaymentStatus.Credited:
       return {
-        label: 'Abonado',
-        color: 'info',
+        label: "Abonado",
+        color: "info",
         icon: <CheckCircleIcon />,
       };
     case GlobalPaymentStatus.Cancelled:
       return {
-        label: 'Cancelado',
-        color: 'primary',
+        label: "Cancelado",
+        color: "primary",
         icon: <CancelIcon />,
       };
     default:
-      return { label: 'Pendiente', color: 'default' };
+      return { label: "Pendiente", color: "default" };
   }
 };
 const ReadOrders: React.FC = () => {
@@ -162,7 +179,7 @@ const ReadOrders: React.FC = () => {
   const [orderToDelete, setOrderToDelete] = useState<OrderSummary | null>(null);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [updatingOrderId, setUpdatingOrderId] = useState<string | null>(null);
   const [isFilteringLoading, setIsFilteringLoading] = useState<boolean>(false);
 
@@ -172,19 +189,23 @@ const ReadOrders: React.FC = () => {
     return isValid(date) ? date : null;
   };
 
-  const [searchQuery, setSearchQuery] = useState<string>(() => searchParams.get('search') || '');
-  const [filterStatus, setFilterStatus] = useState<string>(() => searchParams.get('status') || '');
+  const [searchQuery, setSearchQuery] = useState<string>(
+    () => searchParams.get("search") || "",
+  );
+  const [filterStatus, setFilterStatus] = useState<string>(
+    () => searchParams.get("status") || "",
+  );
   const [filterPayStatus, setFilterPayStatus] = useState<string>(
-    () => searchParams.get('payStatus') || ''
+    () => searchParams.get("payStatus") || "",
   );
   const [startDate, setStartDate] = useState<Date | null>(() =>
-    parseDateParam(searchParams.get('startDate'))
+    parseDateParam(searchParams.get("startDate")),
   );
   const [endDate, setEndDate] = useState<Date | null>(() =>
-    parseDateParam(searchParams.get('endDate'))
+    parseDateParam(searchParams.get("endDate")),
   );
   const [filterIsNotConcretado, setFilterIsNotConcretado] = useState<boolean>(
-    () => searchParams.get('excludeStatus') === 'Concretado'
+    () => searchParams.get("excludeStatus") === "Concretado",
   );
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -197,7 +218,7 @@ const ReadOrders: React.FC = () => {
 
         const fetchedOrders: OrderSummary[] = orders.map((order) => {
           const getLatestStatus = (
-            history: [OrderStatus, Date][] | undefined
+            history: [OrderStatus, Date][] | undefined,
           ): OrderStatus | undefined => {
             return history && history.length > 0
               ? history[history.length - 1][0]
@@ -205,7 +226,7 @@ const ReadOrders: React.FC = () => {
           };
 
           const getLatestPaymentStatus = (
-            history: [GlobalPaymentStatus, Date][] | undefined
+            history: [GlobalPaymentStatus, Date][] | undefined,
           ): GlobalPaymentStatus | undefined => {
             return history && history.length > 0
               ? history[history.length - 1][0]
@@ -235,32 +256,34 @@ const ReadOrders: React.FC = () => {
             createdBy: order.seller,
             customerName: customer
               ? `${customer.name} ${customer.lastName}`.trim()
-              : 'Sin Registrar',
-            customerEmail: customer?.email || '',
+              : "Sin Registrar",
+            customerEmail: customer?.email || "",
             primaryStatus: getLatestStatus(order.status),
-            shippingMethodName: shipping?.method?.name || 'N/A',
-            paymentMethodName: payment?.payment?.[0]?.method?.name || 'N/A',
+            shippingMethodName: shipping?.method?.name || "N/A",
+            paymentMethodName: payment?.payment?.[0]?.method?.name || "N/A",
             shipping: order.shipping,
           };
         });
 
-        if (fetchedOrders.some((o) => !o._id)) console.error("Some orders missing '_id'.");
+        if (fetchedOrders.some((o) => !o._id))
+          console.error("Some orders missing '_id'.");
         fetchedOrders.sort(
-          (a, b) => new Date(b.createdOn).getTime() - new Date(a.createdOn).getTime()
+          (a, b) =>
+            new Date(b.createdOn).getTime() - new Date(a.createdOn).getTime(),
         );
         setAllOrders(fetchedOrders);
         setRawOrders(orders);
         setFilteredOrders(fetchedOrders);
       } catch (err: any) {
-        const message = err.message || 'Error al cargar las órdenes.';
+        const message = err.message || "Error al cargar las órdenes.";
         setError(message);
         showSnackBar(message);
-        console.error('Error fetching orders:', err);
+        console.error("Error fetching orders:", err);
       } finally {
         if (showLoading) setIsLoading(false);
       }
     },
-    [showSnackBar]
+    [showSnackBar],
   );
 
   const readPermissions = async () => {
@@ -268,17 +291,17 @@ const ReadOrders: React.FC = () => {
     setPermissions(response);
   };
   const ALL_STATUSES = [
-    'Por producir',
-    'En impresión',
-    'En producción',
-    'Por entregar',
-    'Entregado',
-    'Concretado',
-    'Detenido',
-    'Anulado',
+    "Por producir",
+    "En impresión",
+    "En producción",
+    "Por entregar",
+    "Entregado",
+    "Concretado",
+    "Detenido",
+    "Anulado",
   ];
 
-  const ALL_PAY_STATUSES = ['Pendiente', 'Pagado', 'Abonado', 'Anulado'];
+  const ALL_PAY_STATUSES = ["Pendiente", "Pagado", "Abonado", "Anulado"];
 
   useEffect(() => {
     loadOrders();
@@ -300,12 +323,14 @@ const ReadOrders: React.FC = () => {
         order.customerEmail?.toLowerCase().includes(lowerSearchTerm);
 
       const statusMatch =
-        filterStatus === '' ||
-        order?.primaryStatus?.toString() === ALL_STATUSES.indexOf(filterStatus).toString();
+        filterStatus === "" ||
+        order?.primaryStatus?.toString() ===
+          ALL_STATUSES.indexOf(filterStatus).toString();
 
       const payStatusMatch =
-        filterPayStatus === '' ||
-        order?.payStatus?.toString() === ALL_PAY_STATUSES.indexOf(filterPayStatus).toString();
+        filterPayStatus === "" ||
+        order?.payStatus?.toString() ===
+          ALL_PAY_STATUSES.indexOf(filterPayStatus).toString();
 
       const dateMatch =
         (!startDate || new Date(order.createdOn) >= startDate) &&
@@ -315,9 +340,18 @@ const ReadOrders: React.FC = () => {
     });
     setFilteredOrders(filtered);
     setPage(0);
-  }, [searchTerm, filterStatus, filterPayStatus, allOrders, startDate, endDate]);
+  }, [
+    searchTerm,
+    filterStatus,
+    filterPayStatus,
+    allOrders,
+    startDate,
+    endDate,
+  ]);
 
-  const handleSearchChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleSearchChange = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const value = event.target.value;
     setSearchTerm(value);
 
@@ -335,10 +369,11 @@ const ReadOrders: React.FC = () => {
   }, []);
 
   const handleSelectFilterChange =
-    (setter: React.Dispatch<React.SetStateAction<any>>) => (event: SelectChangeEvent<any>) => {
+    (setter: React.Dispatch<React.SetStateAction<any>>) =>
+    (event: SelectChangeEvent<any>) => {
       const value = event.target.value;
       setter(value);
-      if (setter === setFilterStatus && value !== '') {
+      if (setter === setFilterStatus && value !== "") {
         setFilterIsNotConcretado(false);
       }
       triggerSearchOrFilter();
@@ -346,15 +381,18 @@ const ReadOrders: React.FC = () => {
 
   const handleDateFilterChange =
     (setter: React.Dispatch<React.SetStateAction<Date | null>>) =>
-    (value: unknown, context: PickerChangeHandlerContext<DateValidationError>) => {
+    (
+      value: unknown,
+      context: PickerChangeHandlerContext<DateValidationError>,
+    ) => {
       setter(value as Date | null);
       triggerSearchOrFilter();
     };
 
   const handleClearFilters = () => {
-    setSearchQuery('');
-    setFilterStatus('');
-    setFilterPayStatus('');
+    setSearchQuery("");
+    setFilterStatus("");
+    setFilterPayStatus("");
     setStartDate(null);
     setEndDate(null);
     setFilterIsNotConcretado(false);
@@ -364,7 +402,8 @@ const ReadOrders: React.FC = () => {
     }
   };
 
-  const handleChangePage = (event: unknown, newPage: number) => setPage(newPage);
+  const handleChangePage = (event: unknown, newPage: number) =>
+    setPage(newPage);
   const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
@@ -372,7 +411,7 @@ const ReadOrders: React.FC = () => {
 
   const handleOpenDeleteDialog = (order: OrderSummary) => {
     if (!order._id) {
-      showSnackBar('Falta ID.');
+      showSnackBar("Falta ID.");
       return;
     }
     setOrderToDelete(order);
@@ -387,7 +426,7 @@ const ReadOrders: React.FC = () => {
 
   const handleConfirmDelete = async () => {
     if (!orderToDelete?._id) {
-      showSnackBar('Error.');
+      showSnackBar("Error.");
       setIsDeleting(false);
       handleCloseDialog();
       return;
@@ -399,8 +438,8 @@ const ReadOrders: React.FC = () => {
       await loadOrders(false);
       handleCloseDialog();
     } catch (err: any) {
-      console.error('Error deleting order:', err);
-      showSnackBar(err.message || 'Error.');
+      console.error("Error deleting order:", err);
+      showSnackBar(err.message || "Error.");
       handleCloseDialog();
     } finally {
       setIsDeleting(false);
@@ -409,14 +448,14 @@ const ReadOrders: React.FC = () => {
 
   const handleUpdate = (orderId: string) => {
     if (!orderId) {
-      showSnackBar('Falta ID.');
+      showSnackBar("Falta ID.");
       return;
     }
     navigate(`/admin/orders/update/${orderId}`);
   };
 
   const handleCreate = () => {
-    navigate('/admin/orders/create');
+    navigate("/admin/orders/create");
   };
 
   const renderContent = () => {
@@ -441,24 +480,32 @@ const ReadOrders: React.FC = () => {
 
     const paginatedOrders = filteredOrders.slice(
       page * rowsPerPage,
-      page * rowsPerPage + rowsPerPage
+      page * rowsPerPage + rowsPerPage,
     );
 
     return (
-      <Paper sx={{ width: '100%', overflow: 'hidden', mt: 2 }}>
+      <Paper sx={{ width: "100%", overflow: "hidden", mt: 2 }}>
         <TableContainer>
           <Table stickyHeader sx={{ minWidth: 900 }} aria-label="orders table">
-            <TableHead sx={{ backgroundColor: (theme) => theme.palette.action.hover }}>
+            <TableHead
+              sx={{ backgroundColor: (theme) => theme.palette.action.hover }}
+            >
               <TableRow>
-                <TableCell sx={{ fontWeight: 'bold' }}># Orden</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }}>Fecha de creación</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }}>Fecha de entrega estimada</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }}>Cliente</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }}>Estado</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }}>Estado de Pago</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }}>Envío</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }}>Asesor</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 'bold' }}>
+                <TableCell sx={{ fontWeight: "bold" }}># Orden</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>
+                  Fecha de creación
+                </TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>
+                  Fecha de entrega estimada
+                </TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>Cliente</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>Estado</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>
+                  Estado de Pago
+                </TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>Envío</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>Asesor</TableCell>
+                <TableCell align="right" sx={{ fontWeight: "bold" }}>
                   Acciones
                 </TableCell>
               </TableRow>
@@ -479,7 +526,7 @@ const ReadOrders: React.FC = () => {
                   <TableRow
                     hover
                     key={order._id}
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
                     <TableCell component="th" scope="row">
                       <Link
@@ -490,16 +537,22 @@ const ReadOrders: React.FC = () => {
                         #{order._id.slice(-6)}
                       </Link>
                     </TableCell>
-                    <TableCell>{dayjs(order.createdOn).format('DD/MM/YYYY')}</TableCell>
                     <TableCell>
-                      {order.shipping.preferredDeliveryDate
-                        ? dayjs(order.shipping.preferredDeliveryDate).format('DD/MM/YYYY')
-                        : ''}
+                      {dayjs(order.createdOn).format("DD/MM/YYYY")}
                     </TableCell>
                     <TableCell>
-                      {order.customerName || 'Sin Registrar'}
+                      {order.shipping.preferredDeliveryDate
+                        ? dayjs(order.shipping.preferredDeliveryDate).format(
+                            "DD/MM/YYYY",
+                          )
+                        : ""}
+                    </TableCell>
+                    <TableCell>
+                      {order.customerName || "Sin Registrar"}
                       <br />
-                      <Typography variant="caption">{order.customerEmail || ''}</Typography>
+                      <Typography variant="caption">
+                        {order.customerEmail || ""}
+                      </Typography>
                     </TableCell>
                     <TableCell>
                       {updatingOrderId === order._id ? (
@@ -509,16 +562,23 @@ const ReadOrders: React.FC = () => {
                           <Select
                             value={order.primaryStatus ?? OrderStatus.Pending}
                             onChange={(e) =>
-                              handleStatusChange(order._id, e.target.value as OrderStatus)
+                              handleStatusChange(
+                                order._id,
+                                e.target.value as OrderStatus,
+                              )
                             }
-                            sx={{ fontSize: '0.875rem' }}
+                            sx={{ fontSize: "0.875rem" }}
                           >
                             {/* Mapeamos el Enum OrderStatus para crear los MenuItems */}
                             {Object.keys(OrderStatus)
                               .filter((key) => !isNaN(Number(key)))
                               .map((key) => (
                                 <MenuItem key={key} value={key}>
-                                  {getStatusChipProps(Number(key) as OrderStatus).label}
+                                  {
+                                    getStatusChipProps(
+                                      Number(key) as OrderStatus,
+                                    ).label
+                                  }
                                 </MenuItem>
                               ))}
                           </Select>
@@ -539,20 +599,26 @@ const ReadOrders: React.FC = () => {
                       ) : permissions?.orders?.updatePayStatus ? (
                         <FormControl fullWidth size="small" variant="outlined">
                           <Select
-                            value={order.payStatus ?? GlobalPaymentStatus.Pending}
+                            value={
+                              order.payStatus ?? GlobalPaymentStatus.Pending
+                            }
                             onChange={(e) =>
                               handlePayStatusChange(
                                 order._id,
-                                e.target.value as GlobalPaymentStatus
+                                e.target.value as GlobalPaymentStatus,
                               )
                             }
-                            sx={{ fontSize: '0.875rem' }}
+                            sx={{ fontSize: "0.875rem" }}
                           >
                             {Object.keys(GlobalPaymentStatus)
                               .filter((key) => !isNaN(Number(key)))
                               .map((key) => (
                                 <MenuItem key={key} value={key}>
-                                  {getpayStatusChipProps(Number(key) as GlobalPaymentStatus).label}
+                                  {
+                                    getpayStatusChipProps(
+                                      Number(key) as GlobalPaymentStatus,
+                                    ).label
+                                  }
                                 </MenuItem>
                               ))}
                           </Select>
@@ -567,13 +633,13 @@ const ReadOrders: React.FC = () => {
                         />
                       )}
                     </TableCell>
-                    <TableCell>{order.shippingMethodName || 'N/A'}</TableCell>
+                    <TableCell>{order.shippingMethodName || "N/A"}</TableCell>
                     <TableCell>{order?.createdBy}</TableCell>
                     <TableCell align="right">
                       <Box
                         sx={{
-                          display: 'flex',
-                          justifyContent: 'flex-end',
+                          display: "flex",
+                          justifyContent: "flex-end",
                           gap: 0.5,
                         }}
                       >
@@ -594,7 +660,8 @@ const ReadOrders: React.FC = () => {
                             color="error"
                             onClick={() => handleOpenDeleteDialog(order)}
                             disabled={
-                              !order._id || (isDeleting && orderToDelete?._id === order._id)
+                              !order._id ||
+                              (isDeleting && orderToDelete?._id === order._id)
                             }
                             size="small"
                           >
@@ -627,7 +694,9 @@ const ReadOrders: React.FC = () => {
     );
   };
 
-  const getLatestStatus = <T,>(statusHistory: [T, Date][] | undefined): T | undefined | any => {
+  const getLatestStatus = <T,>(
+    statusHistory: [T, Date][] | undefined,
+  ): T | undefined | any => {
     if (!statusHistory || statusHistory.length === 0) {
       return undefined;
     }
@@ -635,26 +704,26 @@ const ReadOrders: React.FC = () => {
   };
 
   const getStringLatestStatus = <T,>(
-    statusHistory: [T, Date][] | undefined
+    statusHistory: [T, Date][] | undefined,
   ): T | undefined | any => {
     if (!statusHistory || statusHistory.length === 0) {
       return undefined;
     }
     const st1 = statusHistory[statusHistory.length - 1][0];
     const st = OrderStatus[st1 as OrderStatus];
-    if (st === 'Pending') return 'Pendiente';
-    else if (st === 'Impression') return 'En impresión';
-    else if (st === 'Production') return 'En producción';
-    else if (st === 'ReadyToShip') return 'Listo para enviar';
-    else if (st === 'Delivered') return 'Entregado';
-    else if (st === 'Finished') return 'Concretado';
-    else if (st === 'Paused') return 'Detenido';
-    else if (st === 'Canceled') return 'Cancelado';
-    else return 'Pendiente';
+    if (st === "Pending") return "Pendiente";
+    else if (st === "Impression") return "En impresión";
+    else if (st === "Production") return "En producción";
+    else if (st === "ReadyToShip") return "Listo para enviar";
+    else if (st === "Delivered") return "Entregado";
+    else if (st === "Finished") return "Concretado";
+    else if (st === "Paused") return "Detenido";
+    else if (st === "Canceled") return "Cancelado";
+    else return "Pendiente";
   };
 
   const getStringLatestPayStatus = <T,>(
-    statusHistory: [T, Date][] | undefined
+    statusHistory: [T, Date][] | undefined,
   ): T | undefined | any => {
     if (!statusHistory || statusHistory.length === 0) {
       return undefined;
@@ -662,107 +731,107 @@ const ReadOrders: React.FC = () => {
     const st1 = statusHistory[statusHistory.length - 1][0];
     const st = GlobalPaymentStatus[st1 as GlobalPaymentStatus];
 
-    if (st === 'Pending') return 'Pendiente';
-    else if (st === 'Credited') return 'Abonado';
-    else if (st === 'Paid') return 'Pagado';
-    else if (st === 'Canceled') return 'Cancelado';
-    else return 'Pendiente';
+    if (st === "Pending") return "Pendiente";
+    else if (st === "Credited") return "Abonado";
+    else if (st === "Paid") return "Pagado";
+    else if (st === "Canceled") return "Cancelado";
+    else return "Pendiente";
   };
 
   const getOrderStatusText = (status: OrderStatus): string => {
     switch (Number(status)) {
       case OrderStatus.Pending:
-        return 'Pendiente';
+        return "Pendiente";
       case OrderStatus.Production:
-        return 'En producción';
+        return "En producción";
       case OrderStatus.Impression:
-        return 'En impresión';
+        return "En impresión";
       case OrderStatus.ReadyToShip:
-        return 'Listo para enviar';
+        return "Listo para enviar";
       case OrderStatus.Delivered:
-        return 'Entregado';
+        return "Entregado";
       case OrderStatus.Finished:
-        return 'Concretado';
+        return "Concretado";
       case OrderStatus.Paused:
-        return 'Detenido';
+        return "Detenido";
       case OrderStatus.Canceled:
-        return 'Cancelado';
+        return "Cancelado";
       default:
-        return 'Pendiente';
+        return "Pendiente";
     }
   };
 
   const getOrderPayStatusText = (status: GlobalPaymentStatus): string => {
     switch (Number(status)) {
       case GlobalPaymentStatus.Pending:
-        return 'Pendiente';
+        return "Pendiente";
       case GlobalPaymentStatus.Credited:
-        return 'Abonado';
+        return "Abonado";
       case GlobalPaymentStatus.Paid:
-        return 'Pagado';
+        return "Pagado";
       case OrderStatus.Canceled:
-        return 'Cancelado';
+        return "Cancelado";
       default:
-        return 'Pendiente';
+        return "Pendiente";
     }
   };
 
   const formatDate = (date: Date | undefined): string => {
-    return date ? format(new Date(date), 'dd/MM/yyyy') : '';
+    return date ? format(new Date(date), "dd/MM/yyyy") : "";
   };
 
   const stripHtml = (html?: string): string => {
-    return html ? html.replace(/<[^>]+>/g, '') : '';
+    return html ? html.replace(/<[^>]+>/g, "") : "";
   };
 
   const downloadOrders = async (orders: Order[]): Promise<void> => {
-    if (permissions?.area !== 'Master') {
-      showSnackBar('No tienes autorización para acceder a esta información.');
+    if (permissions?.area !== "Master") {
+      showSnackBar("No tienes autorización para acceder a esta información.");
       return;
     }
     const workbook = new excelJS.Workbook();
     const worksheet = workbook.addWorksheet(`Pedidos Detallados`);
 
     worksheet.columns = [
-      { header: 'status', key: 'status', width: 16 },
-      { header: 'ID', key: 'orderId', width: 10 },
-      { header: 'Fecha de solicitud', key: 'createdOn', width: 12 },
-      { header: 'Nombre del cliente', key: 'customerName', width: 24 },
-      { header: 'Tipo de cliente', key: 'customerType', width: 12 }, // Dato a revisar
-      { header: 'Prixer', key: 'prixer', width: 18 },
-      { header: 'Arte', key: 'art', width: 24 },
-      { header: 'Certificado', key: 'certificate', width: 10 },
-      { header: 'Producto', key: 'product', width: 20 },
-      { header: 'Atributo', key: 'attributes', width: 20 },
-      { header: 'Cantidad', key: 'quantity', width: 10 },
-      { header: 'Observación', key: 'observations', width: 18 },
-      { header: 'Vendedor', key: 'seller', width: 16 },
-      { header: 'Método de pago', key: 'paymentMethod', width: 14 },
-      { header: 'Costo unitario', key: 'unitPrice', width: 12 },
-      { header: 'Validación del pago', key: 'paymentStatus', width: 12 },
-      { header: 'Fecha de pago', key: 'paymentDate', width: 11 },
-      { header: 'Método de entrega', key: 'shippingMethod', width: 14 },
-      { header: 'Fecha de entrega', key: 'deliveryDate', width: 11 },
-      { header: 'Fecha de completado', key: 'completionDate', width: 11 },
+      { header: "status", key: "status", width: 16 },
+      { header: "ID", key: "orderId", width: 10 },
+      { header: "Fecha de solicitud", key: "createdOn", width: 12 },
+      { header: "Nombre del cliente", key: "customerName", width: 24 },
+      { header: "Tipo de cliente", key: "customerType", width: 12 }, // Dato a revisar
+      { header: "Prixer", key: "prixer", width: 18 },
+      { header: "Arte", key: "art", width: 24 },
+      { header: "Certificado", key: "certificate", width: 10 },
+      { header: "Producto", key: "product", width: 20 },
+      { header: "Atributo", key: "attributes", width: 20 },
+      { header: "Cantidad", key: "quantity", width: 10 },
+      { header: "Observación", key: "observations", width: 18 },
+      { header: "Vendedor", key: "seller", width: 16 },
+      { header: "Método de pago", key: "paymentMethod", width: 14 },
+      { header: "Costo unitario", key: "unitPrice", width: 12 },
+      { header: "Validación del pago", key: "paymentStatus", width: 12 },
+      { header: "Fecha de pago", key: "paymentDate", width: 11 },
+      { header: "Método de entrega", key: "shippingMethod", width: 14 },
+      { header: "Fecha de entrega", key: "deliveryDate", width: 11 },
+      { header: "Fecha de completado", key: "completionDate", width: 11 },
     ];
 
     worksheet.getRow(1).eachCell((cell: any) => {
       cell.font = { bold: true };
       cell.border = {
-        top: { style: 'thin' },
-        left: { style: 'thin' },
-        bottom: { style: 'thin' },
-        right: { style: 'thin' },
+        top: { style: "thin" },
+        left: { style: "thin" },
+        bottom: { style: "thin" },
+        right: { style: "thin" },
       };
       cell.alignment = {
-        vertical: 'middle',
-        horizontal: 'center',
+        vertical: "middle",
+        horizontal: "center",
         wrapText: true,
       };
       cell.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: { argb: 'FFD3D3D3' },
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFD3D3D3" },
       };
     });
 
@@ -772,28 +841,35 @@ const ReadOrders: React.FC = () => {
           status: getStringLatestStatus(order.status),
           orderId: order._id?.toString().slice(-6),
           createdOn: formatDate(order.createdOn),
-          customerName: `${order.consumerDetails?.basic.name || ''} ${order.consumerDetails?.basic.lastName || ''}`,
-          customerType: order.consumerDetails?.consumerType || 'Particular',
+          customerName: `${order.consumerDetails?.basic.name || ""} ${order.consumerDetails?.basic.lastName || ""}`,
+          customerType: order.consumerDetails?.consumerType || "Particular",
           observations: stripHtml(order.observations),
           seller: order.seller || order.createdBy,
-          paymentMethod: order.payment?.payment ? order.payment?.payment[0]?.method.name : 'N/A',
+          paymentMethod: order.payment?.payment
+            ? order.payment?.payment[0]?.method.name
+            : "N/A",
           paymentStatus: getStringLatestPayStatus(order.payment.status),
           paymentDate: getLatestStatus(order.payment.status)
-            ? formatDate(order.payment.status[order.payment.status.length - 1][1])
+            ? formatDate(
+                order.payment.status[order.payment.status.length - 1][1],
+              )
             : undefined,
           completionDate:
-            getLatestStatus(order.status) && Number(order.status[order.status.length - 1][0]) === 5
+            getLatestStatus(order.status) &&
+            Number(order.status[order.status.length - 1][0]) === 5
               ? formatDate(order.status[order.status.length - 1][1])
               : undefined,
           shippingMethod: order.shipping.method?.name,
           deliveryDate: formatDate(order.shipping.estimatedDeliveryDate),
-          prixer: line.item.art?.prixerUsername || 'N/A',
-          art: line.item.art?.title || 'N/A',
-          product: line.item.product?.name || 'N/A',
+          prixer: line.item.art?.prixerUsername || "N/A",
+          art: line.item.art?.title || "N/A",
+          product: line.item.product?.name || "N/A",
           attributes:
-            typeof line.item.product?.selection === 'string'
+            typeof line.item.product?.selection === "string"
               ? line.item.product.selection
-              : line.item.product?.selection?.map((attr: any) => attr.value).join(', ') || '',
+              : line.item.product?.selection
+                  ?.map((attr: any) => attr.value)
+                  .join(", ") || "",
           quantity: line.quantity,
           unitPrice: line.pricePerUnit,
         };
@@ -801,31 +877,31 @@ const ReadOrders: React.FC = () => {
         const row = worksheet.addRow(rowData);
 
         const statusCell = row.getCell(1);
-        if (rowData.status === 'Entregado') {
+        if (rowData.status === "Entregado") {
           statusCell.fill = {
-            type: 'pattern',
-            pattern: 'solid',
-            fgColor: { argb: 'FFC8E6C9' },
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFC8E6C9" },
           };
-        } else if (rowData.status === 'Concretado') {
+        } else if (rowData.status === "Concretado") {
           statusCell.fill = {
-            type: 'pattern',
-            pattern: 'solid',
-            fgColor: { argb: 'FF81C784' },
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FF81C784" },
           };
         }
 
         row.eachCell({ includeEmpty: true }, (cell: any) => {
           cell.font = { bold: true };
           cell.border = {
-            top: { style: 'thin' },
-            left: { style: 'thin' },
-            bottom: { style: 'thin' },
-            right: { style: 'thin' },
+            top: { style: "thin" },
+            left: { style: "thin" },
+            bottom: { style: "thin" },
+            right: { style: "thin" },
           };
           cell.alignment = {
-            vertical: 'middle',
-            horizontal: 'center',
+            vertical: "middle",
+            horizontal: "center",
             wrapText: true,
           };
         });
@@ -834,24 +910,30 @@ const ReadOrders: React.FC = () => {
 
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    const date = format(new Date(), 'dd-MM-yyyy');
+    const date = format(new Date(), "dd-MM-yyyy");
     link.download = `Pedidos ${date}.xlsx`;
     link.click();
   };
 
-  const handleStatusChange = async (orderId: string, newStatus: OrderStatus) => {
+  const handleStatusChange = async (
+    orderId: string,
+    newStatus: OrderStatus,
+  ) => {
     setUpdatingOrderId(orderId);
     try {
-      const orderToUpdate = rawOrders.find((o) => o._id?.toString() === orderId);
+      const orderToUpdate = rawOrders.find(
+        (o) => o._id?.toString() === orderId,
+      );
       if (!orderToUpdate) {
-        showSnackBar('No se pudo encontrar la orden localmente.');
+        showSnackBar("No se pudo encontrar la orden localmente.");
       }
 
-      const currentStatusHistory: [OrderStatus, Date][] = orderToUpdate?.status || [];
+      const currentStatusHistory: [OrderStatus, Date][] =
+        orderToUpdate?.status || [];
       const newStatusHistory: [OrderStatus, Date][] = [
         ...currentStatusHistory,
         [Number(newStatus), new Date()],
@@ -873,46 +955,54 @@ const ReadOrders: React.FC = () => {
               primaryStatus: Number(newStatus),
               status: newStatusHistory,
             }
-          : o
+          : o,
       );
 
       setAllOrders(updatedOrders);
       setFilteredOrders(updatedOrders);
 
-      showSnackBar('Estado de la orden actualizado con éxito.');
+      showSnackBar("Estado de la orden actualizado con éxito.");
     } catch (err: any) {
-      console.error('Error updating order status:', err);
-      showSnackBar(err.message || 'No se pudo actualizar el estado.');
+      console.error("Error updating order status:", err);
+      showSnackBar(err.message || "No se pudo actualizar el estado.");
     } finally {
       setUpdatingOrderId(null);
     }
   };
 
-  const handlePayStatusChange = async (orderId: string, newPayStatus: GlobalPaymentStatus) => {
+  const handlePayStatusChange = async (
+    orderId: string,
+    newPayStatus: GlobalPaymentStatus,
+  ) => {
     setUpdatingOrderId(orderId);
     try {
-      const orderToUpdate = rawOrders.find((o) => o._id?.toString() === orderId);
+      const orderToUpdate = rawOrders.find(
+        (o) => o._id?.toString() === orderId,
+      );
       if (!orderToUpdate) {
-        throw new Error('No se pudo encontrar la orden localmente.');
+        throw new Error("No se pudo encontrar la orden localmente.");
       }
 
       const currentPayStatusHistory = orderToUpdate.payment?.status || [];
-      const newPayStatusHistory = [...currentPayStatusHistory, [Number(newPayStatus), new Date()]];
+      const newPayStatusHistory = [
+        ...currentPayStatusHistory,
+        [Number(newPayStatus), new Date()],
+      ];
 
       const description = `El estado de pago del pedido cambió a "${getOrderPayStatusText(newPayStatus)}"`;
 
       const updatePayload = {
-        'payment.status': newPayStatusHistory,
+        "payment.status": newPayStatusHistory,
         changeDescriptions: [description],
       } as any;
 
       await updateOrder(orderId, updatePayload);
       loadOrders();
 
-      showSnackBar('Estado de pago actualizado con éxito.');
+      showSnackBar("Estado de pago actualizado con éxito.");
     } catch (err: any) {
-      console.error('Error updating payment status:', err);
-      showSnackBar(err.message || 'No se pudo actualizar el estado de pago.');
+      console.error("Error updating payment status:", err);
+      showSnackBar(err.message || "No se pudo actualizar el estado de pago.");
     } finally {
       setUpdatingOrderId(null);
     }
@@ -990,7 +1080,7 @@ const ReadOrders: React.FC = () => {
               label="Fecha Desde"
               value={startDate}
               onChange={handleDateFilterChange(setStartDate)}
-              slotProps={{ textField: { size: 'small', fullWidth: true } }}
+              slotProps={{ textField: { size: "small", fullWidth: true } }}
               maxDate={endDate || undefined}
               disabled={isFilteringLoading}
             />
@@ -1000,7 +1090,7 @@ const ReadOrders: React.FC = () => {
               label="Fecha Hasta"
               value={endDate}
               onChange={handleDateFilterChange(setEndDate)}
-              slotProps={{ textField: { size: 'small', fullWidth: true } }}
+              slotProps={{ textField: { size: "small", fullWidth: true } }}
               minDate={startDate || undefined}
               disabled={isFilteringLoading}
             />
@@ -1011,7 +1101,7 @@ const ReadOrders: React.FC = () => {
             justifyContent="flex-end"
             alignItems="center"
           ></Grid2>
-          <Grid2 sx={{ display: 'flex', marginLeft: 'auto' }}>
+          <Grid2 sx={{ display: "flex", marginLeft: "auto" }}>
             <Tooltip title="Limpiar Filtros" style={{ height: 40, width: 40 }}>
               <Fab
                 onClick={handleClearFilters}
@@ -1031,9 +1121,12 @@ const ReadOrders: React.FC = () => {
                 <FilterListOffIcon />
               </Fab>
             </Tooltip>
-            <Tooltip title="Descargar listado" style={{ height: 40, width: 40 }}>
+            <Tooltip
+              title="Descargar listado"
+              style={{ height: 40, width: 40 }}
+            >
               <Fab
-                disabled={permissions?.area !== 'Master'}
+                disabled={permissions?.area !== "Master"}
                 color="secondary"
                 size="small"
                 onClick={() => downloadOrders(rawOrders)}
@@ -1057,7 +1150,7 @@ const ReadOrders: React.FC = () => {
       </Paper>
 
       {isLoading && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+        <Box sx={{ display: "flex", justifyContent: "center", p: 3 }}>
           <CircularProgress />
         </Box>
       )}
@@ -1076,7 +1169,7 @@ const ReadOrders: React.FC = () => {
         title="Confirmar Eliminación"
         message={
           <>
-            ¿Estás seguro de que deseas eliminar la orden{' '}
+            ¿Estás seguro de que deseas eliminar la orden{" "}
             <strong>#{orderToDelete?._id.slice(-6)}</strong>?
           </>
         }

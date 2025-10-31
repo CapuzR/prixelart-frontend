@@ -1,20 +1,20 @@
-import { Alert } from "@mui/lab"
-import Grid2 from "@mui/material/Grid"
+import { Alert } from "@mui/lab";
+import Grid2 from "@mui/material/Grid";
 
-import CurrencySwitch from "components/CurrencySwitch"
-import Checkout from "apps/consumer/checkout"
-import CartGrid from "./Grid"
-import useMediaQuery from "@mui/material/useMediaQuery"
-import { useTheme } from "@mui/material/styles"
+import CurrencySwitch from "components/CurrencySwitch";
+import Checkout from "apps/consumer/checkout";
+import CartGrid from "./Grid";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
 
-import styles from "./styles.module.scss"
-import { useState } from "react"
-import ScrollToTopButton from "@components/ScrollToTop"
+import styles from "./styles.module.scss";
+import { useState } from "react";
+import ScrollToTopButton from "@components/ScrollToTop";
 
 const Cart = () => {
-  const [checking, setChecking] = useState(false)
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+  const [checking, setChecking] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
     <Grid2 className={styles["main-container"]}>
@@ -44,7 +44,7 @@ const Cart = () => {
       </Grid2>
       <ScrollToTopButton />
     </Grid2>
-  )
-}
+  );
+};
 
-export default Cart
+export default Cart;

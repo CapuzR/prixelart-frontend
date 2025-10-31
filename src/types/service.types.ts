@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 
 export interface Service {
-  _id?: ObjectId
+  _id?: ObjectId;
   title: string;
   active: boolean;
   description: string;

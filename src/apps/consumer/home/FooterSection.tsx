@@ -1,25 +1,25 @@
-import { useTheme } from "@mui/material/styles"
+import { useTheme } from "@mui/material/styles";
 
-import Grid2 from "@mui/material/Grid"
-import Link from "@mui/material/Link"
-import useMediaQuery from "@mui/material/useMediaQuery"
+import Grid2 from "@mui/material/Grid";
+import Link from "@mui/material/Link";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
-import { IconButton, Typography } from "@mui/material"
-import { useNavigate } from "react-router-dom"
+import { IconButton, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
-import Copyright from "@components/Copyright/copyright"
-import InstagramIcon from "@mui/icons-material/Instagram"
-import WhatsAppIcon from "@mui/icons-material/WhatsApp"
+import Copyright from "@components/Copyright/copyright";
+import InstagramIcon from "@mui/icons-material/Instagram";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 
-import footerBg from "../../../assets/images/footer-bg-desk.jpg"
-import prixBox from "../../../assets/images/prix-box.png"
-import tiktok from "../../../assets/images/tiktok.svg"
+import footerBg from "../../../assets/images/footer-bg-desk.jpg";
+import prixBox from "../../../assets/images/prix-box.png";
+import tiktok from "../../../assets/images/tiktok.svg";
 
 export default function FooterSection() {
-  const navigate = useNavigate()
-  const theme = useTheme()
+  const navigate = useNavigate();
+  const theme = useTheme();
 
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const allLinks = [
     [
@@ -117,18 +117,18 @@ export default function FooterSection() {
         url: "https://maps.app.goo.gl/LWti7YfsPFkWVaLd8",
       },
     ],
-  ]
+  ];
 
   const handleLinkClick = (url: any) => (event: any) => {
-    event.preventDefault()
+    event.preventDefault();
     if (url) {
       if (url.startsWith("http://") || url.startsWith("https://")) {
-        window.open(url, "_blank", "noopener,noreferrer")
+        window.open(url, "_blank", "noopener,noreferrer");
       } else {
-        navigate(url)
+        navigate(url);
       }
     }
-  }
+  };
 
   return (
     <Grid2
@@ -144,7 +144,7 @@ export default function FooterSection() {
           color: "white",
         },
         paddingTop: isMobile ? 2 : 15,
-        // gap: isMobile ? 2 : 
+        // gap: isMobile ? 2 :
         // paddingBottom: isMobile ? 3 : 0,
       }}
     >
@@ -238,7 +238,11 @@ export default function FooterSection() {
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3923.0137146357715!2d-66.79591852237525!3d10.499584637532607!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8c2a57720849cba1%3A0xcde4fd59e5307907!2sPrixelart%20C.A.!5e0!3m2!1ses!2sve!4v1751474653621!5m2!1ses!2sve"
             width={isMobile ? "320" : "60%"}
             height="100%"
-            style={{ border: 0, borderRadius: 20, minHeight: isMobile ? 150 : 250 }}
+            style={{
+              border: 0,
+              borderRadius: 20,
+              minHeight: isMobile ? 150 : 250,
+            }}
             allowFullScreen={true}
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
@@ -250,7 +254,7 @@ export default function FooterSection() {
               justifyContent: "center",
               alignItems: isMobile ? "center" : "end",
               // marginTop: isMobile ? 2 : 0,
-              margin: isMobile ? "2rem 0" : 0
+              margin: isMobile ? "2rem 0" : 0,
             }}
           >
             <Typography
@@ -305,11 +309,11 @@ export default function FooterSection() {
           justifyContent: "center",
           color: "white",
           height: "fit-content",
-          mb: isMobile ? "2rem" : 0
+          mb: isMobile ? "2rem" : 0,
         }}
       >
         <Copyright />
       </Grid2>
     </Grid2>
-  )
+  );
 }

@@ -5,15 +5,15 @@ import React, {
   ChangeEvent,
   FormEvent,
   SyntheticEvent,
-} from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+} from "react";
+import { useParams, useNavigate } from "react-router-dom";
 
 // Hooks, Types, Context, API
-import { useSnackBar } from 'context/GlobalContext';
-import { Art } from 'types/art.types';
-import { User } from 'types/user.types';
-import { fetchAllPrixers } from '@api/prixer.api';
-import { fetchArtByObjectId, updateArt } from '@api/art.api';
+import { useSnackBar } from "context/GlobalContext";
+import { Art } from "types/art.types";
+import { User } from "types/user.types";
+import { fetchAllPrixers } from "@api/prixer.api";
+import { fetchArtByObjectId, updateArt } from "@api/art.api";
 
 // MUI Components
 import {
@@ -34,44 +34,45 @@ import {
   Select,
   MenuItem,
   FormHelperText, // Added for Selects
-} from '@mui/material';
-import Title from '@apps/admin/components/Title';
-import Grid2 from '@mui/material/Grid';
+} from "@mui/material";
+import Title from "@apps/admin/components/Title";
+import Grid2 from "@mui/material/Grid";
 
 // Define the initial state structure including new fields
 const initialFormState: Pick<
   Art,
-  | 'title'
-  | 'description'
-  | 'prixerUsername'
-  | 'tags'
-  | 'visible'
-  | 'status'
-  | 'category'
-  | 'comission'
-  | 'exclusive'
-  | 'imageUrl'
-  | 'artLocation'
-  | 'artType'
-  | 'points'
+  | "title"
+  | "description"
+  | "prixerUsername"
+  | "tags"
+  | "visible"
+  | "status"
+  | "category"
+  | "comission"
+  | "exclusive"
+  | "imageUrl"
+  | "artLocation"
+  | "artType"
+  | "points"
 > = {
-  title: '',
-  description: '',
-  prixerUsername: '',
+  title: "",
+  description: "",
+  prixerUsername: "",
   tags: [],
   visible: true,
-  status: 'Available',
-  category: '',
+  status: "Available",
+  category: "",
   comission: 0.15,
-  exclusive: 'false', // Keep as string for Select
-  imageUrl: '',
-  artLocation: '',
-  artType: '',
+  exclusive: "false", // Keep as string for Select
+  imageUrl: "",
+  artLocation: "",
+  artType: "",
   points: 0, // Or "" if you prefer for optional number fields
 };
 
 // Interface for User options in Autocomplete
-interface UserOption extends Pick<User, '_id' | 'username' | 'firstName' | 'lastName' | 'avatar'> {
+interface UserOption
+  extends Pick<User, "_id" | "username" | "firstName" | "lastName" | "avatar"> {
   label: string;
 }
 
@@ -93,16 +94,16 @@ interface ArtValidationErrors {
 
 // Constants for Select options
 const STATUS_OPTIONS = [
-  { value: 'Available', label: 'Disponible' },
-  { value: 'Pending', label: 'Pendiente' },
-  { value: 'Draft', label: 'Borrador' },
-  { value: 'Sold', label: 'Vendido' },
-  { value: 'Rejected', label: 'Rechazado' },
+  { value: "Available", label: "Disponible" },
+  { value: "Pending", label: "Pendiente" },
+  { value: "Draft", label: "Borrador" },
+  { value: "Sold", label: "Vendido" },
+  { value: "Rejected", label: "Rechazado" },
 ];
 
 const EXCLUSIVE_OPTIONS = [
-  { value: 'false', label: 'No' },
-  { value: 'true', label: 'Sí' },
+  { value: "false", label: "No" },
+  { value: "true", label: "Sí" },
 ];
 
 // --- Component ---
@@ -115,11 +116,12 @@ const UpdateArt: React.FC = () => {
 
   // --- State ---
   const [formData, setFormData] = useState(initialFormState);
-  const [originalArtTitle, setOriginalArtTitle] = useState<string>('');
+  const [originalArtTitle, setOriginalArtTitle] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [errorFetch, setErrorFetch] = useState<string | null>(null);
-  const [validationErrors, setValidationErrors] = useState<ArtValidationErrors | null>(null); // Updated error state
+  const [validationErrors, setValidationErrors] =
+    useState<ArtValidationErrors | null>(null); // Updated error state
   const [prixerOptions, setPrixerOptions] = useState<UserOption[]>([]);
   const [selectedPrixer, setSelectedPrixer] = useState<UserOption | null>(null);
   // No need for tagsInput state when using Autocomplete
@@ -127,10 +129,10 @@ const UpdateArt: React.FC = () => {
   // --- Fetch Art Data AND Prixers ---
   const loadData = useCallback(async () => {
     if (!id) {
-      /* ... error handling ... */ setErrorFetch('ID inválido.');
+      /* ... error handling ... */ setErrorFetch("ID inválido.");
       setIsLoading(false);
-      showSnackBar('ID inválido.');
-      navigate('/admin/art/read');
+      showSnackBar("ID inválido.");
+      navigate("/admin/art/read");
       return;
     }
     setIsLoading(true);
@@ -143,7 +145,7 @@ const UpdateArt: React.FC = () => {
         fetchAllPrixers() as Promise<User[]>,
       ]);
 
-      if (!artData) throw new Error('Obra de arte no encontrada.');
+      if (!artData) throw new Error("Obra de arte no encontrada.");
 
       // Populate Prixer options
       const options = fetchedUsers
@@ -154,38 +156,41 @@ const UpdateArt: React.FC = () => {
           firstName: u.firstName,
           lastName: u.lastName,
           avatar: u.avatar,
-          label: `${u.firstName || ''} ${u.lastName || ''} (${u.username})`.trim(),
+          label:
+            `${u.firstName || ""} ${u.lastName || ""} (${u.username})`.trim(),
         }));
       setPrixerOptions(options);
 
       // Populate form data, including new fields and conversions
       setFormData({
-        title: artData.title || '',
-        description: artData.description || '',
-        prixerUsername: artData.prixerUsername || '',
+        title: artData.title || "",
+        description: artData.description || "",
+        prixerUsername: artData.prixerUsername || "",
         tags: artData.tags || [],
         visible: artData.visible ?? true,
-        status: artData.status || 'Available',
-        category: artData.category || '',
+        status: artData.status || "Available",
+        category: artData.category || "",
         comission: artData.comission ?? 0.15,
         // --- Convert boolean/string 'exclusive' from API to string "true"/"false" for Select ---
-        exclusive: String(artData.exclusive) === 'true' ? 'true' : 'false',
+        exclusive: String(artData.exclusive) === "true" ? "true" : "false",
         // --- Populate new fields ---
-        imageUrl: artData.imageUrl || '',
-        artLocation: artData.artLocation || '',
-        artType: artData.artType || '',
+        imageUrl: artData.imageUrl || "",
+        artLocation: artData.artLocation || "",
+        artType: artData.artType || "",
         points: artData.points ?? 0, // Default to 0 if null/undefined
       });
       setOriginalArtTitle(artData.title);
 
       // Set the initially selected Prixer
-      const currentOwner = options.find((opt) => opt.username === artData.prixerUsername);
+      const currentOwner = options.find(
+        (opt) => opt.username === artData.prixerUsername,
+      );
       setSelectedPrixer(currentOwner || null);
     } catch (err: any) {
       /* ... error handling ... */
-      console.error('Failed to load data:', err);
-      setErrorFetch(err.message || 'Error al cargar.');
-      showSnackBar(err.message || 'Error al cargar.');
+      console.error("Failed to load data:", err);
+      setErrorFetch(err.message || "Error al cargar.");
+      showSnackBar(err.message || "Error al cargar.");
     } finally {
       setIsLoading(false);
     }
@@ -197,31 +202,50 @@ const UpdateArt: React.FC = () => {
 
   // --- Handlers ---
   const handleInputChange = (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | { name?: string; value: unknown }>
+    event: ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | { name?: string; value: unknown }
+    >,
   ) => {
     // ... Same as refactored CreateArt ...
     const target = event.target as any;
     const name = target.name as keyof typeof initialFormState;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
+    const value = target.type === "checkbox" ? target.checked : target.value;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
-    if (validationErrors && validationErrors[name as keyof ArtValidationErrors]) {
-      setValidationErrors((prevErrors) => ({ ...prevErrors, [name]: undefined }));
+    if (
+      validationErrors &&
+      validationErrors[name as keyof ArtValidationErrors]
+    ) {
+      setValidationErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: undefined,
+      }));
     }
   };
 
-  const handlePrixerChange = (event: SyntheticEvent, newValue: UserOption | null) => {
+  const handlePrixerChange = (
+    event: SyntheticEvent,
+    newValue: UserOption | null,
+  ) => {
     // ... Same as refactored CreateArt ...
     setSelectedPrixer(newValue);
-    setFormData((prev) => ({ ...prev, prixerUsername: newValue ? newValue.username : '' }));
+    setFormData((prev) => ({
+      ...prev,
+      prixerUsername: newValue ? newValue.username : "",
+    }));
     if (validationErrors?.prixer) {
-      setValidationErrors((prevErrors) => ({ ...prevErrors, prixer: undefined }));
+      setValidationErrors((prevErrors) => ({
+        ...prevErrors,
+        prixer: undefined,
+      }));
     }
   };
 
   // Handler for Tags Autocomplete
   const handleTagsChange = (event: SyntheticEvent, newValue: string[]) => {
     // ... Same as refactored CreateArt ...
-    const uniqueTags = Array.from(new Set(newValue.map((tag) => tag.trim()).filter((tag) => tag)));
+    const uniqueTags = Array.from(
+      new Set(newValue.map((tag) => tag.trim()).filter((tag) => tag)),
+    );
     setFormData((prev) => ({ ...prev, tags: uniqueTags }));
     if (validationErrors?.tags) {
       setValidationErrors((prevErrors) => ({ ...prevErrors, tags: undefined }));
@@ -232,10 +256,13 @@ const UpdateArt: React.FC = () => {
   const validateForm = (): boolean => {
     const errors: ArtValidationErrors = {};
 
-    if (!formData.title.trim()) errors.title = 'El título es obligatorio.';
-    if (!formData.description.trim()) errors.description = 'La descripción es obligatoria.';
-    if (!selectedPrixer) errors.prixer = 'Debe seleccionar un Prixer propietario.';
-    if (!formData.imageUrl.trim()) errors.imageUrl = 'La URL de la imagen es obligatoria.';
+    if (!formData.title.trim()) errors.title = "El título es obligatorio.";
+    if (!formData.description.trim())
+      errors.description = "La descripción es obligatoria.";
+    if (!selectedPrixer)
+      errors.prixer = "Debe seleccionar un Prixer propietario.";
+    if (!formData.imageUrl.trim())
+      errors.imageUrl = "La URL de la imagen es obligatoria.";
     // Basic URL format check (can be enhanced)
     // else if (!/^https?:\/\/.+\..+/.test(formData.imageUrl))
     //   errors.imageUrl = 'Formato de URL inválido.';
@@ -245,9 +272,9 @@ const UpdateArt: React.FC = () => {
       Number(formData.comission) < 10 ||
       Number(formData.comission) > 50
     )
-      errors.comission = 'La comisión debe ser un número entre 50 y 10.';
-    if (!formData.status) errors.status = 'El estado es obligatorio.';
-    if (!formData.exclusive) errors.exclusive = 'Debe indicar si es exclusivo.';
+      errors.comission = "La comisión debe ser un número entre 50 y 10.";
+    if (!formData.status) errors.status = "El estado es obligatorio.";
+    if (!formData.exclusive) errors.exclusive = "Debe indicar si es exclusivo.";
 
     // Optional fields validation (points) - CORRECTED LOGIC
     const pointsValue = formData.points; // Store value to avoid repeating formData.points
@@ -257,14 +284,14 @@ const UpdateArt: React.FC = () => {
       // Now, try converting to a number and check validity
       const pointsAsNumber = Number(pointsValue);
       if (isNaN(pointsAsNumber) || pointsAsNumber < 0) {
-        errors.points = 'Los puntos deben ser un número no negativo.';
+        errors.points = "Los puntos deben ser un número no negativo.";
       }
     }
     // --- End of corrected points validation ---
 
     setValidationErrors(Object.keys(errors).length > 0 ? errors : null);
     if (Object.keys(errors).length > 0) {
-      showSnackBar('Por favor, corrija los errores indicados.');
+      showSnackBar("Por favor, corrija los errores indicados.");
     }
     return Object.keys(errors).length === 0; // Return true if no errors
   };
@@ -276,9 +303,9 @@ const UpdateArt: React.FC = () => {
       if (!selectedPrixer?._id && !validationErrors?.prixer) {
         setValidationErrors((prev) => ({
           ...prev,
-          prixer: 'Error interno: ID del Prixer no encontrado.',
+          prixer: "Error interno: ID del Prixer no encontrado.",
         }));
-        showSnackBar('Error interno: ID del Prixer no encontrado.');
+        showSnackBar("Error interno: ID del Prixer no encontrado.");
       }
       return;
     }
@@ -315,34 +342,39 @@ const UpdateArt: React.FC = () => {
     };
 
     try {
-      console.log('Updating Art Data:', id, payload);
+      console.log("Updating Art Data:", id, payload);
       const response = await updateArt(id, payload);
       if (response) {
         showSnackBar(`Arte "${formData.title}" actualizado exitosamente.`);
-        navigate('/admin/art/read');
+        navigate("/admin/art/read");
       } else {
-        throw new Error('La actualización no devolvió una respuesta esperada.');
+        throw new Error("La actualización no devolvió una respuesta esperada.");
       }
     } catch (err: any) {
-      console.error('Failed to update art:', err);
-      const message = err.message || 'Error al actualizar el arte.';
-      setValidationErrors((prev) => ({ ...prev, title: prev?.title || message })); // Show near top
+      console.error("Failed to update art:", err);
+      const message = err.message || "Error al actualizar el arte.";
+      setValidationErrors((prev) => ({
+        ...prev,
+        title: prev?.title || message,
+      })); // Show near top
       showSnackBar(message);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleCancel = () => navigate('/admin/art/read');
+  const handleCancel = () => navigate("/admin/art/read");
 
   // --- Render Logic ---
   return (
     <>
-      <Title title={`Actualizar Arte: ${originalArtTitle || (id ? 'Cargando...' : 'Inválido')}`} />
+      <Title
+        title={`Actualizar Arte: ${originalArtTitle || (id ? "Cargando..." : "Inválido")}`}
+      />
       <Paper elevation={3} sx={{ p: 3, mt: 2 }}>
         {/* Loading Indicator */}
         {isLoading && (
-          <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+          <Box sx={{ display: "flex", justifyContent: "center", p: 3 }}>
             <CircularProgress />
           </Box>
         )}
@@ -353,7 +385,12 @@ const UpdateArt: React.FC = () => {
             <Button onClick={loadData} size="small" sx={{ ml: 1 }}>
               Reintentar
             </Button>
-            <Button onClick={handleCancel} size="small" color="secondary" sx={{ ml: 1 }}>
+            <Button
+              onClick={handleCancel}
+              size="small"
+              color="secondary"
+              sx={{ ml: 1 }}
+            >
               Volver
             </Button>
           </Alert>
@@ -385,11 +422,17 @@ const UpdateArt: React.FC = () => {
                   value={selectedPrixer}
                   onChange={handlePrixerChange}
                   getOptionLabel={(option) => option.label}
-                  isOptionEqualToValue={(option, value) => option.username === value.username}
+                  isOptionEqualToValue={(option, value) =>
+                    option.username === value.username
+                  }
                   loading={isLoading}
                   disabled={isSubmitting}
                   renderOption={(props, option) => (
-                    <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
+                    <Box
+                      component="li"
+                      sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
+                      {...props}
+                    >
                       <Avatar
                         src={option.avatar || undefined}
                         sx={{ width: 24, height: 24, mr: 1 }}
@@ -408,7 +451,9 @@ const UpdateArt: React.FC = () => {
                         ...params.InputProps,
                         endAdornment: (
                           <>
-                            {isLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                            {isLoading ? (
+                              <CircularProgress color="inherit" size={20} />
+                            ) : null}
                             {params.InputProps.endAdornment}
                           </>
                         ),
@@ -438,25 +483,25 @@ const UpdateArt: React.FC = () => {
                       mt: 1,
                       p: 1,
                       border: 1,
-                      borderColor: 'divider',
+                      borderColor: "divider",
                       borderRadius: 1,
                       maxWidth: 250,
                       maxHeight: 250,
-                      display: 'inline-block',
+                      display: "inline-block",
                     }}
                   >
                     <img
                       src={formData.imageUrl}
                       alt="Previsualización"
                       style={{
-                        display: 'block',
-                        width: '100%',
-                        height: 'auto',
-                        objectFit: 'contain',
+                        display: "block",
+                        width: "100%",
+                        height: "auto",
+                        objectFit: "contain",
                         maxHeight: 230,
                       }}
-                      onError={(e) => (e.currentTarget.style.display = 'none')}
-                      onLoad={(e) => (e.currentTarget.style.display = 'block')}
+                      onError={(e) => (e.currentTarget.style.display = "none")}
+                      onLoad={(e) => (e.currentTarget.style.display = "block")}
                     />
                   </Box>
                 )}
@@ -529,8 +574,8 @@ const UpdateArt: React.FC = () => {
                   required
                   fullWidth
                   disabled={isSubmitting}
-                  inputProps={{ step: '1', min: '10', max: '50' }}
-                //   error={!!validationErrors?.comission}
+                  inputProps={{ step: "1", min: "10", max: "50" }}
+                  //   error={!!validationErrors?.comission}
                   helperText={validationErrors?.comission}
                 />
               </Grid2>
@@ -544,7 +589,7 @@ const UpdateArt: React.FC = () => {
                   value={formData.tags}
                   onChange={handleTagsChange}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') e.preventDefault();
+                    if (e.key === "Enter") e.preventDefault();
                   }}
                   renderTags={(value: readonly string[], getTagProps) =>
                     value.map((option: string, index: number) => (
@@ -572,7 +617,11 @@ const UpdateArt: React.FC = () => {
 
               {/* Status (Select) */}
               <Grid2 size={{ xs: 12, sm: 4 }}>
-                <FormControl fullWidth required error={!!validationErrors?.status}>
+                <FormControl
+                  fullWidth
+                  required
+                  error={!!validationErrors?.status}
+                >
                   <InputLabel id="status-select-label">Estado</InputLabel>
                   <Select
                     labelId="status-select-label"
@@ -594,7 +643,11 @@ const UpdateArt: React.FC = () => {
 
               {/* Exclusive (Select) */}
               <Grid2 size={{ xs: 12, sm: 4 }}>
-                <FormControl fullWidth required error={!!validationErrors?.exclusive}>
+                <FormControl
+                  fullWidth
+                  required
+                  error={!!validationErrors?.exclusive}
+                >
                   <InputLabel id="exclusive-select-label">Exclusivo</InputLabel>
                   <Select
                     labelId="exclusive-select-label"
@@ -624,14 +677,17 @@ const UpdateArt: React.FC = () => {
                   onChange={handleInputChange}
                   fullWidth
                   disabled={isSubmitting}
-                  inputProps={{ min: '0' }}
+                  inputProps={{ min: "0" }}
                   error={!!validationErrors?.points}
                   helperText={validationErrors?.points}
                 />
               </Grid2>
 
               {/* Visible Checkbox */}
-              <Grid2 size={{ xs: 12 }} sx={{ display: 'flex', alignItems: 'center' }}>
+              <Grid2
+                size={{ xs: 12 }}
+                sx={{ display: "flex", alignItems: "center" }}
+              >
                 <FormControlLabel
                   control={
                     <Checkbox
@@ -647,7 +703,12 @@ const UpdateArt: React.FC = () => {
 
               {/* Action Buttons */}
               <Grid2 size={{ xs: 12 }}>
-                <Stack direction="row" justifyContent="flex-end" spacing={2} sx={{ mt: 2 }}>
+                <Stack
+                  direction="row"
+                  justifyContent="flex-end"
+                  spacing={2}
+                  sx={{ mt: 2 }}
+                >
                   <Button
                     type="button"
                     variant="outlined"
@@ -662,9 +723,13 @@ const UpdateArt: React.FC = () => {
                     variant="contained"
                     color="primary"
                     disabled={isSubmitting || isLoading}
-                    startIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : null}
+                    startIcon={
+                      isSubmitting ? (
+                        <CircularProgress size={20} color="inherit" />
+                      ) : null
+                    }
                   >
-                    {isSubmitting ? 'Guardando...' : 'Guardar Cambios'}
+                    {isSubmitting ? "Guardando..." : "Guardar Cambios"}
                   </Button>
                 </Stack>
               </Grid2>
@@ -673,7 +738,7 @@ const UpdateArt: React.FC = () => {
               {validationErrors &&
                 validationErrors.title &&
                 !validationErrors.description /* etc */ &&
-                validationErrors.title !== 'El título es obligatorio.' && (
+                validationErrors.title !== "El título es obligatorio." && (
                   <Grid2 size={{ xs: 12 }}>
                     <Alert severity="error" sx={{ mt: 2 }}>
                       {validationErrors.title}

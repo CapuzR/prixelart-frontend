@@ -17,7 +17,7 @@ import {
   Box,
   CircularProgress, // Added
 } from "@mui/material";
-import { useTheme } from '@mui/material/styles'; // Added
+import { useTheme } from "@mui/material/styles"; // Added
 
 import {
   LockOutlined as LockOutlinedIcon,
@@ -38,7 +38,7 @@ const MAX_RETRIES = 3;
 
 const ensureHttps = (url: string): string => {
   let fullUrl = url.trim();
-  if (!/^https?:\/\//i.test(fullUrl) && !fullUrl.startsWith('/')) {
+  if (!/^https?:\/\//i.test(fullUrl) && !fullUrl.startsWith("/")) {
     fullUrl = `https://${fullUrl}`;
   }
   return fullUrl;
@@ -49,25 +49,28 @@ const findValidWebpUrl = (art?: Art): string | null => {
 
   // These keys are expected in your Art type from ../../../types/art.types
   const props: (keyof Art)[] = [
-    'largeThumbUrl',
-    'mediumThumbUrl',
-    'thumbnailUrl',
-    'smallThumbUrl',
-    'squareThumbUrl',
+    "largeThumbUrl",
+    "mediumThumbUrl",
+    "thumbnailUrl",
+    "smallThumbUrl",
+    "squareThumbUrl",
   ];
 
   for (const key of props) {
     const value = art[key];
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       const trimmed = value.trim();
-      if (trimmed && trimmed.toLowerCase().endsWith('.webp') && !trimmed.includes(' ')) {
+      if (
+        trimmed &&
+        trimmed.toLowerCase().endsWith(".webp") &&
+        !trimmed.includes(" ")
+      ) {
         return ensureHttps(trimmed);
       }
     }
   }
   return null;
 };
-
 
 export default function AdminLogin() {
   const { showSnackBar } = useSnackBar();
@@ -126,13 +129,13 @@ export default function AdminLogin() {
           setLoadingBg(false); // Successfully loaded
         } else {
           // No valid URL found, but API call was successful
-          setRetryCount(prev => prev + 1); // Increment retryCount to try again
+          setRetryCount((prev) => prev + 1); // Increment retryCount to try again
           // loadingBg remains true for the next attempt
         }
       } catch (error) {
         console.error("Error obteniendo arte aleatorio para fondo:", error);
         if (mounted) {
-          showSnackBar('Error al cargar la imagen de fondo.');
+          showSnackBar("Error al cargar la imagen de fondo.");
           setLoadingBg(false); // Stop loading on error; no further retries for this error
         }
       }
@@ -142,7 +145,8 @@ export default function AdminLogin() {
     // or when retryCount changes (triggering a re-run of useEffect).
     // If loadingBg became false (due to success, error, or max_retries),
     // and retryCount doesn't change, it won't re-fetch, which is correct.
-    if (loadingBg || retryCount <= MAX_RETRIES) { // Fetch if loading or still have retries
+    if (loadingBg || retryCount <= MAX_RETRIES) {
+      // Fetch if loading or still have retries
       // More precise: only fetch if we are supposed to be loading.
       // The retryCount dependency already handles re-triggering.
       // If loadingBg is true, we should fetch.
@@ -154,12 +158,10 @@ export default function AdminLogin() {
       fetchArtForBg();
     }
 
-
     return () => {
       mounted = false;
     };
   }, [retryCount, showSnackBar]); // Dependencies ensure effect re-runs on retryCount change or if showSnackBar changes
-
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -172,7 +174,7 @@ export default function AdminLogin() {
     setPassword(e.target.value);
     if (!isAValidPassword(e.target.value) && e.target.value) {
       showSnackBar(
-        "Disculpa, tu contraseña debe tener entre 8 y 15 caracteres, incluyendo al menos: una minúscula, una mayúscula, un número y un caracter especial."
+        "Disculpa, tu contraseña debe tener entre 8 y 15 caracteres, incluyendo al menos: una minúscula, una mayúscula, un número y un caracter especial.",
       );
     }
   };
@@ -206,13 +208,14 @@ export default function AdminLogin() {
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
           backgroundPosition: "center",
-          width: isTab ? "100%" : undefined,      // Retained from original
-          height: isTab ? "40vh" : "100%",      // Retained from original
-          backgroundImage: bgUrl ? `url(${bgUrl})` : 'none', // Updated
-          backgroundColor: loadingBg && !bgUrl ? theme.palette.grey[200] : undefined, // Updated
-          display: 'flex', // Added to center CircularProgress
-          alignItems: 'center', // Added to center CircularProgress
-          justifyContent: 'center', // Added to center CircularProgress
+          width: isTab ? "100%" : undefined, // Retained from original
+          height: isTab ? "40vh" : "100%", // Retained from original
+          backgroundImage: bgUrl ? `url(${bgUrl})` : "none", // Updated
+          backgroundColor:
+            loadingBg && !bgUrl ? theme.palette.grey[200] : undefined, // Updated
+          display: "flex", // Added to center CircularProgress
+          alignItems: "center", // Added to center CircularProgress
+          justifyContent: "center", // Added to center CircularProgress
         }}
       >
         {loadingBg && ( // Display loader when background is loading
@@ -306,7 +309,10 @@ export default function AdminLogin() {
                     />
                   </FormControl>
                 </Grid2>
-                <Grid2 size={{ xs: 12, sm: 10, md: 8, lg: 6 }} sx={{ textAlign: 'center' }}>
+                <Grid2
+                  size={{ xs: 12, sm: 10, md: 8, lg: 6 }}
+                  sx={{ textAlign: "center" }}
+                >
                   <Button
                     type="submit"
                     variant="contained"
@@ -314,13 +320,16 @@ export default function AdminLogin() {
                     sx={{
                       mt: 3,
                       mb: 2,
-                      width: '100%'
+                      width: "100%",
                     }}
                   >
                     Inicia sesión
                   </Button>
                 </Grid2>
-                <Grid2 size={{ xs: 12, sm: 10, md: 8, lg: 6 }} sx={{ textAlign: 'center' }}>
+                <Grid2
+                  size={{ xs: 12, sm: 10, md: 8, lg: 6 }}
+                  sx={{ textAlign: "center" }}
+                >
                   <Link href="#" onClick={forgotPassword} variant="body2">
                     {"¿Olvidaste tu contraseña? Recupérala"}
                   </Link>
@@ -332,8 +341,8 @@ export default function AdminLogin() {
               sx={{
                 margin: "auto 0 0",
                 transform: "translateY(-64px)",
-                width: '100%',
-                textAlign: 'center'
+                width: "100%",
+                textAlign: "center",
               }}
             >
               <Copyright />

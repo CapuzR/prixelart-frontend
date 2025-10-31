@@ -1,12 +1,12 @@
-import React, { useState, ChangeEvent, FormEvent, SyntheticEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, ChangeEvent, FormEvent, SyntheticEvent } from "react";
+import { useNavigate } from "react-router-dom";
 
 // Hooks, Types, Context, API
-import { useSnackBar } from 'context/GlobalContext';
-import { User, USER_ROLE_OPTIONS } from 'types/user.types'; // Assuming Prixer is also in user.types or imported separately
-import { createUser } from '@api/user.api';
-import { isAValidUsername } from 'utils/validations';
-import Grid2 from '@mui/material/Grid';
+import { useSnackBar } from "context/GlobalContext";
+import { User, USER_ROLE_OPTIONS } from "types/user.types"; // Assuming Prixer is also in user.types or imported separately
+import { createUser } from "@api/user.api";
+import { isAValidUsername } from "utils/validations";
+import Grid2 from "@mui/material/Grid";
 // MUI Components
 import {
   Box,
@@ -28,19 +28,32 @@ import {
   Autocomplete, // Use for Roles, Specialties, potentially Country
   Chip,
   Avatar, // For previews
-} from '@mui/material';
-import Title from '@apps/admin/components/Title';
+} from "@mui/material";
+import Title from "@apps/admin/components/Title";
 
 // Date Picker & Dayjs
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import dayjs, { Dayjs } from 'dayjs'; // Import Dayjs type
-import { Prixer } from 'types/prixer.types';
-import { PickerChangeHandlerContext, DateValidationError } from '@mui/x-date-pickers';
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs, { Dayjs } from "dayjs"; // Import Dayjs type
+import { Prixer } from "types/prixer.types";
+import {
+  PickerChangeHandlerContext,
+  DateValidationError,
+} from "@mui/x-date-pickers";
 
 // --- Constants and Options ---
-const AVAILABLE_GENDERS = ['Masculino', 'Femenino', 'Otro', 'Prefiero no decir'];
+const AVAILABLE_GENDERS = [
+  "Masculino",
+  "Femenino",
+  "Otro",
+  "Prefiero no decir",
+];
 // Define or fetch Specialties
-const AVAILABLE_SPECIALTIES = ['Ilustración', 'Diseño', 'Fotografía', 'Artes Plásticas'];
+const AVAILABLE_SPECIALTIES = [
+  "Ilustración",
+  "Diseño",
+  "Fotografía",
+  "Artes Plásticas",
+];
 
 // --- Type Definitions ---
 // Define separate structures for validation errors for clarity
@@ -79,39 +92,45 @@ interface UserValidationErrors extends UserBaseValidationErrors {
 // --- Initial State ---
 const initialUserFormState: Partial<User> = {
   // Use Partial<User> for easier initialization
-  username: '',
-  firstName: '',
-  lastName: '',
-  email: '',
-  password: '',
+  username: "",
+  firstName: "",
+  lastName: "",
+  email: "",
+  password: "",
   active: true,
-  role: ['consumer'], // Default role array
-  avatar: '',
-  phone: '',
-  country: '',
-  city: '',
+  role: ["consumer"], // Default role array
+  avatar: "",
+  phone: "",
+  country: "",
+  city: "",
   birthdate: undefined,
-  gender: '',
-  address: '',
-  billingAddress: '',
-  shippingAddress: '',
+  gender: "",
+  address: "",
+  billingAddress: "",
+  shippingAddress: "",
   // Social links are duplicated in User and Prixer, decide where they belong primarily
-  instagram: '',
-  facebook: '',
-  twitter: '',
+  instagram: "",
+  facebook: "",
+  twitter: "",
 };
 
 const initialPrixerFormState: Pick<
   Prixer,
-  'specialty' | 'description' | 'instagram' | 'twitter' | 'facebook' | 'phone' | 'avatar'
+  | "specialty"
+  | "description"
+  | "instagram"
+  | "twitter"
+  | "facebook"
+  | "phone"
+  | "avatar"
 > = {
   specialty: [],
-  description: '',
-  instagram: '',
-  twitter: '',
-  facebook: '',
-  phone: '',
-  avatar: '',
+  description: "",
+  instagram: "",
+  twitter: "",
+  facebook: "",
+  phone: "",
+  avatar: "",
 };
 
 // --- Component ---
@@ -121,29 +140,36 @@ const CreateUser: React.FC = () => {
   const { showSnackBar } = useSnackBar();
 
   // --- State ---
-  const [userFormData, setUserFormData] = useState<Partial<User>>(initialUserFormState);
+  const [userFormData, setUserFormData] =
+    useState<Partial<User>>(initialUserFormState);
   const [prixerFormData, setPrixerFormData] = useState(initialPrixerFormState);
   const [birthdateValue, setBirthdateValue] = useState<Dayjs | null>(null); // State for DatePicker
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [validationErrors, setValidationErrors] = useState<UserValidationErrors | null>(null); // Updated error state
+  const [validationErrors, setValidationErrors] =
+    useState<UserValidationErrors | null>(null); // Updated error state
 
   // Determine if the Prixer role is selected
-  const isPrixerRoleSelected = userFormData.role?.includes('prixer');
+  const isPrixerRoleSelected = userFormData.role?.includes("prixer");
 
   // --- Handlers ---
 
   // Generic handler for most User text/select/checkbox inputs
   const handleUserInputChange = (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | { name?: string; value: unknown }>
+    event: ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | { name?: string; value: unknown }
+    >,
   ) => {
     const target = event.target as any;
     const name = target.name as keyof User;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
+    const value = target.type === "checkbox" ? target.checked : target.value;
 
     setUserFormData((prevData) => ({ ...prevData, [name]: value }));
 
     // Clear validation error for this field
-    if (validationErrors && validationErrors[name as keyof UserBaseValidationErrors]) {
+    if (
+      validationErrors &&
+      validationErrors[name as keyof UserBaseValidationErrors]
+    ) {
       setValidationErrors((prevErrors) => {
         const updated = { ...prevErrors };
         delete updated[name as keyof UserBaseValidationErrors];
@@ -152,13 +178,16 @@ const CreateUser: React.FC = () => {
     }
   };
 
-type RoleOptionType = typeof USER_ROLE_OPTIONS[number];
+  type RoleOptionType = (typeof USER_ROLE_OPTIONS)[number];
   // Handler for Role Autocomplete (allows multiple)
-  const handleRolesChange = (event: SyntheticEvent, newValue: RoleOptionType[]) => {
+  const handleRolesChange = (
+    event: SyntheticEvent,
+    newValue: RoleOptionType[],
+  ) => {
     const roleValues = newValue.map((option) => option.value);
 
-    const hadPrixerBefore = userFormData.role?.includes('prixer');
-    const hasPrixerNow = roleValues.includes('prixer');
+    const hadPrixerBefore = userFormData.role?.includes("prixer");
+    const hasPrixerNow = roleValues.includes("prixer");
 
     setUserFormData((prev) => ({ ...prev, role: roleValues }));
 
@@ -185,22 +214,30 @@ type RoleOptionType = typeof USER_ROLE_OPTIONS[number];
   };
 
   // Generic handler for Prixer text/checkbox inputs
-  const handlePrixerInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handlePrixerInputChange = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const target = event.target as HTMLInputElement;
     const { name, value, type } = target;
     const checked = target.checked;
     setPrixerFormData((prevData) => ({
       ...prevData,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === "checkbox" ? checked : value,
     }));
     // Clear specific prixer validation error
-    if (validationErrors?.prixer && validationErrors.prixer[name as keyof PrixerValidationErrors]) {
+    if (
+      validationErrors?.prixer &&
+      validationErrors.prixer[name as keyof PrixerValidationErrors]
+    ) {
       setValidationErrors((prevErrors) => {
         const updatedPrixerErrors = { ...(prevErrors?.prixer || {}) };
         delete updatedPrixerErrors[name as keyof PrixerValidationErrors];
         const updated = {
           ...prevErrors,
-          prixer: Object.keys(updatedPrixerErrors).length > 0 ? updatedPrixerErrors : undefined,
+          prixer:
+            Object.keys(updatedPrixerErrors).length > 0
+              ? updatedPrixerErrors
+              : undefined,
         };
         if (!updated.prixer) delete updated.prixer; // Clean up prixer key if empty
         return Object.keys(updated).length > 0 ? updated : null;
@@ -217,7 +254,10 @@ type RoleOptionType = typeof USER_ROLE_OPTIONS[number];
         delete updatedPrixerErrors.specialty;
         const updated = {
           ...prevErrors,
-          prixer: Object.keys(updatedPrixerErrors).length > 0 ? updatedPrixerErrors : undefined,
+          prixer:
+            Object.keys(updatedPrixerErrors).length > 0
+              ? updatedPrixerErrors
+              : undefined,
         };
         if (!updated.prixer) delete updated.prixer;
         return Object.keys(updated).length > 0 ? updated : null;
@@ -228,12 +268,12 @@ type RoleOptionType = typeof USER_ROLE_OPTIONS[number];
   // Handler for Date Picker
   const handleBirthdateChange = (
     newValue: unknown,
-    context: PickerChangeHandlerContext<DateValidationError>
+    context: PickerChangeHandlerContext<DateValidationError>,
   ) => {
     const dayjsValue = newValue ? dayjs(newValue as Date | Dayjs) : null;
 
     if (dayjsValue && !dayjsValue.isValid()) {
-      console.error('Invalid date received from DatePicker:', newValue);
+      console.error("Invalid date received from DatePicker:", newValue);
       setBirthdateValue(null);
     } else {
       setBirthdateValue(dayjsValue);
@@ -255,26 +295,28 @@ type RoleOptionType = typeof USER_ROLE_OPTIONS[number];
 
     // User Validation
     if (!userFormData.username?.trim() && isPrixerRoleSelected)
-      errors.username = 'Nombre de usuario obligatorio.';
+      errors.username = "Nombre de usuario obligatorio.";
     else if (
       userFormData.username &&
       isPrixerRoleSelected &&
       !isAValidUsername(userFormData.username)
     )
-      errors.username = 'Formato inválido (letras, números, guión bajo).';
-    if (!userFormData.firstName?.trim()) errors.firstName = 'Nombre obligatorio.';
-    if (!userFormData.lastName?.trim()) errors.lastName = 'Apellido obligatorio.';
+      errors.username = "Formato inválido (letras, números, guión bajo).";
+    if (!userFormData.firstName?.trim())
+      errors.firstName = "Nombre obligatorio.";
+    if (!userFormData.lastName?.trim())
+      errors.lastName = "Apellido obligatorio.";
     if (!userFormData.role || userFormData.role.length === 0)
-      errors.role = 'Seleccione al menos un rol.';
+      errors.role = "Seleccione al menos un rol.";
     // Add validation for other User fields if they become required (e.g., phone, address)
 
     // Prixer Validation (only if role is selected)
-    if (userFormData.role?.includes('prixer')) {
+    if (userFormData.role?.includes("prixer")) {
       const prixerErrors: PrixerValidationErrors = {};
       if (!prixerFormData.description?.trim())
-        prixerErrors.description = 'Descripción de Prixer obligatoria.';
+        prixerErrors.description = "Descripción de Prixer obligatoria.";
       if (!prixerFormData.specialty || prixerFormData.specialty.length === 0)
-        prixerErrors.specialty = 'Seleccione al menos una especialidad.';
+        prixerErrors.specialty = "Seleccione al menos una especialidad.";
       // Add other required Prixer field validations here (e.g., phone)
       // if (!prixerFormData.phone?.trim()) prixerErrors.phone = "Teléfono de Prixer obligatorio.";
 
@@ -285,7 +327,7 @@ type RoleOptionType = typeof USER_ROLE_OPTIONS[number];
 
     setValidationErrors(Object.keys(errors).length > 0 ? errors : null);
     if (Object.keys(errors).length > 0) {
-      showSnackBar('Por favor, corrija los errores indicados.');
+      showSnackBar("Por favor, corrija los errores indicados.");
     }
     return Object.keys(errors).length === 0;
   };
@@ -322,7 +364,7 @@ type RoleOptionType = typeof USER_ROLE_OPTIONS[number];
     };
 
     // Conditionally add Prixer details
-    if (payload.role?.includes('prixer')) {
+    if (payload.role?.includes("prixer")) {
       payload.prixer = {
         // Fields from prixerFormData
         specialty: prixerFormData.specialty,
@@ -345,14 +387,18 @@ type RoleOptionType = typeof USER_ROLE_OPTIONS[number];
       const response = await createUser(payload);
       if (response.success) {
         showSnackBar(`Usuario "${payload.firstName}" creado.`);
-        navigate('/admin/users/read');
+        navigate("/admin/users/read");
       } else {
-        throw new Error('La creación falló.');
+        throw new Error("La creación falló.");
       }
     } catch (err: any) {
-      console.error('Failed create:', err);
-      const message = err.response?.data?.message || err.message || 'Error al crear.';
-      setValidationErrors((prev) => ({ ...(prev || {}), username: prev?.username || message }));
+      console.error("Failed create:", err);
+      const message =
+        err.response?.data?.message || err.message || "Error al crear.";
+      setValidationErrors((prev) => ({
+        ...(prev || {}),
+        username: prev?.username || message,
+      }));
       showSnackBar(message); // Show near username field
     } finally {
       setIsSubmitting(false);
@@ -360,7 +406,7 @@ type RoleOptionType = typeof USER_ROLE_OPTIONS[number];
   };
 
   const handleCancel = () => {
-    navigate('/admin/users/read');
+    navigate("/admin/users/read");
   };
 
   // --- Render Logic ---
@@ -385,7 +431,10 @@ type RoleOptionType = typeof USER_ROLE_OPTIONS[number];
                   fullWidth
                   disabled={isSubmitting}
                   error={!!validationErrors?.username}
-                  helperText={validationErrors?.username || 'Solo letras, números y guiones bajos.'}
+                  helperText={
+                    validationErrors?.username ||
+                    "Solo letras, números y guiones bajos."
+                  }
                 />
               </Grid2>
             )}
@@ -446,21 +495,23 @@ type RoleOptionType = typeof USER_ROLE_OPTIONS[number];
                 id="user-roles-select"
                 options={USER_ROLE_OPTIONS}
                 value={USER_ROLE_OPTIONS.filter((option) =>
-                  (userFormData.role || []).includes(option.value)
+                  (userFormData.role || []).includes(option.value),
                 )}
                 onChange={handleRolesChange}
                 disableCloseOnSelect
                 getOptionLabel={(option) => option.label}
-                isOptionEqualToValue={(option, value) => option.value === value.value}
+                isOptionEqualToValue={(option, value) =>
+                  option.value === value.value
+                }
                 renderTags={(value, getTagProps) =>
-                                        value.map((option, index) => (
-                                          <Chip
-                                            label={option.label}
-                                            size="small"
-                                            {...getTagProps({ index })}
-                                          />
-                                        ))
-                                      }
+                  value.map((option, index) => (
+                    <Chip
+                      label={option.label}
+                      size="small"
+                      {...getTagProps({ index })}
+                    />
+                  ))
+                }
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -472,7 +523,10 @@ type RoleOptionType = typeof USER_ROLE_OPTIONS[number];
                 disabled={isSubmitting}
               />
             </Grid2>
-            <Grid2 size={{ xs: 12, sm: 6 }} sx={{ display: 'flex', alignItems: 'center' }}>
+            <Grid2
+              size={{ xs: 12, sm: 6 }}
+              sx={{ display: "flex", alignItems: "center" }}
+            >
               <FormControlLabel
                 control={
                   <Checkbox
@@ -489,7 +543,9 @@ type RoleOptionType = typeof USER_ROLE_OPTIONS[number];
             {/* Contact Info */}
             <Grid2 size={{ xs: 12 }}>
               <Divider sx={{ my: 2 }}>
-                <Typography variant="overline">Información Adicional (Opcional)</Typography>
+                <Typography variant="overline">
+                  Información Adicional (Opcional)
+                </Typography>
               </Divider>
             </Grid2>
             <Grid2 size={{ xs: 12, sm: 6 }}></Grid2> {/* Spacer */}
@@ -520,7 +576,8 @@ type RoleOptionType = typeof USER_ROLE_OPTIONS[number];
                 disabled={isSubmitting}
                 error={!!validationErrors?.billingAddress}
                 helperText={
-                  validationErrors?.billingAddress || 'Opcional, si es diferente a la principal'
+                  validationErrors?.billingAddress ||
+                  "Opcional, si es diferente a la principal"
                 }
               />
             </Grid2>
@@ -536,7 +593,8 @@ type RoleOptionType = typeof USER_ROLE_OPTIONS[number];
                 disabled={isSubmitting}
                 error={!!validationErrors?.shippingAddress}
                 helperText={
-                  validationErrors?.shippingAddress || 'Opcional, si es diferente a la principal'
+                  validationErrors?.shippingAddress ||
+                  "Opcional, si es diferente a la principal"
                 }
               />
             </Grid2>
@@ -642,7 +700,11 @@ type RoleOptionType = typeof USER_ROLE_OPTIONS[number];
                       getOptionLabel={(option) => option}
                       renderTags={(value: readonly string[], getTagProps) =>
                         value.map((option: string, index: number) => (
-                          <Chip label={option} size="small" {...getTagProps({ index })} />
+                          <Chip
+                            label={option}
+                            size="small"
+                            {...getTagProps({ index })}
+                          />
                         ))
                       }
                       renderInput={(params) => (
@@ -652,7 +714,8 @@ type RoleOptionType = typeof USER_ROLE_OPTIONS[number];
                           required={isPrixerRoleSelected}
                           error={!!validationErrors?.prixer?.specialty}
                           helperText={
-                            validationErrors?.prixer?.specialty || 'Seleccione al menos una'
+                            validationErrors?.prixer?.specialty ||
+                            "Seleccione al menos una"
                           }
                         />
                       )}
@@ -684,13 +747,17 @@ type RoleOptionType = typeof USER_ROLE_OPTIONS[number];
                       helperText={validationErrors?.prixer?.avatar}
                     />
                   </Grid2>
-                  {prixerFormData.avatar && !validationErrors?.prixer?.avatar && (
-                    <Grid2 size={{ xs: 12 }}>
-                      <Box sx={{ mt: -2, mb: 1 }}>
-                        <Avatar src={prixerFormData.avatar} sx={{ width: 60, height: 60 }} />
-                      </Box>
-                    </Grid2>
-                  )}
+                  {prixerFormData.avatar &&
+                    !validationErrors?.prixer?.avatar && (
+                      <Grid2 size={{ xs: 12 }}>
+                        <Box sx={{ mt: -2, mb: 1 }}>
+                          <Avatar
+                            src={prixerFormData.avatar}
+                            sx={{ width: 60, height: 60 }}
+                          />
+                        </Box>
+                      </Grid2>
+                    )}
                   <Grid2 size={{ xs: 12, sm: 4 }}>
                     <TextField
                       label="Instagram"
@@ -733,7 +800,12 @@ type RoleOptionType = typeof USER_ROLE_OPTIONS[number];
             {/* --- End Conditional Prixer Fields --- */}
             {/* Action Buttons */}
             <Grid2 size={{ xs: 12 }}>
-              <Stack direction="row" justifyContent="flex-end" spacing={2} sx={{ mt: 2 }}>
+              <Stack
+                direction="row"
+                justifyContent="flex-end"
+                spacing={2}
+                sx={{ mt: 2 }}
+              >
                 <Button
                   type="button"
                   variant="outlined"
@@ -748,9 +820,13 @@ type RoleOptionType = typeof USER_ROLE_OPTIONS[number];
                   variant="contained"
                   color="primary"
                   disabled={isSubmitting}
-                  startIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : null}
+                  startIcon={
+                    isSubmitting ? (
+                      <CircularProgress size={20} color="inherit" />
+                    ) : null
+                  }
                 >
-                  {isSubmitting ? 'Creando...' : 'Crear Usuario'}
+                  {isSubmitting ? "Creando..." : "Crear Usuario"}
                 </Button>
               </Stack>
             </Grid2>

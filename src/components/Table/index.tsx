@@ -1,35 +1,35 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
 
-import Table from "@mui/material/Table"
-import TableBody from "@mui/material/TableBody"
-import TableCell from "@mui/material/TableCell"
-import TableHead from "@mui/material/TableHead"
-import TableRow from "@mui/material/TableRow"
-import Checkbox from "@mui/material/Checkbox"
-import IconButton from "@mui/material/IconButton"
-import EditIcon from "@mui/icons-material/Edit"
-import DeleteIcon from "@mui/icons-material/Delete"
-import PaginationBar from "@components/Pagination/PaginationBar"
-import { Tooltip, Typography } from "@mui/material"
-import FormControl from "@mui/material/FormControl"
-import InputLabel from "@mui/material/InputLabel"
-import Select, { SelectChangeEvent } from "@mui/material/Select"
-import MenuItem from "@mui/material/MenuItem"
-import { useTheme } from "@mui/styles"
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Checkbox from "@mui/material/Checkbox";
+import IconButton from "@mui/material/IconButton";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import PaginationBar from "@components/Pagination/PaginationBar";
+import { Tooltip, Typography } from "@mui/material";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import { useTheme } from "@mui/styles";
 
 interface TableProps {
-  headers: any
-  elements: any
-  properties: any
-  updateFunction?: any
-  deleteFunction?: any
-  setPageNumber: any
-  pageNumber: any
-  itemsPerPage: any
-  maxLength: any
-  filter?: any // Hacer opcionales estas props
-  options?: any
-  handleFilter?: any
+  headers: any;
+  elements: any;
+  properties: any;
+  updateFunction?: any;
+  deleteFunction?: any;
+  setPageNumber: any;
+  pageNumber: any;
+  itemsPerPage: any;
+  maxLength: any;
+  filter?: any; // Hacer opcionales estas props
+  options?: any;
+  handleFilter?: any;
 }
 
 export default function Table1({
@@ -46,31 +46,31 @@ export default function Table1({
   options,
   handleFilter,
 }: TableProps) {
-  const [dots, setDots] = useState<any[]>()
-  const theme = useTheme()
+  const [dots, setDots] = useState<any[]>();
+  const theme = useTheme();
 
   const filterAndOrder = () => {
-    const itemsToSkip = (pageNumber - 1) * itemsPerPage
+    const itemsToSkip = (pageNumber - 1) * itemsPerPage;
 
-    let elements2 = elements?.slice(itemsToSkip, itemsPerPage + itemsToSkip)
+    let elements2 = elements?.slice(itemsToSkip, itemsPerPage + itemsToSkip);
     return elements2?.map((obj: any) => {
-      let xo: any = {}
+      let xo: any = {};
 
       properties.forEach((prop: string) => {
-        xo[prop] = obj[prop] ?? ""
-      })
-      return xo
-    })
-  }
+        xo[prop] = obj[prop] ?? "";
+      });
+      return xo;
+    });
+  };
 
   useEffect(() => {
-    const neat = filterAndOrder()
-    setDots(neat)
-  }, [elements, pageNumber])
+    const neat = filterAndOrder();
+    setDots(neat);
+  }, [elements, pageNumber]);
 
   interface Head {
-    title: string
-    type: string
+    title: string;
+    type: string;
   }
 
   return (
@@ -127,7 +127,7 @@ export default function Table1({
                         ))}
                       </ul>
                     </TableCell>
-                  )
+                  );
                 } else if (typeof value === "boolean") {
                   return (
                     <TableCell align="center">
@@ -137,12 +137,12 @@ export default function Table1({
                         color="primary"
                       />
                     </TableCell>
-                  )
+                  );
                 } else if (
                   typeof value === "string" ||
                   typeof value === "number"
                 ) {
-                  return <TableCell align="center">{value}</TableCell>
+                  return <TableCell align="center">{value}</TableCell>;
                 }
               })}
               {/* Especificar el permiso según el área correspondiente !!! */}
@@ -199,5 +199,5 @@ export default function Table1({
         maxLength={maxLength}
       />
     </Table>
-  )
+  );
 }

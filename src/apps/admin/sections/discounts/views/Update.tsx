@@ -6,22 +6,22 @@ import React, {
   FormEvent,
   SyntheticEvent,
   useMemo,
-} from "react"
-import { useParams, useNavigate } from "react-router-dom"
-import { v4 as uuidv4 } from "uuid"
+} from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 
 // Hooks, Types, Context, API
-import { useSnackBar } from "context/GlobalContext"
+import { useSnackBar } from "context/GlobalContext";
 import {
   AdjustmentMethod,
   ApplicableEntity,
   Discount,
   Entity,
-} from "types/discount.types"
-import { Product, Variant } from "types/product.types" // Added Variant
-import { fetchProducts } from "@api/product.api"
-import { fetchDiscountById, updateDiscount } from "@api/discount.api"
-import Grid2 from "@mui/material/Grid"
+} from "types/discount.types";
+import { Product, Variant } from "types/product.types"; // Added Variant
+import { fetchProducts } from "@api/product.api";
+import { fetchDiscountById, updateDiscount } from "@api/discount.api";
+import Grid2 from "@mui/material/Grid";
 // MUI Components
 import {
   Box,
@@ -48,16 +48,16 @@ import {
   AccordionSummary,
   AccordionDetails, // Added Accordion components
   Avatar, // Added Avatar for images
-} from "@mui/material"
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline"
-import DeleteIcon from "@mui/icons-material/Delete"
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore" // Icon for Accordion
-import WarningAmberIcon from "@mui/icons-material/WarningAmber" // Icon for Error Summary
-import Title from "@apps/admin/components/Title"
+} from "@mui/material";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore"; // Icon for Accordion
+import WarningAmberIcon from "@mui/icons-material/WarningAmber"; // Icon for Error Summary
+import Title from "@apps/admin/components/Title";
 
 // Date Picker Components & Dayjs
-import { DatePicker } from "@mui/lab"
-import dayjs, { Dayjs } from "dayjs"
+import { DatePicker } from "@mui/lab";
+import dayjs, { Dayjs } from "dayjs";
 import {
   ADJUSTMENT_METHOD_OPTIONS,
   calculateDiscountedPrice,
@@ -65,22 +65,22 @@ import {
   formatPrice,
   getProductImageUrl,
   ProductOrVariantOption,
-} from "@apps/admin/utils/discountSurchargeUtils"
+} from "@apps/admin/utils/discountSurchargeUtils";
 
 // --- Constants and Types (Synced with CreateDiscount) ---
 
 interface OverrideFormState extends ApplicableEntity {
-  tempId: string
+  tempId: string;
 }
 
 type SingleOverrideErrors = NonNullable<
   DiscountValidationErrors["entityOverrides"]
->[number]
+>[number];
 
 // Updated initial state structure matching CreateDiscount
 const initialFormState: Omit<Discount, "_id" | "applicableProducts"> & {
-  entityOverrides: OverrideFormState[]
-  applicableProducts: [string, string?][]
+  entityOverrides: OverrideFormState[];
+  applicableProducts: [string, string?][];
 } = {
   name: "",
   description: "",
@@ -93,101 +93,102 @@ const initialFormState: Omit<Discount, "_id" | "applicableProducts"> & {
   appliestoAllArts: false,
   dateRange: undefined,
   entityOverrides: [],
-}
+};
 
 interface DiscountValidationErrors {
-  name?: string
-  description?: string
-  adjustmentMethod?: string
-  defaultValue?: string
-  applicableProducts?: string
-  priceValidation?: string
-  dateRange?: string
-  startDate?: string
-  endDate?: string
+  name?: string;
+  description?: string;
+  adjustmentMethod?: string;
+  defaultValue?: string;
+  applicableProducts?: string;
+  priceValidation?: string;
+  dateRange?: string;
+  startDate?: string;
+  endDate?: string;
   entityOverrides?: {
     [index: number]: {
-      type?: string
-      id?: string
-      adjustmentMethod?: string
-      customValue?: string
-    }
-  }
-  summary?: string
+      type?: string;
+      id?: string;
+      adjustmentMethod?: string;
+      customValue?: string;
+    };
+  };
+  summary?: string;
 }
 
 // --- Component ---
 const UpdateDiscount: React.FC = () => {
   // --- Hooks ---
-  const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
-  const { showSnackBar } = useSnackBar()
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { showSnackBar } = useSnackBar();
 
   // --- State ---
-  const [formData, setFormData] = useState(initialFormState)
+  const [formData, setFormData] = useState(initialFormState);
   const [originalDiscount, setOriginalDiscount] = useState<Discount | null>(
-    null
-  )
-  const [isLoadingData, setIsLoadingData] = useState<boolean>(true) // For initial discount fetch
-  const [isLoadingProducts, setIsLoadingProducts] = useState<boolean>(true)
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
-  const [errorFetch, setErrorFetch] = useState<string | null>(null)
+    null,
+  );
+  const [isLoadingData, setIsLoadingData] = useState<boolean>(true); // For initial discount fetch
+  const [isLoadingProducts, setIsLoadingProducts] = useState<boolean>(true);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [errorFetch, setErrorFetch] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] =
-    useState<DiscountValidationErrors | null>(null)
-  const [allProducts, setAllProducts] = useState<Product[]>([]) // Store all fetched products
+    useState<DiscountValidationErrors | null>(null);
+  const [allProducts, setAllProducts] = useState<Product[]>([]); // Store all fetched products
   const [selectedProductVariants, setSelectedProductVariants] = useState<
     ProductOrVariantOption[]
-  >([])
-  const [startDate, setStartDate] = useState<Dayjs | null>(null)
-  const [endDate, setEndDate] = useState<Dayjs | null>(null)
+  >([]);
+  const [startDate, setStartDate] = useState<Dayjs | null>(null);
+  const [endDate, setEndDate] = useState<Dayjs | null>(null);
   // State for Accordion expansion
   const [expandedAccordion, setExpandedAccordion] = useState<string | false>(
-    "applicability"
-  ) // Default open
+    "applicability",
+  ); // Default open
 
   // --- UPDATED: productVariantOptions includes image URLs (Copied from CreateDiscount) ---
   const productVariantOptions = useMemo((): ProductOrVariantOption[] => {
-    const options: ProductOrVariantOption[] = []
+    const options: ProductOrVariantOption[] = [];
     allProducts.forEach((product) => {
       if (!product._id || !product.variants || product.variants.length === 0)
-        return
-      const productIdStr = product._id!.toString()
-      const productImageUrl = getProductImageUrl(product)
+        return;
+      const productIdStr = product._id!.toString();
+      const productImageUrl = getProductImageUrl(product);
 
       // Calculate Price Ranges for "Todo el producto"
       let minPublic = Infinity,
         maxPublic = -Infinity,
         minPrixer = Infinity,
-        maxPrixer = -Infinity
-      let validPricesFound = false
+        maxPrixer = -Infinity;
+      let validPricesFound = false;
       product.variants.forEach((variant) => {
         /* ... price calculation logic ... */
-        const publicP = parseFloat(variant.publicPrice)
-        const prixerP = parseFloat(variant.prixerPrice)
+        const publicP = parseFloat(variant.publicPrice);
+        const prixerP = parseFloat(variant.prixerPrice);
         if (!isNaN(publicP)) {
-          minPublic = Math.min(minPublic, publicP)
-          maxPublic = Math.max(maxPublic, publicP)
-          validPricesFound = true
+          minPublic = Math.min(minPublic, publicP);
+          maxPublic = Math.max(maxPublic, publicP);
+          validPricesFound = true;
         }
         if (!isNaN(prixerP)) {
-          minPrixer = Math.min(minPrixer, prixerP)
-          maxPrixer = Math.max(maxPrixer, prixerP)
-          validPricesFound = true
+          minPrixer = Math.min(minPrixer, prixerP);
+          maxPrixer = Math.max(maxPrixer, prixerP);
+          validPricesFound = true;
         }
-      })
-      let priceRangeStr = "(Precios N/A)"
+      });
+      let priceRangeStr = "(Precios N/A)";
       if (validPricesFound) {
         /* ... formatRange logic ... */
         const formatRange = (
           min: number,
           max: number,
-          prefix: string
+          prefix: string,
         ): string => {
-          if (min === Infinity || max === -Infinity) return `${prefix}: USD N/A`
-          if (min === max) return `${prefix}: USD ${min.toFixed(2)}`
-          return `${prefix}: USD ${min.toFixed(2)} - USD ${max.toFixed(2)}`
-        }
-        priceRangeStr = `(${formatRange(minPublic, maxPublic, "Precio Normal")}, ${formatRange(minPrixer, maxPrixer, "PVM")})`
+          if (min === Infinity || max === -Infinity)
+            return `${prefix}: USD N/A`;
+          if (min === max) return `${prefix}: USD ${min.toFixed(2)}`;
+          return `${prefix}: USD ${min.toFixed(2)} - USD ${max.toFixed(2)}`;
+        };
+        priceRangeStr = `(${formatRange(minPublic, maxPublic, "Precio Normal")}, ${formatRange(minPrixer, maxPrixer, "PVM")})`;
       }
 
       // Add option for the whole product
@@ -198,14 +199,14 @@ const UpdateDiscount: React.FC = () => {
         productId: productIdStr,
         productName: product.name,
         imageUrl: productImageUrl,
-      })
+      });
 
       // Add options for individual variants
       product.variants.forEach((variant) => {
         /* ... add variant option with price in label ... */
-        if (!variant._id) return
-        const variantImageUrl = getProductImageUrl(product, variant)
-        const variantPriceStr = `(Precio Normal: ${formatPrice(variant.publicPrice)}, PVM: ${formatPrice(variant.prixerPrice)})`
+        if (!variant._id) return;
+        const variantImageUrl = getProductImageUrl(product, variant);
+        const variantPriceStr = `(Precio Normal: ${formatPrice(variant.publicPrice)}, PVM: ${formatPrice(variant.prixerPrice)})`;
         options.push({
           id: `${productIdStr}_${variant._id}`,
           label: `    ↳ ${variant.name || "Variante sin nombre"} ${variantPriceStr}`,
@@ -215,26 +216,26 @@ const UpdateDiscount: React.FC = () => {
           variantId: variant._id,
           variantName: variant.name,
           imageUrl: variantImageUrl,
-        })
-      })
-    })
-    return options
-  }, [allProducts])
+        });
+      });
+    });
+    return options;
+  }, [allProducts]);
 
   useEffect(() => {
     const loadInitialData = async () => {
       if (!id) {
-        setErrorFetch("ID de descuento inválido.")
-        setIsLoadingData(false)
-        setIsLoadingProducts(false)
-        showSnackBar("ID de descuento inválido.")
-        navigate("/admin/discount/read")
-        return
+        setErrorFetch("ID de descuento inválido.");
+        setIsLoadingData(false);
+        setIsLoadingProducts(false);
+        showSnackBar("ID de descuento inválido.");
+        navigate("/admin/discount/read");
+        return;
       }
-      setIsLoadingData(true)
-      setIsLoadingProducts(true)
-      setErrorFetch(null)
-      setValidationErrors(null)
+      setIsLoadingData(true);
+      setIsLoadingProducts(true);
+      setErrorFetch(null);
+      setValidationErrors(null);
 
       try {
         // Fetch discount and products concurrently
@@ -242,15 +243,15 @@ const UpdateDiscount: React.FC = () => {
           fetchDiscountById(id),
           fetchProducts(), // Fetch all products
           // Removed Arts fetch
-        ])
+        ]);
 
-        if (!discountData) throw new Error("Descuento no encontrado.")
-        setOriginalDiscount(discountData) // Store original discount data
+        if (!discountData) throw new Error("Descuento no encontrado.");
+        setOriginalDiscount(discountData); // Store original discount data
 
         const validProducts = productsData.filter(
-          (p) => p._id && p.variants && p.variants.length > 0
-        )
-        setAllProducts(validProducts) // Set products state -> triggers productVariantOptions calculation
+          (p) => p._id && p.variants && p.variants.length > 0,
+        );
+        setAllProducts(validProducts); // Set products state -> triggers productVariantOptions calculation
 
         // Populate base form data (excluding applicableProducts/selectedProductVariants initially)
         setFormData({
@@ -270,28 +271,30 @@ const UpdateDiscount: React.FC = () => {
             ...ov,
             tempId: uuidv4(),
           })),
-        })
+        });
 
         // Set initial date picker state
         setStartDate(
           discountData.dateRange?.start
             ? dayjs(discountData.dateRange.start)
-            : null
-        )
+            : null,
+        );
         setEndDate(
-          discountData.dateRange?.end ? dayjs(discountData.dateRange.end) : null
-        )
+          discountData.dateRange?.end
+            ? dayjs(discountData.dateRange.end)
+            : null,
+        );
       } catch (err: any) {
-        console.error("Failed to load initial data:", err)
-        setErrorFetch(err.message || "Error al cargar los datos.")
-        showSnackBar(err.message || "Error al cargar los datos.")
+        console.error("Failed to load initial data:", err);
+        setErrorFetch(err.message || "Error al cargar los datos.");
+        showSnackBar(err.message || "Error al cargar los datos.");
       } finally {
-        setIsLoadingData(false) // Discount data loaded (or failed)
-        setIsLoadingProducts(false) // Products loaded (or failed)
+        setIsLoadingData(false); // Discount data loaded (or failed)
+        setIsLoadingProducts(false); // Products loaded (or failed)
       }
-    }
-    loadInitialData()
-  }, [id, navigate, showSnackBar])
+    };
+    loadInitialData();
+  }, [id, navigate, showSnackBar]);
 
   useEffect(() => {
     // Run only after BOTH discount and products are loaded AND productVariantOptions has been calculated
@@ -302,75 +305,75 @@ const UpdateDiscount: React.FC = () => {
       allProducts.length > 0 &&
       productVariantOptions.length > 0
     ) {
-      const initialApplicableVariants = new Set<string>() // Use set for "productId_variantId"
+      const initialApplicableVariants = new Set<string>(); // Use set for "productId_variantId"
 
       if (
         !originalDiscount.appliesToAllProducts &&
         originalDiscount.applicableProducts
       ) {
         originalDiscount.applicableProducts.forEach((savedProdRef) => {
-          let productId: string | undefined
-          let variantId: string | undefined
+          let productId: string | undefined;
+          let variantId: string | undefined;
 
           // Normalize saved reference (handle [prodId], [prodId, varId], or potentially just prodId string)
           if (Array.isArray(savedProdRef) && savedProdRef.length === 2) {
-            productId = savedProdRef[0]
-            variantId = savedProdRef[1]
+            productId = savedProdRef[0];
+            variantId = savedProdRef[1];
           } else if (Array.isArray(savedProdRef) && savedProdRef.length === 1) {
-            productId = savedProdRef[0]
+            productId = savedProdRef[0];
             // Need to expand this product ID to all its variants
           } else if (typeof savedProdRef === "string") {
-            productId = savedProdRef // Assume legacy product ID string
+            productId = savedProdRef; // Assume legacy product ID string
             // Need to expand
           }
 
           if (productId && variantId) {
             // Specific variant reference
-            initialApplicableVariants.add(`${productId}_${variantId}`)
+            initialApplicableVariants.add(`${productId}_${variantId}`);
           } else if (productId) {
             // Whole product reference - find product and add all variants
             const product = allProducts.find(
-              (p) => p._id!.toString() === productId
-            )
+              (p) => p._id!.toString() === productId,
+            );
             if (product && product.variants) {
               product.variants.forEach((v) => {
                 if (v._id) {
-                  initialApplicableVariants.add(`${productId}_${v._id}`)
+                  initialApplicableVariants.add(`${productId}_${v._id}`);
                 }
-              })
+              });
             }
           }
-        })
+        });
       }
 
       // Convert Set back to the required array format for formData
       const finalInitialApplicableProducts: [string, string][] = Array.from(
-        initialApplicableVariants
+        initialApplicableVariants,
       ).map((idPair) => {
-        const [prodId, varId] = idPair.split("_")
-        return [prodId, varId]
-      })
+        const [prodId, varId] = idPair.split("_");
+        return [prodId, varId];
+      });
 
       // Find the corresponding ProductOrVariantOption objects for the Autocomplete UI
       const preselectedOptions = productVariantOptions.filter(
-        (opt) => !opt.isProduct && initialApplicableVariants.has(opt.id) // Match based on the composite "productId_variantId"
-      )
+        (opt) => !opt.isProduct && initialApplicableVariants.has(opt.id), // Match based on the composite "productId_variantId"
+      );
 
       // Update state
       setFormData((prev) => ({
         ...prev,
         applicableProducts: finalInitialApplicableProducts,
-      }))
-      setSelectedProductVariants(preselectedOptions)
+      }));
+      setSelectedProductVariants(preselectedOptions);
       // Optionally set initial accordion expansion if there are specific selections
       if (
         finalInitialApplicableProducts.length > 0 ||
         (originalDiscount?.entityOverrides?.length ?? 0 > 0) ||
         originalDiscount?.dateRange
       ) {
-        setExpandedAccordion(false) // Collapse default initially if specific stuff exists
+        setExpandedAccordion(false); // Collapse default initially if specific stuff exists
       } else {
-        setExpandedAccordion("applicability") // Keep default open otherwise
+        setExpandedAccordion("applicability"); // Keep default open otherwise
       }
     }
   }, [
@@ -379,69 +382,69 @@ const UpdateDiscount: React.FC = () => {
     originalDiscount,
     allProducts,
     productVariantOptions,
-  ]) // Dependencies
+  ]); // Dependencies
 
   // --- Handlers (Copied/Adapted from refactored CreateDiscount) ---
   const handleInputChange = (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
-    const target = event.target as HTMLInputElement
-    const { name, value, type } = target
-    const checked = target.checked
-    const fieldVal = type === "checkbox" ? checked : value
-    setFormData((prevData) => ({ ...prevData, [name]: fieldVal }))
+    const target = event.target as HTMLInputElement;
+    const { name, value, type } = target;
+    const checked = target.checked;
+    const fieldVal = type === "checkbox" ? checked : value;
+    setFormData((prevData) => ({ ...prevData, [name]: fieldVal }));
     // Clear validation
     if (
       validationErrors &&
       validationErrors[name as keyof DiscountValidationErrors]
     ) {
       setValidationErrors((prevErrors) => {
-        if (!prevErrors) return null
-        const updated = { ...prevErrors }
-        delete updated[name as keyof DiscountValidationErrors]
+        if (!prevErrors) return null;
+        const updated = { ...prevErrors };
+        delete updated[name as keyof DiscountValidationErrors];
         if (name === "defaultValue" || name === "adjustmentMethod") {
-          delete updated.priceValidation
+          delete updated.priceValidation;
         }
-        return Object.keys(updated).length > 0 ? updated : null
-      })
+        return Object.keys(updated).length > 0 ? updated : null;
+      });
     }
-  }
+  };
   const handleSelectChange = (
-    event: ChangeEvent<{ name?: string; value: unknown }>
+    event: ChangeEvent<{ name?: string; value: unknown }>,
   ) => {
-    const name = event.target.name as keyof typeof formData
-    const value = event.target.value
+    const name = event.target.name as keyof typeof formData;
+    const value = event.target.value;
     setFormData((prev) => ({
       ...prev,
       [name]: value as AdjustmentMethod | Entity,
-    }))
+    }));
     // Clear validation
     if (
       validationErrors &&
       validationErrors[name as keyof DiscountValidationErrors]
     ) {
       setValidationErrors((prevErrors) => {
-        if (!prevErrors) return null
-        const updated = { ...prevErrors }
-        delete updated[name as keyof DiscountValidationErrors]
+        if (!prevErrors) return null;
+        const updated = { ...prevErrors };
+        delete updated[name as keyof DiscountValidationErrors];
         if (name === "defaultValue" || name === "adjustmentMethod") {
-          delete updated.priceValidation
+          delete updated.priceValidation;
         }
-        return Object.keys(updated).length > 0 ? updated : null
-      })
+        return Object.keys(updated).length > 0 ? updated : null;
+      });
     }
-  }
+  };
   const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = event.target
+    const { name, checked } = event.target;
     setFormData((prev) => {
-      const newState = { ...prev, [name]: checked }
+      const newState = { ...prev, [name]: checked };
       if (name === "appliesToAllProducts" && checked) {
-        newState.applicableProducts = []
-        setSelectedProductVariants([])
+        newState.applicableProducts = [];
+        setSelectedProductVariants([]);
       }
       // Removed Arts logic
-      return newState
-    })
+      return newState;
+    });
     // Clear validation
     if (
       name === "appliesToAllProducts" &&
@@ -449,54 +452,54 @@ const UpdateDiscount: React.FC = () => {
         validationErrors?.priceValidation)
     ) {
       setValidationErrors((prevErrors) => {
-        if (!prevErrors) return null
-        const updated = { ...prevErrors }
-        delete updated.applicableProducts
-        if (checked) delete updated.priceValidation
-        return Object.keys(updated).length > 0 ? updated : null
-      })
+        if (!prevErrors) return null;
+        const updated = { ...prevErrors };
+        delete updated.applicableProducts;
+        if (checked) delete updated.priceValidation;
+        return Object.keys(updated).length > 0 ? updated : null;
+      });
     }
-  }
+  };
 
   // --- UPDATED Handlers use new option types ---
   const handleProductVariantChange = (
     event: SyntheticEvent,
-    newValue: ProductOrVariantOption[]
+    newValue: ProductOrVariantOption[],
   ) => {
-    setSelectedProductVariants(newValue) // Update visual selection
+    setSelectedProductVariants(newValue); // Update visual selection
 
-    const finalApplicableVariants = new Set<string>() // Use set for unique "productId_variantId"
+    const finalApplicableVariants = new Set<string>(); // Use set for unique "productId_variantId"
 
     newValue.forEach((option) => {
       if (option.isProduct) {
         // Expand whole product selection
         const product = allProducts.find(
-          (p) => p._id!.toString() === option.productId
-        )
+          (p) => p._id!.toString() === option.productId,
+        );
         if (product?.variants) {
           product.variants.forEach((variant) => {
             if (variant._id)
-              finalApplicableVariants.add(`${product._id}_${variant._id}`)
-          })
+              finalApplicableVariants.add(`${product._id}_${variant._id}`);
+          });
         }
       } else if (option.variantId) {
         // Add specific variant
-        finalApplicableVariants.add(`${option.productId}_${option.variantId}`)
+        finalApplicableVariants.add(`${option.productId}_${option.variantId}`);
       }
-    })
+    });
 
     // Convert Set back to array format for formData
     const newApplicableProducts: [string, string][] = Array.from(
-      finalApplicableVariants
+      finalApplicableVariants,
     ).map((idPair) => {
-      const [prodId, varId] = idPair.split("_")
-      return [prodId, varId]
-    })
+      const [prodId, varId] = idPair.split("_");
+      return [prodId, varId];
+    });
 
     setFormData((prev) => ({
       ...prev,
       applicableProducts: newApplicableProducts,
-    }))
+    }));
 
     // Clear validation
     if (
@@ -504,70 +507,70 @@ const UpdateDiscount: React.FC = () => {
       validationErrors?.priceValidation
     ) {
       setValidationErrors((prevErrors) => {
-        if (!prevErrors) return null
-        const updated = { ...prevErrors }
-        delete updated.applicableProducts
-        delete updated.priceValidation
-        return Object.keys(updated).length > 0 ? updated : null
-      })
+        if (!prevErrors) return null;
+        const updated = { ...prevErrors };
+        delete updated.applicableProducts;
+        delete updated.priceValidation;
+        return Object.keys(updated).length > 0 ? updated : null;
+      });
     }
-  }
+  };
 
   const handleStartDateChange = (newValue: Dayjs | null) => {
     /* ... clear date validation ... */
-  }
+  };
   const handleEndDateChange = (newValue: Dayjs | null) => {
     /* ... clear date validation ... */
-  }
+  };
   const handleAddOverride = () => {
     /* ... add override, clear override validation ... */
-  }
+  };
   const handleOverrideChange = (
     tempId: string,
     field: keyof ApplicableEntity,
-    value: string | number | Entity | AdjustmentMethod
+    value: string | number | Entity | AdjustmentMethod,
   ) => {
     /* ... update override, clear specific + price validation ... */
-  }
+  };
   const handleRemoveOverride = (tempIdToRemove: string) => {
     /* ... remove override, clear price validation ... */
-  }
+  };
   const handleAccordionChange =
     (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
       /* ... set accordion state ... */
-    }
+    };
 
   // --- Validation (Copied/Adapted from refactored CreateDiscount) ---
   const validateForm = (): boolean => {
-    const errors: DiscountValidationErrors = {}
-    const errorMessages: string[] = []
+    const errors: DiscountValidationErrors = {};
+    const errorMessages: string[] = [];
 
     // Basic field checks (Name, Description, Default Value/Method)
     if (!formData.name.trim()) {
-      errors.name = "El nombre es obligatorio."
-      errorMessages.push("Nombre")
+      errors.name = "El nombre es obligatorio.";
+      errorMessages.push("Nombre");
     }
     if (!formData.description.trim()) {
-      errors.description = "La descripción es obligatoria."
-      errorMessages.push("Descripción")
+      errors.description = "La descripción es obligatoria.";
+      errorMessages.push("Descripción");
     }
-    const defaultValueNum = Number(formData.defaultValue)
+    const defaultValueNum = Number(formData.defaultValue);
     if (isNaN(defaultValueNum)) {
-      errors.defaultValue = "El valor base debe ser un número."
-      errorMessages.push("Valor Base")
+      errors.defaultValue = "El valor base debe ser un número.";
+      errorMessages.push("Valor Base");
     } else if (
       formData.adjustmentMethod === "percentage" &&
       (defaultValueNum < 0 || defaultValueNum > 1)
     ) {
-      errors.defaultValue = "Para porcentaje, el valor debe estar entre 0 y 1."
-      errorMessages.push("Valor Base (Porcentaje)")
+      errors.defaultValue = "Para porcentaje, el valor debe estar entre 0 y 1.";
+      errorMessages.push("Valor Base (Porcentaje)");
     } else if (
       formData.adjustmentMethod === "absolute" &&
       defaultValueNum < 0
     ) {
       errors.defaultValue =
-        "Para monto absoluto, el valor no puede ser negativo."
-      errorMessages.push("Valor Base (Absoluto)")
+        "Para monto absoluto, el valor no puede ser negativo.";
+      errorMessages.push("Valor Base (Absoluto)");
     }
 
     // Product selection check
@@ -576,8 +579,8 @@ const UpdateDiscount: React.FC = () => {
       formData.applicableProducts.length === 0
     ) {
       errors.applicableProducts =
-        "Seleccione productos/variantes o marque 'Aplica a todos'."
-      errorMessages.push("Productos/Variantes")
+        "Seleccione productos/variantes o marque 'Aplica a todos'.";
+      errorMessages.push("Productos/Variantes");
     }
     // REMOVED Arts selection check
 
@@ -585,15 +588,15 @@ const UpdateDiscount: React.FC = () => {
     /* ... same check as refactored CreateDiscount ... */
     if (startDate && endDate && !startDate.isBefore(endDate)) {
       errors.dateRange =
-        "La fecha de inicio debe ser anterior a la fecha de fin."
-      errors.startDate = " "
-      errors.endDate = " "
-      errorMessages.push("Rango de Fechas")
+        "La fecha de inicio debe ser anterior a la fecha de fin.";
+      errors.startDate = " ";
+      errors.endDate = " ";
+      errorMessages.push("Rango de Fechas");
     } else if ((startDate && !endDate) || (!startDate && endDate)) {
-      errors.dateRange = "Especifique ambas fechas del rango o ninguna."
-      if (startDate && !endDate) errors.endDate = " "
-      if (!startDate && endDate) errors.startDate = " "
-      errorMessages.push("Rango de Fechas (Incompleto)")
+      errors.dateRange = "Especifique ambas fechas del rango o ninguna.";
+      if (startDate && !endDate) errors.endDate = " ";
+      if (!startDate && endDate) errors.startDate = " ";
+      errorMessages.push("Rango de Fechas (Incompleto)");
     }
 
     // --- Price Validation Logic ---
@@ -602,117 +605,117 @@ const UpdateDiscount: React.FC = () => {
       formData.applicableProducts.length > 0 &&
       !errors.defaultValue
     ) {
-      const invalidVariants: string[] = []
-      const variantMap = new Map<string, Variant>()
+      const invalidVariants: string[] = [];
+      const variantMap = new Map<string, Variant>();
       allProducts.forEach((p) => {
         if (p._id && p.variants)
           p.variants.forEach((v) => {
-            if (v._id) variantMap.set(`${p._id}_${v._id}`, v)
-          })
-      })
+            if (v._id) variantMap.set(`${p._id}_${v._id}`, v);
+          });
+      });
 
       for (const [productId, variantId] of formData.applicableProducts) {
-        const variant = variantMap.get(`${productId}_${variantId}`)
-        if (!variant) continue
+        const variant = variantMap.get(`${productId}_${variantId}`);
+        if (!variant) continue;
         const discountedPublic = calculateDiscountedPrice(
           variant.publicPrice,
           formData.adjustmentMethod,
-          defaultValueNum
-        )
+          defaultValueNum,
+        );
         const discountedPrixer = calculateDiscountedPrice(
           variant.prixerPrice,
           formData.adjustmentMethod,
-          defaultValueNum
-        )
+          defaultValueNum,
+        );
         if (
           (discountedPublic !== null && discountedPublic <= 0) ||
           (discountedPrixer !== null && discountedPrixer <= 0)
         ) {
           const productName =
             allProducts.find((p) => p._id!.toString() === productId)?.name ||
-            "Producto"
-          const cleanLabel = `${productName} - ${variant.name || "Variante"}` // Simpler label for error
-          invalidVariants.push(cleanLabel)
+            "Producto";
+          const cleanLabel = `${productName} - ${variant.name || "Variante"}`; // Simpler label for error
+          invalidVariants.push(cleanLabel);
         }
       }
       if (invalidVariants.length > 0) {
-        errors.priceValidation = `El descuento base resulta en precio ≤ 0 para: ${invalidVariants.slice(0, 2).join(", ")}${invalidVariants.length > 2 ? "..." : ""}.`
-        errorMessages.push("Precios Inválidos")
-        errors.applicableProducts = " " // Mark selector visually
+        errors.priceValidation = `El descuento base resulta en precio ≤ 0 para: ${invalidVariants.slice(0, 2).join(", ")}${invalidVariants.length > 2 ? "..." : ""}.`;
+        errorMessages.push("Precios Inválidos");
+        errors.applicableProducts = " "; // Mark selector visually
       }
     }
     // --- End Price Validation ---
 
     // Entity Override Validation
     /* ... same checks as refactored CreateDiscount ... */
-    const overrideErrors: DiscountValidationErrors["entityOverrides"] = {}
-    let hasOverrideError = false
+    const overrideErrors: DiscountValidationErrors["entityOverrides"] = {};
+    let hasOverrideError = false;
     formData.entityOverrides.forEach((ov, index) => {
-      const currentErrors: SingleOverrideErrors = {}
-      let overrideErrorFields: string[] = []
+      const currentErrors: SingleOverrideErrors = {};
+      let overrideErrorFields: string[] = [];
       if (!ov.type) {
-        currentErrors.type = "Requerido"
-        overrideErrorFields.push("Tipo Entidad")
+        currentErrors.type = "Requerido";
+        overrideErrorFields.push("Tipo Entidad");
       }
       if (!ov.adjustmentMethod) {
-        currentErrors.adjustmentMethod = "Requerido"
-        overrideErrorFields.push("Método Excep.")
+        currentErrors.adjustmentMethod = "Requerido";
+        overrideErrorFields.push("Método Excep.");
       }
-      const customValueNum = Number(ov.customValue)
+      const customValueNum = Number(ov.customValue);
       if (
         ov.customValue === undefined ||
         ov.customValue === null ||
         isNaN(customValueNum)
       ) {
-        currentErrors.customValue = "Valor numérico requerido."
-        overrideErrorFields.push("Valor Excepción")
+        currentErrors.customValue = "Valor numérico requerido.";
+        overrideErrorFields.push("Valor Excepción");
       } else if (
         ov.adjustmentMethod === "percentage" &&
         (customValueNum < 0 || customValueNum > 1)
       ) {
-        currentErrors.customValue = "Valor entre 0 y 1."
-        overrideErrorFields.push("Valor Excepción (%)")
+        currentErrors.customValue = "Valor entre 0 y 1.";
+        overrideErrorFields.push("Valor Excepción (%)");
       } else if (ov.adjustmentMethod === "absolute" && customValueNum < 0) {
-        currentErrors.customValue = "Valor no negativo."
-        overrideErrorFields.push("Valor Excepción ($)")
+        currentErrors.customValue = "Valor no negativo.";
+        overrideErrorFields.push("Valor Excepción ($)");
       }
       if (Object.keys(currentErrors).length > 0) {
-        overrideErrors[index] = currentErrors
-        if (!hasOverrideError) errorMessages.push(`Excepción(es)`)
-        hasOverrideError = true
+        overrideErrors[index] = currentErrors;
+        if (!hasOverrideError) errorMessages.push(`Excepción(es)`);
+        hasOverrideError = true;
       }
-    })
-    if (hasOverrideError) errors.entityOverrides = overrideErrors
+    });
+    if (hasOverrideError) errors.entityOverrides = overrideErrors;
 
     // Set final errors and summary
     if (errorMessages.length > 0) {
       const mainErrorFocus = errors.priceValidation
         ? errors.priceValidation
-        : `Por favor, corrija los errores marcados (${errorMessages.join(", ")}).`
-      errors.summary = mainErrorFocus
+        : `Por favor, corrija los errores marcados (${errorMessages.join(", ")}).`;
+      errors.summary = mainErrorFocus;
     }
-    setValidationErrors(Object.keys(errors).length > 0 ? errors : null)
+    setValidationErrors(Object.keys(errors).length > 0 ? errors : null);
     if (Object.keys(errors).length > 0 && !errors.summary) {
-      errors.summary = `Por favor, corrija los errores marcados.`
-      setValidationErrors(errors)
+      errors.summary = `Por favor, corrija los errores marcados.`;
+      setValidationErrors(errors);
     }
     if (Object.keys(errors).length > 0 && errors.summary) {
       if (!errors.priceValidation || Object.keys(errors).length > 1)
-        showSnackBar("Por favor, corrija los errores indicados.")
+        showSnackBar("Por favor, corrija los errores indicados.");
     }
 
-    return Object.keys(errors).length === 0
-  }
+    return Object.keys(errors).length === 0;
+  };
   // --- Submission ---
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    if (!id || !validateForm()) return
-    setIsSubmitting(true)
+    event.preventDefault();
+    if (!id || !validateForm()) return;
+    setIsSubmitting(true);
 
     // Final overrides preparation (same as CreateDiscount)
     const finalOverrides: ApplicableEntity[] = formData.entityOverrides.map(
       (override: OverrideFormState) => {
-        const { tempId, ...rest } = override
+        const { tempId, ...rest } = override;
         const overrideData: ApplicableEntity = {
           type: rest.type,
           adjustmentMethod: rest.adjustmentMethod,
@@ -724,15 +727,15 @@ const UpdateDiscount: React.FC = () => {
             !isNaN(Number(rest.customValue))
               ? Number(rest.customValue)
               : undefined,
-        }
+        };
         Object.keys(overrideData).forEach((key) => {
           if (overrideData[key as keyof ApplicableEntity] === undefined) {
-            delete overrideData[key as keyof ApplicableEntity]
+            delete overrideData[key as keyof ApplicableEntity];
           }
-        })
-        return overrideData
-      }
-    )
+        });
+        return overrideData;
+      },
+    );
 
     // Payload construction (REMOVED Arts, applicableProducts uses formData)
     const payload: Omit<Discount, "_id"> = {
@@ -752,38 +755,38 @@ const UpdateDiscount: React.FC = () => {
           ? { start: startDate.toDate(), end: endDate.toDate() }
           : undefined,
       entityOverrides: finalOverrides,
-    }
+    };
 
     try {
-      console.log("Updating Discount Data:", id, payload)
-      const response = await updateDiscount(id, payload as Discount) // Cast needed? Check API expected type
+      console.log("Updating Discount Data:", id, payload);
+      const response = await updateDiscount(id, payload as Discount); // Cast needed? Check API expected type
       if (response) {
-        showSnackBar(`Descuento "${formData.name}" actualizado.`)
-        navigate("/admin/discount/read")
+        showSnackBar(`Descuento "${formData.name}" actualizado.`);
+        navigate("/admin/discount/read");
       } else {
         throw new Error(
-          "La actualización del descuento falló (respuesta vacía)."
-        )
+          "La actualización del descuento falló (respuesta vacía).",
+        );
       }
     } catch (err: any) {
-      console.error("Failed to update discount:", err)
+      console.error("Failed to update discount:", err);
       const message =
         err?.response?.data?.message ||
         err.message ||
-        "Error al actualizar el descuento."
+        "Error al actualizar el descuento.";
       setValidationErrors((prev) => ({
         ...(prev || {}),
         summary: `Error del servidor: ${message}`,
-      }))
-      showSnackBar(message)
+      }));
+      showSnackBar(message);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
-  const handleCancel = () => navigate("/admin/discount/read")
+  const handleCancel = () => navigate("/admin/discount/read");
 
-  const isLoading = isLoadingData || isLoadingProducts
+  const isLoading = isLoadingData || isLoadingProducts;
   // --- Render ---
   return (
     <>
@@ -1125,7 +1128,7 @@ const UpdateDiscount: React.FC = () => {
                       {formData.entityOverrides.map(
                         (override: OverrideFormState, index) => {
                           const overrideErrors =
-                            validationErrors?.entityOverrides?.[index] || {}
+                            validationErrors?.entityOverrides?.[index] || {};
                           return (
                             // Wrap each override in outlined Box (copied from CreateDiscount)
                             <Box
@@ -1177,7 +1180,7 @@ const UpdateDiscount: React.FC = () => {
                                         handleOverrideChange(
                                           override.tempId,
                                           "type",
-                                          e.target.value as Entity
+                                          e.target.value as Entity,
                                         )
                                       }
                                       disabled={isSubmitting}
@@ -1205,7 +1208,7 @@ const UpdateDiscount: React.FC = () => {
                                       handleOverrideChange(
                                         override.tempId,
                                         "id",
-                                        e.target.value
+                                        e.target.value,
                                       )
                                     }
                                     fullWidth
@@ -1237,7 +1240,7 @@ const UpdateDiscount: React.FC = () => {
                                         handleOverrideChange(
                                           override.tempId,
                                           "adjustmentMethod",
-                                          e.target.value as AdjustmentMethod
+                                          e.target.value as AdjustmentMethod,
                                         )
                                       }
                                       disabled={isSubmitting}
@@ -1266,7 +1269,7 @@ const UpdateDiscount: React.FC = () => {
                                       handleOverrideChange(
                                         override.tempId,
                                         "customValue",
-                                        e.target.value
+                                        e.target.value,
                                       )
                                     } // Pass string value
                                     required
@@ -1291,8 +1294,8 @@ const UpdateDiscount: React.FC = () => {
                                 </Grid2>
                               </Grid2>
                             </Box>
-                          )
-                        }
+                          );
+                        },
                       )}
                       <Button
                         startIcon={<AddCircleOutlineIcon />}
@@ -1346,7 +1349,7 @@ const UpdateDiscount: React.FC = () => {
           )}
       </Paper>
     </>
-  )
-}
+  );
+};
 
-export default UpdateDiscount
+export default UpdateDiscount;

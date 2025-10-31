@@ -1,39 +1,39 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
-import CardContent from '@mui/material/CardContent';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import Grid2 from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import Tooltip from '@mui/material/Tooltip';
-import Chip from '@mui/material/Chip';
-import Paper from '@mui/material/Paper';
-import Skeleton from '@mui/material/Skeleton';
-import Star from '@mui/icons-material/StarRate';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import PhotoSizeSelectActualIcon from '@mui/icons-material/PhotoSizeSelectActual';
-import LabelIcon from '@mui/icons-material/Label';
-import BrokenImageIcon from '@mui/icons-material/BrokenImage';
-import EditIcon from '@mui/icons-material/Edit';
-import SaveAsIcon from '@mui/icons-material/SaveAs';
-import CloseIcon from '@mui/icons-material/Close';
-import StarIcon from '@mui/icons-material/Star';
-import TagIcon from '@mui/icons-material/Tag';
+import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate, useParams, Link } from "react-router-dom";
+import CardContent from "@mui/material/CardContent";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
+import Grid2 from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import Tooltip from "@mui/material/Tooltip";
+import Chip from "@mui/material/Chip";
+import Paper from "@mui/material/Paper";
+import Skeleton from "@mui/material/Skeleton";
+import Star from "@mui/icons-material/StarRate";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import PhotoSizeSelectActualIcon from "@mui/icons-material/PhotoSizeSelectActual";
+import LabelIcon from "@mui/icons-material/Label";
+import BrokenImageIcon from "@mui/icons-material/BrokenImage";
+import EditIcon from "@mui/icons-material/Edit";
+import SaveAsIcon from "@mui/icons-material/SaveAs";
+import CloseIcon from "@mui/icons-material/Close";
+import StarIcon from "@mui/icons-material/Star";
+import TagIcon from "@mui/icons-material/Tag";
 
-import IconButton from '@mui/material/IconButton';
-import TextField from '@mui/material/TextField';
-import { Autocomplete } from '@mui/material';
+import IconButton from "@mui/material/IconButton";
+import TextField from "@mui/material/TextField";
+import { Autocomplete } from "@mui/material";
 
-import Img from 'react-cool-img';
-import dayjs from 'dayjs';
+import Img from "react-cool-img";
+import dayjs from "dayjs";
 
-import { useLoading, useSnackBar, useUser } from 'context/GlobalContext';
+import { useLoading, useSnackBar, useUser } from "context/GlobalContext";
 
-import utils from 'utils/utils.js';
-import { Art } from '../../../../../../types/art.types';
-import { fetchArt, updateArt } from '@api/art.api';
+import utils from "utils/utils.js";
+import { Art } from "../../../../../../types/art.types";
+import { fetchArt, updateArt } from "@api/art.api";
 
 const ArtDetail: React.FC = () => {
   console.log("Componente ArtDetail se montó. ¡La ruta /arte/:artId funciona!");
@@ -50,23 +50,32 @@ const ArtDetail: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<Art | null>(null);
 
-  const preTags: string[] = ['arte', 'fotografia', 'pintura', 'diseño', 'abstracto'];
+  const preTags: string[] = [
+    "arte",
+    "fotografia",
+    "pintura",
+    "diseño",
+    "abstracto",
+  ];
   const [showAllTags, setShowAllTags] = useState(false);
-  const [tooltipTitle, setTooltipTitle] = useState('Copiar ID');
+  const [tooltipTitle, setTooltipTitle] = useState("Copiar ID");
 
   const handleCopyToClipboard = (text: string) => {
     navigator.clipboard
       .writeText(text)
       .then(() => {
-        setTooltipTitle('¡ID copiado!');
+        setTooltipTitle("¡ID copiado!");
       })
       .catch((err) => {
-        console.error('Error al copiar: ', err);
-        setTooltipTitle('Error al copiar');
+        console.error("Error al copiar: ", err);
+        setTooltipTitle("Error al copiar");
       });
   };
 
-  const handleTagsChange = (event: React.SyntheticEvent, newValue: string[]) => {
+  const handleTagsChange = (
+    event: React.SyntheticEvent,
+    newValue: string[],
+  ) => {
     setFormData((prev) => (prev ? { ...prev, tags: newValue } : null));
   };
 
@@ -87,26 +96,33 @@ const ArtDetail: React.FC = () => {
       }
       setIsEditing(false);
     } catch (error) {
-      console.error('Error al actualizar el arte:', error);
+      console.error("Error al actualizar el arte:", error);
     } finally {
       setLoading(false);
     }
   };
 
   const maxPrintValues = useCallback((tile: Art) => {
-    if (!tile.originalPhotoWidth || !tile.originalPhotoHeight || !tile.originalPhotoPpi) {
-      return 'N/A';
+    if (
+      !tile.originalPhotoWidth ||
+      !tile.originalPhotoHeight ||
+      !tile.originalPhotoPpi
+    ) {
+      return "N/A";
     }
     const [w, h] = utils.maxPrintCalc(
       Number(tile.originalPhotoWidth),
       Number(tile.originalPhotoHeight),
       Number(tile.originalPhotoPpi),
-      tile.originalPhotoIso
+      tile.originalPhotoIso,
     );
     return `${w} x ${h} cm`;
   }, []);
 
-  const navigateToPrixer = (e: React.MouseEvent<HTMLButtonElement>, username: string) => {
+  const navigateToPrixer = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    username: string,
+  ) => {
     e.preventDefault();
     navigate(`/prixer/${username}`);
   };
@@ -120,19 +136,21 @@ const ArtDetail: React.FC = () => {
         setArt(data);
         setFormData(data);
         if (!data) {
-          setArtLoadingError('Art not found. It might have been moved or deleted.');
+          setArtLoadingError(
+            "Art not found. It might have been moved or deleted.",
+          );
         }
       } catch (error) {
-        console.error('Failed to fetch art:', error);
+        console.error("Failed to fetch art:", error);
         setArtLoadingError(
-          'An error occurred while fetching the art details. Please try again later.'
+          "An error occurred while fetching the art details. Please try again later.",
         );
         setArt(null);
       } finally {
         setLoading(false);
       }
     } else {
-      setArtLoadingError('No Art ID provided.');
+      setArtLoadingError("No Art ID provided.");
       setLoading(false);
     }
   };
@@ -151,13 +169,27 @@ const ArtDetail: React.FC = () => {
             <Skeleton variant="rectangular" width="100%" height={400} />
           </Grid2>
           <Grid2 size={{ xs: 12, md: 5 }}>
-            <Skeleton variant="text" sx={{ fontSize: '2rem' }} />
-            <Skeleton variant="text" sx={{ fontSize: '1rem', width: '50%' }} />
-            <Skeleton variant="rectangular" width="100%" height={100} sx={{ my: 2 }} />
-            <Skeleton variant="text" sx={{ fontSize: '0.9rem', width: '70%' }} />
-            <Skeleton variant="text" sx={{ fontSize: '0.9rem', width: '60%' }} />
-            <Skeleton variant="text" sx={{ fontSize: '0.9rem', width: '65%' }} />
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 2 }}>
+            <Skeleton variant="text" sx={{ fontSize: "2rem" }} />
+            <Skeleton variant="text" sx={{ fontSize: "1rem", width: "50%" }} />
+            <Skeleton
+              variant="rectangular"
+              width="100%"
+              height={100}
+              sx={{ my: 2 }}
+            />
+            <Skeleton
+              variant="text"
+              sx={{ fontSize: "0.9rem", width: "70%" }}
+            />
+            <Skeleton
+              variant="text"
+              sx={{ fontSize: "0.9rem", width: "60%" }}
+            />
+            <Skeleton
+              variant="text"
+              sx={{ fontSize: "0.9rem", width: "65%" }}
+            />
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 2 }}>
               <Skeleton variant="rounded" width={80} height={32} />
               <Skeleton variant="rounded" width={80} height={32} />
               <Skeleton variant="rounded" width={80} height={32} />
@@ -175,15 +207,17 @@ const ArtDetail: React.FC = () => {
         sx={{
           py: 4,
           mt: { xs: 2, md: 4 },
-          textAlign: 'center',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: 'calc(100vh - 200px)', // Adjust as needed
+          textAlign: "center",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "calc(100vh - 200px)", // Adjust as needed
         }}
       >
-        <BrokenImageIcon sx={{ fontSize: 60, color: 'text.secondary', mb: 2 }} />
+        <BrokenImageIcon
+          sx={{ fontSize: 60, color: "text.secondary", mb: 2 }}
+        />
         <Typography variant="h5" gutterBottom>
           Oops!
         </Typography>
@@ -197,8 +231,10 @@ const ArtDetail: React.FC = () => {
 
   if (!art) {
     return (
-      <Container sx={{ py: 4, mt: { xs: 2, md: 4 }, textAlign: 'center' }}>
-        <Typography>No encontramos el arte que indicas, intenta volver a la Galería.</Typography>
+      <Container sx={{ py: 4, mt: { xs: 2, md: 4 }, textAlign: "center" }}>
+        <Typography>
+          No encontramos el arte que indicas, intenta volver a la Galería.
+        </Typography>
       </Container>
     );
   }
@@ -206,36 +242,36 @@ const ArtDetail: React.FC = () => {
   return (
     <>
       <Container maxWidth="lg" sx={{ py: 4, mt: { xs: 0, md: 2 } }}>
-        <Paper elevation={3} sx={{ overflow: 'hidden' }}>
+        <Paper elevation={3} sx={{ overflow: "hidden" }}>
           <Grid2 container spacing={{ xs: 0, md: 0 }}>
             <Grid2
               size={{ xs: 12, md: 7 }}
               sx={{
-                position: 'relative',
-                backgroundColor: '#f0f0f0',
-                justifyContent: 'center',
-                alignItems: 'center',
-                display: 'flex',
+                position: "relative",
+                backgroundColor: "#f0f0f0",
+                justifyContent: "center",
+                alignItems: "center",
+                display: "flex",
               }}
               id={`art-detail-${art.artId}`}
             >
-              {art.exclusive === 'exclusive' && (
+              {art.exclusive === "exclusive" && (
                 <Tooltip title="Arte Exclusivo">
                   <Box
                     sx={{
-                      position: 'absolute',
+                      position: "absolute",
                       top: 16,
                       right: 16,
                       zIndex: 1,
-                      backgroundColor: 'rgba(0,0,0,0.5)',
-                      borderRadius: '50%',
-                      padding: '4px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
+                      backgroundColor: "rgba(0,0,0,0.5)",
+                      borderRadius: "50%",
+                      padding: "4px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
                     }}
                   >
-                    <Star sx={{ color: 'gold' }} fontSize="medium" />
+                    <Star sx={{ color: "gold" }} fontSize="medium" />
                   </Box>
                 </Tooltip>
               )}
@@ -243,11 +279,11 @@ const ArtDetail: React.FC = () => {
               <Img
                 placeholder="/imgLoading.svg"
                 style={{
-                  display: 'block',
-                  width: '100%',
-                  height: 'auto',
-                  maxHeight: '80vh',
-                  objectFit: 'contain',
+                  display: "block",
+                  width: "100%",
+                  height: "auto",
+                  maxHeight: "80vh",
+                  objectFit: "contain",
                 }}
                 src={art.largeThumbUrl || art.mediumThumbUrl || art.imageUrl}
                 debounce={300}
@@ -256,48 +292,53 @@ const ArtDetail: React.FC = () => {
                 alt={art.title}
               />
             </Grid2>
-            <Grid2 size={{ xs: 12, md: 5 }} sx={{ position: 'relative' }}>
+            <Grid2 size={{ xs: 12, md: 5 }} sx={{ position: "relative" }}>
               {isOwner && (
                 <Box>
-                  <Tooltip title={isEditing ? 'Guardar Arte' : 'Editar Arte'}>
+                  <Tooltip title={isEditing ? "Guardar Arte" : "Editar Arte"}>
                     <Box
                       sx={{
-                        position: 'absolute',
+                        position: "absolute",
                         top: 16,
                         right: isEditing ? 52 : 16,
                         zIndex: 1,
-                        borderRadius: '50%',
-                        padding: '4px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
+                        borderRadius: "50%",
+                        padding: "4px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                       }}
                     >
                       <IconButton
                         color="primary"
                         aria-label="Guardar Arte"
-                        onClick={() => (isEditing ? handleSaveChanges() : setIsEditing(true))}
+                        onClick={() =>
+                          isEditing ? handleSaveChanges() : setIsEditing(true)
+                        }
                       >
                         {isEditing ? <SaveAsIcon /> : <EditIcon />}
                       </IconButton>
                     </Box>
                   </Tooltip>
                   {isEditing && (
-                    <Tooltip title={'Cancelar'}>
+                    <Tooltip title={"Cancelar"}>
                       <Box
                         sx={{
-                          position: 'absolute',
+                          position: "absolute",
                           top: 16,
                           right: 16,
                           zIndex: 1,
-                          borderRadius: '50%',
-                          padding: '4px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
+                          borderRadius: "50%",
+                          padding: "4px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
                         }}
                       >
-                        <IconButton aria-label="Cancelar" onClick={() => setIsEditing(false)}>
+                        <IconButton
+                          aria-label="Cancelar"
+                          onClick={() => setIsEditing(false)}
+                        >
                           <CloseIcon />
                         </IconButton>
                       </Box>
@@ -308,9 +349,9 @@ const ArtDetail: React.FC = () => {
               <CardContent
                 sx={{
                   p: { xs: 2, md: 3 },
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
                 }}
               >
                 {isEditing ? (
@@ -319,9 +360,9 @@ const ArtDetail: React.FC = () => {
                     variant="outlined"
                     label="Título"
                     name="title"
-                    value={formData?.title || ''}
+                    value={formData?.title || ""}
                     onChange={handleInputChange}
-                    sx={{ mb: 2, pr: '4.8rem' }}
+                    sx={{ mb: 2, pr: "4.8rem" }}
                   />
                 ) : (
                   <Typography
@@ -329,7 +370,7 @@ const ArtDetail: React.FC = () => {
                     component="h1"
                     gutterBottom
                     color="secondary"
-                    sx={{ fontWeight: 'bold' }}
+                    sx={{ fontWeight: "bold" }}
                   >
                     {art.title}
                   </Typography>
@@ -337,15 +378,15 @@ const ArtDetail: React.FC = () => {
                 {!isEditing && (
                   <Grid2
                     sx={{
-                      display: 'flex',
-                      justifyContent: 'left',
-                      alignItems: 'center',
+                      display: "flex",
+                      justifyContent: "left",
+                      alignItems: "center",
                       mb: 2,
                       gap: 1,
                     }}
                   >
                     <Typography variant="subtitle1" color="secondary">
-                      {'Prixer: '}
+                      {"Prixer: "}
                     </Typography>
                     <Button
                       size="small"
@@ -353,12 +394,12 @@ const ArtDetail: React.FC = () => {
                       color="secondary"
                       onClick={(e) => navigateToPrixer(e, art.prixerUsername)}
                       sx={{
-                        textTransform: 'none',
-                        padding: '0px 14px',
-                        fontSize: '1.1rem',
-                        ':hover': {
-                          backgroundColor: '#404e5c',
-                          color: '#fff',
+                        textTransform: "none",
+                        padding: "0px 14px",
+                        fontSize: "1.1rem",
+                        ":hover": {
+                          backgroundColor: "#404e5c",
+                          color: "#fff",
                         },
                       }}
                     >
@@ -374,7 +415,7 @@ const ArtDetail: React.FC = () => {
                     name="description"
                     multiline
                     rows={4}
-                    value={formData?.description || ''}
+                    value={formData?.description || ""}
                     onChange={handleInputChange}
                     sx={{ mb: 2 }}
                   />
@@ -386,11 +427,11 @@ const ArtDetail: React.FC = () => {
                       variant="subtitle1"
                       color="text.secondary"
                       sx={{
-                        whiteSpace: 'pre-line',
+                        whiteSpace: "pre-line",
                         mb: 3,
-                        fontSize: '1rem',
-                        maxHeight: '200px',
-                        overflowY: 'auto',
+                        fontSize: "1rem",
+                        maxHeight: "200px",
+                        overflowY: "auto",
                       }}
                     >
                       {art.description}
@@ -404,13 +445,17 @@ const ArtDetail: React.FC = () => {
                       variant="outlined"
                       label="Ubicación"
                       name="artLocation"
-                      value={formData?.artLocation || ''}
+                      value={formData?.artLocation || ""}
                       onChange={handleInputChange}
                     />
                   ) : (
                     art.artLocation && (
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                        <LocationOnIcon sx={{ mr: 1.5, color: 'text.secondary' }} />
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", mb: 1 }}
+                      >
+                        <LocationOnIcon
+                          sx={{ mr: 1.5, color: "text.secondary" }}
+                        />
                         <Typography variant="body2" color="text.secondary">
                           {art.artLocation}
                         </Typography>
@@ -421,9 +466,9 @@ const ArtDetail: React.FC = () => {
                   {isEditing ? (
                     <Box
                       sx={{
-                        display: 'grid',
-                        gridTemplateColumns: '1fr 1fr',
-                        gap: '8px',
+                        display: "grid",
+                        gridTemplateColumns: "1fr 1fr",
+                        gap: "8px",
                       }}
                     >
                       <TextField
@@ -431,7 +476,7 @@ const ArtDetail: React.FC = () => {
                         variant="outlined"
                         label="Ancho"
                         name="originalPhotoWidth"
-                        value={formData?.originalPhotoWidth || ''}
+                        value={formData?.originalPhotoWidth || ""}
                         onChange={handleInputChange}
                       />
                       <TextField
@@ -439,7 +484,7 @@ const ArtDetail: React.FC = () => {
                         variant="outlined"
                         label="Alto"
                         name="originalPhotoHeight"
-                        value={formData?.originalPhotoHeight || ''}
+                        value={formData?.originalPhotoHeight || ""}
                         onChange={handleInputChange}
                       />
                       <TextField
@@ -447,7 +492,7 @@ const ArtDetail: React.FC = () => {
                         variant="outlined"
                         label="PPI"
                         name="originalPhotoPpi"
-                        value={formData?.originalPhotoPpi || ''}
+                        value={formData?.originalPhotoPpi || ""}
                         onChange={handleInputChange}
                       />
                       <TextField
@@ -455,7 +500,7 @@ const ArtDetail: React.FC = () => {
                         variant="outlined"
                         label="ISO"
                         name="originalPhotoIso"
-                        value={formData?.originalPhotoIso || ''}
+                        value={formData?.originalPhotoIso || ""}
                         onChange={handleInputChange}
                       />
                     </Box>
@@ -464,16 +509,24 @@ const ArtDetail: React.FC = () => {
                       {art.originalPhotoHeight &&
                         art.originalPhotoWidth &&
                         art.originalPhotoPpi && (
-                          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                            <PhotoSizeSelectActualIcon sx={{ mr: 1.5, color: 'text.secondary' }} />
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              mb: 1,
+                            }}
+                          >
+                            <PhotoSizeSelectActualIcon
+                              sx={{ mr: 1.5, color: "text.secondary" }}
+                            />
                             <Typography variant="body2" color="text.secondary">
                               Máx. Impresión: {maxPrintValues(art)}
                             </Typography>
                           </Box>
                         )}
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Box sx={{ display: "flex", alignItems: "center" }}>
                         <Tooltip title="Este porcentaje representa la ganancia de nuestro prixer al venderse su arte. ¡Apoya a tu artista favorito!">
-                          <StarIcon sx={{ mr: 1.5, color: 'text.secondary' }} />
+                          <StarIcon sx={{ mr: 1.5, color: "text.secondary" }} />
                         </Tooltip>
                         <Typography variant="body2" color="text.secondary">
                           Este arte tiene una comisión de {art.comission}%
@@ -492,7 +545,11 @@ const ArtDetail: React.FC = () => {
                     onChange={handleTagsChange}
                     renderTags={(value, getTagProps) =>
                       value.map((option, index) => (
-                        <Chip variant="outlined" label={option} {...getTagProps({ index })} />
+                        <Chip
+                          variant="outlined"
+                          label={option}
+                          {...getTagProps({ index })}
+                        />
                       ))
                     }
                     renderInput={(params) => (
@@ -509,23 +566,30 @@ const ArtDetail: React.FC = () => {
                   art.tags.length > 0 &&
                   (() => {
                     const cleanTags = art.tags
-                      .flatMap((tag) => tag.split(','))
+                      .flatMap((tag) => tag.split(","))
                       .map((tag) => tag.trim())
                       .filter(Boolean);
 
                     const limit = 4;
 
-                    const tagsToShow = showAllTags ? cleanTags : cleanTags.slice(0, limit);
+                    const tagsToShow = showAllTags
+                      ? cleanTags
+                      : cleanTags.slice(0, limit);
                     const remainingTags = cleanTags.length - limit;
 
                     return (
-                      <Box sx={{ mb: 3, display: 'flex' }}>
+                      <Box sx={{ mb: 3, display: "flex" }}>
                         <Tooltip title="Los tags son usados por los prixers para destacar un tópico, úsalos para navegar entre temas de tu interés.">
-                          <LabelIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                          <LabelIcon sx={{ mr: 1, color: "text.secondary" }} />
                         </Tooltip>
 
                         <Box
-                          sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center' }}
+                          sx={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: 1,
+                            alignItems: "center",
+                          }}
                         >
                           {tagsToShow.map((tag) => (
                             <Chip
@@ -535,7 +599,10 @@ const ArtDetail: React.FC = () => {
                               component={Link}
                               to={`/galeria?name=${encodeURIComponent(tag)}`}
                               clickable
-                              sx={{ cursor: 'pointer', color: 'text.secondary' }}
+                              sx={{
+                                cursor: "pointer",
+                                color: "text.secondary",
+                              }}
                             />
                           ))}
 
@@ -545,9 +612,9 @@ const ArtDetail: React.FC = () => {
                               size="small"
                               onClick={() => setShowAllTags(true)}
                               sx={{
-                                cursor: 'pointer',
-                                color: 'text.secondary',
-                                backgroundColor: 'action.hover',
+                                cursor: "pointer",
+                                color: "text.secondary",
+                                backgroundColor: "action.hover",
                               }}
                             />
                           )}
@@ -558,9 +625,9 @@ const ArtDetail: React.FC = () => {
                               size="small"
                               onClick={() => setShowAllTags(false)}
                               sx={{
-                                cursor: 'pointer',
-                                color: 'text.secondary',
-                                backgroundColor: 'action.hover',
+                                cursor: "pointer",
+                                color: "text.secondary",
+                                backgroundColor: "action.hover",
                               }}
                             />
                           )}
@@ -571,45 +638,47 @@ const ArtDetail: React.FC = () => {
                 )}
                 <Box
                   sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'end',
-                    mt: 'auto',
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "end",
+                    mt: "auto",
                   }}
                 >
                   {art?.createdOn && (
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
                       <Tooltip title="Esta es la fecha en que el prixer publicó este arte, es posible que el material se haya creado antes y lo publicó tiempo después.">
-                        <CalendarTodayIcon sx={{ mr: 1.5, color: 'text.disabled' }} />
+                        <CalendarTodayIcon
+                          sx={{ mr: 1.5, color: "text.disabled" }}
+                        />
                       </Tooltip>
                       <Typography variant="body2" color="text.disabled">
                         {` Arte publicado el 
-                        ${new Date(art?.createdOn).toLocaleDateString('es-ES', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
+                        ${new Date(art?.createdOn).toLocaleDateString("es-ES", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
                         })}`}
                       </Typography>
                     </Box>
                   )}
                   <Tooltip
                     title={tooltipTitle}
-                    onMouseLeave={() => setTooltipTitle('Copiar ID')}
+                    onMouseLeave={() => setTooltipTitle("Copiar ID")}
                   >
                     <Box
                       sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        cursor: 'pointer',
+                        display: "flex",
+                        alignItems: "center",
+                        cursor: "pointer",
                       }}
                       onClick={() => handleCopyToClipboard(art.artId)}
                     >
-                      <TagIcon sx={{ mr: 1.5, color: 'text.disabled' }} />
+                      <TagIcon sx={{ mr: 1.5, color: "text.disabled" }} />
                       <Typography
                         variant="caption"
                         color="text.disabled"
                         component="p"
-                        sx={{ textAlign: 'right' }}
+                        sx={{ textAlign: "right" }}
                       >
                         {art.artId}
                       </Typography>

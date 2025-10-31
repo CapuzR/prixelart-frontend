@@ -1,4 +1,4 @@
-import React, { useMemo } from "react"
+import React, { useMemo } from "react";
 
 import {
   Typography,
@@ -10,51 +10,51 @@ import {
   Select,
   InputLabel,
   SelectChangeEvent,
-} from "@mui/material"
+} from "@mui/material";
 import {
   Share as ShareIcon,
   ExpandMore as ExpandMoreIcon,
-} from "@mui/icons-material"
+} from "@mui/icons-material";
 
-import Button from "components/Button"
+import Button from "components/Button";
 
-import { generateWaProductMessage } from "utils/utils"
-import { formatRange, formatSinglePrice } from "utils/formats"
-import { useConversionRate } from "context/GlobalContext"
+import { generateWaProductMessage } from "utils/utils";
+import { formatRange, formatSinglePrice } from "utils/formats";
+import { useConversionRate } from "context/GlobalContext";
 
-import styles from "./Landscape.module.scss"
+import styles from "./Landscape.module.scss";
 
-import { getFilteredOptions } from "apps/consumer/products/services"
+import { getFilteredOptions } from "apps/consumer/products/services";
 
-import { useCurrency } from "context/GlobalContext"
-import { Slider } from "components/Slider"
-import { Image } from "components/Image"
-import CurrencySwitch from "components/CurrencySwitch"
-import { Product, Variant } from "../../../../../types/product.types"
-import { DisplayPriceInfo } from "../Details"
-import MDEditor from "@uiw/react-md-editor"
-import ReactQuill from "react-quill-new"
-import "react-quill/dist/quill.snow.css"
+import { useCurrency } from "context/GlobalContext";
+import { Slider } from "components/Slider";
+import { Image } from "components/Image";
+import CurrencySwitch from "components/CurrencySwitch";
+import { Product, Variant } from "../../../../../types/product.types";
+import { DisplayPriceInfo } from "../Details";
+import MDEditor from "@uiw/react-md-editor";
+import ReactQuill from "react-quill-new";
+import "react-quill/dist/quill.snow.css";
 
 interface LandscapeProps {
-  product: Product
-  expanded: string | false
-  description: { generalDescription: string; technicalSpecification: string }
-  handleArtSelection: () => void
-  handleSelection: (e: SelectChangeEvent<string>) => void
+  product: Product;
+  expanded: string | false;
+  description: { generalDescription: string; technicalSpecification: string };
+  handleArtSelection: () => void;
+  handleSelection: (e: SelectChangeEvent<string>) => void;
   handleChange: (
-    panel: string
-  ) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => void
-  isFetchingVariantPrice: boolean
-  flowProductId?: string
-  selectedVariant?: Variant
-  currentSelectionParams: { [key: string]: string }
-  priceInfo: DisplayPriceInfo
+    panel: string,
+  ) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => void;
+  isFetchingVariantPrice: boolean;
+  flowProductId?: string;
+  selectedVariant?: Variant;
+  currentSelectionParams: { [key: string]: string };
+  priceInfo: DisplayPriceInfo;
 }
 
 const Landscape: React.FC<LandscapeProps> = (props) => {
-  const { currency } = useCurrency()
-  const { conversionRate } = useConversionRate()
+  const { currency } = useCurrency();
+  const { conversionRate } = useConversionRate();
 
   const RenderHTML: React.FC<{ htmlString: string }> = ({ htmlString }) => {
     return (
@@ -62,40 +62,41 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
         dangerouslySetInnerHTML={{ __html: htmlString }}
         style={{ margin: 10 }}
       />
-    )
-  }
+    );
+  };
 
   const uniqueAttributes = useMemo(() => {
-    const attributesMap = new Map<string, Set<string>>()
+    const attributesMap = new Map<string, Set<string>>();
     props.product?.variants?.forEach((variant) => {
       variant.attributes?.forEach((attr) => {
         if (!attributesMap.has(attr.name)) {
-          attributesMap.set(attr.name, new Set<string>())
+          attributesMap.set(attr.name, new Set<string>());
         }
-        attributesMap.get(attr.name)?.add(attr.value)
-      })
-    })
+        attributesMap.get(attr.name)?.add(attr.value);
+      });
+    });
     return Array.from(attributesMap.entries())
       .map(([name, values]) => ({ name, value: Array.from(values).sort() }))
-      .sort((a, b) => a.name.localeCompare(b.name))
-  }, [props.product?.variants])
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [props.product?.variants]);
 
   const allAttributesSelected = useMemo(() => {
-    if (uniqueAttributes.length === 0) return true
+    if (uniqueAttributes.length === 0) return true;
     return uniqueAttributes.every(
-      (attribute) => props.currentSelectionParams[attribute.name]?.trim() !== ""
-    )
-  }, [uniqueAttributes, props.currentSelectionParams])
+      (attribute) =>
+        props.currentSelectionParams[attribute.name]?.trim() !== "",
+    );
+  }, [uniqueAttributes, props.currentSelectionParams]);
 
   const renderPriceDisplay = () => {
-    const { priceInfo } = props
+    const { priceInfo } = props;
 
     switch (priceInfo.type) {
       case "loading":
-        return "Cargando precio..."
+        return "Cargando precio...";
       case "error":
         // Optionally show specific error: priceInfo.errorMessage
-        return "Precio no disponible"
+        return "Precio no disponible";
       case "single":
         // Use formatSinglePrice which handles potential strikethrough
         return (
@@ -109,25 +110,25 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
                 conversionRate,
                 priceInfo.originalPrice !== undefined
                   ? priceInfo.originalPrice.toString()
-                  : priceInfo.originalPrice // Convert original price if defined
+                  : priceInfo.originalPrice, // Convert original price if defined
               ),
             }}
           />
-        )
+        );
       case "range":
         // Format the final range
         const finalRangeString = formatRange(
           priceInfo.finalMin,
           priceInfo.finalMax,
           currency,
-          conversionRate
-        )
+          conversionRate,
+        );
 
         // Check if base range differs from final range
         const baseRangeDiffers =
           priceInfo.baseMin !== null &&
           (priceInfo.baseMin !== priceInfo.finalMin ||
-            priceInfo.baseMax !== priceInfo.finalMax)
+            priceInfo.baseMax !== priceInfo.finalMax);
 
         if (baseRangeDiffers) {
           // Format the base range
@@ -135,8 +136,8 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
             priceInfo.baseMin,
             priceInfo.baseMax,
             currency,
-            conversionRate
-          )
+            conversionRate,
+          );
           // Render base with strikethrough + final range
           return (
             <span
@@ -151,20 +152,20 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
                     `,
               }}
             />
-          )
+          );
         } else {
           // Just render the final range
-          return <span>{finalRangeString}</span>
+          return <span>{finalRangeString}</span>;
         }
       case "none":
         // If attributes exist, prompt selection, otherwise show unavailable
         return uniqueAttributes.length > 0
           ? "Selecciona opciones para ver el precio"
-          : "Precio no disponible"
+          : "Precio no disponible";
       default:
-        return null // Should not happen
+        return null; // Should not happen
     }
-  }
+  };
 
   return (
     <div className={styles["prix-product-container"]}>
@@ -172,16 +173,20 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
       <div className={styles["left-side"]}>
         <div className={styles["slider-wrapper"]}>
           <Slider
-            images={props.product?.sources?.images.filter(image => image?.url) || []}
+            images={
+              props.product?.sources?.images.filter((image) => image?.url) || []
+            }
             useIndicators={{
               type: "thumbnails",
               position: "over",
               color: { active: "primary", inactive: "secondary" },
             }}
           >
-            {props.product?.sources?.images?.filter(image => image?.url).map((image, i) => (
-              <Image key={i} src={image.url} alt={props.product?.name} />
-            ))}
+            {props.product?.sources?.images
+              ?.filter((image) => image?.url)
+              .map((image, i) => (
+                <Image key={i} src={image.url} alt={props.product?.name} />
+              ))}
           </Slider>
         </div>
       </div>
@@ -200,11 +205,11 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
             type="onlyText"
             color="primary"
             onClick={() => {
-              const currentUrl = window.location.href
+              const currentUrl = window.location.href;
               window.open(
                 generateWaProductMessage(props.product, currentUrl),
-                "_blank"
-              )
+                "_blank",
+              );
             }}
           >
             <ShareIcon className={styles["share-icon"]} />
@@ -251,7 +256,9 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
                 </Typography> */}
                 {/* <RenderHTML htmlString={props.description}/> */}
                 <div data-color-mode="light" className={styles["modal-text"]}>
-                  <MDEditor.Markdown source={props.description.technicalSpecification} />
+                  <MDEditor.Markdown
+                    source={props.description.technicalSpecification}
+                  />
                 </div>
               </AccordionDetails>
             </Accordion>
@@ -267,14 +274,14 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
             >
               {uniqueAttributes.map((att, iAtt) => {
                 const selectedValue =
-                  props.currentSelectionParams[att.name] || ""
+                  props.currentSelectionParams[att.name] || "";
                 // Assuming getFilteredOptions works correctly based on currentSelectionParams
                 const filteredOptions =
                   getFilteredOptions(
                     props.product,
                     att,
-                    props.currentSelectionParams
-                  ) || []
+                    props.currentSelectionParams,
+                  ) || [];
 
                 return (
                   <div
@@ -308,7 +315,7 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
                       </Select>
                     </FormControl>
                   </div>
-                )
+                );
               })}
             </div>
           </div>
@@ -329,7 +336,7 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Landscape
+export default Landscape;

@@ -1,13 +1,13 @@
-import React, { ChangeEvent } from "react"
-import { TextField, Typography, Box } from "@mui/material"
-import { Address } from "types/order.types" 
-import Grid2 from "@mui/material/Grid"
+import React, { ChangeEvent } from "react";
+import { TextField, Typography, Box } from "@mui/material";
+import { Address } from "types/order.types";
+import Grid2 from "@mui/material/Grid";
 interface EditableAddressFormProps {
-  address: Address
-  onAddressChange: (updatedAddress: Address) => void
-  isDisabled?: boolean
-  basicDisabled?: boolean
-  showRecipientFields?: boolean
+  address: Address;
+  onAddressChange: (updatedAddress: Address) => void;
+  isDisabled?: boolean;
+  basicDisabled?: boolean;
+  showRecipientFields?: boolean;
 }
 
 const EditableAddressForm: React.FC<EditableAddressFormProps> = ({
@@ -18,26 +18,26 @@ const EditableAddressForm: React.FC<EditableAddressFormProps> = ({
   showRecipientFields = true,
 }) => {
   const handleRecipientChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target
+    const { name, value } = event.target;
     onAddressChange({
       ...address,
       recepient: {
         ...address.recepient,
         [name]: value,
       },
-    })
-  }
+    });
+  };
 
   const handleBasicAddressChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target
+    const { name, value } = event.target;
     onAddressChange({
       ...address,
       address: {
         ...address.address,
         [name]: value,
       },
-    })
-  }
+    });
+  };
 
   return (
     <Box
@@ -196,7 +196,7 @@ const EditableAddressForm: React.FC<EditableAddressFormProps> = ({
         </Grid2>
       </Grid2>
     </Box>
-  )
-}
+  );
+};
 
-export default EditableAddressForm
+export default EditableAddressForm;

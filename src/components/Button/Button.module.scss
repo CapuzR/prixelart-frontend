@@ -1,5 +1,4 @@
-
-@use '@/styles/theme.scss' as theme;
+@use "@/styles/theme.scss" as theme;
 @use "sass:color";
 
 .btn {
@@ -8,7 +7,11 @@
   align-items: center;
   text-transform: none !important;
   border-radius: theme.$border-radius-button !important;
-  font-size: clamp(theme.$font-size-small, theme.$font-size-small, theme.$font-size-small) !important;
+  font-size: clamp(
+    theme.$font-size-small,
+    theme.$font-size-small,
+    theme.$font-size-small
+  ) !important;
   padding: theme.$spacing-sm theme.$spacing-md;
   cursor: pointer;
   transition:
@@ -61,7 +64,11 @@
     font-weight: 500 !important;
 
     &:hover:not(.disabled) {
-      background-color: color.mix(white, theme.$secondary-color, 10%) !important;
+      background-color: color.mix(
+        white,
+        theme.$secondary-color,
+        10%
+      ) !important;
     }
   }
 }
@@ -132,7 +139,7 @@
   animation: blinkBackground 0.8s infinite ease-in-out;
 
   &:before {
-    content: '';
+    content: "";
     position: absolute;
     top: -10%;
     left: -10%;

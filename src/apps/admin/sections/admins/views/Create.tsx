@@ -1,33 +1,56 @@
-import React, { useState, useEffect, useCallback, ChangeEvent, FormEvent, MouseEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  ChangeEvent,
+  FormEvent,
+  MouseEvent,
+} from "react";
+import { useNavigate } from "react-router-dom";
 
-// Hooks, Context, Types, API 
-import { useSnackBar } from 'context/GlobalContext';
-import { Admin } from 'types/admin.types'; // Assuming this path
-import { PermissionsV2 } from 'types/permissions.types'; // To get Role type  for fetching
-import { getRoles, createAdmin /*, checkUsernameExists, checkEmailExists */ } from '@api/admin.api'; // Adjust API functions
-import Grid2 from '@mui/material/Grid';
+// Hooks, Context, Types, API
+import { useSnackBar } from "context/GlobalContext";
+import { Admin } from "types/admin.types"; // Assuming this path
+import { PermissionsV2 } from "types/permissions.types"; // To get Role type  for fetching
+import {
+  getRoles,
+  createAdmin /*, checkUsernameExists, checkEmailExists */,
+} from "@api/admin.api"; // Adjust API functions
+import Grid2 from "@mui/material/Grid";
 // MUI Components
 import {
-  Typography, TextField, Button, Paper, FormControlLabel, CircularProgress, Alert, Stack, Switch, IconButton, InputAdornment,
+  Typography,
+  TextField,
+  Button,
+  Paper,
+  FormControlLabel,
+  CircularProgress,
+  Alert,
+  Stack,
+  Switch,
+  IconButton,
+  InputAdornment,
   Autocomplete,
   Tooltip,
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
-} from '@mui/material';
-import { SelectChangeEvent } from '@mui/material/Select';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import CloseIcon from '@mui/icons-material/Close';
+  DialogActions,
+} from "@mui/material";
+import { SelectChangeEvent } from "@mui/material/Select";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import CloseIcon from "@mui/icons-material/Close";
 
-import Title from '@apps/admin/components/Title';
-import { RolePermissionsDetails } from './ReadRoles';
+import Title from "@apps/admin/components/Title";
+import { RolePermissionsDetails } from "./ReadRoles";
 
 // Initial state for the form
-const initialAdminState: Omit<Admin, '_id' | 'password'> & { password?: string } = { // Exclude _id, handle password separately
+const initialAdminState: Omit<Admin, "_id" | "password"> & {
+  password?: string;
+} = {
+  // Exclude _id, handle password separately
   firstname: "",
   lastname: "",
   username: "",
@@ -44,14 +67,16 @@ const CreateAdmin: React.FC = () => {
 
   // --- State ---
   const [formData, setFormData] = useState(initialAdminState);
-  const [password, setPassword] = useState('');
-  const [passwordConfirm, setPasswordConfirm] = useState('');
+  const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
 
-  const [roles, setRoles] = useState<PermissionsV2[]>([]);// For role dropdown
+  const [roles, setRoles] = useState<PermissionsV2[]>([]); // For role dropdown
   const [isLoadingRoles, setIsLoadingRoles] = useState(false);
-  const [errorFetchingRoles, setErrorFetchingRoles] = useState<string | null>(null);
+  const [errorFetchingRoles, setErrorFetchingRoles] = useState<string | null>(
+    null,
+  );
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorSubmit, setErrorSubmit] = useState<string | null>(null); // API submission errors
@@ -81,45 +106,50 @@ const CreateAdmin: React.FC = () => {
   }, [fetchRoles]);
 
   // --- Input Handlers ---
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const { name, value } = event.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
     // Clear validation error for this field on change
     if (formErrors[name]) {
-      setFormErrors(prev => ({ ...prev, [name]: '' }));
+      setFormErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
   const handleSwitchChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = event.target;
-    setFormData(prev => ({ ...prev, [name]: checked }));
+    setFormData((prev) => ({ ...prev, [name]: checked }));
   };
 
   const handleRoleChange = (event: SelectChangeEvent<string>) => {
     const { name, value } = event.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
     if (formErrors[name]) {
-      setFormErrors(prev => ({ ...prev, [name]: '' }));
+      setFormErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
   const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value);
     if (formErrors.password) {
-      setFormErrors(prev => ({ ...prev, password: '', passwordConfirm: '' })); // Clear both password errors
+      setFormErrors((prev) => ({ ...prev, password: "", passwordConfirm: "" })); // Clear both password errors
     }
   };
 
-  const handlePasswordConfirmChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handlePasswordConfirmChange = (
+    event: ChangeEvent<HTMLInputElement>,
+  ) => {
     setPasswordConfirm(event.target.value);
     if (formErrors.passwordConfirm) {
-      setFormErrors(prev => ({ ...prev, passwordConfirm: '' }));
+      setFormErrors((prev) => ({ ...prev, passwordConfirm: "" }));
     }
   };
 
   // --- Password Visibility Toggle ---
   const handleClickShowPassword = () => setShowPassword((show) => !show);
-  const handleClickShowPasswordConfirm = () => setShowPasswordConfirm((show) => !show);
+  const handleClickShowPasswordConfirm = () =>
+    setShowPasswordConfirm((show) => !show);
   const handleMouseDownPassword = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault(); // Prevent focus loss
   };
@@ -127,13 +157,16 @@ const CreateAdmin: React.FC = () => {
   // --- Handler to open modal ---
   const handleViewSelectedRolePermissions = () => {
     if (!formData.area) return;
-    const selectedRole = roles.find(role => role.area === formData.area);
+    const selectedRole = roles.find((role) => role.area === formData.area);
     if (selectedRole) {
       setRoleToView(selectedRole);
       setPermissionModalOpen(true);
     } else {
       showSnackBar("No se encontraron los detalles para el rol seleccionado.");
-      console.warn("Could not find role details for selected area:", formData.area);
+      console.warn(
+        "Could not find role details for selected area:",
+        formData.area,
+      );
     }
   };
 
@@ -146,30 +179,34 @@ const CreateAdmin: React.FC = () => {
   // --- Validation ---
   const validateField = (name: string, value: any): string => {
     switch (name) {
-      case 'firstname':
-      case 'lastname':
-      case 'username':
-        return value.trim() ? '' : 'Este campo es obligatorio.';
-      case 'email':
-        if (!value.trim()) return 'El email es obligatorio.';
+      case "firstname":
+      case "lastname":
+      case "username":
+        return value.trim() ? "" : "Este campo es obligatorio.";
+      case "email":
+        if (!value.trim()) return "El email es obligatorio.";
         // Basic email regex
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? '' : 'Formato de email inválido.';
-      case 'phone':
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+          ? ""
+          : "Formato de email inválido.";
+      case "phone":
         // Example: Basic validation (optional field?) - Adjust if required
-        if (value && !/^\+?[0-9\s\-()]+$/.test(value)) return 'Formato de teléfono inválido.';
-        return ''; // Or make required: return value.trim() ? '' : 'Teléfono es obligatorio';
-      case 'area':
-        return value ? '' : 'Debe seleccionar un rol/área.';
-      case 'password':
-        if (!value) return 'La contraseña es obligatoria.';
-        if (value.length < 6) return 'La contraseña debe tener al menos 6 caracteres.'; // Example rule
+        if (value && !/^\+?[0-9\s\-()]+$/.test(value))
+          return "Formato de teléfono inválido.";
+        return ""; // Or make required: return value.trim() ? '' : 'Teléfono es obligatorio';
+      case "area":
+        return value ? "" : "Debe seleccionar un rol/área.";
+      case "password":
+        if (!value) return "La contraseña es obligatoria.";
+        if (value.length < 6)
+          return "La contraseña debe tener al menos 6 caracteres."; // Example rule
         // Add more strength rules if desired
-        return '';
-      case 'passwordConfirm':
-        if (!value) return 'Debe confirmar la contraseña.';
-        return password === value ? '' : 'Las contraseñas no coinciden.';
+        return "";
+      case "passwordConfirm":
+        if (!value) return "Debe confirmar la contraseña.";
+        return password === value ? "" : "Las contraseñas no coinciden.";
       default:
-        return '';
+        return "";
     }
   };
 
@@ -178,7 +215,7 @@ const CreateAdmin: React.FC = () => {
     let isValid = true;
 
     // Validate formData fields
-    Object.keys(formData).forEach(key => {
+    Object.keys(formData).forEach((key) => {
       const error = validateField(key, formData[key as keyof typeof formData]);
       if (error) {
         errors[key] = error;
@@ -187,12 +224,15 @@ const CreateAdmin: React.FC = () => {
     });
 
     // Validate password fields
-    const passwordError = validateField('password', password);
+    const passwordError = validateField("password", password);
     if (passwordError) {
       errors.password = passwordError;
       isValid = false;
     }
-    const passwordConfirmError = validateField('passwordConfirm', passwordConfirm);
+    const passwordConfirmError = validateField(
+      "passwordConfirm",
+      passwordConfirm,
+    );
     if (passwordConfirmError) {
       errors.passwordConfirm = passwordConfirmError;
       isValid = false;
@@ -201,7 +241,6 @@ const CreateAdmin: React.FC = () => {
     setFormErrors(errors);
     return isValid;
   };
-
 
   // --- Handle Submission ---
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -215,7 +254,7 @@ const CreateAdmin: React.FC = () => {
 
     setIsSubmitting(true);
 
-    const adminData: Omit<Admin, '_id'> = {
+    const adminData: Omit<Admin, "_id"> = {
       ...formData,
       password: password, // Add the validated password
     };
@@ -224,16 +263,24 @@ const CreateAdmin: React.FC = () => {
       console.log("Creating Admin:", adminData);
       const response = await createAdmin(adminData); // Call your API function
 
-      if (response) { // Adjust based on API response
-        showSnackBar(`Administrador "${formData.firstname} ${formData.lastname}" creado exitosamente.`);
+      if (response) {
+        // Adjust based on API response
+        showSnackBar(
+          `Administrador "${formData.firstname} ${formData.lastname}" creado exitosamente.`,
+        );
         navigate("/admin/admins/read"); // Navigate to admin list on success
       } else {
-        throw new Error("La creación del administrador no devolvió una respuesta esperada.");
+        throw new Error(
+          "La creación del administrador no devolvió una respuesta esperada.",
+        );
       }
     } catch (err: any) {
       console.error("Failed to create admin:", err);
       // Extract specific error message (e.g., for duplicate username/email) if API provides it
-      const message = err.response?.data?.message || err.message || "Error al crear el administrador.";
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        "Error al crear el administrador.";
       setErrorSubmit(message); // Show API error in Alert
       showSnackBar(message);
     } finally {
@@ -246,7 +293,6 @@ const CreateAdmin: React.FC = () => {
     navigate("/admin/admins/read"); // Navigate back to list
   };
 
-
   // --- Render Logic ---
   return (
     <>
@@ -254,7 +300,6 @@ const CreateAdmin: React.FC = () => {
       <Paper elevation={3} sx={{ p: { xs: 2, sm: 3 }, mt: 2 }}>
         <form onSubmit={handleSubmit} noValidate>
           <Grid2 container spacing={3}>
-
             {/* Personal Info */}
             <Grid2 size={{ xs: 12, sm: 6 }}>
               <TextField
@@ -294,8 +339,11 @@ const CreateAdmin: React.FC = () => {
                 fullWidth
                 disabled={isSubmitting}
                 error={!!formErrors.username}
-                helperText={formErrors.username || "Este será el nombre para iniciar sesión."}
-              // Add onBlur={handleUsernameCheck} for async validation if implemented
+                helperText={
+                  formErrors.username ||
+                  "Este será el nombre para iniciar sesión."
+                }
+                // Add onBlur={handleUsernameCheck} for async validation if implemented
               />
             </Grid2>
             <Grid2 size={{ xs: 12, sm: 6 }}>
@@ -310,7 +358,7 @@ const CreateAdmin: React.FC = () => {
                 disabled={isSubmitting}
                 error={!!formErrors.email}
                 helperText={formErrors.email}
-              // Add onBlur={handleEmailCheck} for async validation if implemented
+                // Add onBlur={handleEmailCheck} for async validation if implemented
               />
             </Grid2>
 
@@ -332,13 +380,22 @@ const CreateAdmin: React.FC = () => {
                 <Autocomplete
                   fullWidth
                   options={roles}
-                  getOptionLabel={(option) => option.area || ''}
-                  value={roles.find(role => role.area === formData.area) || null}
+                  getOptionLabel={(option) => option.area || ""}
+                  value={
+                    roles.find((role) => role.area === formData.area) || null
+                  }
                   onChange={(event, newValue) => {
-                    setFormData(prev => ({ ...prev, area: newValue?.area || '' }));
-                    if (formErrors.area) { setFormErrors(prev => ({ ...prev, area: '' })); }
+                    setFormData((prev) => ({
+                      ...prev,
+                      area: newValue?.area || "",
+                    }));
+                    if (formErrors.area) {
+                      setFormErrors((prev) => ({ ...prev, area: "" }));
+                    }
                   }}
-                  isOptionEqualToValue={(option, value) => option._id === value._id}
+                  isOptionEqualToValue={(option, value) =>
+                    option._id === value._id
+                  }
                   disabled={isLoadingRoles || isSubmitting}
                   renderInput={(params) => (
                     <TextField
@@ -346,19 +403,31 @@ const CreateAdmin: React.FC = () => {
                       label="Rol / Área"
                       required
                       error={!!formErrors.area || !!errorFetchingRoles}
-                      helperText={formErrors.area || errorFetchingRoles || (isLoadingRoles ? 'Cargando roles...' : '')}
+                      helperText={
+                        formErrors.area ||
+                        errorFetchingRoles ||
+                        (isLoadingRoles ? "Cargando roles..." : "")
+                      }
                     />
                   )}
                   // REMOVED renderOption
                   ListboxProps={{ style: { maxHeight: 250 } }}
                 />
-                <Tooltip title={formData.area ? `Ver permisos para ${formData.area}` : "Seleccione un rol para ver sus permisos"}>
+                <Tooltip
+                  title={
+                    formData.area
+                      ? `Ver permisos para ${formData.area}`
+                      : "Seleccione un rol para ver sus permisos"
+                  }
+                >
                   {/* Wrap IconButton in span for Tooltip when disabled */}
                   <span>
                     <IconButton
                       aria-label="Ver permisos del rol seleccionado"
                       onClick={handleViewSelectedRolePermissions} // Use the new handler
-                      disabled={!formData.area || isLoadingRoles || isSubmitting} // Disable if no role selected or loading/submitting
+                      disabled={
+                        !formData.area || isLoadingRoles || isSubmitting
+                      } // Disable if no role selected or loading/submitting
                       sx={{ mt: 1 }} // Align button vertically
                     >
                       <InfoOutlinedIcon />
@@ -373,7 +442,7 @@ const CreateAdmin: React.FC = () => {
               <TextField
                 name="password"
                 label="Contraseña"
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={handlePasswordChange}
                 required
@@ -402,7 +471,7 @@ const CreateAdmin: React.FC = () => {
               <TextField
                 name="passwordConfirm"
                 label="Confirmar Contraseña"
-                type={showPasswordConfirm ? 'text' : 'password'}
+                type={showPasswordConfirm ? "text" : "password"}
                 value={passwordConfirm}
                 onChange={handlePasswordConfirmChange}
                 required
@@ -419,7 +488,11 @@ const CreateAdmin: React.FC = () => {
                         onMouseDown={handleMouseDownPassword} // Reuse same mouse down handler
                         edge="end"
                       >
-                        {showPasswordConfirm ? <VisibilityOff /> : <Visibility />}
+                        {showPasswordConfirm ? (
+                          <VisibilityOff />
+                        ) : (
+                          <Visibility />
+                        )}
                       </IconButton>
                     </InputAdornment>
                   ),
@@ -442,7 +515,6 @@ const CreateAdmin: React.FC = () => {
               />
             </Grid2>
 
-
             {/* Submission Error Display */}
             {errorSubmit && (
               <Grid2 size={{ xs: 12 }}>
@@ -454,7 +526,12 @@ const CreateAdmin: React.FC = () => {
 
             {/* Action Buttons */}
             <Grid2 size={{ xs: 12 }}>
-              <Stack direction="row" justifyContent="flex-end" spacing={2} sx={{ mt: 2 }}>
+              <Stack
+                direction="row"
+                justifyContent="flex-end"
+                spacing={2}
+                sx={{ mt: 2 }}
+              >
                 <Button
                   type="button"
                   variant="outlined"
@@ -469,7 +546,11 @@ const CreateAdmin: React.FC = () => {
                   variant="contained"
                   color="primary"
                   disabled={isSubmitting || isLoadingRoles} // Disable if roles still loading or submitting
-                  startIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : null}
+                  startIcon={
+                    isSubmitting ? (
+                      <CircularProgress size={20} color="inherit" />
+                    ) : null
+                  }
                 >
                   {isSubmitting ? "Creando..." : "Crear Administrador"}
                 </Button>
@@ -477,12 +558,17 @@ const CreateAdmin: React.FC = () => {
             </Grid2>
           </Grid2>
         </form>
-      </Paper >
+      </Paper>
 
-      <Dialog open={permissionModalOpen} onClose={handleClosePermissionModal} maxWidth="sm" fullWidth>
+      <Dialog
+        open={permissionModalOpen}
+        onClose={handleClosePermissionModal}
+        maxWidth="sm"
+        fullWidth
+      >
         <DialogTitle>
-          Permisos para Rol: {roleToView?.area || ''}
-          <IconButton /* ... close button ... */ >
+          Permisos para Rol: {roleToView?.area || ""}
+          <IconButton /* ... close button ... */>
             <CloseIcon />
           </IconButton>
         </DialogTitle>

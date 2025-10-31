@@ -1,40 +1,40 @@
-import { useState, useEffect } from "react"
-import { withStyles } from "@mui/styles"
-import axios from "axios"
-import { useNavigate } from "react-router-dom"
-import Paper from "@mui/material/Paper"
-import Button from "@mui/material/Button"
-import Typography from "@mui/material/Typography"
-import IconButton from "@mui/material/IconButton"
-import Grid2 from "@mui/material/Grid"
-import Slider from "react-slick"
-import "slick-carousel/slick/slick.css"
-import "slick-carousel/slick/slick-theme.css"
-import useMediaQuery from "@mui/material/useMediaQuery"
-import DirectionsBikeIcon from "@mui/icons-material/DirectionsBike"
-import BusinessIcon from "@mui/icons-material/Business"
-import EditIcon from "@mui/icons-material/Edit"
-import { TextField, Theme, useTheme } from "@mui/material"
-import FormControl from "@mui/material/FormControl"
-import MenuItem from "@mui/material/MenuItem"
-import Select from "@mui/material/Select"
-import InputLabel from "@mui/material/InputLabel"
-import Switch from "@mui/material/Switch"
-import InputAdornment from "@mui/material/InputAdornment"
-import HighlightOffOutlinedIcon from "@mui/icons-material/HighlightOffOutlined"
-import AddIcon from "@mui/icons-material/Add"
-import DeleteIcon from "@mui/icons-material/Delete"
-import { generateServiceMessage } from "../../../utils/utils"
-import ReactQuill from "react-quill"
-import "react-quill/dist/quill.snow.css"
-import ServiceSearchBar from "components/searchBar/serviceSearchBar"
-import FloatingAddButton from "@components/floatingAddButton"
-import ArtUploader from "@apps/artist/artUploader"
-import CreateService from "@components/createService"
-import { makeStyles } from "tss-react/mui"
-import { useLoading, useSnackBar } from "@context/GlobalContext"
-import { getServicesByPrixer } from "./api"
-import { getPermissions } from "@api/admin.api"
+import { useState, useEffect } from "react";
+import { withStyles } from "@mui/styles";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import Paper from "@mui/material/Paper";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
+import Grid2 from "@mui/material/Grid";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import DirectionsBikeIcon from "@mui/icons-material/DirectionsBike";
+import BusinessIcon from "@mui/icons-material/Business";
+import EditIcon from "@mui/icons-material/Edit";
+import { TextField, Theme, useTheme } from "@mui/material";
+import FormControl from "@mui/material/FormControl";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import InputLabel from "@mui/material/InputLabel";
+import Switch from "@mui/material/Switch";
+import InputAdornment from "@mui/material/InputAdornment";
+import HighlightOffOutlinedIcon from "@mui/icons-material/HighlightOffOutlined";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { generateServiceMessage } from "../../../utils/utils";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import ServiceSearchBar from "components/searchBar/serviceSearchBar";
+import FloatingAddButton from "@components/floatingAddButton";
+import ArtUploader from "@apps/artist/artUploader";
+import CreateService from "@components/createService";
+import { makeStyles } from "tss-react/mui";
+import { useLoading, useSnackBar } from "@context/GlobalContext";
+import { getServicesByPrixer } from "./api";
+import { getPermissions } from "@api/admin.api";
 
 const IOSSwitch = withStyles((theme) => ({
   root: {
@@ -88,8 +88,8 @@ const IOSSwitch = withStyles((theme) => ({
       }}
       {...props}
     />
-  )
-})
+  );
+});
 
 const useStyles = makeStyles()((theme: Theme) => {
   return {
@@ -155,82 +155,82 @@ const useStyles = makeStyles()((theme: Theme) => {
       position: "relative",
       marginLeft: "95%",
     },
-  }
-})
+  };
+});
 
 export default function ServiceGrid2(props) {
-  const { classes, cx } = useStyles()
-  const { setLoading } = useLoading()
-  const { showSnackBar } = useSnackBar()
-  const permissions = getPermissions()
+  const { classes, cx } = useStyles();
+  const { setLoading } = useLoading();
+  const { showSnackBar } = useSnackBar();
+  const permissions = getPermissions();
 
-  const [tiles, setTiles] = useState([])
-  const [services, setServices] = useState([])
-  const navigate = useNavigate()
-  const view = window.location.pathname.slice(1)
-  const prixer = props.prixerUsername
-  const theme = useTheme()
-  const [openEdit, setOpenEdit] = useState()
-  const totalOrders = tiles?.length
-  const itemsPerPage = 30
+  const [tiles, setTiles] = useState([]);
+  const [services, setServices] = useState([]);
+  const navigate = useNavigate();
+  const view = window.location.pathname.slice(1);
+  const prixer = props.prixerUsername;
+  const theme = useTheme();
+  const [openEdit, setOpenEdit] = useState();
+  const totalOrders = tiles?.length;
+  const itemsPerPage = 30;
   // const noOfPages = Math.ceil(totalOrders / itemsPerPage)
-  const [pageNumber, setPageNumber] = useState(1)
-  const itemsToSkip = (pageNumber - 1) * itemsPerPage
-  const tilesv2 = tiles?.slice(itemsToSkip, itemsPerPage + itemsToSkip)
-  const isDesktop = useMediaQuery(theme.breakpoints.up("md"))
-  const isTab = useMediaQuery(theme.breakpoints.up("xs"))
-  const isMobile = useMediaQuery(theme.breakpoints.down("xs"))
-  const isnDesk = useMediaQuery(theme.breakpoints.down("md"))
-  const serviceAreas = ["Diseño", "Fotografía", "Artes Plásticas", "Otro"]
-  const [serviceOnEdit, setServiceOnEdit] = useState() //Data inicial
-  const [showFullDescription, setShowFullDescription] = useState([])
-  const [query, setQuery] = useState()
-  const [categories, setCategories] = useState()
-  const [images, setImages] = useState([]) // Imágenes visaulizadas
-  const [newImg, setNewImg] = useState([])
-  const [openArtFormDialog, setOpenArtFormDialog] = useState(false)
-  const [openShoppingCart, setOpenShoppingCart] = useState(false)
-  const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false)
-  const [createdService, setCreatedService] = useState(false)
+  const [pageNumber, setPageNumber] = useState(1);
+  const itemsToSkip = (pageNumber - 1) * itemsPerPage;
+  const tilesv2 = tiles?.slice(itemsToSkip, itemsPerPage + itemsToSkip);
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  const isTab = useMediaQuery(theme.breakpoints.up("xs"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
+  const isnDesk = useMediaQuery(theme.breakpoints.down("md"));
+  const serviceAreas = ["Diseño", "Fotografía", "Artes Plásticas", "Otro"];
+  const [serviceOnEdit, setServiceOnEdit] = useState(); //Data inicial
+  const [showFullDescription, setShowFullDescription] = useState([]);
+  const [query, setQuery] = useState();
+  const [categories, setCategories] = useState();
+  const [images, setImages] = useState([]); // Imágenes visaulizadas
+  const [newImg, setNewImg] = useState([]);
+  const [openArtFormDialog, setOpenArtFormDialog] = useState(false);
+  const [openShoppingCart, setOpenShoppingCart] = useState(false);
+  const [openServiceFormDialog, setOpenServiceFormDialog] = useState(false);
+  const [createdService, setCreatedService] = useState(false);
 
   const toggleDescription = (index) => {
-    const updatedShowFullDescription = [...showFullDescription]
-    updatedShowFullDescription[index] = !updatedShowFullDescription[index]
-    setShowFullDescription(updatedShowFullDescription)
-  }
+    const updatedShowFullDescription = [...showFullDescription];
+    updatedShowFullDescription[index] = !updatedShowFullDescription[index];
+    setShowFullDescription(updatedShowFullDescription);
+  };
 
   const readServices = async () => {
-    let response
+    let response;
     try {
       if (prixer === null || prixer === undefined) {
-        response = await getServicesByPrixer(prixer)
+        response = await getServicesByPrixer(prixer);
       } else {
-        response = await getServices()
+        response = await getServices();
       }
 
-      setTiles(response)
-      setServices(response)
+      setTiles(response);
+      setServices(response);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   useEffect(() => {
-    readServices()
-  }, [])
+    readServices();
+  }, []);
 
   if (props.createdService) {
   }
   useEffect(() => {
     if (props.createdService) {
-      readServices()
-      showSnackBar("¡Servicio creado exitosamente!")
-    } else return
-  }, [props.createdService])
+      readServices();
+      showSnackBar("¡Servicio creado exitosamente!");
+    } else return;
+  }, [props.createdService]);
 
   useEffect(() => {
     if (categories && query?.length > 0) {
-      const result = []
+      const result = [];
       services.map((tile) => {
         if (
           tile.serviceArea === categories &&
@@ -239,18 +239,18 @@ export default function ServiceGrid2(props) {
               .toLowerCase()
               .includes(
                 query.toLowerCase() ||
-                tile.serviceArea.toLowerCase().includes(query.toLowerCase())
+                  tile.serviceArea.toLowerCase().includes(query.toLowerCase()),
               ))
         ) {
-          result.push(tile)
+          result.push(tile);
         }
-      })
-      setTiles(result)
+      });
+      setTiles(result);
     } else if (categories !== undefined) {
-      const result = services.filter((tile) => tile.serviceArea === categories)
-      setTiles(result)
+      const result = services.filter((tile) => tile.serviceArea === categories);
+      setTiles(result);
     } else if (query?.length > 0) {
-      const result = []
+      const result = [];
       services.map((tile) => {
         if (
           tile.title.toLowerCase().includes(query.toLowerCase()) ||
@@ -258,204 +258,204 @@ export default function ServiceGrid2(props) {
             .toLowerCase()
             .includes(
               query.toLowerCase() ||
-              tile.serviceArea.toLowerCase().includes(query.toLowerCase())
+                tile.serviceArea.toLowerCase().includes(query.toLowerCase()),
             )
         ) {
-          result.push(tile)
+          result.push(tile);
         }
-      })
-      setTiles(result)
+      });
+      setTiles(result);
     } else {
-      setTiles(services)
+      setTiles(services);
     }
-  }, [query, categories])
+  }, [query, categories]);
 
   const updateService = async () => {
-    var formData = new FormData()
-    formData.append("_id", serviceOnEdit._id)
-    formData.append("title", serviceOnEdit.title)
-    formData.append("description", serviceOnEdit.description)
-    formData.append("serviceArea", serviceOnEdit.serviceArea)
-    formData.append("isLocal", serviceOnEdit.isLocal)
-    formData.append("isRemote", serviceOnEdit.isRemote)
+    var formData = new FormData();
+    formData.append("_id", serviceOnEdit._id);
+    formData.append("title", serviceOnEdit.title);
+    formData.append("description", serviceOnEdit.description);
+    formData.append("serviceArea", serviceOnEdit.serviceArea);
+    formData.append("isLocal", serviceOnEdit.isLocal);
+    formData.append("isRemote", serviceOnEdit.isRemote);
     if (serviceOnEdit.location !== ("" || undefined)) {
-      formData.append("location", serviceOnEdit.location)
+      formData.append("location", serviceOnEdit.location);
     }
     if (serviceOnEdit.productionTime !== ("" || undefined)) {
-      formData.append("productionTime", serviceOnEdit.productionTime)
+      formData.append("productionTime", serviceOnEdit.productionTime);
     }
-    formData.append("priceFrom", serviceOnEdit.publicPrice.from)
+    formData.append("priceFrom", serviceOnEdit.publicPrice.from);
     if (serviceOnEdit.publicPrice.to !== ("" || undefined)) {
-      formData.append("priceTo", serviceOnEdit.publicPrice.to)
+      formData.append("priceTo", serviceOnEdit.publicPrice.to);
     }
-    formData.append("userId", JSON.parse(localStorage.getItem("token")).id)
+    formData.append("userId", JSON.parse(localStorage.getItem("token")).id);
     formData.append(
       "prixerUsername",
-      JSON.parse(localStorage.getItem("token")).username
-    )
+      JSON.parse(localStorage.getItem("token")).username,
+    );
     formData.append(
       "prixer",
-      JSON.parse(localStorage.getItem("token")).prixerId
-    )
-    formData.append("active", serviceOnEdit.active || true)
+      JSON.parse(localStorage.getItem("token")).prixerId,
+    );
+    formData.append("active", serviceOnEdit.active || true);
 
     if (serviceOnEdit.sources.images.length > 0) {
       serviceOnEdit.sources.images.map((file) =>
-        formData.append("images", file.url)
-      )
+        formData.append("images", file.url),
+      );
     }
 
     if (newImg.length > 0) {
-      newImg.map((file) => formData.append("newServiceImages", file))
+      newImg.map((file) => formData.append("newServiceImages", file));
     }
 
     const base_url =
       import.meta.env.VITE_BACKEND_URL +
       "/service/updateMyService/" +
-      serviceOnEdit._id
-    const data = await axios.put(base_url, formData)
+      serviceOnEdit._id;
+    const data = await axios.put(base_url, formData);
     if (data.data.success) {
-      showSnackBar(data.data.message)
-      readServices()
+      showSnackBar(data.data.message);
+      readServices();
     } else {
       showSnackBar(
-        "Por favor vuelve a intentarlo, puede que exista algún inconveniente de conexión. Si aún no lo has hecho por favor inicia sesión."
-      )
+        "Por favor vuelve a intentarlo, puede que exista algún inconveniente de conexión. Si aún no lo has hecho por favor inicia sesión.",
+      );
     }
-  }
+  };
 
   const deleteService = async (id) => {
     const url =
-      import.meta.env.VITE_BACKEND_URL + "/service/deleteService/" + id
-    const serviceToDelete = await axios.put(url)
+      import.meta.env.VITE_BACKEND_URL + "/service/deleteService/" + id;
+    const serviceToDelete = await axios.put(url);
     if (serviceToDelete.data.success) {
-      showSnackBar(serviceToDelete.data.message)
-      readServices()
+      showSnackBar(serviceToDelete.data.message);
+      readServices();
     }
-  }
+  };
 
   const checkImages = async (tile) => {
-    const prevImg = []
+    const prevImg = [];
     await tile.sources.images.map((images) => {
-      prevImg.push(images.url)
-    })
-    setImages(prevImg)
-  }
+      prevImg.push(images.url);
+    });
+    setImages(prevImg);
+  };
 
   const adjustPrice = async (type, e) => {
-    const newPrice = serviceOnEdit.publicPrice
+    const newPrice = serviceOnEdit.publicPrice;
     if (type === "from") {
-      newPrice.from = e
+      newPrice.from = e;
     } else {
-      newPrice.to = e
+      newPrice.to = e;
     }
-    setServiceOnEdit({ ...serviceOnEdit, publicPrice: newPrice })
-  }
+    setServiceOnEdit({ ...serviceOnEdit, publicPrice: newPrice });
+  };
 
   const loadNewImage = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     if (images.length === 6) {
-      showSnackBar("Has alcanzado el máximo de imágenes (6).")
+      showSnackBar("Has alcanzado el máximo de imágenes (6).");
     } else {
-      const file = e.target.files[0]
-      const resizedString = await convertToBase64(file)
-      setImages([...images, { name: file.name, url: resizedString }])
-      setNewImg([...newImg, file])
+      const file = e.target.files[0];
+      const resizedString = await convertToBase64(file);
+      setImages([...images, { name: file.name, url: resizedString }]);
+      setNewImg([...newImg, file]);
     }
-  }
+  };
 
   const replaceImage = async (e, x, index) => {
     const filteredPrev = serviceOnEdit.sources.images.filter(
-      (prev) => prev.url !== x
-    )
-    setServiceOnEdit({ ...serviceOnEdit, sources: { images: filteredPrev } })
+      (prev) => prev.url !== x,
+    );
+    setServiceOnEdit({ ...serviceOnEdit, sources: { images: filteredPrev } });
 
-    const file = e.target.files[0]
-    const resizedString = await convertToBase64(file)
-    const prevImg = [...images]
-    prevImg[index] = resizedString
-    setImages(prevImg)
+    const file = e.target.files[0];
+    const resizedString = await convertToBase64(file);
+    const prevImg = [...images];
+    prevImg[index] = resizedString;
+    setImages(prevImg);
 
     if (newImg.length > 0) {
-      const filteredNewImg = newImg.filter((img) => img.name !== x.name)
-      setNewImg([...filteredNewImg, file])
+      const filteredNewImg = newImg.filter((img) => img.name !== x.name);
+      setNewImg([...filteredNewImg, file]);
     } else {
-      setNewImg([...newImg, file])
+      setNewImg([...newImg, file]);
     }
-  }
+  };
 
   const deleteImg = async (x, i2) => {
     const filteredPrev = serviceOnEdit.sources.images.filter(
-      (prev) => prev.url !== x
-    )
-    setServiceOnEdit({ ...serviceOnEdit, sources: { images: filteredPrev } })
+      (prev) => prev.url !== x,
+    );
+    setServiceOnEdit({ ...serviceOnEdit, sources: { images: filteredPrev } });
     if (newImg.length > 0) {
-      const filteredNewImg = newImg.filter((img) => img.name !== x.name)
-      setNewImg(filteredNewImg)
+      const filteredNewImg = newImg.filter((img) => img.name !== x.name);
+      setNewImg(filteredNewImg);
     }
-    const filteredImg = images.filter((img) => img !== x)
-    setImages(filteredImg)
-  }
+    const filteredImg = images.filter((img) => img !== x);
+    setImages(filteredImg);
+  };
 
   const convertToBase64 = (blob) => {
     return new Promise((resolve) => {
-      var reader = new FileReader()
+      var reader = new FileReader();
       reader.onload = function () {
-        resolve(reader.result)
-      }
-      reader.readAsDataURL(blob)
-    })
-  }
+        resolve(reader.result);
+      };
+      reader.readAsDataURL(blob);
+    });
+  };
 
   const handleChangeIsLocal = () => {
     setServiceOnEdit({
       ...serviceOnEdit,
       isLocal: !serviceOnEdit.isLocal,
-    })
-  }
+    });
+  };
 
   const handleChangeIsRemote = () => {
     setServiceOnEdit({
       ...serviceOnEdit,
       isRemote: !serviceOnEdit.isRemote,
-    })
-  }
+    });
+  };
 
   const RenderHTML = ({ htmlString }) => {
-    return <div dangerouslySetInnerHTML={{ __html: htmlString }} />
-  }
+    return <div dangerouslySetInnerHTML={{ __html: htmlString }} />;
+  };
 
   const handleEditorChange = (value) => {
     setServiceOnEdit((prevState) => ({
       ...prevState,
       description: value,
-    }))
-  }
+    }));
+  };
 
   const setVisibleService = async (service, event) => {
-    setLoading(true)
+    setLoading(true);
     const base_url =
-      import.meta.env.VITE_BACKEND_URL + "/service/disable/" + service._id
-    service.visible = event
+      import.meta.env.VITE_BACKEND_URL + "/service/disable/" + service._id;
+    service.visible = event;
     const response = await axios.put(
       base_url,
       { visible: event, adminToken: localStorage.getItem("adminTokenV") },
-      { withCredentials: true }
-    )
-    showSnackBar("Servicio modificado exitosamente")
-    readServices()
-    setLoading(false)
-  }
+      { withCredentials: true },
+    );
+    showSnackBar("Servicio modificado exitosamente");
+    readServices();
+    setLoading(false);
+  };
 
   const checkPhone = async (service) => {
-    const base_url = import.meta.env.VITE_BACKEND_URL + "/prixer/read"
-    const prixer = await axios.post(base_url, { username: service.prixer })
-    console.log(prixer)
+    const base_url = import.meta.env.VITE_BACKEND_URL + "/prixer/read";
+    const prixer = await axios.post(base_url, { username: service.prixer });
+    console.log(prixer);
     await window.open(
       utils.generateServiceMessage(service, prixer.data.phone),
-      "_blank"
-    )
-  }
+      "_blank",
+    );
+  };
 
   const settings = {
     slidesToShow: (isDesktop && 1) || (isMobile && 1) || (isTab && 1),
@@ -467,7 +467,7 @@ export default function ServiceGrid2(props) {
     infinite: true,
     dots: true,
     adaptiveHeight: true,
-  }
+  };
 
   return (
     <>
@@ -515,10 +515,10 @@ export default function ServiceGrid2(props) {
                   style={{ display: "flex", flexDirection: "row" }}
                 >
                   {isnDesk &&
-                    JSON.parse(localStorage.getItem("token")) &&
-                    JSON.parse(localStorage.getItem("token")).username ===
+                  JSON.parse(localStorage.getItem("token")) &&
+                  JSON.parse(localStorage.getItem("token")).username ===
                     prixer &&
-                    openEdit === i ? (
+                  openEdit === i ? (
                     <Button
                       style={{
                         backgroundColor: "#d33f49",
@@ -527,8 +527,8 @@ export default function ServiceGrid2(props) {
                         marginLeft: 10,
                       }}
                       onClick={() => {
-                        updateService()
-                        setOpenEdit(undefined)
+                        updateService();
+                        setOpenEdit(undefined);
                       }}
                     >
                       Guardar
@@ -536,7 +536,7 @@ export default function ServiceGrid2(props) {
                   ) : (
                     JSON.parse(localStorage.getItem("token")) &&
                     JSON.parse(localStorage.getItem("token")).username ===
-                    prixer &&
+                      prixer &&
                     isnDesk && (
                       <div
                         style={{
@@ -550,9 +550,9 @@ export default function ServiceGrid2(props) {
                         <IconButton
                           color="primary"
                           onClick={() => {
-                            setOpenEdit(i)
-                            setServiceOnEdit(tile)
-                            checkImages(tile)
+                            setOpenEdit(i);
+                            setServiceOnEdit(tile);
+                            checkImages(tile);
                           }}
                         >
                           <EditIcon />
@@ -561,7 +561,7 @@ export default function ServiceGrid2(props) {
                         <IconButton
                           color="primary"
                           onClick={() => {
-                            deleteService(tile._id)
+                            deleteService(tile._id);
                           }}
                         >
                           <DeleteIcon />
@@ -594,7 +594,7 @@ export default function ServiceGrid2(props) {
                               setServiceOnEdit({
                                 ...serviceOnEdit,
                                 active: e.target.value,
-                              })
+                              });
                             }}
                             color="primary"
                           />
@@ -628,7 +628,7 @@ export default function ServiceGrid2(props) {
                                     accept="image/*"
                                     hidden
                                     onChange={(a) => {
-                                      replaceImage(a, img, i2)
+                                      replaceImage(a, img, i2);
                                     }}
                                   />
                                   <EditIcon />
@@ -636,7 +636,7 @@ export default function ServiceGrid2(props) {
                                 <IconButton
                                   className={classes.buttonImgLoader}
                                   onClick={(d) => {
-                                    deleteImg(img, i2)
+                                    deleteImg(img, i2);
                                   }}
                                 >
                                   <HighlightOffOutlinedIcon />
@@ -673,7 +673,7 @@ export default function ServiceGrid2(props) {
                             accept="image/*"
                             hidden
                             onChange={(a) => {
-                              loadNewImage(a)
+                              loadNewImage(a);
                             }}
                           />
                           <AddIcon fontSize="large" />
@@ -738,7 +738,7 @@ export default function ServiceGrid2(props) {
                             setServiceOnEdit({
                               ...serviceOnEdit,
                               title: e.target.value,
-                            })
+                            });
                           }}
                         />
                       ) : (
@@ -747,10 +747,10 @@ export default function ServiceGrid2(props) {
                         </Typography>
                       )}
                       {JSON.parse(localStorage.getItem("token")) &&
-                        JSON.parse(localStorage.getItem("token")).username ===
+                      JSON.parse(localStorage.getItem("token")).username ===
                         tile.prixer &&
-                        !isnDesk &&
-                        openEdit === i ? (
+                      !isnDesk &&
+                      openEdit === i ? (
                         <Button
                           style={{
                             backgroundColor: "#d33f49",
@@ -759,8 +759,8 @@ export default function ServiceGrid2(props) {
                             marginLeft: 10,
                           }}
                           onClick={() => {
-                            updateService()
-                            setOpenEdit(undefined)
+                            updateService();
+                            setOpenEdit(undefined);
                           }}
                         >
                           Guardar
@@ -768,15 +768,15 @@ export default function ServiceGrid2(props) {
                       ) : (
                         JSON.parse(localStorage.getItem("token")) &&
                         JSON.parse(localStorage.getItem("token")).username ===
-                        tile.prixer &&
+                          tile.prixer &&
                         !isnDesk && (
                           <div>
                             <IconButton
                               color="primary"
                               onClick={() => {
-                                setOpenEdit(i)
-                                setServiceOnEdit(tile)
-                                checkImages(tile)
+                                setOpenEdit(i);
+                                setServiceOnEdit(tile);
+                                checkImages(tile);
                               }}
                             >
                               <EditIcon />
@@ -785,7 +785,7 @@ export default function ServiceGrid2(props) {
                             <IconButton
                               color="primary"
                               onClick={() => {
-                                deleteService(tile._id)
+                                deleteService(tile._id);
                               }}
                             >
                               <DeleteIcon />
@@ -804,7 +804,7 @@ export default function ServiceGrid2(props) {
                           padding: "1px 5px",
                         }}
                         onClick={() => {
-                          navigate({ pathname: "/prixer=" + tile.prixer })
+                          navigate({ pathname: "/prixer=" + tile.prixer });
                         }}
                       >
                         de {tile.prixer}
@@ -833,7 +833,7 @@ export default function ServiceGrid2(props) {
                               setServiceOnEdit({
                                 ...serviceOnEdit,
                                 serviceArea: e.target.value,
-                              })
+                              });
                             }}
                           >
                             <MenuItem value="">
@@ -859,7 +859,7 @@ export default function ServiceGrid2(props) {
                               setServiceOnEdit({
                                 ...serviceOnEdit,
                                 productionTime: e.target.value,
-                              })
+                              });
                             }}
                           />
                         </FormControl>
@@ -998,7 +998,7 @@ export default function ServiceGrid2(props) {
                           setServiceOnEdit({
                             ...serviceOnEdit,
                             location: e.target.value,
-                          })
+                          });
                         }}
                         style={{ marginTop: 10 }}
                         minRows={3}
@@ -1026,7 +1026,7 @@ export default function ServiceGrid2(props) {
                           type="Number"
                           value={serviceOnEdit?.publicPrice?.from}
                           onChange={(e) => {
-                            adjustPrice("from", e.target.value)
+                            adjustPrice("from", e.target.value);
                           }}
                           InputProps={{
                             startAdornment: (
@@ -1042,7 +1042,7 @@ export default function ServiceGrid2(props) {
                           type="Number"
                           value={serviceOnEdit.publicPrice?.to}
                           onChange={(e) => {
-                            adjustPrice("to", e.target.value)
+                            adjustPrice("to", e.target.value);
                           }}
                           InputProps={{
                             startAdornment: (
@@ -1082,15 +1082,15 @@ export default function ServiceGrid2(props) {
                         onClick={(e) => {
                           window.open(
                             utils.generateLikeServiceMessage(tile),
-                            "_blank"
-                          )
+                            "_blank",
+                          );
                         }}
                       >
                         Compartir
                       </Button>
                       {JSON.parse(localStorage.getItem("token")) ? (
                         JSON.parse(localStorage.getItem("token")).username !==
-                        prixer && (
+                          prixer && (
                           <Button
                             style={{
                               backgroundColor: "#d33f49",
@@ -1100,7 +1100,7 @@ export default function ServiceGrid2(props) {
                               marginTop: 20,
                             }}
                             onClick={(e) => {
-                              checkPhone(tile)
+                              checkPhone(tile);
                             }}
                           >
                             Contactar
@@ -1116,7 +1116,7 @@ export default function ServiceGrid2(props) {
                             marginTop: 20,
                           }}
                           onClick={(e) => {
-                            checkPhone(tile)
+                            checkPhone(tile);
                           }}
                         >
                           Contactar
@@ -1175,5 +1175,5 @@ export default function ServiceGrid2(props) {
         />
       )} */}
     </>
-  )
+  );
 }

@@ -1,4 +1,6 @@
-export const getImageSize = (url: string): Promise<{ width: number; height: number }> => {
+export const getImageSize = (
+  url: string,
+): Promise<{ width: number; height: number }> => {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => {
@@ -12,7 +14,9 @@ export const getImageSize = (url: string): Promise<{ width: number; height: numb
   });
 };
 
-export const getUrlParams = (excludedParams: string[] = []): URLSearchParams => {
+export const getUrlParams = (
+  excludedParams: string[] = [],
+): URLSearchParams => {
   const originalSearchParams = new URLSearchParams(window.location.search);
   const filteredParams = new URLSearchParams();
 
@@ -23,4 +27,4 @@ export const getUrlParams = (excludedParams: string[] = []): URLSearchParams => 
   });
 
   return filteredParams;
-}
+};

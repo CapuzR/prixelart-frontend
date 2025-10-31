@@ -7,10 +7,10 @@ import React, {
   forwardRef,
   Dispatch,
   SetStateAction,
-} from "react"
+} from "react";
 
-import { useSnackBar, usePrixerCreator, useUser } from "context/GlobalContext"
-import { Art } from "../../../types/art.types"
+import { useSnackBar, usePrixerCreator, useUser } from "context/GlobalContext";
+import { Art } from "../../../types/art.types";
 
 import {
   Box,
@@ -41,41 +41,41 @@ import {
   Slide,
   Container,
   Snackbar,
-} from "@mui/material"
-import { TransitionProps } from "@mui/material/transitions"
-import DeleteIcon from "@mui/icons-material/Delete"
+} from "@mui/material";
+import { TransitionProps } from "@mui/material/transitions";
+import DeleteIcon from "@mui/icons-material/Delete";
 // import Title from '@apps/admin/components/Title'; // Asumiendo que este componente es para el Dialog
-import Grid2 from "@mui/material/Grid"
+import Grid2 from "@mui/material/Grid";
 
-import BrokenImageIcon from "@mui/icons-material/BrokenImage"
-import CloseIcon from "@mui/icons-material/Close"
-import AppBar from "@mui/material/AppBar"
-import Toolbar from "@mui/material/Toolbar"
+import BrokenImageIcon from "@mui/icons-material/BrokenImage";
+import CloseIcon from "@mui/icons-material/Close";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
 
-import axios from "axios"
-import { PrixResponse } from "types/prixResponse.types"
+import axios from "axios";
+import { PrixResponse } from "types/prixResponse.types";
 
-import * as tus from "tus-js-client"
+import * as tus from "tus-js-client";
 import ReactCrop, {
   centerCrop,
   makeAspectCrop,
   Crop,
   PixelCrop,
-} from "react-image-crop"
-import "react-image-crop/dist/ReactCrop.css"
-import { BACKEND_URL } from "@api/utils.api"
-import PhotoCameraBackIcon from "@mui/icons-material/PhotoCameraBack"
-import util from "@utils/utils"
-import { nanoid } from "nanoid"
+} from "react-image-crop";
+import "react-image-crop/dist/ReactCrop.css";
+import { BACKEND_URL } from "@api/utils.api";
+import PhotoCameraBackIcon from "@mui/icons-material/PhotoCameraBack";
+import util from "@utils/utils";
+import { nanoid } from "nanoid";
 interface ImageUploadState {
-  id: string
-  url: string
-  file?: File
-  progress?: number
-  error?: string
+  id: string;
+  url: string;
+  file?: File;
+  progress?: number;
+  error?: string;
 }
 
-type SourceImageFieldName = "sourceArtImage"
+type SourceImageFieldName = "sourceArtImage";
 
 const ART_IMAGE_FIELD_CONFIG: Record<
   SourceImageFieldName,
@@ -92,7 +92,7 @@ const ART_IMAGE_FIELD_CONFIG: Record<
   // vertical2: { label: "3:4 Vertical", aspect: 3 / 4, artFieldName: "" },
   // horizonta3: { label: "3:2 Horizontal", aspect: 3 / 2, artFieldName: "" },
   // vertical3: { label: "2:3 Vertical", aspect: 2 / 3, artFieldName: "" },
-}
+};
 
 interface ArtFormDataState
   extends Pick<
@@ -111,17 +111,17 @@ interface ArtFormDataState
     | "comission"
     | "crops"
   > {
-  artist?: string
-  year?: string
-  medium?: string
-  dimensions?: string
+  artist?: string;
+  year?: string;
+  medium?: string;
+  dimensions?: string;
 }
 
 interface ArtValidationErrors {
-  [key: string]: string | undefined
-  mainImage?: string
-  detailImage1?: string
-  detailImage2?: string
+  [key: string]: string | undefined;
+  mainImage?: string;
+  detailImage1?: string;
+  detailImage2?: string;
 }
 
 // --- Initial State ---
@@ -143,16 +143,16 @@ const initialArtFormDataState: ArtFormDataState = {
   exclusive: "standard",
   comission: 10,
   crops: [],
-}
+};
 
-const photoIsos: string[] = ["100", "200", "400", "800", "1600", "3200"]
+const photoIsos: string[] = ["100", "200", "400", "800", "1600", "3200"];
 const artTypesList: string[] = [
   "Diseño",
   "Foto",
   "Pintura",
   "Arte plástica",
   "Ilustración Digital",
-]
+];
 const categoriesList: string[] = [
   "Abstracto",
   "Animales",
@@ -189,52 +189,52 @@ const categoriesList: string[] = [
   "Transportes",
   "Vehículos",
   "Viajes",
-]
+];
 const preTags: string[] = [
   "arte",
   "fotografia",
   "pintura",
   "diseño",
   "abstracto",
-]
+];
 
 async function canvasPreview(
   image: HTMLImageElement,
   canvas: HTMLCanvasElement,
   crop: PixelCrop,
   scale = 1,
-  rotate = 0
+  rotate = 0,
 ) {
-  const ctx = canvas.getContext("2d")
+  const ctx = canvas.getContext("2d");
   if (!ctx) {
-    throw new Error("No 2d context")
+    throw new Error("No 2d context");
   }
-  const scaleX = image.naturalWidth / image.width
-  const scaleY = image.naturalHeight / image.height
-  const pixelRatio = window.devicePixelRatio || 1
-  canvas.width = Math.floor(crop.width * scaleX * pixelRatio)
-  canvas.height = Math.floor(crop.height * scaleY * pixelRatio)
-  ctx.scale(pixelRatio, pixelRatio)
-  ctx.imageSmoothingQuality = "high"
-  const cropX = crop.x * scaleX
-  const cropY = crop.y * scaleY
-  const rotateRads = (rotate * Math.PI) / 180
-  const centerX = image.naturalWidth / 2
-  const centerY = image.naturalHeight / 2
-  ctx.save()
-  ctx.translate(-cropX, -cropY)
-  ctx.translate(centerX, centerY)
-  ctx.rotate(rotateRads)
-  ctx.scale(scale, scale)
-  ctx.translate(-centerX, -centerY)
-  ctx.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight)
-  ctx.restore()
+  const scaleX = image.naturalWidth / image.width;
+  const scaleY = image.naturalHeight / image.height;
+  const pixelRatio = window.devicePixelRatio || 1;
+  canvas.width = Math.floor(crop.width * scaleX * pixelRatio);
+  canvas.height = Math.floor(crop.height * scaleY * pixelRatio);
+  ctx.scale(pixelRatio, pixelRatio);
+  ctx.imageSmoothingQuality = "high";
+  const cropX = crop.x * scaleX;
+  const cropY = crop.y * scaleY;
+  const rotateRads = (rotate * Math.PI) / 180;
+  const centerX = image.naturalWidth / 2;
+  const centerY = image.naturalHeight / 2;
+  ctx.save();
+  ctx.translate(-cropX, -cropY);
+  ctx.translate(centerX, centerY);
+  ctx.rotate(rotateRads);
+  ctx.scale(scale, scale);
+  ctx.translate(-centerX, -centerY);
+  ctx.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight);
+  ctx.restore();
 }
 
 function centerAspectCrop(
   mediaWidth: number,
   mediaHeight: number,
-  aspect: number
+  aspect: number,
 ): Crop {
   if (aspect <= 0) {
     return {
@@ -243,7 +243,7 @@ function centerAspectCrop(
       height: 100,
       x: 0,
       y: 0,
-    }
+    };
   }
   return centerCrop(
     makeAspectCrop(
@@ -253,53 +253,53 @@ function centerAspectCrop(
       },
       aspect,
       mediaWidth,
-      mediaHeight
+      mediaHeight,
     ),
     mediaWidth,
-    mediaHeight
-  )
+    mediaHeight,
+  );
 }
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & { children: React.ReactElement<any, any> },
-  ref: React.Ref<unknown>
+  ref: React.Ref<unknown>,
 ) {
-  return <Slide direction="up" ref={ref} {...props} />
-})
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 interface ArtUploaderProps {
-  openArtFormDialog: boolean
-  setOpenArtFormDialog: (x: boolean) => void
+  openArtFormDialog: boolean;
+  setOpenArtFormDialog: (x: boolean) => void;
 }
 
 export default function ArtUploader({
   openArtFormDialog,
   setOpenArtFormDialog,
 }: ArtUploaderProps) {
-  const { showSnackBar: showSnackBarFromContext } = useSnackBar()
-  const showSnackBarRef = useRef(showSnackBarFromContext)
+  const { showSnackBar: showSnackBarFromContext } = useSnackBar();
+  const showSnackBarRef = useRef(showSnackBarFromContext);
   // const { setArtModal, uploadArt } = usePrixerCreator()
-  const { user } = useUser()
+  const { user } = useUser();
 
   useEffect(() => {
-    showSnackBarRef.current = showSnackBarFromContext
-  }, [showSnackBarFromContext])
+    showSnackBarRef.current = showSnackBarFromContext;
+  }, [showSnackBarFromContext]);
 
-  const formRef = useRef<HTMLFormElement>(null)
+  const formRef = useRef<HTMLFormElement>(null);
 
   const [formData, setFormData] = useState<ArtFormDataState>(
-    initialArtFormDataState
-  )
+    initialArtFormDataState,
+  );
 
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [validationErrors, setValidationErrors] =
-    useState<ArtValidationErrors | null>(null)
+    useState<ArtValidationErrors | null>(null);
 
-  const [maxPrintHeightCm, setMaxPrintHeightCm] = useState<string>("")
-  const [maxPrintWidthCm, setMaxPrintWidthCm] = useState<string>("")
-  const [requiredPhotoMeta, setRequiredPhotoMeta] = useState<boolean>(false)
+  const [maxPrintHeightCm, setMaxPrintHeightCm] = useState<string>("");
+  const [maxPrintWidthCm, setMaxPrintWidthCm] = useState<string>("");
+  const [requiredPhotoMeta, setRequiredPhotoMeta] = useState<boolean>(false);
   const [sourceImageState, setSourceImageState] =
-    useState<ImageUploadState | null>(null)
+    useState<ImageUploadState | null>(null);
 
   // Actualizar imageStateSetters e imageStates
   const imageStateSetters: Record<
@@ -307,40 +307,40 @@ export default function ArtUploader({
     React.Dispatch<React.SetStateAction<ImageUploadState | null>>
   > = {
     sourceArtImage: setSourceImageState,
-  }
+  };
   const imageStates: Record<SourceImageFieldName, ImageUploadState | null> = {
     sourceArtImage: sourceImageState,
-  }
+  };
 
   const [imageToCropDetails, setImageToCropDetails] = useState<{
-    originalFile: File
-    targetField: SourceImageFieldName
-  } | null>(null)
+    originalFile: File;
+    targetField: SourceImageFieldName;
+  } | null>(null);
   const [imageSrcForCropper, setImageSrcForCropper] = useState<string | null>(
-    null
-  )
-  const [crop, setCrop] = useState<Crop>()
-  const [completedCrop, setCompletedCrop] = useState<PixelCrop>()
-  const [cropModalOpen, setCropModalOpen] = useState<boolean>(false)
-  const imgRef = useRef<HTMLImageElement | null>(null)
-  const previewCanvasRef = useRef<HTMLCanvasElement | null>(null)
+    null,
+  );
+  const [crop, setCrop] = useState<Crop>();
+  const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
+  const [cropModalOpen, setCropModalOpen] = useState<boolean>(false);
+  const imgRef = useRef<HTMLImageElement | null>(null);
+  const previewCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
     if (openArtFormDialog) {
-      setFormData(initialArtFormDataState)
-      setValidationErrors(null)
-      setMaxPrintHeightCm("")
-      setMaxPrintWidthCm("")
-      setRequiredPhotoMeta(false)
+      setFormData(initialArtFormDataState);
+      setValidationErrors(null);
+      setMaxPrintHeightCm("");
+      setMaxPrintWidthCm("");
+      setRequiredPhotoMeta(false);
     }
-  }, [openArtFormDialog])
+  }, [openArtFormDialog]);
 
   useEffect(() => {
     if (formData.artType === "Foto") {
-      handleMaxPrintCalc()
+      handleMaxPrintCalc();
     } else {
-      setMaxPrintWidthCm("")
-      setMaxPrintHeightCm("")
+      setMaxPrintWidthCm("");
+      setMaxPrintHeightCm("");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -349,95 +349,99 @@ export default function ArtUploader({
     formData.originalPhotoPpi,
     formData.originalPhotoIso,
     formData.artType,
-  ])
+  ]);
 
   // --- Manejadores de Recorte e Imagen ---
   const onImageLoadInCropper = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    imgRef.current = e.currentTarget
-    const { width, height } = e.currentTarget
+    imgRef.current = e.currentTarget;
+    const { width, height } = e.currentTarget;
     if (imageToCropDetails) {
       const aspect =
-        ART_IMAGE_FIELD_CONFIG[imageToCropDetails.targetField].aspect
-      setCrop(centerAspectCrop(width, height, aspect))
+        ART_IMAGE_FIELD_CONFIG[imageToCropDetails.targetField].aspect;
+      setCrop(centerAspectCrop(width, height, aspect));
     }
-  }
+  };
 
   const openCropperWithFile = (
     file: File,
-    targetField: SourceImageFieldName
+    targetField: SourceImageFieldName,
   ) => {
-    setImageToCropDetails({ originalFile: file, targetField })
-    const reader = new FileReader()
+    setImageToCropDetails({ originalFile: file, targetField });
+    const reader = new FileReader();
     reader.addEventListener("load", () => {
-      setImageSrcForCropper(reader.result?.toString() || null)
-      setCropModalOpen(true)
-    })
-    reader.readAsDataURL(file)
-  }
+      setImageSrcForCropper(reader.result?.toString() || null);
+      setCropModalOpen(true);
+    });
+    reader.readAsDataURL(file);
+  };
 
   const handleFileSelectForField = (
     event: ChangeEvent<HTMLInputElement>,
-    fieldName: SourceImageFieldName
+    fieldName: SourceImageFieldName,
   ) => {
     if (event.target.files && event.target.files.length > 0) {
-      const file = event.target.files[0]
+      const file = event.target.files[0];
       if (file.size > 15 * 1024 * 1024) {
-        showSnackBarRef.current("El archivo es muy grande. Máximo 15MB.")
-        if (event.target) (event.target as HTMLInputElement).value = ""
-        return
+        showSnackBarRef.current("El archivo es muy grande. Máximo 15MB.");
+        if (event.target) (event.target as HTMLInputElement).value = "";
+        return;
       }
       if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
-        showSnackBarRef.current("Formato no permitido. Solo JPG, PNG, WEBP.")
-        if (event.target) (event.target as HTMLInputElement).value = ""
-        return
+        showSnackBarRef.current("Formato no permitido. Solo JPG, PNG, WEBP.");
+        if (event.target) (event.target as HTMLInputElement).value = "";
+        return;
       }
-      openCropperWithFile(file, fieldName)
+      openCropperWithFile(file, fieldName);
     }
     // No resetear event.target.value aquí si se quiere mantener la selección en caso de error de validación antes del cropper
-  }
+  };
 
   const closeAndResetCropper = () => {
-    setCropModalOpen(false)
-    setImageSrcForCropper(null)
-    setImageToCropDetails(null)
-    setCrop(undefined)
-    setCompletedCrop(undefined)
-    if (imgRef.current) imgRef.current = null
-  }
+    setCropModalOpen(false);
+    setImageSrcForCropper(null);
+    setImageToCropDetails(null);
+    setCrop(undefined);
+    setCompletedCrop(undefined);
+    if (imgRef.current) imgRef.current = null;
+  };
 
   const handleConfirmCropAndUpload = async () => {
-    const showSnackBar = showSnackBarRef.current
+    const showSnackBar = showSnackBarRef.current;
     if (
       !completedCrop ||
       !imgRef.current ||
       !previewCanvasRef.current ||
       !imageToCropDetails
     ) {
-      showSnackBar("Error: No se pudo procesar el recorte.")
-      return
+      showSnackBar("Error: No se pudo procesar el recorte.");
+      return;
     }
-    await canvasPreview(imgRef.current, previewCanvasRef.current, completedCrop)
+    await canvasPreview(
+      imgRef.current,
+      previewCanvasRef.current,
+      completedCrop,
+    );
     previewCanvasRef.current.toBlob(
       (blob) => {
         if (!blob) {
-          showSnackBar("Error: No se pudo crear el archivo WebP.")
-          return
+          showSnackBar("Error: No se pudo crear el archivo WebP.");
+          return;
         }
-        const { originalFile, targetField } = imageToCropDetails
-        let originalNameWithoutExtension = originalFile.name
-        const lastDotIndex = originalFile.name.lastIndexOf(".")
+        const { originalFile, targetField } = imageToCropDetails;
+        let originalNameWithoutExtension = originalFile.name;
+        const lastDotIndex = originalFile.name.lastIndexOf(".");
         if (lastDotIndex > 0)
           originalNameWithoutExtension = originalFile.name.substring(
             0,
-            lastDotIndex
-          )
-        const webpFileName = `${targetField}_${originalNameWithoutExtension.replace(/[^a-zA-Z0-9.]/g, "_")}_${Date.now()}.webp`
+            lastDotIndex,
+          );
+        const webpFileName = `${targetField}_${originalNameWithoutExtension.replace(/[^a-zA-Z0-9.]/g, "_")}_${Date.now()}.webp`;
         const croppedWebpFile = new File([blob], webpFileName, {
           type: "image/webp",
-        })
+        });
 
-        closeAndResetCropper()
-        const setImageState = imageStateSetters[targetField]
+        closeAndResetCropper();
+        const setImageState = imageStateSetters[targetField];
         if (setImageState) {
           setImageState({
             id: targetField,
@@ -445,18 +449,18 @@ export default function ArtUploader({
             file: croppedWebpFile,
             progress: 0,
             error: undefined,
-          })
-          startTusUpload(croppedWebpFile, targetField)
+          });
+          startTusUpload(croppedWebpFile, targetField);
         }
       },
       "image/webp",
-      0.85
-    )
-  }
+      0.85,
+    );
+  };
 
   const startTusUpload = (file: File, targetField: SourceImageFieldName) => {
-    const showSnackBar = showSnackBarRef.current
-    const setImageState = imageStateSetters[targetField]
+    const showSnackBar = showSnackBarRef.current;
+    const setImageState = imageStateSetters[targetField];
     const upload = new tus.Upload(file, {
       endpoint: `${BACKEND_URL}/files`,
       retryDelays: [0, 1000, 3000, 5000],
@@ -467,128 +471,128 @@ export default function ArtUploader({
         field: targetField,
       },
       onProgress: (bytesUploaded, bytesTotal) => {
-        const percentage = Math.floor((bytesUploaded / bytesTotal) * 100)
+        const percentage = Math.floor((bytesUploaded / bytesTotal) * 100);
         if (setImageState)
           setImageState((prev) =>
-            prev ? { ...prev, progress: percentage } : null
-          )
+            prev ? { ...prev, progress: percentage } : null,
+          );
       },
       onSuccess: async () => {
-        const tusUploadInstance = upload as any
-        let finalS3Url: string | null = null
-        
+        const tusUploadInstance = upload as any;
+        let finalS3Url: string | null = null;
+
         if (tusUploadInstance._req?._xhr?.getResponseHeader) {
           finalS3Url =
             tusUploadInstance._req._xhr.getResponseHeader("x-final-url") ||
-            tusUploadInstance._req._xhr.getResponseHeader("X-Final-URL")
+            tusUploadInstance._req._xhr.getResponseHeader("X-Final-URL");
         } else if (tusUploadInstance.xhr?.getResponseHeader) {
           finalS3Url =
             tusUploadInstance.xhr.getResponseHeader("x-final-url") ||
-            tusUploadInstance.xhr.getResponseHeader("X-Final-URL")
+            tusUploadInstance.xhr.getResponseHeader("X-Final-URL");
         }
         if (finalS3Url && finalS3Url.startsWith("https://https//")) {
-          finalS3Url = finalS3Url.replace("https://https//", "https://")
+          finalS3Url = finalS3Url.replace("https://https//", "https://");
         }
 
-        const imageUrl = finalS3Url || upload.url
+        const imageUrl = finalS3Url || upload.url;
 
         if (imageUrl && setImageState) {
           setImageState((prev) =>
             prev
               ? { ...prev, url: imageUrl, progress: 100, file: undefined }
-              : null
-          )
+              : null,
+          );
           showSnackBar(
-            `Imagen para ${ART_IMAGE_FIELD_CONFIG[targetField].label} subida.`
-          )
+            `Imagen para ${ART_IMAGE_FIELD_CONFIG[targetField].label} subida.`,
+          );
         } else {
-          const errorMsg = "Error al obtener URL"
+          const errorMsg = "Error al obtener URL";
           if (setImageState)
             setImageState((prev) =>
-              prev ? { ...prev, error: errorMsg, file: undefined } : null
-            )
+              prev ? { ...prev, error: errorMsg, file: undefined } : null,
+            );
           showSnackBar(
-            `Error al obtener URL para ${ART_IMAGE_FIELD_CONFIG[targetField].label}.`
-          )
+            `Error al obtener URL para ${ART_IMAGE_FIELD_CONFIG[targetField].label}.`,
+          );
         }
       },
       onError: (error) => {
-        const errorMsg = error.message || "Error desconocido"
+        const errorMsg = error.message || "Error desconocido";
         if (setImageState)
           setImageState((prev) =>
-            prev ? { ...prev, error: errorMsg, file: undefined } : null
-          )
+            prev ? { ...prev, error: errorMsg, file: undefined } : null,
+          );
         showSnackBar(
-          `Error al subir para ${ART_IMAGE_FIELD_CONFIG[targetField].label}: ${errorMsg}`
-        )
+          `Error al subir para ${ART_IMAGE_FIELD_CONFIG[targetField].label}: ${errorMsg}`,
+        );
       },
-    })
-    upload.start()
-  }
+    });
+    upload.start();
+  };
 
   const handleRemoveImageField = (fieldName: SourceImageFieldName) => {
-    const setImageState = imageStateSetters[fieldName]
+    const setImageState = imageStateSetters[fieldName];
     if (setImageState) {
-      setImageState(null)
+      setImageState(null);
       showSnackBarRef.current(
-        `Imagen para ${ART_IMAGE_FIELD_CONFIG[fieldName].label} eliminada.`
-      )
+        `Imagen para ${ART_IMAGE_FIELD_CONFIG[fieldName].label} eliminada.`,
+      );
     }
-  }
+  };
 
   const handleInputChange = (
     event:
       | ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
       | SelectChangeEvent<string>,
-    fieldName?: keyof ArtFormDataState
+    fieldName?: keyof ArtFormDataState,
   ) => {
-    let name: keyof ArtFormDataState | string
-    let value: string | boolean
+    let name: keyof ArtFormDataState | string;
+    let value: string | boolean;
 
     if ("target" in event && event.target && "name" in event.target) {
-      const target = event.target as HTMLInputElement | HTMLTextAreaElement
-      name = target.name as keyof ArtFormDataState
+      const target = event.target as HTMLInputElement | HTMLTextAreaElement;
+      name = target.name as keyof ArtFormDataState;
 
       if (target instanceof HTMLInputElement && target.type === "checkbox") {
-        value = target.checked
+        value = target.checked;
       } else {
-        value = target.value
+        value = target.value;
       }
     } else if (fieldName && "target" in event) {
-      name = fieldName
-      value = (event as SelectChangeEvent<string>).target.value
+      name = fieldName;
+      value = (event as SelectChangeEvent<string>).target.value;
     } else {
       console.error(
         "ArtUploader - handleInputChange: Evento no manejado o fieldName faltante para Select.",
-        event
-      )
-      return
+        event,
+      );
+      return;
     }
 
-    setFormData((prev) => ({ ...prev, [name as string]: value }))
+    setFormData((prev) => ({ ...prev, [name as string]: value }));
 
     if (validationErrors?.[name as string]) {
       setValidationErrors((prev) => {
-        if (!prev) return null
-        const newErrors = { ...prev }
-        delete newErrors[name as string]
-        return Object.keys(newErrors).length > 0 ? newErrors : null
-      })
+        if (!prev) return null;
+        const newErrors = { ...prev };
+        delete newErrors[name as string];
+        return Object.keys(newErrors).length > 0 ? newErrors : null;
+      });
     }
-  }
+  };
 
   const handleTagsChange = (
     event: React.SyntheticEvent,
-    newValue: string[]
+    newValue: string[],
   ) => {
-    setFormData((prev) => ({ ...prev, tags: newValue }))
-  }
+    setFormData((prev) => ({ ...prev, tags: newValue }));
+  };
 
   const handleMaxPrintCalc = () => {
-    const showSnackBar = showSnackBarRef.current
-    const widthNum = parseInt(formData?.originalPhotoWidth, 10)
-    const heightNum = parseInt(formData?.originalPhotoHeight, 10)
-    const ppiNum = parseInt(formData?.originalPhotoPpi, 10)
+    const showSnackBar = showSnackBarRef.current;
+    const widthNum = parseInt(formData?.originalPhotoWidth, 10);
+    const heightNum = parseInt(formData?.originalPhotoHeight, 10);
+    const ppiNum = parseInt(formData?.originalPhotoPpi, 10);
 
     if (
       widthNum > 0 &&
@@ -600,10 +604,10 @@ export default function ArtUploader({
         widthNum,
         heightNum,
         ppiNum,
-        formData.originalPhotoIso
-      )
-      setMaxPrintWidthCm(String(widthCm))
-      setMaxPrintHeightCm(String(heightCm))
+        formData.originalPhotoIso,
+      );
+      setMaxPrintWidthCm(String(widthCm));
+      setMaxPrintHeightCm(String(heightCm));
     } else if (formData.artType === "Foto") {
       if (
         !formData.originalPhotoIso &&
@@ -611,31 +615,31 @@ export default function ArtUploader({
         heightNum > 0 &&
         ppiNum > 0
       )
-        showSnackBar("Indica el ISO.")
+        showSnackBar("Indica el ISO.");
       else if (
         formData.originalPhotoIso &&
         (!widthNum || !heightNum) &&
         ppiNum > 0
       )
-        showSnackBar("Indica Ancho y Alto (px).")
+        showSnackBar("Indica Ancho y Alto (px).");
       else if (
         formData.originalPhotoIso &&
         widthNum > 0 &&
         heightNum > 0 &&
         !ppiNum
       )
-        showSnackBar("Indica los PPI.")
+        showSnackBar("Indica los PPI.");
     }
-  }
+  };
 
   const validateForm = (): boolean => {
-    const showSnackBar = showSnackBarRef.current
-    const errors: ArtValidationErrors = {}
-    let hasErrors = false
+    const showSnackBar = showSnackBarRef.current;
+    const errors: ArtValidationErrors = {};
+    let hasErrors = false;
 
     if (!formData.title.trim()) {
-      errors.title = "Título es obligatorio."
-      hasErrors = true
+      errors.title = "Título es obligatorio.";
+      hasErrors = true;
     }
     // TODO: undo the comment
     // if (!formData.description.trim() || formData.description.length < 20) {
@@ -644,55 +648,55 @@ export default function ArtUploader({
     //   hasErrors = true
     // }
     if (!formData.category?.trim()) {
-      errors.category = "Categoría principal es obligatoria."
-      hasErrors = true
+      errors.category = "Categoría principal es obligatoria.";
+      hasErrors = true;
     }
     if (!formData.artType?.trim()) {
-      errors.artType = "Tipo de arte es obligatorio."
-      hasErrors = true
+      errors.artType = "Tipo de arte es obligatorio.";
+      hasErrors = true;
     }
     if (!formData.tags || formData.tags.length === 0) {
-      errors.tags = "Añade al menos una etiqueta."
-      hasErrors = true
+      errors.tags = "Añade al menos una etiqueta.";
+      hasErrors = true;
     }
 
     if (formData.artType === "Foto") {
       if (!formData.originalPhotoWidth) {
-        errors.originalPhotoWidth = "Ancho (px) es obligatorio para fotos."
-        hasErrors = true
+        errors.originalPhotoWidth = "Ancho (px) es obligatorio para fotos.";
+        hasErrors = true;
       }
       if (!formData.originalPhotoHeight) {
-        errors.originalPhotoHeight = "Alto (px) es obligatorio para fotos."
-        hasErrors = true
+        errors.originalPhotoHeight = "Alto (px) es obligatorio para fotos.";
+        hasErrors = true;
       }
       if (!formData.originalPhotoPpi) {
-        errors.originalPhotoPpi = "PPI es obligatorio para fotos."
-        hasErrors = true
+        errors.originalPhotoPpi = "PPI es obligatorio para fotos.";
+        hasErrors = true;
       }
       if (!formData.originalPhotoIso) {
-        errors.originalPhotoIso = "ISO es obligatorio para fotos."
-        hasErrors = true
+        errors.originalPhotoIso = "ISO es obligatorio para fotos.";
+        hasErrors = true;
       }
     }
 
-    setValidationErrors(hasErrors ? errors : null)
+    setValidationErrors(hasErrors ? errors : null);
     if (hasErrors) {
-      showSnackBar("Por favor, corrija los errores indicados.")
-      const firstErrorKey = Object.keys(errors)[0]
+      showSnackBar("Por favor, corrija los errores indicados.");
+      const firstErrorKey = Object.keys(errors)[0];
       const errorElement =
         document.getElementsByName(firstErrorKey)[0] ||
-        document.getElementById(`image-input-${firstErrorKey}`)
-      errorElement?.scrollIntoView({ behavior: "smooth", block: "center" })
+        document.getElementById(`image-input-${firstErrorKey}`);
+      errorElement?.scrollIntoView({ behavior: "smooth", block: "center" });
     }
-    return !hasErrors
-  }
+    return !hasErrors;
+  };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    const showSnackBar = showSnackBarRef.current
-    if (!validateForm()) return
-    setIsSubmitting(true)
-    setValidationErrors(null)
+    event.preventDefault();
+    const showSnackBar = showSnackBarRef.current;
+    if (!validateForm()) return;
+    setIsSubmitting(true);
+    setValidationErrors(null);
 
     const payload: Partial<Art> = {
       ...formData,
@@ -702,40 +706,42 @@ export default function ArtUploader({
       userId: user ? user._id?.toString() : undefined, // TODO: add this value on backend
       status: "Active",
       visible: true,
-    }
+    };
 
     try {
       console.log(
         "Creating New Art Piece Data:",
-        JSON.stringify(payload, null, 2)
-      )
-      const base_url = `${import.meta.env.VITE_BACKEND_URL}/art/create`
+        JSON.stringify(payload, null, 2),
+      );
+      const base_url = `${import.meta.env.VITE_BACKEND_URL}/art/create`;
       const response = await axios.post<PrixResponse>(base_url, payload, {
         withCredentials: true,
-      })
+      });
       if (response && response.data.success) {
-        showSnackBar(`Obra "${formData.title}" creada exitosamente.`)
-        handleClose()
+        showSnackBar(`Obra "${formData.title}" creada exitosamente.`);
+        handleClose();
       } else {
-        throw new Error(`La creación de la obra falló o no devolvió respuesta.`)
+        throw new Error(
+          `La creación de la obra falló o no devolvió respuesta.`,
+        );
       }
     } catch (err: any) {
-      console.error(`Failed to create art piece:`, err)
+      console.error(`Failed to create art piece:`, err);
       const errorMessage =
         err?.response?.data?.message ||
         err.message ||
-        `Error desconocido al crear la obra.`
-      setValidationErrors({ title: errorMessage })
-      showSnackBar(errorMessage)
+        `Error desconocido al crear la obra.`;
+      setValidationErrors({ title: errorMessage });
+      showSnackBar(errorMessage);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const renderImageField = (fieldName: SourceImageFieldName) => {
-    const imageState = imageStates[fieldName]
-    const config = ART_IMAGE_FIELD_CONFIG[fieldName]
-    const errorHelperText = validationErrors?.[fieldName]
+    const imageState = imageStates[fieldName];
+    const config = ART_IMAGE_FIELD_CONFIG[fieldName];
+    const errorHelperText = validationErrors?.[fieldName];
 
     return (
       <Grid2
@@ -903,14 +909,14 @@ export default function ArtUploader({
           )}
         </Paper>
       </Grid2>
-    )
-  }
+    );
+  };
 
   // --- Render ---
-  const handleClose = () => setOpenArtFormDialog(false)
+  const handleClose = () => setOpenArtFormDialog(false);
 
   if (!openArtFormDialog) {
-    return null
+    return null;
   }
 
   return (
@@ -940,7 +946,7 @@ export default function ArtUploader({
                 (imgState) =>
                   imgState?.file &&
                   typeof imgState?.progress === "number" &&
-                  imgState.progress < 100
+                  imgState.progress < 100,
               )
             }
             startIcon={
@@ -1000,8 +1006,8 @@ export default function ArtUploader({
                     value={formData.artType}
                     label="Tipo de Arte"
                     onChange={(e) => {
-                      handleInputChange(e, "artType")
-                      setRequiredPhotoMeta(e.target.value === "Foto")
+                      handleInputChange(e, "artType");
+                      setRequiredPhotoMeta(e.target.value === "Foto");
                     }}
                   >
                     <MenuItem value="">_Selecciona un tipo</MenuItem>
@@ -1224,9 +1230,9 @@ export default function ArtUploader({
                     value={formData.exclusive}
                     label="Exclusividad"
                     onChange={(e) => {
-                      handleInputChange(e, "exclusive")
+                      handleInputChange(e, "exclusive");
                       if (e.target.value === "standard")
-                        setFormData((p) => ({ ...p, comission: 10 }))
+                        setFormData((p) => ({ ...p, comission: 10 }));
                     }}
                   >
                     <MenuItem value="standard">
@@ -1251,16 +1257,16 @@ export default function ArtUploader({
                   name="comission"
                   value={formData.comission}
                   onChange={(e) => {
-                    let val = parseInt(e.target.value, 10)
-                    if (isNaN(val)) val = 10
-                    if (val < 10) val = 10
-                    if (val > 70) val = 70
+                    let val = parseInt(e.target.value, 10);
+                    if (isNaN(val)) val = 10;
+                    if (val < 10) val = 10;
+                    if (val > 70) val = 70;
                     handleInputChange(
                       {
                         target: { name: "comission", value: String(val) },
                       } as any,
-                      "comission"
-                    )
+                      "comission",
+                    );
                   }}
                   disabled={formData.exclusive === "standard"}
                   fullWidth
@@ -1359,12 +1365,12 @@ export default function ArtUploader({
         autoHideDuration={6000}
         onClose={() => {
           if (validationErrors?.title)
-            setValidationErrors((prev) => ({ ...prev, title: undefined }))
+            setValidationErrors((prev) => ({ ...prev, title: undefined }));
         }}
         message={validationErrors?.title}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         sx={{ bottom: { xs: 90, sm: 24 } }}
       />
     </Dialog>
-  )
+  );
 }

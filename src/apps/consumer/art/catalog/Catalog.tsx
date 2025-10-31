@@ -1,18 +1,18 @@
-import { useState } from "react"
-import FloatingAddButton from "@components/floatingAddButton"
-import ArtsGrid from "@apps/consumer/art/components/ArtsGrid/ArtsGrid"
-import Container from "@mui/material/Container"
-import CssBaseline from "@mui/material/CssBaseline"
-import ArtUploader from "@apps/artist/artUploader"
-import Typography from "@mui/material/Typography"
-import CreateService from "components/createService"
-import Grid2 from "@mui/material/Grid"
-import ScrollToTopButton from "@components/ScrollToTop"
+import { useState } from "react";
+import FloatingAddButton from "@components/floatingAddButton";
+import ArtsGrid from "@apps/consumer/art/components/ArtsGrid/ArtsGrid";
+import Container from "@mui/material/Container";
+import CssBaseline from "@mui/material/CssBaseline";
+import ArtUploader from "@apps/artist/artUploader";
+import Typography from "@mui/material/Typography";
+import CreateService from "components/createService";
+import Grid2 from "@mui/material/Grid";
+import ScrollToTopButton from "@components/ScrollToTop";
 
 export default function Catalog() {
-  const [openArtFormDialog, setOpenArtFormDialog] = useState<boolean>(false)
+  const [openArtFormDialog, setOpenArtFormDialog] = useState<boolean>(false);
   const [openServiceFormDialog, setOpenServiceFormDialog] =
-    useState<boolean>(false)
+    useState<boolean>(false);
 
   return (
     <>
@@ -69,5 +69,5 @@ export default function Catalog() {
       </Container>
       <ScrollToTopButton />
     </>
-  )
+  );
 }

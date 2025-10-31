@@ -1,15 +1,15 @@
-import React, { useState } from "react"
-import Backdrop from "@mui/material/Backdrop"
-import SpeedDial from "@mui/material/SpeedDial"
-import SpeedDialIcon from "@mui/material/SpeedDialIcon"
-import SpeedDialAction from "@mui/material/SpeedDialAction"
-import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate"
-import LocalActivityIcon from "@mui/icons-material/LocalActivity"
-import { usePrixerCreator } from "@context/GlobalContext"
+import React, { useState } from "react";
+import Backdrop from "@mui/material/Backdrop";
+import SpeedDial from "@mui/material/SpeedDial";
+import SpeedDialIcon from "@mui/material/SpeedDialIcon";
+import SpeedDialAction from "@mui/material/SpeedDialAction";
+import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
+import LocalActivityIcon from "@mui/icons-material/LocalActivity";
+import { usePrixerCreator } from "@context/GlobalContext";
 
 const FloatingAddButton: React.FC = () => {
-  const { setArtModal, setServiceModal } = usePrixerCreator()
-  const [open, setOpen] = useState(false)
+  const { setArtModal, setServiceModal } = usePrixerCreator();
+  const [open, setOpen] = useState(false);
 
   const actions = [
     {
@@ -22,10 +22,10 @@ const FloatingAddButton: React.FC = () => {
       name: "Agregar Servicio",
       onClick: () => setServiceModal(true),
     },
-  ]
+  ];
 
-  const handleOpen = () => setOpen(true)
-  const handleClose = () => setOpen(false)
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   return (
     <>
@@ -51,19 +51,19 @@ const FloatingAddButton: React.FC = () => {
               },
             }}
             onClick={() => {
-              action.onClick()
-              handleClose()
+              action.onClick();
+              handleClose();
             }}
             sx={{
-              '& .MuiSpeedDialAction-staticTooltipLabel': {
-                whiteSpace: 'nowrap',
+              "& .MuiSpeedDialAction-staticTooltipLabel": {
+                whiteSpace: "nowrap",
               },
             }}
           />
         ))}
       </SpeedDial>
     </>
-  )
-}
+  );
+};
 
-export default FloatingAddButton
+export default FloatingAddButton;

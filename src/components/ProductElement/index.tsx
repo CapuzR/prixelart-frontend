@@ -1,7 +1,7 @@
-import React from 'react';
-import { Card, Typography, Box } from '@mui/material';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
+import React from "react";
+import { Card, Typography, Box } from "@mui/material";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
 
 interface ProductElementProps {
   src: string;
@@ -20,42 +20,42 @@ const ProductElement: React.FC<ProductElementProps> = ({
 }) => {
   const theme = useTheme();
 
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const borderRadiusValue = roundedCorner ? 2 : 0;
 
   return (
     <Card
       onClick={onButtonClick}
       sx={{
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        textAlign: 'center',
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        textAlign: "center",
         borderRadius: borderRadiusValue,
-        cursor: 'pointer',
+        cursor: "pointer",
       }}
       variant="outlined"
     >
       <Box
         sx={{
-          position: 'relative',
-          width: isMobile ? '100vw' : '100%',
-          height: isMobile ? '370px' : '440px',
-          display: 'flex',
-          alignItems: 'end',
+          position: "relative",
+          width: isMobile ? "100vw" : "100%",
+          height: isMobile ? "370px" : "440px",
+          display: "flex",
+          alignItems: "end",
           background: `url(${src}) center / cover no-repeat transparent`,
-          padding: isMobile ? '0' : '2rem',
+          padding: isMobile ? "0" : "2rem",
         }}
       >
         <Typography
-          variant={isMobile ? 'h5' : 'h3'}
+          variant={isMobile ? "h5" : "h3"}
           sx={{
-            position: 'relative',
-            fontFamily: 'Futura, sans-serif',
-            fontStyle: 'italic',
-            fontWeight: '700',
-            color: 'white',
-            textShadow: '-3px 8px 22px rgba(0,0,0,0.7)',
+            position: "relative",
+            fontFamily: "Futura, sans-serif",
+            fontStyle: "italic",
+            fontWeight: "700",
+            color: "white",
+            textShadow: "-3px 8px 22px rgba(0,0,0,0.7)",
           }}
         >
           {productName}

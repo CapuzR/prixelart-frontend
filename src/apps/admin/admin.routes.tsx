@@ -1,46 +1,46 @@
-import React from "react"
-import { Routes, Route, Navigate, useRoutes } from "react-router-dom"
-import CreateAdmin from "./sections/admins/views/Create"
-import ReadAdmins from "./sections/admins/views/Read"
-import CreateProduct from "./sections/products/views/Create"
-import UpdateProduct from "./sections/products/views/Update"
-import UpdateAdmin from "./sections/admins/views/Update"
-import CreateRole from "./sections/admins/views/CreateRole"
-import ReadRoles from "./sections/admins/views/ReadRoles"
-import UpdateAdminRole from "./sections/admins/views/UpdateRole"
-import CreateShippingMethod from "./sections/shippingMethods/views/Create"
-import ReadShippingMethods from "./sections/shippingMethods/views/Read"
-import UpdateShippingMethod from "./sections/shippingMethods/views/Update"
-import CreatePaymentMethod from "./sections/paymentMethod/views/Create"
-import ReadPaymentMethods from "./sections/paymentMethod/views/Read"
-import UpdatePaymentMethod from "./sections/paymentMethod/views/Update"
-import ReadTestimonials from "./sections/testimonials/views/Read"
-import CreateTestimonial from "./sections/testimonials/views/Create"
-import UpdateTestimonial from "./sections/testimonials/views/Update"
-import CreateArt from "./sections/art/views/Create"
-import ReadArts from "./sections/art/views/Read"
-import UpdateArt from "./sections/art/views/Update"
-import ReadDiscounts from "./sections/discounts/views/Read"
-import UpdateDiscount from "./sections/discounts/views/Update"
-import CreateDiscount from "./sections/discounts/views/Create"
-import CreateSurcharge from "./sections/surcharges/views/Create"
-import ReadSurcharges from "./sections/surcharges/views/Read"
-import UpdateSurcharge from "./sections/surcharges/views/Update"
-import CreateMovement from "./sections/movements/views/Create"
-import ReadMovements from "./sections/movements/views/Read"
-import UpdateMovement from "./sections/movements/views/Update"
-import ReadAndUpdateTerms from "./sections/preferences/components/views/Terms"
-import CreateUser from "./sections/users/Create"
-import ReadUsers from "./sections/users/Read"
-import UpdateUser from "./sections/users/Update"
-import ReadProducts from "./sections/products/views/Read"
-import CreateOrder from "./sections/orders/views/Create"
-import ReadOrders from "./sections/orders/views/Read"
-import UpdateOrder from "./sections/orders/views/Update"
-import ManageCarousels from "./sections/carousel/Manage"
-import ReadOrderArchives from "./sections/orderArchives/views/Read"
-import OrderArchiveDetail from "./sections/orderArchives/views/Details"
-import SellerDashboard from "./sections/dashboard/Dashboard"
+import React from "react";
+import { Routes, Route, Navigate, useRoutes } from "react-router-dom";
+import CreateAdmin from "./sections/admins/views/Create";
+import ReadAdmins from "./sections/admins/views/Read";
+import CreateProduct from "./sections/products/views/Create";
+import UpdateProduct from "./sections/products/views/Update";
+import UpdateAdmin from "./sections/admins/views/Update";
+import CreateRole from "./sections/admins/views/CreateRole";
+import ReadRoles from "./sections/admins/views/ReadRoles";
+import UpdateAdminRole from "./sections/admins/views/UpdateRole";
+import CreateShippingMethod from "./sections/shippingMethods/views/Create";
+import ReadShippingMethods from "./sections/shippingMethods/views/Read";
+import UpdateShippingMethod from "./sections/shippingMethods/views/Update";
+import CreatePaymentMethod from "./sections/paymentMethod/views/Create";
+import ReadPaymentMethods from "./sections/paymentMethod/views/Read";
+import UpdatePaymentMethod from "./sections/paymentMethod/views/Update";
+import ReadTestimonials from "./sections/testimonials/views/Read";
+import CreateTestimonial from "./sections/testimonials/views/Create";
+import UpdateTestimonial from "./sections/testimonials/views/Update";
+import CreateArt from "./sections/art/views/Create";
+import ReadArts from "./sections/art/views/Read";
+import UpdateArt from "./sections/art/views/Update";
+import ReadDiscounts from "./sections/discounts/views/Read";
+import UpdateDiscount from "./sections/discounts/views/Update";
+import CreateDiscount from "./sections/discounts/views/Create";
+import CreateSurcharge from "./sections/surcharges/views/Create";
+import ReadSurcharges from "./sections/surcharges/views/Read";
+import UpdateSurcharge from "./sections/surcharges/views/Update";
+import CreateMovement from "./sections/movements/views/Create";
+import ReadMovements from "./sections/movements/views/Read";
+import UpdateMovement from "./sections/movements/views/Update";
+import ReadAndUpdateTerms from "./sections/preferences/components/views/Terms";
+import CreateUser from "./sections/users/Create";
+import ReadUsers from "./sections/users/Read";
+import UpdateUser from "./sections/users/Update";
+import ReadProducts from "./sections/products/views/Read";
+import CreateOrder from "./sections/orders/views/Create";
+import ReadOrders from "./sections/orders/views/Read";
+import UpdateOrder from "./sections/orders/views/Update";
+import ManageCarousels from "./sections/carousel/Manage";
+import ReadOrderArchives from "./sections/orderArchives/views/Read";
+import OrderArchiveDetail from "./sections/orderArchives/views/Details";
+import SellerDashboard from "./sections/dashboard/Dashboard";
 
 const AdminNestedRoutes: React.FC = () => {
   return (
@@ -93,13 +93,18 @@ const AdminNestedRoutes: React.FC = () => {
       {/* Shipping Methods */}
       <Route path="shipping-method/create" element={<CreateShippingMethod />} />
       <Route path="shipping-method/read" element={<ReadShippingMethods />} />
-      <Route path="shipping-method/update/:id" element={<UpdateShippingMethod />} />
+      <Route
+        path="shipping-method/update/:id"
+        element={<UpdateShippingMethod />}
+      />
 
       {/* Payment Methods */}
       <Route path="payment-method/create" element={<CreatePaymentMethod />} />
       <Route path="payment-method/read" element={<ReadPaymentMethods />} />
-      <Route path="payment-method/update/:id" element={<UpdatePaymentMethod />} />
-
+      <Route
+        path="payment-method/update/:id"
+        element={<UpdatePaymentMethod />}
+      />
 
       {/* Movements */}
       <Route path="movements/create" element={<CreateMovement />} />
@@ -118,11 +123,9 @@ const AdminNestedRoutes: React.FC = () => {
       <Route path="preferences/terms" element={<ReadAndUpdateTerms />} />
       <Route path="preferences/banners" element={<ManageCarousels />} />
 
-
       <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
-
     </Routes>
   );
 };
 
-export default AdminNestedRoutes
+export default AdminNestedRoutes;

@@ -6,18 +6,18 @@ import React, {
   ChangeEvent,
   FormEvent,
   MouseEvent,
-} from "react"
-import { useParams, useNavigate } from "react-router-dom"
+} from "react";
+import { useParams, useNavigate } from "react-router-dom";
 
 // Hooks, Context, Types, API
-import { useSnackBar } from "context/GlobalContext"
-import { Admin } from "types/admin.types"
-import { PermissionsV2 } from "types/permissions.types"
+import { useSnackBar } from "context/GlobalContext";
+import { Admin } from "types/admin.types";
+import { PermissionsV2 } from "types/permissions.types";
 import {
   getRoles,
   getAdminByUsername,
   updateAdmin /*, checkUsernameExists, checkEmailExists */,
-} from "@api/admin.api" // Assuming updateAdmin takes identifier (username or id) and payload
+} from "@api/admin.api"; // Assuming updateAdmin takes identifier (username or id) and payload
 
 // MUI Components
 import {
@@ -39,14 +39,14 @@ import {
   DialogContent,
   DialogActions,
   Tooltip, // For Modal
-} from "@mui/material"
-import Visibility from "@mui/icons-material/Visibility"
-import VisibilityOff from "@mui/icons-material/VisibilityOff"
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined" // For permissions icon
-import CloseIcon from "@mui/icons-material/Close" // For modal close
-import Grid2 from "@mui/material/Grid"
-import Title from "@apps/admin/components/Title"
-import { RolePermissionsDetails } from "./ReadRoles"
+} from "@mui/material";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined"; // For permissions icon
+import CloseIcon from "@mui/icons-material/Close"; // For modal close
+import Grid2 from "@mui/material/Grid";
+import Title from "@apps/admin/components/Title";
+import { RolePermissionsDetails } from "./ReadRoles";
 // Import the RolePermissionsDetails component (adjust path)
 
 // Define the initial state structure dynamically from constants
@@ -59,143 +59,143 @@ const initialFormState: Omit<Admin, "_id" | "password"> = {
   email: "",
   isSeller: false,
   // Password is handled separately for update
-}
+};
 
 const UpdateAdmin: React.FC = () => {
-  const { username: usernameParam } = useParams<{ username: string }>() // Get username from URL
-  const navigate = useNavigate()
-  const { showSnackBar } = useSnackBar()
+  const { username: usernameParam } = useParams<{ username: string }>(); // Get username from URL
+  const navigate = useNavigate();
+  const { showSnackBar } = useSnackBar();
 
   // --- Local State ---
-  const [formData, setFormData] = useState(initialFormState)
-  const [password, setPassword] = useState("") // New password (optional)
-  const [passwordConfirm, setPasswordConfirm] = useState("") // New password confirm
-  const [showPassword, setShowPassword] = useState(false)
-  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false)
+  const [formData, setFormData] = useState(initialFormState);
+  const [password, setPassword] = useState(""); // New password (optional)
+  const [passwordConfirm, setPasswordConfirm] = useState(""); // New password confirm
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
 
-  const [roles, setRoles] = useState<PermissionsV2[]>([]) // Store full Permissions objects
-  const [isLoadingData, setIsLoadingData] = useState<boolean>(true) // Combined loading state
-  const [errorLoad, setErrorLoad] = useState<string | null>(null) // Fetching error
+  const [roles, setRoles] = useState<PermissionsV2[]>([]); // Store full Permissions objects
+  const [isLoadingData, setIsLoadingData] = useState<boolean>(true); // Combined loading state
+  const [errorLoad, setErrorLoad] = useState<string | null>(null); // Fetching error
 
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [errorSubmit, setErrorSubmit] = useState<string | null>(null) // API submission errors
-  const [formErrors, setFormErrors] = useState<Record<string, string>>({}) // Field validation errors
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorSubmit, setErrorSubmit] = useState<string | null>(null); // API submission errors
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({}); // Field validation errors
 
   // State for roles permission preview modal
-  const [permissionModalOpen, setPermissionModalOpen] = useState(false)
-  const [roleToView, setRoleToView] = useState<PermissionsV2 | null>(null)
-  const [adminId, setAdminId] = useState<string | null>(null) // Store the ID  for update
+  const [permissionModalOpen, setPermissionModalOpen] = useState(false);
+  const [roleToView, setRoleToView] = useState<PermissionsV2 | null>(null);
+  const [adminId, setAdminId] = useState<string | null>(null); // Store the ID  for update
 
   // --- Fetch Initial Data (Admin + Roles) ---
   const loadInitialData = useCallback(async () => {
     if (!usernameParam) {
-      setErrorLoad("No se proporcionó un nombre de usuario de administrador.")
-      setIsLoadingData(false)
-      return
+      setErrorLoad("No se proporcionó un nombre de usuario de administrador.");
+      setIsLoadingData(false);
+      return;
     }
-    setIsLoadingData(true)
-    setErrorLoad(null)
-    setErrorSubmit(null)
+    setIsLoadingData(true);
+    setErrorLoad(null);
+    setErrorSubmit(null);
     try {
       const [fetchedAdmin, fetchedRoles] = await Promise.all([
         getAdminByUsername(usernameParam), // Assuming this returns full Admin object including _id
         getRoles() as Promise<PermissionsV2[]>, // Fetch full roles
-      ])
+      ]);
 
       if (!fetchedAdmin) {
-        throw new Error("Administrador no encontrado.")
+        throw new Error("Administrador no encontrado.");
       }
       if (!fetchedAdmin._id) {
         throw new Error(
-          "ID del administrador no encontrado en los datos recibidos."
-        )
+          "ID del administrador no encontrado en los datos recibidos.",
+        );
       }
 
-      const { _id, password, ...adminDataToSet } = fetchedAdmin // Exclude password and _id from initial form data
+      const { _id, password, ...adminDataToSet } = fetchedAdmin; // Exclude password and _id from initial form data
 
       // Ensure all keys from constants are present
-      const completeFormData = { ...initialFormState, ...adminDataToSet }
+      const completeFormData = { ...initialFormState, ...adminDataToSet };
 
-      setFormData(completeFormData)
-      setAdminId(_id.toString()) // Store the admin ID (as string)
-      setRoles(fetchedRoles || [])
+      setFormData(completeFormData);
+      setAdminId(_id.toString()); // Store the admin ID (as string)
+      setRoles(fetchedRoles || []);
     } catch (err: any) {
-      const message = err.message || "No se pudieron cargar los datos."
-      setErrorLoad(message)
-      showSnackBar(message)
-      console.error("Error loading data for update:", err)
+      const message = err.message || "No se pudieron cargar los datos.";
+      setErrorLoad(message);
+      showSnackBar(message);
+      console.error("Error loading data for update:", err);
     } finally {
-      setIsLoadingData(false)
+      setIsLoadingData(false);
     }
-  }, [usernameParam, showSnackBar])
+  }, [usernameParam, showSnackBar]);
 
   useEffect(() => {
-    loadInitialData()
-  }, [loadInitialData])
+    loadInitialData();
+  }, [loadInitialData]);
 
   // --- Input Handlers (Mostly same as Create) ---
   const handleInputChange = (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
-    const { name, value } = event.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    const { name, value } = event.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
     if (formErrors[name]) {
-      setFormErrors((prev) => ({ ...prev, [name]: "" }))
+      setFormErrors((prev) => ({ ...prev, [name]: "" }));
     }
-  }
+  };
   const handleSwitchChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = event.target
-    setFormData((prev) => ({ ...prev, [name]: checked }))
-  }
+    const { name, checked } = event.target;
+    setFormData((prev) => ({ ...prev, [name]: checked }));
+  };
   // Role change via Autocomplete is handled in its onChange prop
 
   const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setPassword(event.target.value)
+    setPassword(event.target.value);
     // Clear password errors if user starts typing
     if (formErrors.password || formErrors.passwordConfirm) {
-      setFormErrors((prev) => ({ ...prev, password: "", passwordConfirm: "" }))
+      setFormErrors((prev) => ({ ...prev, password: "", passwordConfirm: "" }));
     }
-  }
+  };
   const handlePasswordConfirmChange = (
-    event: ChangeEvent<HTMLInputElement>
+    event: ChangeEvent<HTMLInputElement>,
   ) => {
-    setPasswordConfirm(event.target.value)
+    setPasswordConfirm(event.target.value);
     if (formErrors.passwordConfirm) {
-      setFormErrors((prev) => ({ ...prev, passwordConfirm: "" }))
+      setFormErrors((prev) => ({ ...prev, passwordConfirm: "" }));
     }
-  }
-  const handleClickShowPassword = () => setShowPassword((show) => !show)
+  };
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
   const handleClickShowPasswordConfirm = () =>
-    setShowPasswordConfirm((show) => !show)
+    setShowPasswordConfirm((show) => !show);
   const handleMouseDownPassword = (event: MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault()
-  }
+    event.preventDefault();
+  };
 
   // --- Roles Permission Modal Handlers ---
   const handleViewSelectedRolePermissions = () => {
-    if (!formData.area) return // Should be disabled, but double-check
+    if (!formData.area) return; // Should be disabled, but double-check
 
     // Find the full role object based on the selected area name
-    const selectedRole = roles.find((role) => role.area === formData.area)
+    const selectedRole = roles.find((role) => role.area === formData.area);
 
     if (selectedRole) {
-      setRoleToView(selectedRole)
-      setPermissionModalOpen(true)
+      setRoleToView(selectedRole);
+      setPermissionModalOpen(true);
     } else {
       // Should ideally not happen if formData.area is valid
-      showSnackBar("No se encontraron los detalles para el rol seleccionado.")
+      showSnackBar("No se encontraron los detalles para el rol seleccionado.");
       console.warn(
         "Could not find role details for selected area:",
-        formData.area
-      )
+        formData.area,
+      );
     }
-  }
+  };
 
   // --- Handler to close modal (Keep this) ---
   const handleClosePermissionModal = () => {
-    setPermissionModalOpen(false)
-    setTimeout(() => setRoleToView(null), 150)
-  }
+    setPermissionModalOpen(false);
+    setTimeout(() => setRoleToView(null), 150);
+  };
 
   // --- Validation ---
   const validateField = (name: string, value: any): string => {
@@ -204,129 +204,129 @@ const UpdateAdmin: React.FC = () => {
       case "firstname":
       case "lastname":
       case "username": // Keep validating username, even if disabled often
-        return value.trim() ? "" : "Este campo es obligatorio."
+        return value.trim() ? "" : "Este campo es obligatorio.";
       case "email":
-        if (!value.trim()) return "El email es obligatorio."
+        if (!value.trim()) return "El email es obligatorio.";
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
           ? ""
-          : "Formato de email inválido."
+          : "Formato de email inválido.";
       case "phone":
         if (value && !/^\+?[0-9\s\-()]+$/.test(value))
-          return "Formato de teléfono inválido."
-        return ""
+          return "Formato de teléfono inválido.";
+        return "";
       case "area":
-        return value ? "" : "Debe seleccionar un rol/área."
+        return value ? "" : "Debe seleccionar un rol/área.";
 
       // Password validation (conditional for update)
       case "password":
-        if (!value && !passwordConfirm) return "" // Okay if both are empty (not updating password)
+        if (!value && !passwordConfirm) return ""; // Okay if both are empty (not updating password)
         if (value && value.length < 6)
-          return "La nueva contraseña debe tener al menos 6 caracteres."
+          return "La nueva contraseña debe tener al menos 6 caracteres.";
         // Add more strength rules
-        return ""
+        return "";
       case "passwordConfirm":
-        if (password && !value) return "Debe confirmar la nueva contraseña." // Required if password has value
+        if (password && !value) return "Debe confirmar la nueva contraseña."; // Required if password has value
         if (password && value !== password)
-          return "Las contraseñas no coinciden."
-        return ""
+          return "Las contraseñas no coinciden.";
+        return "";
       default:
-        return ""
+        return "";
     }
-  }
+  };
 
   const validateForm = (): boolean => {
-    const errors: Record<string, string> = {}
-    let isValid = true
+    const errors: Record<string, string> = {};
+    let isValid = true;
 
     // Validate formData fields
     Object.keys(formData).forEach((key) => {
-      const error = validateField(key, formData[key as keyof typeof formData])
+      const error = validateField(key, formData[key as keyof typeof formData]);
       if (error) {
-        errors[key] = error
-        isValid = false
+        errors[key] = error;
+        isValid = false;
       }
-    })
+    });
 
     // Validate password fields (only if password is being changed)
     if (password) {
       // Only validate password fields if a new password was entered
-      const passwordError = validateField("password", password)
+      const passwordError = validateField("password", password);
       if (passwordError) {
-        errors.password = passwordError
-        isValid = false
+        errors.password = passwordError;
+        isValid = false;
       }
       const passwordConfirmError = validateField(
         "passwordConfirm",
-        passwordConfirm
-      )
+        passwordConfirm,
+      );
       if (passwordConfirmError) {
-        errors.passwordConfirm = passwordConfirmError
-        isValid = false
+        errors.passwordConfirm = passwordConfirmError;
+        isValid = false;
       }
     } else if (passwordConfirm) {
       // If only confirm is filled, mark password as required
-      errors.password = "Ingrese la nueva contraseña."
-      isValid = false
+      errors.password = "Ingrese la nueva contraseña.";
+      isValid = false;
     }
 
-    setFormErrors(errors)
-    return isValid
-  }
+    setFormErrors(errors);
+    return isValid;
+  };
 
   // --- Handle Submission ---
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    setErrorSubmit(null)
+    event.preventDefault();
+    setErrorSubmit(null);
 
     // Use adminId stored in state for the update call
     if (!adminId || !validateForm()) {
-      showSnackBar("Por favor corrija los errores en el formulario.")
-      return
+      showSnackBar("Por favor corrija los errores en el formulario.");
+      return;
     }
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     // Prepare payload - exclude password if it wasn't changed
     const payload: Partial<Admin> = {
       ...formData, // Include all standard fields from formData
-    }
+    };
     if (password) {
       // Only add password to payload if a new one was entered
-      payload.password = password
+      payload.password = password;
     }
 
     try {
-      console.log("Updating Admin:", adminId, payload)
+      console.log("Updating Admin:", adminId, payload);
       // Assuming updateAdmin uses ID now
-      const response = await updateAdmin(adminId, payload)
+      const response = await updateAdmin(adminId, payload);
 
       if (response) {
         showSnackBar(
-          `Administrador '${formData.username}' actualizado correctamente.`
-        )
-        navigate("/admin/admins/read")
+          `Administrador '${formData.username}' actualizado correctamente.`,
+        );
+        navigate("/admin/admins/read");
       } else {
         throw new Error(
-          "La actualización del administrador no devolvió una respuesta esperada."
-        )
+          "La actualización del administrador no devolvió una respuesta esperada.",
+        );
       }
     } catch (err: any) {
-      console.error("Update error:", err)
+      console.error("Update error:", err);
       const message =
         err.response?.data?.message ||
         err.message ||
-        "Error al actualizar el administrador."
-      setErrorSubmit(message)
-      showSnackBar(message)
+        "Error al actualizar el administrador.";
+      setErrorSubmit(message);
+      showSnackBar(message);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   // --- Handle Cancel ---
   const handleCancel = () => {
-    navigate("/admin/admins/read")
-  }
+    navigate("/admin/admins/read");
+  };
 
   // --- Render Logic ---
 
@@ -337,7 +337,7 @@ const UpdateAdmin: React.FC = () => {
         <CircularProgress />{" "}
         <Typography sx={{ ml: 2 }}>Cargando...</Typography>{" "}
       </Box>
-    )
+    );
   }
 
   if (errorLoad) {
@@ -356,7 +356,7 @@ const UpdateAdmin: React.FC = () => {
           </Button>{" "}
         </Alert>{" "}
       </Box>
-    )
+    );
   }
 
   return (
@@ -450,9 +450,9 @@ const UpdateAdmin: React.FC = () => {
                     setFormData((prev) => ({
                       ...prev,
                       area: newValue?.area || "",
-                    }))
+                    }));
                     if (formErrors.area) {
-                      setFormErrors((prev) => ({ ...prev, area: "" }))
+                      setFormErrors((prev) => ({ ...prev, area: "" }));
                     }
                   }}
                   isOptionEqualToValue={(option, value) =>
@@ -660,8 +660,8 @@ const UpdateAdmin: React.FC = () => {
         </DialogActions>
       </Dialog>
     </>
-  )
-}
+  );
+};
 
 // No Provider wrapper needed anymore
-export default UpdateAdmin
+export default UpdateAdmin;

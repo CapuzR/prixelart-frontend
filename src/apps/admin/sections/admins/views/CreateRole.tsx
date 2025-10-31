@@ -1,10 +1,10 @@
-import React, { useState, ChangeEvent, FormEvent } from "react"
-import { useNavigate } from "react-router-dom"
+import React, { useState, ChangeEvent, FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 
 // Hooks and Context
-import { useSnackBar } from "context/GlobalContext"
-import { PermissionsV2 } from "types/permissions.types"
-import { createRole } from "@api/admin.api"
+import { useSnackBar } from "context/GlobalContext";
+import { PermissionsV2 } from "types/permissions.types";
+import { createRole } from "@api/admin.api";
 
 // MUI Components
 import {
@@ -22,12 +22,12 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-} from "@mui/material"
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
+} from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-import Title from "@apps/admin/components/Title"
-import { permissionGroups } from "../roles/roles"
-import Grid2 from "@mui/material/Grid"
+import Title from "@apps/admin/components/Title";
+import { permissionGroups } from "../roles/roles";
+import Grid2 from "@mui/material/Grid";
 
 const initializeNestedPermissions = (): Omit<PermissionsV2, "_id"> => {
   const initial: Omit<PermissionsV2, "_id"> = {
@@ -44,64 +44,64 @@ const initializeNestedPermissions = (): Omit<PermissionsV2, "_id"> => {
     surcharges: {},
     testimonials: {},
     users: {},
-  } as Omit<PermissionsV2, "_id">
+  } as Omit<PermissionsV2, "_id">;
 
   permissionGroups.forEach((group) => {
     group.items.forEach((item) => {
-      const parts = item.key.split(".")
-      let current: any = initial
+      const parts = item.key.split(".");
+      let current: any = initial;
 
       for (let i = 0; i < parts.length; i++) {
-        const part = parts[i]
+        const part = parts[i];
         if (i === parts.length - 1) {
-          current[part] = false
+          current[part] = false;
         } else {
           if (
             !current[part] ||
             typeof current[part] !== "object" ||
             current[part] === null
           ) {
-            current[part] = {}
+            current[part] = {};
           }
-          current = current[part]
+          current = current[part];
         }
       }
-    })
-  })
-  return initial
-}
+    });
+  });
+  return initial;
+};
 
 const getNestedPermissionValue = (
   permissions: Omit<PermissionsV2, "_id">,
-  path: string
+  path: string,
 ): boolean => {
-  const parts = path.split(".")
-  let current: any = permissions
+  const parts = path.split(".");
+  let current: any = permissions;
 
   for (const part of parts) {
     if (current && typeof current === "object" && part in current) {
-      current = current[part]
+      current = current[part];
     } else {
-      return false
+      return false;
     }
   }
-  return typeof current === "boolean" ? current : false
-}
+  return typeof current === "boolean" ? current : false;
+};
 
 const setNestedPermissionValue = (
   permissions: Omit<PermissionsV2, "_id">,
   path: string,
-  value: boolean
+  value: boolean,
 ): Omit<PermissionsV2, "_id"> => {
-  const newPermissions = JSON.parse(JSON.stringify(permissions))
-  const parts = path.split(".")
-  let current: any = newPermissions
+  const newPermissions = JSON.parse(JSON.stringify(permissions));
+  const parts = path.split(".");
+  let current: any = newPermissions;
 
   for (let i = 0; i < parts.length; i++) {
-    const part = parts[i]
+    const part = parts[i];
     if (i === parts.length - 1) {
       if (typeof current === "object" && current !== null) {
-        current[part] = value
+        current[part] = value;
       }
     } else {
       if (
@@ -109,140 +109,140 @@ const setNestedPermissionValue = (
         typeof current[part] !== "object" ||
         current[part] === null
       ) {
-        current[part] = {}
+        current[part] = {};
       }
-      current = current[part]
+      current = current[part];
     }
   }
-  return newPermissions
-}
+  return newPermissions;
+};
 
 const CreateRole: React.FC = () => {
-  const navigate = useNavigate()
-  const { showSnackBar } = useSnackBar()
+  const navigate = useNavigate();
+  const { showSnackBar } = useSnackBar();
 
   const [formData, setFormData] = useState<Omit<PermissionsV2, "_id">>(
-    initializeNestedPermissions()
-  )
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
-  const [errorSubmit, setErrorSubmit] = useState<string | null>(null)
-  const [nameTouched, setNameTouched] = useState<boolean>(false)
+    initializeNestedPermissions(),
+  );
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [errorSubmit, setErrorSubmit] = useState<string | null>(null);
+  const [nameTouched, setNameTouched] = useState<boolean>(false);
   const [expandedAccordion, setExpandedAccordion] = useState<string | false>(
-    false
-  )
+    false,
+  );
 
   const handleAccordionChange =
     (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
-      setExpandedAccordion(isExpanded ? panel : false)
-    }
+      setExpandedAccordion(isExpanded ? panel : false);
+    };
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value, checked, type } = event.target
+    const { name, value, checked, type } = event.target;
 
     if (name === "area") {
       setFormData((prevData) => ({
         ...prevData,
         area: value,
-      }))
+      }));
     } else {
       setFormData((prevData) =>
-        setNestedPermissionValue(prevData, name, checked)
-      )
+        setNestedPermissionValue(prevData, name, checked),
+      );
     }
 
     if (
       errorSubmit &&
       errorSubmit !== "El nombre del Área/Rol es obligatorio."
     ) {
-      setErrorSubmit(null)
+      setErrorSubmit(null);
     }
     if (
       name === "area" &&
       errorSubmit === "El nombre del Área/Rol es obligatorio." &&
       value.trim()
     ) {
-      setErrorSubmit(null)
+      setErrorSubmit(null);
     }
-  }
+  };
 
   const handleNameBlur = () => {
-    setNameTouched(true)
-  }
+    setNameTouched(true);
+  };
 
   const handleGroupToggle = (
     groupItems: { key: string }[],
-    checked: boolean
+    checked: boolean,
   ) => {
     setFormData((prevData) => {
-      let newData = { ...prevData }
+      let newData = { ...prevData };
       groupItems.forEach((item) => {
-        newData = setNestedPermissionValue(newData, item.key, checked)
-      })
-      return newData
-    })
+        newData = setNestedPermissionValue(newData, item.key, checked);
+      });
+      return newData;
+    });
     if (
       errorSubmit &&
       errorSubmit !== "El nombre del Área/Rol es obligatorio."
     ) {
-      setErrorSubmit(null)
+      setErrorSubmit(null);
     }
-  }
+  };
 
   const validateForm = (): boolean => {
     if (!formData.area.trim()) {
-      return false
+      return false;
     }
-    return true
-  }
+    return true;
+  };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    setNameTouched(true)
+    event.preventDefault();
+    setNameTouched(true);
 
     if (!validateForm()) {
-      return
+      return;
     }
 
-    setIsSubmitting(true)
-    setErrorSubmit(null)
+    setIsSubmitting(true);
+    setErrorSubmit(null);
 
     try {
-      const response = await createRole(formData)
+      const response = await createRole(formData);
 
       if (response) {
-        showSnackBar(`Área/Rol "${formData.area}" creado exitosamente.`)
-        setFormData(initializeNestedPermissions())
-        navigate("/admin/admins/roles/read")
+        showSnackBar(`Área/Rol "${formData.area}" creado exitosamente.`);
+        setFormData(initializeNestedPermissions());
+        navigate("/admin/admins/roles/read");
       } else {
-        console.warn("Role creation response was empty or unexpected.")
+        console.warn("Role creation response was empty or unexpected.");
         showSnackBar(
-          `Área/Rol "${formData.area}" creado, pero la respuesta fue inesperada.`
-        )
-        setFormData(initializeNestedPermissions())
-        navigate("/admin/admins/roles/read")
+          `Área/Rol "${formData.area}" creado, pero la respuesta fue inesperada.`,
+        );
+        setFormData(initializeNestedPermissions());
+        navigate("/admin/admins/roles/read");
       }
     } catch (err: any) {
-      console.error("Failed to create role:", err)
+      console.error("Failed to create role:", err);
       const message =
         err.response?.data?.message ||
         err.message ||
-        "Error al crear el Área/Rol. Intente nuevamente."
-      setErrorSubmit(message)
-      showSnackBar(message)
+        "Error al crear el Área/Rol. Intente nuevamente.";
+      setErrorSubmit(message);
+      showSnackBar(message);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleCancel = () => {
-    setFormData(initializeNestedPermissions())
-    setErrorSubmit(null)
-    setNameTouched(false)
-    setExpandedAccordion(false)
-    navigate("/admin/admins/roles/read")
-  }
+    setFormData(initializeNestedPermissions());
+    setErrorSubmit(null);
+    setNameTouched(false);
+    setExpandedAccordion(false);
+    navigate("/admin/admins/roles/read");
+  };
 
-  const nameHasError = nameTouched && !formData.area.trim()
+  const nameHasError = nameTouched && !formData.area.trim();
 
   return (
     <>
@@ -276,15 +276,15 @@ const CreateRole: React.FC = () => {
             </Grid2>
 
             {permissionGroups.map((group) => {
-              const groupKeys = group.items.map((item) => item.key)
+              const groupKeys = group.items.map((item) => item.key);
               const checkedCount = groupKeys.reduce(
                 (count, key) =>
                   count + (getNestedPermissionValue(formData, key) ? 1 : 0),
-                0
-              )
+                0,
+              );
               const allChecked =
-                groupKeys.length > 0 && checkedCount === groupKeys.length
-              const someChecked = checkedCount > 0 && !allChecked
+                groupKeys.length > 0 && checkedCount === groupKeys.length;
+              const someChecked = checkedCount > 0 && !allChecked;
 
               return (
                 <Grid2 size={{ xs: 12, md: 6, lg: 4 }} key={group.title}>
@@ -350,7 +350,7 @@ const CreateRole: React.FC = () => {
                               <Checkbox
                                 checked={getNestedPermissionValue(
                                   formData,
-                                  item.key
+                                  item.key,
                                 )}
                                 onChange={handleInputChange}
                                 name={item.key}
@@ -379,7 +379,7 @@ const CreateRole: React.FC = () => {
                     </AccordionDetails>
                   </Accordion>
                 </Grid2>
-              )
+              );
             })}
 
             {errorSubmit && (
@@ -427,7 +427,7 @@ const CreateRole: React.FC = () => {
         </form>
       </Paper>
     </>
-  )
-}
+  );
+};
 
-export default CreateRole
+export default CreateRole;

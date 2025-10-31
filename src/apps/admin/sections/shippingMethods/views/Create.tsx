@@ -1,11 +1,11 @@
 // src/apps/admin/sections/shipping/views/CreateShippingMethod.tsx
-import React, { useState, ChangeEvent, FormEvent } from "react"
-import { useNavigate } from "react-router-dom"
+import React, { useState, ChangeEvent, FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 
 // Hooks and Context
-import { useSnackBar } from "context/GlobalContext"
-import { ShippingMethod } from "types/order.types"
-import { createShippingMethod } from "@api/order.api"
+import { useSnackBar } from "context/GlobalContext";
+import { ShippingMethod } from "types/order.types";
+import { createShippingMethod } from "@api/order.api";
 
 // MUI Components
 import {
@@ -21,10 +21,10 @@ import {
   Stack,
   InputAdornment, // Added
   FormHelperText,
-} from "@mui/material"
-import Grid2 from "@mui/material/Grid"
+} from "@mui/material";
+import Grid2 from "@mui/material/Grid";
 
-import Title from "@apps/admin/components/Title"
+import Title from "@apps/admin/components/Title";
 
 // --- Type Definitions ---
 // Initial State excluding backend-set fields
@@ -35,35 +35,35 @@ const initialFormState: Omit<
   name: "",
   price: "", // Keep as string for input binding, parse on submit/validate
   active: true,
-}
+};
 
 // Validation Errors Type
 interface ShippingValidationErrors {
-  name?: string
-  price?: string
+  name?: string;
+  price?: string;
 }
 
 // --- Component ---
 const CreateShippingMethod: React.FC = () => {
   // --- Hooks ---
-  const navigate = useNavigate()
-  const { showSnackBar } = useSnackBar()
+  const navigate = useNavigate();
+  const { showSnackBar } = useSnackBar();
 
   // --- State ---
-  const [formData, setFormData] = useState(initialFormState)
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+  const [formData, setFormData] = useState(initialFormState);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   // Use validationErrors object state instead of single string
   const [validationErrors, setValidationErrors] =
-    useState<ShippingValidationErrors | null>(null)
+    useState<ShippingValidationErrors | null>(null);
 
   // --- Handlers ---
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value, checked, type } = event.target
+    const { name, value, checked, type } = event.target;
 
     setFormData((prevData) => ({
       ...prevData,
       [name]: type === "checkbox" ? checked : value,
-    }))
+    }));
 
     // Clear validation error for the specific field on change
     if (
@@ -71,75 +71,75 @@ const CreateShippingMethod: React.FC = () => {
       validationErrors[name as keyof ShippingValidationErrors]
     ) {
       setValidationErrors((prevErrors) => {
-        const updatedErrors = { ...prevErrors }
-        delete updatedErrors[name as keyof ShippingValidationErrors]
+        const updatedErrors = { ...prevErrors };
+        delete updatedErrors[name as keyof ShippingValidationErrors];
         // Return null if no errors remain, otherwise return the updated object
-        return Object.keys(updatedErrors).length === 0 ? null : updatedErrors
-      })
+        return Object.keys(updatedErrors).length === 0 ? null : updatedErrors;
+      });
     }
-  }
+  };
 
   // --- Validation ---
   const validateForm = (): boolean => {
-    const errors: ShippingValidationErrors = {}
+    const errors: ShippingValidationErrors = {};
 
     if (!formData.name.trim()) {
-      errors.name = "El nombre del método es obligatorio."
+      errors.name = "El nombre del método es obligatorio.";
     }
     if (!formData.price.trim()) {
-      errors.price = "El precio es obligatorio."
+      errors.price = "El precio es obligatorio.";
     } else {
-      const priceValue = parseFloat(formData.price)
+      const priceValue = parseFloat(formData.price);
       if (isNaN(priceValue) || priceValue < 0) {
-        errors.price = "El precio debe ser un número válido y no negativo."
+        errors.price = "El precio debe ser un número válido y no negativo.";
       }
     }
 
-    setValidationErrors(Object.keys(errors).length > 0 ? errors : null)
-    return Object.keys(errors).length === 0 // Return true if no errors
-  }
+    setValidationErrors(Object.keys(errors).length > 0 ? errors : null);
+    return Object.keys(errors).length === 0; // Return true if no errors
+  };
 
   // --- Submission ---
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
+    event.preventDefault();
     if (!validateForm()) {
-      showSnackBar("Por favor, corrija los errores indicados.")
-      return
+      showSnackBar("Por favor, corrija los errores indicados.");
+      return;
     }
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     // Prepare payload - Convert price to a formatted string (assuming API expects string)
     const payload = {
       ...formData,
       price: parseFloat(formData.price).toFixed(2),
-    }
+    };
 
     try {
-      console.log("Submitting Shipping Method Data:", payload)
-      const response = await createShippingMethod(payload) // API call
+      console.log("Submitting Shipping Method Data:", payload);
+      const response = await createShippingMethod(payload); // API call
 
       if (response) {
-        showSnackBar(`Método de envío "${formData.name}" creado exitosamente.`)
-        navigate("/admin/shipping-method/read") // Navigate back
+        showSnackBar(`Método de envío "${formData.name}" creado exitosamente.`);
+        navigate("/admin/shipping-method/read"); // Navigate back
       } else {
-        throw new Error("La creación no devolvió una respuesta esperada.")
+        throw new Error("La creación no devolvió una respuesta esperada.");
       }
     } catch (err: any) {
-      console.error("Failed to create shipping method:", err)
-      const message = err.message || "Error al crear el método de envío."
+      console.error("Failed to create shipping method:", err);
+      const message = err.message || "Error al crear el método de envío.";
       // Set general error (e.g., on name field) or use a separate general error state
-      setValidationErrors((prev) => ({ ...(prev || {}), name: message }))
-      showSnackBar(message)
+      setValidationErrors((prev) => ({ ...(prev || {}), name: message }));
+      showSnackBar(message);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   // Handle cancellation
   const handleCancel = () => {
-    navigate("/admin/shipping-method/read") // Navigate back
-  }
+    navigate("/admin/shipping-method/read"); // Navigate back
+  };
 
   // --- Render Logic ---
   return (
@@ -254,7 +254,7 @@ const CreateShippingMethod: React.FC = () => {
         </form>
       </Paper>
     </>
-  )
-}
+  );
+};
 
-export default CreateShippingMethod
+export default CreateShippingMethod;

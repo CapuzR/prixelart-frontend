@@ -162,7 +162,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     >
       <List component="nav" aria-labelledby="admin-sidebar-nav">
         {/* Dashboard */}
-        {permissions.area === "Master" && (
+        {permissions.area === "Master" || permissions.area === "Ventas" || permissions.area === "Administración" && (
           <>
             <ListItemButton
               component={RouterLink}
@@ -176,7 +176,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             </ListItemButton>
             <Divider sx={{ my: 1 }} />
           </>
-        )}
+         )} 
         {/* Admins Section */}
         {canViewAdmins && (
           <>

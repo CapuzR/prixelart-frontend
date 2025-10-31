@@ -90,7 +90,7 @@ const AdminLayout: React.FC = () => {
 
     useEffect(() => {
         if (permissions && !loading) {
-            if (location.pathname === '/admin/dashboard' && permissions.area !== 'Master') {
+            if (location.pathname === '/admin/dashboard' && (permissions.area !== 'Master' && permissions.area !== "Ventas" && permissions.area !== "Administración")            ) {
                 showSnackBar("El dashboard es solo para administradores Master.");
                 navigate('/admin/orders/read', { replace: true });
             }

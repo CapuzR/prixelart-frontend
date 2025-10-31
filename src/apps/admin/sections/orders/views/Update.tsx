@@ -2251,7 +2251,7 @@ export default function UpdateOrder() {
                               )}
                             </Grid2>
                             <Grid2 size={{ xs: 6, md: 3 }} sx={{ textAlign: 'right' }}>
-                              {permissions?.area !== 'Master' ? (
+                              {permissions?.area === 'Master' ? (
                                 <TextField
                                   fullWidth
                                   variant="outlined"
@@ -2277,6 +2277,7 @@ export default function UpdateOrder() {
                                   }}
                                 />
                               ) : (
+                                permissions?.area !== 'Master' &&
                                 permissions?.orders.readPayDetails && (
                                   <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
                                     $
@@ -2285,15 +2286,16 @@ export default function UpdateOrder() {
                                   </Typography>
                                 )
                               )}
-                              {permissions?.orders.readPayDetails && (
-                                <Typography variant="subtitle2" color="primary.main">
-                                  $
-                                  {(
-                                    (line.quantity || 0) *
-                                    (line?.pricePerUnit ? Number(line?.pricePerUnit) : 0)
-                                  ).toFixed(2)}
-                                </Typography>
-                              )}
+                              {permissions?.area !== 'Master' &&
+                                permissions?.orders.readPayDetails && (
+                                  <Typography variant="subtitle2" color="primary.main">
+                                    $
+                                    {(
+                                      (line.quantity || 0) *
+                                      (line?.pricePerUnit ? Number(line?.pricePerUnit) : 0)
+                                    ).toFixed(2)}
+                                  </Typography>
+                                )}
                             </Grid2>
                           </Grid2>
                         </Grid2>

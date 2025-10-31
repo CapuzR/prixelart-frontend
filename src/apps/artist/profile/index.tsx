@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Avatar,
   Box,
@@ -41,8 +41,8 @@ import {
   Dialog,
   DialogContent,
   LinearProgress,
-} from "@mui/material"
-import Grid2 from "@mui/material/Grid"
+} from "@mui/material";
+import Grid2 from "@mui/material/Grid";
 import {
   Instagram,
   Twitter,
@@ -62,27 +62,27 @@ import {
   DesignServices as DesignServicesIcon,
   Edit as EditIcon,
   CloudUpload as CloudUploadIcon,
-} from "@mui/icons-material"
-import { Prixer } from "types/prixer.types"
-import { useParams, useNavigate } from "react-router-dom"
-import { getPrixerByUsername, updatePrixerProfile } from "@api/prixer.api"
-import { User } from "types/user.types"
-import { getArtsByPrixer, PaginatedArtsResult } from "@api/art.api"
-import { Art } from "types/art.types"
-import { Service } from "types/service.types"
-import { fetchServicesByUser } from "@api/service.api"
-import { useLoading, useSnackBar, useUser } from "@context/GlobalContext"
+} from "@mui/icons-material";
+import { Prixer } from "types/prixer.types";
+import { useParams, useNavigate } from "react-router-dom";
+import { getPrixerByUsername, updatePrixerProfile } from "@api/prixer.api";
+import { User } from "types/user.types";
+import { getArtsByPrixer, PaginatedArtsResult } from "@api/art.api";
+import { Art } from "types/art.types";
+import { Service } from "types/service.types";
+import { fetchServicesByUser } from "@api/service.api";
+import { useLoading, useSnackBar, useUser } from "@context/GlobalContext";
 import ReactCrop, {
   centerCrop,
   Crop,
   makeAspectCrop,
   PixelCrop,
-} from "react-image-crop"
-import { BACKEND_URL } from "@api/utils.api"
-import * as tus from "tus-js-client"
-import ScrollToTopButton from "@components/ScrollToTop"
+} from "react-image-crop";
+import { BACKEND_URL } from "@api/utils.api";
+import * as tus from "tus-js-client";
+import ScrollToTopButton from "@components/ScrollToTop";
 
-const ARTS_PER_PAGE = 12
+const ARTS_PER_PAGE = 12;
 const availableSpecialties = [
   "Fotografía",
   "Ilustración",
@@ -90,7 +90,7 @@ const availableSpecialties = [
   "Artes Plásticas",
   "Música",
   "Escritura",
-]
+];
 
 const lightboxModalStyle = {
   position: "absolute" as "absolute",
@@ -107,7 +107,7 @@ const lightboxModalStyle = {
   alignItems: "center",
   justifyContent: "center",
   borderRadius: 1,
-}
+};
 
 const sortOptions = [
   {
@@ -140,13 +140,13 @@ const sortOptions = [
       />
     ),
   },
-]
+];
 
 const PrixerProfileSkeleton: React.FC = () => {
-  const theme = useTheme()
-  const isSmall = useMediaQuery(theme.breakpoints.down("sm"))
-  const isMedium = useMediaQuery(theme.breakpoints.down("md"))
-  const artCols = isSmall ? 2 : isMedium ? 3 : 4
+  const theme = useTheme();
+  const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMedium = useMediaQuery(theme.breakpoints.down("md"));
+  const artCols = isSmall ? 2 : isMedium ? 3 : 4;
   return (
     <Card
       sx={{
@@ -268,121 +268,122 @@ const PrixerProfileSkeleton: React.FC = () => {
         </Box>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
 async function canvasPreview(
   image: HTMLImageElement,
   canvas: HTMLCanvasElement,
-  crop: PixelCrop
+  crop: PixelCrop,
 ) {
-  const ctx = canvas.getContext("2d")
-  if (!ctx) throw new Error("No 2d context")
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("No 2d context");
 
-  const scaleX = image.naturalWidth / image.width
-  const scaleY = image.naturalHeight / image.height
-  const pixelRatio = window.devicePixelRatio || 1
+  const scaleX = image.naturalWidth / image.width;
+  const scaleY = image.naturalHeight / image.height;
+  const pixelRatio = window.devicePixelRatio || 1;
 
-  canvas.width = Math.floor(crop.width * scaleX * pixelRatio)
-  canvas.height = Math.floor(crop.height * scaleY * pixelRatio)
+  canvas.width = Math.floor(crop.width * scaleX * pixelRatio);
+  canvas.height = Math.floor(crop.height * scaleY * pixelRatio);
 
-  ctx.scale(pixelRatio, pixelRatio)
-  ctx.imageSmoothingQuality = "high"
+  ctx.scale(pixelRatio, pixelRatio);
+  ctx.imageSmoothingQuality = "high";
 
-  const cropX = crop.x * scaleX
-  const cropY = crop.y * scaleY
+  const cropX = crop.x * scaleX;
+  const cropY = crop.y * scaleY;
 
-  ctx.save()
-  ctx.translate(-cropX, -cropY)
-  ctx.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight)
-  ctx.restore()
+  ctx.save();
+  ctx.translate(-cropX, -cropY);
+  ctx.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight);
+  ctx.restore();
 }
 
 function centerAspectCrop(
   mediaWidth: number,
   mediaHeight: number,
-  aspect: number
+  aspect: number,
 ) {
   return centerCrop(
     makeAspectCrop({ unit: "%", width: 90 }, aspect, mediaWidth, mediaHeight),
     mediaWidth,
-    mediaHeight
-  )
+    mediaHeight,
+  );
 }
 
 export default function PrixerProfileCard() {
-  const [prixer, setPrixer] = useState<Prixer | null>(null)
-  const [prixerUser, setPrixerUser] = useState<User | null>(null)
-  const [userName, setUserName] = useState<string | undefined>(undefined)
-  const [loading, setLoading] = useState<boolean>(true)
-  const [error, setError] = useState<string | null>(null)
-  const [arts, setArts] = useState<Art[]>([])
-  const [currentPage, setCurrentPage] = useState<number>(1)
-  const [artsLoading, setArtsLoading] = useState<boolean>(false)
-  const [moreArtsLoading, setMoreArtsLoading] = useState<boolean>(false)
-  const [artsError, setArtsError] = useState<string | null>(null)
-  const [hasNextPage, setHasNextPage] = useState<boolean>(true)
+  const [prixer, setPrixer] = useState<Prixer | null>(null);
+  const [prixerUser, setPrixerUser] = useState<User | null>(null);
+  const [userName, setUserName] = useState<string | undefined>(undefined);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [arts, setArts] = useState<Art[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [artsLoading, setArtsLoading] = useState<boolean>(false);
+  const [moreArtsLoading, setMoreArtsLoading] = useState<boolean>(false);
+  const [artsError, setArtsError] = useState<string | null>(null);
+  const [hasNextPage, setHasNextPage] = useState<boolean>(true);
 
-  const [currentTab, setCurrentTab] = useState("portfolio")
-  const [services, setServices] = useState<Service[]>([])
-  const [servicesLoading, setServicesLoading] = useState<boolean>(true)
-  const [servicesError, setServicesError] = useState<string | null>(null)
+  const [currentTab, setCurrentTab] = useState("portfolio");
+  const [services, setServices] = useState<Service[]>([]);
+  const [servicesLoading, setServicesLoading] = useState<boolean>(true);
+  const [servicesError, setServicesError] = useState<string | null>(null);
 
-  const [showFullDescription, setShowFullDescription] = useState<boolean>(false)
+  const [showFullDescription, setShowFullDescription] =
+    useState<boolean>(false);
 
-  const [lightboxOpen, setLightboxOpen] = useState<boolean>(false)
-  const [lightboxImage, setLightboxImage] = useState<string>("")
+  const [lightboxOpen, setLightboxOpen] = useState<boolean>(false);
+  const [lightboxImage, setLightboxImage] = useState<string>("");
 
-  const [sortOption, setSortOption] = useState<string>(sortOptions[0].value)
-  const [filterCategory, setFilterCategory] = useState<string>("")
-  const [availableCategories, setAvailableCategories] = useState<string[]>([])
+  const [sortOption, setSortOption] = useState<string>(sortOptions[0].value);
+  const [filterCategory, setFilterCategory] = useState<string>("");
+  const [availableCategories, setAvailableCategories] = useState<string[]>([]);
 
-  const { username: routeUsername } = useParams<{ username: string }>()
-  const navigate = useNavigate()
-  const { user } = useUser()
-  const { showSnackBar } = useSnackBar()
-  const { loading: isSaving, setLoading: setIsSaving } = useLoading()
-  const isOwner = user?.username === routeUsername
+  const { username: routeUsername } = useParams<{ username: string }>();
+  const navigate = useNavigate();
+  const { user } = useUser();
+  const { showSnackBar } = useSnackBar();
+  const { loading: isSaving, setLoading: setIsSaving } = useLoading();
+  const isOwner = user?.username === routeUsername;
 
-  const [isEditMode, setIsEditMode] = useState(false)
-  const [formData, setFormData] = useState<Partial<Prixer>>({})
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [formData, setFormData] = useState<Partial<Prixer>>({});
 
-  const theme = useTheme()
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"))
-  const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"))
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
 
-  const observerRef = useRef<IntersectionObserver | null>(null)
-  const loadMoreTriggerRef = useRef<HTMLDivElement | null>(null)
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const loadMoreTriggerRef = useRef<HTMLDivElement | null>(null);
 
   // --- NEW: Uploader and Cropper State ---
-  const [imageSrc, setImageSrc] = useState("")
-  const [crop, setCrop] = useState<Crop>()
-  const [completedCrop, setCompletedCrop] = useState<PixelCrop>()
-  const [cropModalOpen, setCropModalOpen] = useState(false)
+  const [imageSrc, setImageSrc] = useState("");
+  const [crop, setCrop] = useState<Crop>();
+  const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
+  const [cropModalOpen, setCropModalOpen] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<{
-    percentage: number
-    status: string
-  } | null>(null)
-  const imgRef = useRef<HTMLImageElement>(null)
-  const previewCanvasRef = useRef<HTMLCanvasElement>(null)
+    percentage: number;
+    status: string;
+  } | null>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
+  const previewCanvasRef = useRef<HTMLCanvasElement>(null);
 
   const [errors, setErrors] = useState<
     Partial<Record<keyof Prixer, string | null>>
-  >({})
+  >({});
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
-    setCurrentTab(newValue)
-  }
+    setCurrentTab(newValue);
+  };
 
   const handleSortChange = (event: SelectChangeEvent<string>) => {
-    setSortOption(event.target.value)
-  }
+    setSortOption(event.target.value);
+  };
 
   const handleFilterCategoryChange = (event: SelectChangeEvent<string>) => {
-    setFilterCategory(event.target.value)
-  }
+    setFilterCategory(event.target.value);
+  };
 
-  const getImageListCols = () => (isSmallScreen ? 2 : isMediumScreen ? 3 : 4)
+  const getImageListCols = () => (isSmallScreen ? 2 : isMediumScreen ? 3 : 4);
 
   useEffect(() => {
     // When prixer data is loaded, initialize the form data
@@ -395,119 +396,121 @@ export default function PrixerProfileCard() {
         twitter: prixer.twitter || "",
         facebook: prixer.facebook || "",
         phone: prixer.phone || "",
-      })
+      });
     }
-  }, [prixerUser])
+  }, [prixerUser]);
 
   const handleFormChange = (field: keyof Prixer, value: string | string[]) => {
     if (typeof value === "string") {
-      const error = validateField(field, value)
-      setErrors((prev) => ({ ...prev, [field]: error }))
+      const error = validateField(field, value);
+      setErrors((prev) => ({ ...prev, [field]: error }));
     }
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   const onSelectFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setCrop(undefined) // Makes crop preview update between selections
-      const reader = new FileReader()
+      setCrop(undefined); // Makes crop preview update between selections
+      const reader = new FileReader();
       reader.addEventListener("load", () => {
-        setImageSrc(reader.result?.toString() || "")
-        setCropModalOpen(true)
-      })
-      reader.readAsDataURL(e.target.files[0])
+        setImageSrc(reader.result?.toString() || "");
+        setCropModalOpen(true);
+      });
+      reader.readAsDataURL(e.target.files[0]);
     }
-  }
+  };
 
   const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    imgRef.current = e.currentTarget
-    const { width, height } = e.currentTarget
-    setCrop(centerAspectCrop(width, height, 1 / 1)) // 1:1 aspect ratio for avatar
-  }
+    imgRef.current = e.currentTarget;
+    const { width, height } = e.currentTarget;
+    setCrop(centerAspectCrop(width, height, 1 / 1)); // 1:1 aspect ratio for avatar
+  };
 
   const handleConfirmCropAndUpload = async () => {
-    const image = imgRef.current
-    const canvas = previewCanvasRef.current
+    const image = imgRef.current;
+    const canvas = previewCanvasRef.current;
     if (!image || !canvas || !completedCrop) {
-      throw new Error("Crop canvas does not exist")
+      throw new Error("Crop canvas does not exist");
     }
 
-    await canvasPreview(image, canvas, completedCrop)
+    await canvasPreview(image, canvas, completedCrop);
 
     canvas.toBlob(
       (blob) => {
         if (!blob) {
-          throw new Error("Failed to create blob")
+          throw new Error("Failed to create blob");
         }
         const croppedFile = new File([blob], "avatar.webp", {
           type: "image/webp",
-        })
-        handleTusUpload(croppedFile)
+        });
+        handleTusUpload(croppedFile);
       },
       "image/webp",
-      0.85
-    )
-    setCropModalOpen(false)
-  }
+      0.85,
+    );
+    setCropModalOpen(false);
+  };
 
   const handleTusUpload = (file: File) => {
-    setUploadProgress({ percentage: 0, status: "Starting..." })
+    setUploadProgress({ percentage: 0, status: "Starting..." });
 
     const upload = new tus.Upload(file, {
       endpoint: `${BACKEND_URL}/files`,
       retryDelays: [0, 3000, 5000, 10000],
       metadata: { filename: file.name, filetype: file.type },
       onProgress: (bytesUploaded, bytesTotal) => {
-        const percentage = Math.round((bytesUploaded / bytesTotal) * 100)
-        setUploadProgress({ percentage, status: "Uploading..." })
+        const percentage = Math.round((bytesUploaded / bytesTotal) * 100);
+        setUploadProgress({ percentage, status: "Uploading..." });
       },
       onSuccess: () => {
-        const tusUploadInstance = upload as any
-        let finalUrl: string | null = null
+        const tusUploadInstance = upload as any;
+        let finalUrl: string | null = null;
 
         // This logic is adapted from your ManageCarousels component.
         // It correctly tries to find the final URL from the response headers.
         const xhr =
           tusUploadInstance.xhr ||
-          (tusUploadInstance._req && tusUploadInstance._req._xhr)
+          (tusUploadInstance._req && tusUploadInstance._req._xhr);
 
         if (xhr && typeof xhr.getResponseHeader === "function") {
           finalUrl =
             xhr.getResponseHeader("X-Final-URL") ||
-            xhr.getResponseHeader("x-final-url")
+            xhr.getResponseHeader("x-final-url");
         }
 
         // If the header is missing, fall back to the TUS endpoint URL.
         if (!finalUrl && upload.url) {
           console.warn(
-            "X-Final-URL header not found. Falling back to constructing the URL manually. This might not be the public URL."
-          )
-          const fileId = upload.url.split("/").pop()
-          finalUrl = `${import.meta.env.VITE_PUBLIC_BUCKET_URL}/${fileId}`
+            "X-Final-URL header not found. Falling back to constructing the URL manually. This might not be the public URL.",
+          );
+          const fileId = upload.url.split("/").pop();
+          finalUrl = `${import.meta.env.VITE_PUBLIC_BUCKET_URL}/${fileId}`;
         }
 
         if (finalUrl) {
           // Update the form state with the new URL
-          handleFormChange("avatar", finalUrl)
+          handleFormChange("avatar", finalUrl);
 
-          setUploadProgress({ percentage: 100, status: "Completed!" })
-          showSnackBar("Avatar uploaded. Click Save to apply.")
-          setTimeout(() => setUploadProgress(null), 3000)
+          setUploadProgress({ percentage: 100, status: "Completed!" });
+          showSnackBar("Avatar uploaded. Click Save to apply.");
+          setTimeout(() => setUploadProgress(null), 3000);
         } else {
-          console.error("CRITICAL: Could not determine final URL after upload.")
-          setUploadProgress({ percentage: 100, status: `Error: Missing URL` })
-          showSnackBar("Upload failed: Could not retrieve file URL.")
+          console.error(
+            "CRITICAL: Could not determine final URL after upload.",
+          );
+          setUploadProgress({ percentage: 100, status: `Error: Missing URL` });
+          showSnackBar("Upload failed: Could not retrieve file URL.");
         }
       },
       onError: (error) => {
-        console.error("Failed to upload", error)
-        setUploadProgress({ percentage: 0, status: `Error` })
-        showSnackBar(`Upload failed: ${error.message}`)
+        console.error("Failed to upload", error);
+        setUploadProgress({ percentage: 0, status: `Error` });
+        showSnackBar(`Upload failed: ${error.message}`);
       },
-    })
+    });
 
-    upload.start()
-  }
+    upload.start();
+  };
 
   const fieldRefs = {
     avatar: useRef<HTMLInputElement>(null),
@@ -515,77 +518,77 @@ export default function PrixerProfileCard() {
     instagram: useRef<HTMLInputElement>(null),
     twitter: useRef<HTMLInputElement>(null),
     facebook: useRef<HTMLInputElement>(null),
-  }
+  };
 
   const handleSave = async () => {
     if (!prixerUser?._id) {
-      showSnackBar("Error: User ID not found.")
-      return
+      showSnackBar("Error: User ID not found.");
+      return;
     }
 
-    const newErrors: typeof errors = {}
-    let firstErrorField: keyof typeof fieldRefs | null = null
+    const newErrors: typeof errors = {};
+    let firstErrorField: keyof typeof fieldRefs | null = null;
 
     const fieldsToValidate: Array<keyof typeof fieldRefs> = [
       "phone",
       "instagram",
       "twitter",
       "facebook",
-    ]
+    ];
 
     for (const key of fieldsToValidate) {
-      const value = formData[key] as string
-      const error = validateField(key, value)
+      const value = formData[key] as string;
+      const error = validateField(key, value);
       if (error) {
-        newErrors[key] = error
+        newErrors[key] = error;
         if (!firstErrorField) {
-          firstErrorField = key
+          firstErrorField = key;
         }
       }
     }
 
-    setErrors(newErrors)
+    setErrors(newErrors);
 
     if (firstErrorField) {
-      const errorFieldNames = Object.keys(newErrors).join(", ")
-      showSnackBar(`Please fix the following fields: ${errorFieldNames}`)
+      const errorFieldNames = Object.keys(newErrors).join(", ");
+      showSnackBar(`Please fix the following fields: ${errorFieldNames}`);
 
-      fieldRefs[firstErrorField]?.current?.focus()
-      return
+      fieldRefs[firstErrorField]?.current?.focus();
+      return;
     }
 
-    setIsSaving(true)
+    setIsSaving(true);
     try {
       const dataToUpdate: Partial<Prixer> = {
         ...formData,
         specialty: formData.specialty || [],
-      }
+      };
 
       const response = await updatePrixerProfile(
         prixerUser._id.toString(),
-        dataToUpdate
-      )
+        dataToUpdate,
+      );
       if (response.success && response.result) {
-        const updatedUser = response.result as User
-        setPrixer(updatedUser.prixer || null)
-        setPrixerUser(updatedUser)
-        showSnackBar("Profile updated successfully!")
-        setIsEditMode(false)
+        const updatedUser = response.result as User;
+        setPrixer(updatedUser.prixer || null);
+        setPrixerUser(updatedUser);
+        showSnackBar("Profile updated successfully!");
+        setIsEditMode(false);
       } else {
-        showSnackBar(response.message || "Failed to update profile.")
+        showSnackBar(response.message || "Failed to update profile.");
       }
     } catch (err) {
-      console.error("Save failed:", err)
-      showSnackBar("An unexpected error occurred.")
+      console.error("Save failed:", err);
+      showSnackBar("An unexpected error occurred.");
     } finally {
-      setIsSaving(false)
+      setIsSaving(false);
     }
-  }
+  };
 
   const handleCancel = () => {
-    setIsEditMode(false)
-    if (prixer) setFormData(prixer)
-  }
+    setIsEditMode(false);
+    if (prixer) setFormData(prixer);
+  };
 
   const loadPrixerArts = useCallback(
     async (
@@ -593,13 +596,13 @@ export default function PrixerProfileCard() {
       pageNum: number,
       currentSort: string,
       currentCategory: string,
-      isInitialArtLoadForUser: boolean = false
+      isInitialArtLoadForUser: boolean = false,
     ) => {
       if (pageNum === 1) {
-        setArtsLoading(true)
-        setArtsError(null)
+        setArtsLoading(true);
+        setArtsError(null);
       } else {
-        setMoreArtsLoading(true)
+        setMoreArtsLoading(true);
       }
 
       try {
@@ -608,144 +611,149 @@ export default function PrixerProfileCard() {
           pageNum,
           ARTS_PER_PAGE,
           currentSort,
-          currentCategory
-        )
+          currentCategory,
+        );
 
         if (data) {
           setArts((prev) =>
-            pageNum === 1 ? data.arts : [...prev, ...data.arts]
-          )
-          setCurrentPage(data.currentPage)
-          setHasNextPage(data.hasNextPage)
+            pageNum === 1 ? data.arts : [...prev, ...data.arts],
+          );
+          setCurrentPage(data.currentPage);
+          setHasNextPage(data.hasNextPage);
 
           if (isInitialArtLoadForUser && pageNum === 1) {
             const uniqueCategories = Array.from(
               new Set(
-                data.arts.map((art) => art.category).filter(Boolean) as string[]
-              )
-            )
-            setAvailableCategories(uniqueCategories.sort())
+                data.arts
+                  .map((art) => art.category)
+                  .filter(Boolean) as string[],
+              ),
+            );
+            setAvailableCategories(uniqueCategories.sort());
           }
         } else {
-          setHasNextPage(false)
+          setHasNextPage(false);
           if (isInitialArtLoadForUser && pageNum === 1)
-            setAvailableCategories([])
+            setAvailableCategories([]);
         }
       } catch (err) {
-        console.error("Failed to fetch arts in component:", err)
+        console.error("Failed to fetch arts in component:", err);
         setArtsError(
-          err instanceof Error ? err.message : "Could not retrieve arts."
-        )
-        if (isInitialArtLoadForUser && pageNum === 1) setAvailableCategories([])
+          err instanceof Error ? err.message : "Could not retrieve arts.",
+        );
+        if (isInitialArtLoadForUser && pageNum === 1)
+          setAvailableCategories([]);
       } finally {
-        if (pageNum === 1) setArtsLoading(false)
-        else setMoreArtsLoading(false)
+        if (pageNum === 1) setArtsLoading(false);
+        else setMoreArtsLoading(false);
       }
     },
-    []
-  )
+    [],
+  );
 
   useEffect(() => {
     if (!routeUsername) {
-      setError("No Username provided in URL.")
-      setLoading(false)
-      setHasNextPage(false)
-      return
+      setError("No Username provided in URL.");
+      setLoading(false);
+      setHasNextPage(false);
+      return;
     }
 
     const loadProfileAndData = async () => {
-      setLoading(true)
-      setError(null)
-      setPrixer(null)
-      setPrixerUser(null)
-      setUserName(undefined)
-      setArts([])
-      setServices([])
-      setCurrentPage(1)
-      setHasNextPage(true)
-      setArtsError(null)
-      setServicesError(null)
-      setShowFullDescription(false)
+      setLoading(true);
+      setError(null);
+      setPrixer(null);
+      setPrixerUser(null);
+      setUserName(undefined);
+      setArts([]);
+      setServices([]);
+      setCurrentPage(1);
+      setHasNextPage(true);
+      setArtsError(null);
+      setServicesError(null);
+      setShowFullDescription(false);
 
       try {
         const userDataResponse: User | null =
-          await getPrixerByUsername(routeUsername)
+          await getPrixerByUsername(routeUsername);
 
         if (userDataResponse?.prixer) {
-          setPrixerUser(userDataResponse)
-          setPrixer(userDataResponse.prixer)
-          setUserName(userDataResponse.username)
-          const prixerId = userDataResponse?.prixer._id?.toString()
+          setPrixerUser(userDataResponse);
+          setPrixer(userDataResponse.prixer);
+          setUserName(userDataResponse.username);
+          const prixerId = userDataResponse?.prixer._id?.toString();
 
-          setServicesLoading(true)
+          setServicesLoading(true);
           await Promise.all([
             loadPrixerArts(
               userDataResponse.username,
               1,
               sortOption,
               filterCategory,
-              true
+              true,
             ),
             (async () => {
               try {
-                if (!prixerId) throw new Error("Prixer ID is missing.")
-                const servicesData = await fetchServicesByUser(prixerId)
+                if (!prixerId) throw new Error("Prixer ID is missing.");
+                const servicesData = await fetchServicesByUser(prixerId);
                 setServices(
                   servicesData.filter(
                     (s: Service) =>
                       s.active &&
-                      (s.visible === true || s.visible === undefined)
-                  ) || []
-                )
+                      (s.visible === true || s.visible === undefined),
+                  ) || [],
+                );
               } catch (err) {
-                console.error("Failed to fetch services:", err)
-                setServicesError("Could not retrieve services for this Prixer.")
+                console.error("Failed to fetch services:", err);
+                setServicesError(
+                  "Could not retrieve services for this Prixer.",
+                );
               } finally {
-                setServicesLoading(false)
+                setServicesLoading(false);
               }
             })(),
-          ])
+          ]);
         } else if (userDataResponse) {
-          setError(`User '${userDataResponse.username}' is not a Prixer.`)
-          setHasNextPage(false)
+          setError(`User '${userDataResponse.username}' is not a Prixer.`);
+          setHasNextPage(false);
         } else {
-          setError(`Prixer profile for '${routeUsername}' not found.`)
-          setHasNextPage(false)
+          setError(`Prixer profile for '${routeUsername}' not found.`);
+          setHasNextPage(false);
         }
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : "An unknown error occurred."
-        )
-        setHasNextPage(false)
+          err instanceof Error ? err.message : "An unknown error occurred.",
+        );
+        setHasNextPage(false);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
-    loadProfileAndData()
-  }, [routeUsername, sortOption, filterCategory, loadPrixerArts])
+    };
+    loadProfileAndData();
+  }, [routeUsername, sortOption, filterCategory, loadPrixerArts]);
 
   useEffect(() => {
-    if (observerRef.current) observerRef.current.disconnect()
-    if (!hasNextPage || artsLoading || moreArtsLoading || !userName) return
+    if (observerRef.current) observerRef.current.disconnect();
+    if (!hasNextPage || artsLoading || moreArtsLoading || !userName) return;
 
     observerRef.current = new IntersectionObserver(
       (entries) => {
-        const entry = entries[0]
+        const entry = entries[0];
         if (entry.isIntersecting && userName) {
-          loadPrixerArts(userName, currentPage + 1, sortOption, filterCategory)
+          loadPrixerArts(userName, currentPage + 1, sortOption, filterCategory);
         }
       },
-      { threshold: 0.1 }
-    )
+      { threshold: 0.1 },
+    );
 
-    const currentTrigger = loadMoreTriggerRef.current
-    if (currentTrigger) observerRef.current.observe(currentTrigger)
+    const currentTrigger = loadMoreTriggerRef.current;
+    if (currentTrigger) observerRef.current.observe(currentTrigger);
 
     return () => {
       if (observerRef.current && currentTrigger)
-        observerRef.current.unobserve(currentTrigger)
-      else if (observerRef.current) observerRef.current.disconnect()
-    }
+        observerRef.current.unobserve(currentTrigger);
+      else if (observerRef.current) observerRef.current.disconnect();
+    };
   }, [
     hasNextPage,
     artsLoading,
@@ -755,70 +763,70 @@ export default function PrixerProfileCard() {
     sortOption,
     filterCategory,
     loadPrixerArts,
-  ])
+  ]);
 
   const getSocialLink = (platform: string, handle?: string) => {
-    if (!handle) return null
-    const cleanedHandle = handle.replace("@", "")
+    if (!handle) return null;
+    const cleanedHandle = handle.replace("@", "");
     switch (platform) {
       case "instagram":
-        return `https://instagram.com/${cleanedHandle}`
+        return `https://instagram.com/${cleanedHandle}`;
       case "twitter":
-        return `https://twitter.com/${cleanedHandle}`
+        return `https://twitter.com/${cleanedHandle}`;
       case "facebook":
-        return `https://facebook.com/${cleanedHandle}`
+        return `https://facebook.com/${cleanedHandle}`;
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   const validateField = (name: keyof Prixer, value: string): string | null => {
-    if (!value) return null // Don't validate empty fields, only on submit
+    if (!value) return null; // Don't validate empty fields, only on submit
 
     switch (name) {
       case "phone":
-        const phoneRegex = /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/
+        const phoneRegex = /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/;
         if (!phoneRegex.test(value)) {
-          return "Invalid phone number format."
+          return "Invalid phone number format.";
         }
-        return null
+        return null;
 
       case "instagram":
       case "twitter":
-        const handleRegex = /^@?[a-zA-Z0-9._]{1,30}$/
+        const handleRegex = /^@?[a-zA-Z0-9._]{1,30}$/;
         if (!handleRegex.test(value)) {
-          return "Invalid handle format. Spaces are not allowed."
+          return "Invalid handle format. Spaces are not allowed.";
         }
-        return null
+        return null;
 
       case "facebook":
         if (/\s/.test(value)) {
-          return "Facebook path cannot contain spaces."
+          return "Facebook path cannot contain spaces.";
         }
-        return null
+        return null;
 
       case "avatar":
         try {
-          new URL(value)
-          return null
+          new URL(value);
+          return null;
         } catch (_) {
-          return "Please enter a valid URL."
+          return "Please enter a valid URL.";
         }
 
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   const handleOpenLightbox = (imageUrl: string) => {
-    setLightboxImage(imageUrl)
-    setLightboxOpen(true)
-  }
-  const handleCloseLightbox = () => setLightboxOpen(false)
+    setLightboxImage(imageUrl);
+    setLightboxOpen(true);
+  };
+  const handleCloseLightbox = () => setLightboxOpen(false);
 
   const handleShare = async () => {
-    const shareUrl = window.location.href
-    const shareTitle = `Check out ${userName}'s profile on Prixer`
+    const shareUrl = window.location.href;
+    const shareTitle = `Check out ${userName}'s profile on Prixer`;
 
     if (navigator.share) {
       try {
@@ -826,30 +834,30 @@ export default function PrixerProfileCard() {
           title: shareTitle,
           text: `Discover ${userName}'s artwork and bio!`,
           url: shareUrl,
-        })
+        });
       } catch (error) {
         if ((error as DOMException).name !== "AbortError") {
-          copyToClipboard(shareUrl, shareTitle)
+          copyToClipboard(shareUrl, shareTitle);
         }
       }
     } else {
-      copyToClipboard(shareUrl, shareTitle)
+      copyToClipboard(shareUrl, shareTitle);
     }
-  }
+  };
 
   const copyToClipboard = (text: string, title: string) => {
     navigator.clipboard
       .writeText(text)
       .then(() => {
-        alert(`${title}\nLink copied to clipboard!`)
+        alert(`${title}\nLink copied to clipboard!`);
       })
       .catch((err) => {
-        console.error("Failed to copy link: ", err)
-        alert("Failed to copy link. Please copy it manually.")
-      })
-  }
+        console.error("Failed to copy link: ", err);
+        alert("Failed to copy link. Please copy it manually.");
+      });
+  };
 
-  if (loading) return <PrixerProfileSkeleton />
+  if (loading) return <PrixerProfileSkeleton />;
   if (error && !prixer) {
     return (
       <Alert
@@ -860,7 +868,7 @@ export default function PrixerProfileCard() {
         <Typography fontWeight="bold">{error}</Typography>
         <Typography variant="body2">Por favor, intente nuevamente.</Typography>
       </Alert>
-    )
+    );
   }
   if (!prixer || !prixerUser) {
     return (
@@ -874,7 +882,7 @@ export default function PrixerProfileCard() {
           El perfil de Prixer no pudo ser cargado.
         </Typography>
       </Alert>
-    )
+    );
   }
 
   const {
@@ -886,11 +894,11 @@ export default function PrixerProfileCard() {
     facebook,
     phone,
     bio,
-  } = prixer
+  } = prixer;
   const prixerLocation =
     prixerUser.city && prixerUser.country
       ? `${prixerUser.city}, ${prixerUser.country}`
-      : prixerUser.city || prixerUser.country || null
+      : prixerUser.city || prixerUser.country || null;
 
   return (
     <>
@@ -1075,7 +1083,7 @@ export default function PrixerProfileCard() {
                       onChange={(e) =>
                         handleFormChange(
                           "specialty",
-                          e.target.value as string[]
+                          e.target.value as string[],
                         )
                       }
                       input={
@@ -1324,8 +1332,8 @@ export default function PrixerProfileCard() {
                         variant="text"
                         size="small"
                         onClick={() => {
-                          setFilterCategory("")
-                          setSortOption(sortOptions[0].value)
+                          setFilterCategory("");
+                          setSortOption(sortOptions[0].value);
                         }}
                         sx={{ mt: { xs: 1, md: 0 } }}
                       >
@@ -1825,5 +1833,5 @@ export default function PrixerProfileCard() {
         }}
       />
     </>
-  )
+  );
 }

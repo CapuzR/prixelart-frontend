@@ -1,12 +1,12 @@
-import * as React from 'react';
-import {  Paper, Button, Typography } from '@mui/material';
-import TextField from '@mui/material/TextField';
-import Grid2 from '@mui/material/Grid';
+import * as React from "react";
+import { Paper, Button, Typography } from "@mui/material";
+import TextField from "@mui/material/TextField";
+import Grid2 from "@mui/material/Grid";
 export function IconsForm({ icons, setIcons }) {
   const [data, setData] = React.useState({
-    name: '',
-    description: '',
-    src: '',
+    name: "",
+    description: "",
+    src: "",
     originalCoordinates: {
       x: 0,
       y: 0,
@@ -20,9 +20,9 @@ export function IconsForm({ icons, setIcons }) {
 
     e.target.reset();
     setData({
-      name: '',
-      description: '',
-      src: '',
+      name: "",
+      description: "",
+      src: "",
       originalCoordinates: {
         x: 0,
         y: 0,
@@ -31,7 +31,7 @@ export function IconsForm({ icons, setIcons }) {
   };
 
   const handleInputChange = (e) => {
-    if (e.target.id === 'x' || e.target.id === 'y') {
+    if (e.target.id === "x" || e.target.id === "y") {
       setData({
         ...data,
         originalCoordinates: {
@@ -49,11 +49,14 @@ export function IconsForm({ icons, setIcons }) {
 
   return (
     <>
-      <Paper style={{ padding: '8%', width: '80%' }} elevation={1}>
+      <Paper style={{ padding: "8%", width: "80%" }} elevation={1}>
         <form onSubmit={handleSubmit}>
           <Grid2 container spacing={5}>
             <Grid2 size={{ xs: 12 }}>
-              <Typography variant="h5" sx={{ color: 'black', paddingBottom: 3 }}>
+              <Typography
+                variant="h5"
+                sx={{ color: "black", paddingBottom: 3 }}
+              >
                 Incluye íconos en LPG
               </Typography>
             </Grid2>
@@ -86,18 +89,28 @@ export function IconsForm({ icons, setIcons }) {
                 fullWidth
               />
             </Grid2>
-            <Grid2 size={{xs:6}}>
-              <TextField id="x" label="Posición X" variant="filled" onChange={handleInputChange} />
+            <Grid2 size={{ xs: 6 }}>
+              <TextField
+                id="x"
+                label="Posición X"
+                variant="filled"
+                onChange={handleInputChange}
+              />
             </Grid2>
-            <Grid2 size={{xs:6}}>
-              <TextField id="y" label="Posición Y" variant="filled" onChange={handleInputChange} />
+            <Grid2 size={{ xs: 6 }}>
+              <TextField
+                id="y"
+                label="Posición Y"
+                variant="filled"
+                onChange={handleInputChange}
+              />
             </Grid2>
             <Grid2 size={{ xs: 12 }}>
               <Button
                 id="button"
                 variant="contained"
                 type="submit"
-                sx={{ backgroundColor: '#f3a89e' }}
+                sx={{ backgroundColor: "#f3a89e" }}
               >
                 Agregar
               </Button>

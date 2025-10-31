@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
-import { useTheme } from '@mui/material/styles';
-import Paper from '@mui/material/Paper';
-import InputBase from '@mui/material/InputBase';
-import IconButton from '@mui/material/IconButton';
-import SearchIcon from '@mui/icons-material/Search';
-import Input from '@mui/material/Input';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import FilterListIcon from '@mui/icons-material/FilterList';
-import CloseIcon from '@mui/icons-material/Close'; // Import for the clear search button
-import Tooltip from '@mui/material/Tooltip';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import InputAdornment from '@mui/material/InputAdornment'; // For adding the clear button
+import React, { useState } from "react";
+import { useTheme } from "@mui/material/styles";
+import Paper from "@mui/material/Paper";
+import InputBase from "@mui/material/InputBase";
+import IconButton from "@mui/material/IconButton";
+import SearchIcon from "@mui/icons-material/Search";
+import Input from "@mui/material/Input";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import CloseIcon from "@mui/icons-material/Close"; // Import for the clear search button
+import Tooltip from "@mui/material/Tooltip";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import InputAdornment from "@mui/material/InputAdornment"; // For adding the clear button
 
 interface ServiceSearchBarProps {
   query: string;
@@ -24,9 +24,14 @@ interface ServiceSearchBarProps {
 
 const ServiceSearchBar: React.FC<ServiceSearchBarProps> = (props) => {
   const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up('lg'));
+  const isDesktop = useMediaQuery(theme.breakpoints.up("lg"));
 
-  const serviceAreas: string[] = ['Diseño', 'Fotografía', 'Artes Plásticas', 'Otro'];
+  const serviceAreas: string[] = [
+    "Diseño",
+    "Fotografía",
+    "Artes Plásticas",
+    "Otro",
+  ];
 
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
@@ -42,7 +47,7 @@ const ServiceSearchBar: React.FC<ServiceSearchBarProps> = (props) => {
   const [isShowFilter, setIsShowFilter] = useState<boolean>(false);
 
   const handleClearQuery = () => {
-    props.setQuery('');
+    props.setQuery("");
   };
 
   const isFilterActive = !!props.categories;
@@ -57,8 +62,8 @@ const ServiceSearchBar: React.FC<ServiceSearchBarProps> = (props) => {
   return (
     <div
       style={{
-        width: isDesktop ? '50%' : '100%',
-        margin: 'auto',
+        width: isDesktop ? "50%" : "100%",
+        margin: "auto",
         maxWidth: 616,
       }}
     >
@@ -66,28 +71,28 @@ const ServiceSearchBar: React.FC<ServiceSearchBarProps> = (props) => {
         component="form"
         onSubmit={(e) => e.preventDefault()} // Prevent form submission if Enter is pressed
         sx={{
-          display: 'flex',
-          alignItems: 'center',
-          borderRadius: '8px',
-          padding: '2px 4px',
+          display: "flex",
+          alignItems: "center",
+          borderRadius: "8px",
+          padding: "2px 4px",
         }}
         elevation={3}
       >
-        <div style={{ display: 'flex', width: '100%', alignItems: 'center' }}>
+        <div style={{ display: "flex", width: "100%", alignItems: "center" }}>
           <IconButton
             type="submit" // Kept as submit, can be changed if search-on-type is preferred later
-            sx={{ padding: '10px' }}
+            sx={{ padding: "10px" }}
             aria-label="search"
           >
             <SearchIcon />
           </IconButton>
           <InputBase
             sx={{
-              marginLeft: '8px',
+              marginLeft: "8px",
               flex: 1,
             }}
             placeholder={placeholderText}
-            inputProps={{ 'aria-label': placeholderText }}
+            inputProps={{ "aria-label": placeholderText }}
             value={props.query}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               props.setQuery(e.target.value);
@@ -100,7 +105,7 @@ const ServiceSearchBar: React.FC<ServiceSearchBarProps> = (props) => {
                     onClick={handleClearQuery}
                     edge="end"
                     size="small"
-                    sx={{ marginRight: '-4px' }} // Adjust spacing if needed
+                    sx={{ marginRight: "-4px" }} // Adjust spacing if needed
                   >
                     <CloseIcon fontSize="small" />
                   </IconButton>
@@ -111,8 +116,8 @@ const ServiceSearchBar: React.FC<ServiceSearchBarProps> = (props) => {
           <Tooltip title={filterIconTooltip}>
             <IconButton
               sx={{
-                padding: '10px',
-                color: isFilterActive ? theme.palette.primary.main : 'inherit', // Change color if filter is active
+                padding: "10px",
+                color: isFilterActive ? theme.palette.primary.main : "inherit", // Change color if filter is active
               }}
               onClick={() => setIsShowFilter(!isShowFilter)}
               aria-pressed={isFilterActive} // For accessibility
@@ -126,34 +131,44 @@ const ServiceSearchBar: React.FC<ServiceSearchBarProps> = (props) => {
         <FormControl
           sx={{
             minWidth: 100,
-            width: '100%',
-            marginTop: '12px',
-            backgroundColor: 'background.paper',
-            borderRadius: '8px',
+            width: "100%",
+            marginTop: "12px",
+            backgroundColor: "background.paper",
+            borderRadius: "8px",
             boxShadow: theme.shadows[1], // Add a subtle shadow to the dropdown
           }}
         >
           <InputLabel
             id="category-select-label" // Added id for accessibility
             sx={{
-              marginLeft: '14px',
-              marginTop: '2px',
+              marginLeft: "14px",
+              marginTop: "2px",
               // Ensure label doesn't overlap with Select input when value is present
-              '&.MuiInputLabel-shrink': {
-                marginTop: '2px', // Adjust if needed
-              }
+              "&.MuiInputLabel-shrink": {
+                marginTop: "2px", // Adjust if needed
+              },
             }}
           >
             Categoría
           </InputLabel>
           <Select
             labelId="category-select-label" // Link to InputLabel
-            value={props.categories || ''}
+            value={props.categories || ""}
             onChange={(e: SelectChangeEvent) => {
               props.setCategories(e.target.value as string);
             }}
             // The input prop is used to customize the appearance of the Select's input itself
-            input={<Input disableUnderline sx={{ paddingLeft: '14px', paddingRight: '32px', paddingTop: '8px', paddingBottom: '8px' }} />}
+            input={
+              <Input
+                disableUnderline
+                sx={{
+                  paddingLeft: "14px",
+                  paddingRight: "32px",
+                  paddingTop: "8px",
+                  paddingBottom: "8px",
+                }}
+              />
+            }
             MenuProps={MenuProps}
             displayEmpty
           >

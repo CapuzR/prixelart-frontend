@@ -1,34 +1,34 @@
-import React, { useState, FormEvent } from "react"
+import React, { useState, FormEvent } from "react";
 
-import Avatar from "@mui/material/Avatar"
-import { useNavigate } from "react-router-dom"
-import Button from "@mui/material/Button"
-import CssBaseline from "@mui/material/CssBaseline"
-import TextField from "@mui/material/TextField"
-import FormControlLabel from "@mui/material/FormControlLabel"
-import Checkbox from "@mui/material/Checkbox"
-import Grid2 from "@mui/material/Grid"
-import AddIcon from "@mui/icons-material/AddRounded"
-import Typography from "@mui/material/Typography"
-import Container from "@mui/material/Container"
-import MenuItem from "@mui/material/MenuItem"
-import InputLabel from "@mui/material/InputLabel"
-import Select from "@mui/material/Select"
-import FormControl from "@mui/material/FormControl"
-import Input from "@mui/material/Input"
-import useMediaQuery from "@mui/material/useMediaQuery"
-import Modal from "@mui/material/Modal"
+import Avatar from "@mui/material/Avatar";
+import { useNavigate } from "react-router-dom";
+import Button from "@mui/material/Button";
+import CssBaseline from "@mui/material/CssBaseline";
+import TextField from "@mui/material/TextField";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import Grid2 from "@mui/material/Grid";
+import AddIcon from "@mui/icons-material/AddRounded";
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
+import MenuItem from "@mui/material/MenuItem";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import FormControl from "@mui/material/FormControl";
+import Input from "@mui/material/Input";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import Modal from "@mui/material/Modal";
 
-import { Theme, useTheme } from "@mui/material/styles"
-import { makeStyles } from "tss-react/mui"
-import dayjs, { Dayjs } from "dayjs"
+import { Theme, useTheme } from "@mui/material/styles";
+import { makeStyles } from "tss-react/mui";
+import dayjs, { Dayjs } from "dayjs";
 
-import { useSnackBar, useLoading } from "@context/GlobalContext"
-import Copyright from "@components/Copyright/copyright"
-import { createPrixer } from "../api"
+import { useSnackBar, useLoading } from "@context/GlobalContext";
+import Copyright from "@components/Copyright/copyright";
+import { createPrixer } from "../api";
 
-import { DatePicker } from "@mui/x-date-pickers/DatePicker"
-import InitialTerms from "@apps/artist/components/Terms/index"
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import InitialTerms from "@apps/artist/components/Terms/index";
 
 const useStyles = makeStyles()((theme: Theme) => {
   return {
@@ -54,10 +54,10 @@ const useStyles = makeStyles()((theme: Theme) => {
       width: "100%",
     },
     submit: {
-      marginTop: '24px', 
-      marginRight: '0px', 
-      marginBottom: '16px',
-      marginLeft: '0px',
+      marginTop: "24px",
+      marginRight: "0px",
+      marginBottom: "16px",
+      marginLeft: "0px",
       fontWeight: "bold",
       textTransform: "none",
     },
@@ -89,11 +89,11 @@ const useStyles = makeStyles()((theme: Theme) => {
       flexGrow: 1,
       minWidth: 300,
     },
-  }
-})
+  };
+});
 
-const ITEM_HEIGHT = 48
-const ITEM_PADDING_TOP = 8
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
 
 const MenuProps = {
   PaperProps: {
@@ -102,55 +102,55 @@ const MenuProps = {
       width: 250,
     },
   },
-}
+};
 function getStyles(specialty, theme) {
   return {
     fontWeight:
       specialty.indexOf(specialty) === -1
         ? theme.typography.fontWeightRegular
         : theme.typography.fontWeightMedium,
-  }
+  };
 }
 
 export default function PrixerRegistration() {
-  const { classes } = useStyles()
-  const navigate = useNavigate()
-  const theme = useTheme()
+  const { classes } = useStyles();
+  const navigate = useNavigate();
+  const theme = useTheme();
 
-  const { showSnackBar } = useSnackBar()
-  const { setLoading } = useLoading()
+  const { showSnackBar } = useSnackBar();
+  const { setLoading } = useLoading();
 
-  const [instagram, setInstagram] = useState("")
-  const [facebook, setFacebook] = useState("")
-  const [twitter, setTwitter] = useState("")
+  const [instagram, setInstagram] = useState("");
+  const [facebook, setFacebook] = useState("");
+  const [twitter, setTwitter] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState<Dayjs | null>(
-    dayjs("2022-04-17")
-  )
-  const [phone, setPhone] = useState("")
-  const [country, setCountry] = useState("")
-  const [city, setCity] = useState("")
-  const [description, setDescription] = useState("")
-  const [avatarObj, setAvatarObj] = useState("")
-  const [avatarPic, setAvatarPic] = useState("")
-  const [buttonState, setButtonState] = useState(true)
-  const [isChecked, setIsChecked] = useState(false)
-  const [specialty, setSpecialty] = useState<string[]>([])
-  const [modal, setModal] = useState(false)
+    dayjs("2022-04-17"),
+  );
+  const [phone, setPhone] = useState("");
+  const [country, setCountry] = useState("");
+  const [city, setCity] = useState("");
+  const [description, setDescription] = useState("");
+  const [avatarObj, setAvatarObj] = useState("");
+  const [avatarPic, setAvatarPic] = useState("");
+  const [buttonState, setButtonState] = useState(true);
+  const [isChecked, setIsChecked] = useState(false);
+  const [specialty, setSpecialty] = useState<string[]>([]);
+  const [modal, setModal] = useState(false);
 
-  const specialties = ["Fotografía", "Diseño", "Artes plásticas"]
+  const specialties = ["Fotografía", "Diseño", "Artes plásticas"];
   // const isDesktop = useMediaQuery(theme.breakpoints.up("sm"));
-  const status = true
+  const status = true;
 
   const handleOnChange = () => {
-    setIsChecked(!isChecked)
-  }
+    setIsChecked(!isChecked);
+  };
 
   const openModal = () => {
-    setModal(!modal)
-  }
+    setModal(!modal);
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     if (
       !specialty ||
       !instagram ||
@@ -161,34 +161,34 @@ export default function PrixerRegistration() {
       !city ||
       !isChecked
     ) {
-      showSnackBar("Por favor completa todos los campos requeridos.")
-      setIsChecked(true)
+      showSnackBar("Por favor completa todos los campos requeridos.");
+      setIsChecked(true);
     } else {
-      setLoading(true)
-      setButtonState(true)
+      setLoading(true);
+      setButtonState(true);
 
-      const formData = new FormData()
-      formData.append("specialtyArt", specialty.join())
-      formData.append("instagram", instagram)
-      formData.append("facebook", facebook)
-      formData.append("twitter", twitter)
-      formData.append("dateOfBirth", dateOfBirth.format("DD-MM-YYYY"))
-      formData.append("phone", phone)
-      formData.append("country", country)
-      formData.append("city", city)
-      formData.append("description", description)
-      formData.append("termsAgree", isChecked.toString())
-      formData.append("status", status.toString())
-      formData.append("avatar", avatarPic)
+      const formData = new FormData();
+      formData.append("specialtyArt", specialty.join());
+      formData.append("instagram", instagram);
+      formData.append("facebook", facebook);
+      formData.append("twitter", twitter);
+      formData.append("dateOfBirth", dateOfBirth.format("DD-MM-YYYY"));
+      formData.append("phone", phone);
+      formData.append("country", country);
+      formData.append("city", city);
+      formData.append("description", description);
+      formData.append("termsAgree", isChecked.toString());
+      formData.append("status", status.toString());
+      formData.append("avatar", avatarPic);
       formData.append(
         "username",
-        JSON.parse(localStorage.getItem("token")).username
-      )
+        JSON.parse(localStorage.getItem("token")).username,
+      );
       try {
-        const response = await createPrixer(formData)
+        const response = await createPrixer(formData);
         if (response.data.success === false) {
-          setButtonState(false)
-          showSnackBar(response.data.message)
+          setButtonState(false);
+          showSnackBar(response.data.message);
         } else {
           // const data = {
           //   balance: 0,
@@ -200,30 +200,30 @@ export default function PrixerRegistration() {
           //   "Content-Type": "multipart/form-data",
           // })
           // showSnackBar("Registro de Prixer exitoso.")
-          const token = JSON.parse(localStorage.getItem("token"))
-          token.prixerId = token.id
-          localStorage.setItem("token", JSON.stringify(token))
+          const token = JSON.parse(localStorage.getItem("token"));
+          token.prixerId = token.id;
+          localStorage.setItem("token", JSON.stringify(token));
           navigate({
             pathname: "/prixer=" + response.data.prixerData.username,
-          })
+          });
         }
       } catch (error) {
-        setButtonState(false)
-        console.log(error.response)
+        setButtonState(false);
+        console.log(error.response);
       }
     }
-  }
+  };
 
   const handleChange = (event) => {
-    setSpecialty(event.target.value)
-  }
+    setSpecialty(event.target.value);
+  };
 
   const onImageChange = async (e) => {
     if (e.target.files && e.target.files[0]) {
-      setAvatarObj(URL.createObjectURL(e.target.files[0]))
-      setAvatarPic(e.target.files[0])
+      setAvatarObj(URL.createObjectURL(e.target.files[0]));
+      setAvatarPic(e.target.files[0]);
     }
-  }
+  };
 
   return (
     <Container
@@ -379,7 +379,7 @@ export default function PrixerRegistration() {
                 label="Instagram"
                 autoFocus
                 onChange={(e) => {
-                  setInstagram(e.target.value)
+                  setInstagram(e.target.value);
                 }}
               />
             </Grid2>
@@ -394,7 +394,7 @@ export default function PrixerRegistration() {
                 label="Facebook"
                 autoFocus
                 onChange={(e) => {
-                  setFacebook(e.target.value)
+                  setFacebook(e.target.value);
                 }}
               />
             </Grid2>
@@ -409,7 +409,7 @@ export default function PrixerRegistration() {
                 label="Twitter"
                 autoFocus
                 onChange={(e) => {
-                  setTwitter(e.target.value)
+                  setTwitter(e.target.value);
                 }}
               />
             </Grid2>
@@ -423,7 +423,7 @@ export default function PrixerRegistration() {
                 label="Teléfono"
                 value={phone}
                 onChange={(e) => {
-                  setPhone(e.target.value)
+                  setPhone(e.target.value);
                 }}
               />
             </Grid2>
@@ -438,7 +438,7 @@ export default function PrixerRegistration() {
                 type="country"
                 id="country"
                 onChange={(e) => {
-                  setCountry(e.target.value)
+                  setCountry(e.target.value);
                 }}
               />
             </Grid2>
@@ -453,7 +453,7 @@ export default function PrixerRegistration() {
                 type="city"
                 id="city"
                 onChange={(e) => {
-                  setCity(e.target.value)
+                  setCity(e.target.value);
                 }}
               />
             </Grid2>
@@ -468,7 +468,7 @@ export default function PrixerRegistration() {
               type="description"
               id="description"
               onChange={(e) => {
-                setDescription(e.target.value)
+                setDescription(e.target.value);
               }}
             />
           </Grid2>
@@ -522,5 +522,5 @@ export default function PrixerRegistration() {
       </div>
       <Copyright />
     </Container>
-  )
+  );
 }

@@ -1,49 +1,49 @@
-import React from "react"
-import { useCart } from "context/CartContext"
-import useMediaQuery from "@mui/material/useMediaQuery"
-import Typography from "components/Typography"
-import styles from "./styles.module.scss"
-import LineCard from "../Detail"
-import { useNavigate } from "react-router-dom"
-import { queryCreator } from "@apps/consumer/flow/helpers"
-import { Button } from "@mui/material"
-import { CartLine } from "../../../../types/cart.types"
-import { Item } from "types/order.types"
-import Grid2 from "@mui/material/Grid"
+import React from "react";
+import { useCart } from "context/CartContext";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import Typography from "components/Typography";
+import styles from "./styles.module.scss";
+import LineCard from "../Detail";
+import { useNavigate } from "react-router-dom";
+import { queryCreator } from "@apps/consumer/flow/helpers";
+import { Button } from "@mui/material";
+import { CartLine } from "../../../../types/cart.types";
+import { Item } from "types/order.types";
+import Grid2 from "@mui/material/Grid";
 interface CartReviewProps {
-  checking: boolean
+  checking: boolean;
 }
 
 const CartReview: React.FC<CartReviewProps> = ({ checking }) => {
-  const { cart } = useCart()
-  const navigate = useNavigate()
-  const isMobile = useMediaQuery("(max-width: 600px)")
+  const { cart } = useCart();
+  const navigate = useNavigate();
+  const isMobile = useMediaQuery("(max-width: 600px)");
 
   const handleChangeElement = (
     type: "producto" | "arte",
     item: Item,
-    lineId?: string
+    lineId?: string,
   ) => {
     const selectionAsObject: { [key: string]: string } = Array.isArray(
-      item.product?.selection
+      item.product?.selection,
     )
       ? item.product.selection.reduce(
           (acc, sel) => {
-            acc[sel.name] = sel.value
-            return acc
+            acc[sel.name] = sel.value;
+            return acc;
           },
-          {} as { [key: string]: string }
+          {} as { [key: string]: string },
         )
-      : item.product?.selection || {}
+      : item.product?.selection || {};
 
     const queryString = queryCreator(
       lineId ? lineId : undefined,
       type === "producto" ? undefined : item.product?._id?.toString(),
       type === "arte" ? undefined : item.art?.artId?.toString(),
-      selectionAsObject
-    )
-    navigate(`/crear-prix?${queryString}`)
-  }
+      selectionAsObject,
+    );
+    navigate(`/crear-prix?${queryString}`);
+  };
 
   return (
     <Grid2 className={styles["cart-container"]}>
@@ -142,7 +142,7 @@ const CartReview: React.FC<CartReviewProps> = ({ checking }) => {
         </>
       )}
     </Grid2>
-  )
-}
+  );
+};
 
-export default CartReview
+export default CartReview;

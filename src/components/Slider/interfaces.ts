@@ -1,9 +1,9 @@
 export interface UseIndicators {
-  type: 'dots' | 'thumbnails';
-  position: 'over' | 'below';
+  type: "dots" | "thumbnails";
+  position: "over" | "below";
   color: {
-    active: 'primary' | 'secondary' | 'tertiary' | 'white';
-    inactive: 'primary' | 'secondary' | 'tertiary' | 'white';
+    active: "primary" | "secondary" | "tertiary" | "white";
+    inactive: "primary" | "secondary" | "tertiary" | "white";
   };
 }
 

@@ -1,13 +1,13 @@
-import React from 'react';
-import { Icon } from './icon.jsx';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useHistory, useLocation } from 'react-router-dom';
+import React from "react";
+import { Icon } from "./icon.jsx";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useHistory, useLocation } from "react-router-dom";
 
 export const Map = ({ icons, setSelectedIcon, setOpenSelected }) => {
   const history = useHistory();
 
-  let rawMapRef = React.useRef(document.getElementById('rawMap'));
-  const isMobile = useMediaQuery('(max-width:1090px)');
+  let rawMapRef = React.useRef(document.getElementById("rawMap"));
+  const isMobile = useMediaQuery("(max-width:1090px)");
   const calculateIconRelation = (mapOriginal, iconOriginal, adapted) => {
     return {
       x: (iconOriginal.x * adapted.x) / mapOriginal.x + 10,
@@ -16,14 +16,14 @@ export const Map = ({ icons, setSelectedIcon, setOpenSelected }) => {
   };
 
   return (
-    <div style={{ display: 'Flex', flexDirection: 'column' }}>
+    <div style={{ display: "Flex", flexDirection: "column" }}>
       <div
         style={{
-          position: 'relative',
-          width: '100%',
-          display: 'flex',
+          position: "relative",
+          width: "100%",
+          display: "flex",
           // justifyContent: isMobile ? "end" : "start",
-          marginTop: isMobile && '-200px',
+          marginTop: isMobile && "-200px",
         }}
       >
         <img
@@ -32,9 +32,9 @@ export const Map = ({ icons, setSelectedIcon, setOpenSelected }) => {
           src="/LPG/rawMap.webp"
           style={{
             margin: 10,
-            width: 'auto',
-            maxHeight: '70vh',
-            maxWidth: '95%',
+            width: "auto",
+            maxHeight: "70vh",
+            maxWidth: "95%",
           }}
         />
         {icons.map((icon, index) => {

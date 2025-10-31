@@ -143,9 +143,9 @@ interface ValidationErrors {
   variants?: {
     [tempId: string]: {
       [key in
-      | keyof Omit<FormVariant, "variantImage">
-      | "attributeValues"
-      | "variantImage"]?: string;
+        | keyof Omit<FormVariant, "variantImage">
+        | "attributeValues"
+        | "variantImage"]?: string;
     };
   };
 }
@@ -154,7 +154,7 @@ interface ValidationErrors {
 const initialAttributeTypeState: AttributeType = { id: uuidv4(), name: "" };
 
 const initialVariantStateForUpdate = (
-  attributeTypes: AttributeType[]
+  attributeTypes: AttributeType[],
 ): FormVariant => {
   const attributes: { [attributeName: string]: string } = {};
   attributeTypes.forEach((at) => {
@@ -198,14 +198,14 @@ const generateVariantName = (attributes: {
     .join(" / ");
 };
 
-const PRODUCT_IMAGE_ASPECT = 1 / 1
+const PRODUCT_IMAGE_ASPECT = 1 / 1;
 
 async function canvasPreview(
   image: HTMLImageElement,
   canvas: HTMLCanvasElement,
   crop: PixelCrop,
   scale = 1,
-  rotate = 0
+  rotate = 0,
 ) {
   const ctx = canvas.getContext("2d");
   if (!ctx) {
@@ -236,12 +236,12 @@ async function canvasPreview(
 function centerAspectCrop(
   mediaWidth: number,
   mediaHeight: number,
-  aspect: number
+  aspect: number,
 ) {
   return centerCrop(
     makeAspectCrop({ unit: "%", width: 90 }, aspect, mediaWidth, mediaHeight),
     mediaWidth,
-    mediaHeight
+    mediaHeight,
   );
 }
 
@@ -280,7 +280,7 @@ const UpdateProduct: React.FC = () => {
     targetId: string;
   } | null>(null);
   const [imageSrcForCropper, setImageSrcForCropper] = useState<string | null>(
-    null
+    null,
   );
   const [crop, setCrop] = useState<Crop>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
@@ -321,7 +321,7 @@ const UpdateProduct: React.FC = () => {
         });
       });
       const derivedAttributeTypes: AttributeType[] = Array.from(
-        attributeNameSet
+        attributeNameSet,
       )
         .filter((name) => name)
         .map((name) => ({ id: uuidv4(), name: name }));
@@ -358,7 +358,7 @@ const UpdateProduct: React.FC = () => {
 
       const existingProductImages: ImageUploadState[] = (
         productData.sources?.images || []
-      ).map((img: { url: string; }) => ({
+      ).map((img: { url: string }) => ({
         id: uuidv4(),
         url: img.url,
         isExisting: true,
@@ -410,7 +410,7 @@ const UpdateProduct: React.FC = () => {
   const openCropperWithFile = (
     file: File,
     targetType: "productMainImage" | "variantImage",
-    targetId: string
+    targetId: string,
   ) => {
     setImageToCropDetails({ originalFile: file, targetType, targetId });
     const reader = new FileReader();
@@ -422,7 +422,7 @@ const UpdateProduct: React.FC = () => {
   };
 
   const handleProductMainImageSelect = (
-    event: ChangeEvent<HTMLInputElement>
+    event: ChangeEvent<HTMLInputElement>,
   ) => {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
@@ -444,7 +444,7 @@ const UpdateProduct: React.FC = () => {
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   // Puedes definir esto dentro de UpdateProduct.tsx o en un archivo separado
@@ -639,7 +639,7 @@ const UpdateProduct: React.FC = () => {
 
   const handleVariantImageSelect = (
     event: ChangeEvent<HTMLInputElement>,
-    variantTempId: string
+    variantTempId: string,
   ) => {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
@@ -670,7 +670,11 @@ const UpdateProduct: React.FC = () => {
       showSnackBar("Error: No se pudo procesar el recorte.");
       return;
     }
-    await canvasPreview(imgRef.current, previewCanvasRef.current, completedCrop);
+    await canvasPreview(
+      imgRef.current,
+      previewCanvasRef.current,
+      completedCrop,
+    );
     previewCanvasRef.current.toBlob(
       (blob) => {
         if (!blob) {
@@ -683,7 +687,7 @@ const UpdateProduct: React.FC = () => {
         if (lastDotIndex > 0)
           originalNameWithoutExtension = originalFile.name.substring(
             0,
-            lastDotIndex
+            lastDotIndex,
           );
         const webpFileName = `${originalNameWithoutExtension}_${Date.now()}.webp`;
         const croppedWebpFile = new File([blob], webpFileName, {
@@ -701,7 +705,7 @@ const UpdateProduct: React.FC = () => {
         if (targetType === "productMainImage") {
           setProductImages((prev) => {
             const existingIndex = prev.findIndex(
-              (img) => img.id === targetId && img.isExisting
+              (img) => img.id === targetId && img.isExisting,
             );
             if (existingIndex > -1) {
               const updatedImages = [...prev];
@@ -717,21 +721,21 @@ const UpdateProduct: React.FC = () => {
             variants: prev.variants.map((v) =>
               v.tempId === targetId
                 ? { ...v, variantImage: newImageStateEntry }
-                : v
+                : v,
             ),
           }));
           startTusUpload(croppedWebpFile, targetId, "variantImage");
         }
       },
       "image/webp",
-      0.85
+      0.85,
     );
   };
 
   const startTusUpload = (
     file: File,
     targetId: string,
-    targetType: "productMainImage" | "variantImage"
+    targetType: "productMainImage" | "variantImage",
   ) => {
     const showSnackBar = showSnackBarRef.current; // Usar ref
     const upload = new tus.Upload(file, {
@@ -743,8 +747,8 @@ const UpdateProduct: React.FC = () => {
         if (targetType === "productMainImage") {
           setProductImages((prev) =>
             prev.map((img) =>
-              img.id === targetId ? { ...img, progress: percentage } : img
-            )
+              img.id === targetId ? { ...img, progress: percentage } : img,
+            ),
           );
         } else if (targetType === "variantImage") {
           setFormData((prev) => ({
@@ -752,10 +756,10 @@ const UpdateProduct: React.FC = () => {
             variants: prev.variants.map((v) =>
               v.tempId === targetId && v.variantImage
                 ? {
-                  ...v,
-                  variantImage: { ...v.variantImage, progress: percentage },
-                }
-                : v
+                    ...v,
+                    variantImage: { ...v.variantImage, progress: percentage },
+                  }
+                : v,
             ),
           }));
         }
@@ -782,14 +786,14 @@ const UpdateProduct: React.FC = () => {
               prev.map((img) =>
                 img.id === targetId
                   ? {
-                    ...img,
-                    url: imageUrl,
-                    progress: 100,
-                    file: undefined,
-                    isExisting: true,
-                  }
-                  : img
-              )
+                      ...img,
+                      url: imageUrl,
+                      progress: 100,
+                      file: undefined,
+                      isExisting: true,
+                    }
+                  : img,
+              ),
             );
           } else if (targetType === "variantImage") {
             setFormData((prev) => ({
@@ -797,16 +801,16 @@ const UpdateProduct: React.FC = () => {
               variants: prev.variants.map((v) =>
                 v.tempId === targetId && v.variantImage
                   ? {
-                    ...v,
-                    variantImage: {
-                      ...v.variantImage,
-                      url: imageUrl,
-                      progress: 100,
-                      file: undefined,
-                      isExisting: true,
-                    },
-                  }
-                  : v
+                      ...v,
+                      variantImage: {
+                        ...v.variantImage,
+                        url: imageUrl,
+                        progress: 100,
+                        file: undefined,
+                        isExisting: true,
+                      },
+                    }
+                  : v,
               ),
             }));
           }
@@ -818,8 +822,8 @@ const UpdateProduct: React.FC = () => {
               prev.map((img) =>
                 img.id === targetId
                   ? { ...img, error: errorMsg, file: undefined }
-                  : img
-              )
+                  : img,
+              ),
             );
           } else if (targetType === "variantImage") {
             setFormData((prev) => ({
@@ -827,14 +831,14 @@ const UpdateProduct: React.FC = () => {
               variants: prev.variants.map((v) =>
                 v.tempId === targetId && v.variantImage
                   ? {
-                    ...v,
-                    variantImage: {
-                      ...v.variantImage,
-                      error: errorMsg,
-                      file: undefined,
-                    },
-                  }
-                  : v
+                      ...v,
+                      variantImage: {
+                        ...v.variantImage,
+                        error: errorMsg,
+                        file: undefined,
+                      },
+                    }
+                  : v,
               ),
             }));
           }
@@ -848,8 +852,8 @@ const UpdateProduct: React.FC = () => {
             prev.map((img) =>
               img.id === targetId
                 ? { ...img, error: errorMsg, file: undefined }
-                : img
-            )
+                : img,
+            ),
           );
         } else if (targetType === "variantImage") {
           setFormData((prev) => ({
@@ -857,14 +861,14 @@ const UpdateProduct: React.FC = () => {
             variants: prev.variants.map((v) =>
               v.tempId === targetId && v.variantImage
                 ? {
-                  ...v,
-                  variantImage: {
-                    ...v.variantImage,
-                    error: errorMsg,
-                    file: undefined,
-                  },
-                }
-                : v
+                    ...v,
+                    variantImage: {
+                      ...v.variantImage,
+                      error: errorMsg,
+                      file: undefined,
+                    },
+                  }
+                : v,
             ),
           }));
         }
@@ -877,7 +881,7 @@ const UpdateProduct: React.FC = () => {
   const handleRemoveProductMainImage = (idToRemove: string) => {
     setProductImages((prev) => prev.filter((img) => img.id !== idToRemove));
     showSnackBarRef.current(
-      "Imagen principal eliminada de la lista (cambios se guardarán al actualizar)."
+      "Imagen principal eliminada de la lista (cambios se guardarán al actualizar).",
     );
   };
 
@@ -885,11 +889,11 @@ const UpdateProduct: React.FC = () => {
     setFormData((prev) => ({
       ...prev,
       variants: prev.variants.map((v) =>
-        v.tempId === variantTempId ? { ...v, variantImage: null } : v
+        v.tempId === variantTempId ? { ...v, variantImage: null } : v,
       ),
     }));
     showSnackBarRef.current(
-      "Imagen de variante eliminada (cambios se guardarán al actualizar)."
+      "Imagen de variante eliminada (cambios se guardarán al actualizar).",
     );
     if (validationErrors?.variants?.[variantTempId]?.variantImage) {
       setValidationErrors((currentErrors) => {
@@ -916,7 +920,7 @@ const UpdateProduct: React.FC = () => {
 
   // --- Handlers para campos de Producto, Atributos y Variantes ---
   const handleProductInputChange = (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const target = event.target as HTMLInputElement;
     const { name, value, type } = target;
@@ -1012,11 +1016,11 @@ const UpdateProduct: React.FC = () => {
     let nameToRemove = "";
     setFormData((prev) => {
       const typeToRemove = prev.attributeTypes.find(
-        (at) => at.id === idToRemove
+        (at) => at.id === idToRemove,
       );
       nameToRemove = typeToRemove?.name.trim() || "";
       const updatedTypes = prev.attributeTypes.filter(
-        (at) => at.id !== idToRemove
+        (at) => at.id !== idToRemove,
       );
       let updatedVariants = prev.variants;
       if (nameToRemove) {
@@ -1031,7 +1035,7 @@ const UpdateProduct: React.FC = () => {
       }
       if (updatedTypes.length === 0 && updatedVariants.length > 0) {
         showSnackBar(
-          "No puede eliminar todos los tipos de atributos si existen variantes."
+          "No puede eliminar todos los tipos de atributos si existen variantes.",
         );
         return prev;
       }
@@ -1049,19 +1053,19 @@ const UpdateProduct: React.FC = () => {
       FormVariant,
       "attributes" | "tempId" | "_id" | "variantImage"
     >,
-    value: string
+    value: string,
   ) => {
     setFormData((prev) => ({
       ...prev,
       variants: prev.variants.map((v) =>
         v.tempId === tempId
           ? {
-            ...v,
-            [field]: value,
-            variantNameManuallyEdited:
-              field === "name" ? true : v.variantNameManuallyEdited,
-          }
-          : v
+              ...v,
+              [field]: value,
+              variantNameManuallyEdited:
+                field === "name" ? true : v.variantNameManuallyEdited,
+            }
+          : v,
       ),
     }));
     if (validationErrors?.variants?.[tempId]?.[field]) {
@@ -1089,7 +1093,7 @@ const UpdateProduct: React.FC = () => {
   const handleVariantAttributeValueChange = (
     tempId: string,
     attributeName: string,
-    value: string
+    value: string,
   ) => {
     if (!attributeName) return;
     setFormData((prev) => ({
@@ -1130,17 +1134,17 @@ const UpdateProduct: React.FC = () => {
   const handleAddVariant = () => {
     const showSnackBar = showSnackBarRef.current;
     const validAttributeTypes = formData.attributeTypes.filter((at) =>
-      at.name.trim()
+      at.name.trim(),
     );
     if (
       validAttributeTypes.length === 0 &&
       formData.attributeTypes.length > 0
     ) {
       showSnackBar(
-        "Defina nombres para los tipos de atributo antes de añadir variantes, o elimine los tipos de atributo vacíos."
+        "Defina nombres para los tipos de atributo antes de añadir variantes, o elimine los tipos de atributo vacíos.",
       );
       const firstEmptyAttrIndex = formData.attributeTypes.findIndex(
-        (at) => !at.name.trim()
+        (at) => !at.name.trim(),
       );
       if (firstEmptyAttrIndex !== -1) {
         setValidationErrors((prev) => ({
@@ -1165,13 +1169,15 @@ const UpdateProduct: React.FC = () => {
 
   const handleRemoveVariant = (tempIdToRemove: string) => {
     const variantToRemove = formData.variants.find(
-      (v) => v.tempId === tempIdToRemove
+      (v) => v.tempId === tempIdToRemove,
     );
     const confirmMsg = variantToRemove?._id
-      ? `¿Está seguro de eliminar esta variante existente (${variantToRemove.name || "sin nombre"
-      })? Esto la marcará para eliminación al guardar.`
-      : `¿Está seguro de eliminar esta nueva variante (${variantToRemove?.name || "sin nombre"
-      })?`;
+      ? `¿Está seguro de eliminar esta variante existente (${
+          variantToRemove.name || "sin nombre"
+        })? Esto la marcará para eliminación al guardar.`
+      : `¿Está seguro de eliminar esta nueva variante (${
+          variantToRemove?.name || "sin nombre"
+        })?`;
     if (window.confirm(confirmMsg)) {
       // Considerar reemplazar con Dialog de MUI
       setFormData((prev) => ({
@@ -1184,7 +1190,7 @@ const UpdateProduct: React.FC = () => {
 
   const handleCopyVariant = (tempIdToCopy: string) => {
     const variantToCopy = formData.variants.find(
-      (v) => v.tempId === tempIdToCopy
+      (v) => v.tempId === tempIdToCopy,
     );
     if (!variantToCopy) return;
     const newVariant: FormVariant = {
@@ -1195,13 +1201,13 @@ const UpdateProduct: React.FC = () => {
       variantNameManuallyEdited: true,
       variantImage: variantToCopy.variantImage
         ? {
-          ...JSON.parse(JSON.stringify(variantToCopy.variantImage)),
-          id: uuidv4(),
-          file: undefined,
-          progress: undefined,
-          error: undefined,
-          isExisting: !!variantToCopy.variantImage.url,
-        }
+            ...JSON.parse(JSON.stringify(variantToCopy.variantImage)),
+            id: uuidv4(),
+            file: undefined,
+            progress: undefined,
+            error: undefined,
+            isExisting: !!variantToCopy.variantImage.url,
+          }
         : null,
     };
     setFormData((prev) => ({
@@ -1267,7 +1273,7 @@ const UpdateProduct: React.FC = () => {
       formData.attributeTypes.length > 0
     ) {
       showSnackBar(
-        "Si existen variantes, debe definir al menos un tipo de atributo con nombre válido."
+        "Si existen variantes, debe definir al menos un tipo de atributo con nombre válido.",
       );
       if (!errors.attributeTypes![0]) errors.attributeTypes![0] = {};
       errors.attributeTypes![0].name =
@@ -1334,7 +1340,7 @@ const UpdateProduct: React.FC = () => {
       showSnackBar("Por favor, corrija los errores indicados.");
       if (firstErrorVariantId) {
         const errorAccordion = document.getElementById(
-          `variant-${firstErrorVariantId}-header`
+          `variant-${firstErrorVariantId}-header`,
         );
         errorAccordion?.scrollIntoView({ behavior: "smooth", block: "center" });
       } else {
@@ -1365,7 +1371,7 @@ const UpdateProduct: React.FC = () => {
         (attrName) => ({
           name: attrName,
           value: formVariant.attributes[attrName] || "",
-        })
+        }),
       );
       const {
         tempId,
@@ -1405,15 +1411,14 @@ const UpdateProduct: React.FC = () => {
     };
 
     try {
-      console.log(
-        "Updating Product Data:", productId);
+      console.log("Updating Product Data:", productId);
       const response = await updateProduct(productId, payload);
       if (response) {
         showSnackBar(`Producto "${formData.name}" actualizado exitosamente.`);
         navigate("/admin/product/read");
       } else {
         throw new Error(
-          "La actualización del producto falló o no devolvió respuesta."
+          "La actualización del producto falló o no devolvió respuesta.",
         );
       }
     } catch (err: any) {
@@ -1458,8 +1463,9 @@ const UpdateProduct: React.FC = () => {
   return (
     <>
       <Title
-        title={`Actualizar Producto: ${originalProductName || (productId ? "Cargando..." : "Inválido")
-          }`}
+        title={`Actualizar Producto: ${
+          originalProductName || (productId ? "Cargando..." : "Inválido")
+        }`}
       />
       <Paper elevation={3} sx={{ p: { xs: 2, sm: 3, md: 4 }, mt: 2 }}>
         <form onSubmit={handleSubmit} noValidate ref={formRef}>
@@ -1599,7 +1605,7 @@ const UpdateProduct: React.FC = () => {
                         <SortableProductImage
                           image={activeDraggedImage}
                           isSubmitting={isSubmitting} // Pasar props necesarias para el estilo del overlay
-                          onRemove={() => { }} // onRemove no es relevante para el overlay
+                          onRemove={() => {}} // onRemove no es relevante para el overlay
                           isOverlay // Prop para indicar que es el overlay
                         />
                       ) : null}
@@ -1785,7 +1791,7 @@ const UpdateProduct: React.FC = () => {
                     sx={{
                       color:
                         formData.attributeTypes.length <= 1 &&
-                          formData.variants.length > 0
+                        formData.variants.length > 0
                           ? "grey.400"
                           : "error.main",
                     }}
@@ -1818,7 +1824,8 @@ const UpdateProduct: React.FC = () => {
               </Divider>
             </Grid2>
             {formData.variants.map((variant, vIndex) => {
-              const variantErrors = validationErrors?.variants?.[variant.tempId];
+              const variantErrors =
+                validationErrors?.variants?.[variant.tempId];
               const isErrorExpanded = errorVariantId === variant.tempId;
               const currentVariantImage = variant.variantImage;
               return (
@@ -1923,7 +1930,7 @@ const UpdateProduct: React.FC = () => {
                               handleVariantInputChange(
                                 variant.tempId,
                                 "name",
-                                e.target.value
+                                e.target.value,
                               )
                             }
                             required
@@ -1949,7 +1956,7 @@ const UpdateProduct: React.FC = () => {
                               handleVariantInputChange(
                                 variant.tempId,
                                 "publicPrice",
-                                e.target.value
+                                e.target.value,
                               )
                             }
                             required
@@ -1971,7 +1978,7 @@ const UpdateProduct: React.FC = () => {
                               handleVariantInputChange(
                                 variant.tempId,
                                 "prixerPrice",
-                                e.target.value
+                                e.target.value,
                               )
                             }
                             required
@@ -2000,8 +2007,8 @@ const UpdateProduct: React.FC = () => {
                             }}
                           >
                             {currentVariantImage &&
-                              (currentVariantImage.url ||
-                                currentVariantImage.file) ? (
+                            (currentVariantImage.url ||
+                              currentVariantImage.file) ? (
                               <Box
                                 sx={{
                                   width: 88,
@@ -2132,40 +2139,40 @@ const UpdateProduct: React.FC = () => {
                                     isSubmitting ||
                                     (!!currentVariantImage?.file &&
                                       typeof currentVariantImage?.progress ===
-                                      "number" &&
+                                        "number" &&
                                       currentVariantImage.progress < 100)
                                   }
                                   size="small"
                                   color="secondary"
                                 >
                                   {currentVariantImage?.url ||
-                                    currentVariantImage?.file
+                                  currentVariantImage?.file
                                     ? "Cambiar"
                                     : "Añadir"}
                                 </Button>
                               </label>
                               {(currentVariantImage?.url ||
                                 currentVariantImage?.file) && (
-                                  <Button
-                                    size="small"
-                                    color="error"
-                                    onClick={() =>
-                                      handleRemoveVariantImage(variant.tempId)
-                                    }
-                                    startIcon={<DeleteIcon />}
-                                    disabled={
-                                      isSubmitting ||
-                                      (!!currentVariantImage?.file &&
-                                        typeof currentVariantImage?.progress ===
+                                <Button
+                                  size="small"
+                                  color="error"
+                                  onClick={() =>
+                                    handleRemoveVariantImage(variant.tempId)
+                                  }
+                                  startIcon={<DeleteIcon />}
+                                  disabled={
+                                    isSubmitting ||
+                                    (!!currentVariantImage?.file &&
+                                      typeof currentVariantImage?.progress ===
                                         "number" &&
-                                        currentVariantImage.progress < 100)
-                                    }
-                                    variant="text"
-                                    sx={{ justifyContent: "flex-start" }}
-                                  >
-                                    Quitar
-                                  </Button>
-                                )}
+                                      currentVariantImage.progress < 100)
+                                  }
+                                  variant="text"
+                                  sx={{ justifyContent: "flex-start" }}
+                                >
+                                  Quitar
+                                </Button>
+                              )}
                             </Box>
                           </Box>
                           {variantErrors?.variantImage && (
@@ -2197,7 +2204,7 @@ const UpdateProduct: React.FC = () => {
                                   handleVariantAttributeValueChange(
                                     variant.tempId,
                                     attrType.name,
-                                    e.target.value
+                                    e.target.value,
                                   )
                                 }
                                 required
@@ -2210,7 +2217,7 @@ const UpdateProduct: React.FC = () => {
                                 }
                                 helperText={
                                   !!variantErrors?.attributeValues &&
-                                    !variant.attributes[attrType.name]?.trim()
+                                  !variant.attributes[attrType.name]?.trim()
                                     ? "Valor requerido"
                                     : ""
                                 }
@@ -2260,12 +2267,12 @@ const UpdateProduct: React.FC = () => {
             {validationErrors?.product?.name && !formData.name.trim()
               ? null
               : validationErrors?.product?.name && (
-                <Grid2 size={{ xs: 12 }}>
-                  <Alert severity="error" sx={{ mt: 2 }}>
-                    Error: {validationErrors.product.name}
-                  </Alert>
-                </Grid2>
-              )}
+                  <Grid2 size={{ xs: 12 }}>
+                    <Alert severity="error" sx={{ mt: 2 }}>
+                      Error: {validationErrors.product.name}
+                    </Alert>
+                  </Grid2>
+                )}
             <Grid2 size={{ xs: 12 }}>
               <Stack
                 direction="row"
@@ -2293,13 +2300,13 @@ const UpdateProduct: React.FC = () => {
                       (img) =>
                         img.file &&
                         typeof img.progress === "number" &&
-                        img.progress < 100
+                        img.progress < 100,
                     ) ||
                     formData.variants.some(
                       (v) =>
                         v.variantImage?.file &&
                         typeof v.variantImage?.progress === "number" &&
-                        v.variantImage.progress < 100
+                        v.variantImage.progress < 100,
                     )
                   }
                   startIcon={

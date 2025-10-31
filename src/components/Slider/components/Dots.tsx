@@ -1,6 +1,6 @@
-import React from 'react';
-import styles from '../Styles.module.scss';
-import { UseIndicatorsType } from '../interfaces';
+import React from "react";
+import styles from "../Styles.module.scss";
+import { UseIndicatorsType } from "../interfaces";
 
 interface DotsProps {
   total: number;
@@ -14,17 +14,17 @@ export const Dots: React.FC<DotsProps> = ({
   currentIndex,
   goToSlide,
   useIndicators = {
-    type: 'dots',
-    position: 'over',
-    color: { active: 'primary', inactive: 'tertiary' },
+    type: "dots",
+    position: "over",
+    color: { active: "primary", inactive: "tertiary" },
   },
 }) => (
-  <div className={`${styles['slider-dots']}`}>
+  <div className={`${styles["slider-dots"]}`}>
     {Array.from({ length: total })?.map((_, index) => (
       <button
         key={index}
         className={`
-          ${styles['slider-dot']}
+          ${styles["slider-dot"]}
           ${
             index === currentIndex
               ? `${styles[`active-${useIndicators && useIndicators?.color?.active}`]}`

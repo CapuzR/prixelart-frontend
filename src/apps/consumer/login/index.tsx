@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Paper,
@@ -11,32 +11,32 @@ import {
   CircularProgress,
   IconButton,
   InputAdornment,
-} from "@mui/material"
-import { useTheme } from "@mui/material/styles"
-import useMediaQuery from "@mui/material/useMediaQuery"
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined"
-import Visibility from "@mui/icons-material/Visibility"
-import VisibilityOff from "@mui/icons-material/VisibilityOff"
-import Grid2 from "@mui/material/Grid"
-import { isAValidEmail, isAValidPassword } from "utils/validations"
-import { getRandomArt } from "@api/art.api"
-import { login } from "@api/utils.api"
-import { useSnackBar, useUser } from "context/GlobalContext"
-import Copyright from "@components/Copyright/copyright"
-import { Art } from "types/art.types"
-import { User } from "types/user.types"
-import { jwtDecode } from 'jwt-decode';
+} from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import Grid2 from "@mui/material/Grid";
+import { isAValidEmail, isAValidPassword } from "utils/validations";
+import { getRandomArt } from "@api/art.api";
+import { login } from "@api/utils.api";
+import { useSnackBar, useUser } from "context/GlobalContext";
+import Copyright from "@components/Copyright/copyright";
+import { Art } from "types/art.types";
+import { User } from "types/user.types";
+import { jwtDecode } from "jwt-decode";
 const ensureHttps = (url: string): string => {
-  let fullUrl = url.trim()
+  let fullUrl = url.trim();
   if (!/^https?:\/\//i.test(fullUrl) && !fullUrl.startsWith("/")) {
-    fullUrl = `https://${fullUrl}`
+    fullUrl = `https://${fullUrl}`;
   }
-  return fullUrl
-}
+  return fullUrl;
+};
 
 // Pick the first valid .webp URL from an Art object
 const findValidWebpUrl = (art?: Art): string | null => {
-  if (!art) return null
+  if (!art) return null;
 
   const props: (keyof Art)[] = [
     "largeThumbUrl",
@@ -44,96 +44,96 @@ const findValidWebpUrl = (art?: Art): string | null => {
     "thumbnailUrl",
     "smallThumbUrl",
     "squareThumbUrl",
-  ]
+  ];
 
   for (const key of props) {
-    const value = art[key]
+    const value = art[key];
     if (typeof value === "string") {
-      const trimmed = value.trim()
+      const trimmed = value.trim();
       if (
         trimmed &&
         trimmed.toLowerCase().endsWith(".webp") &&
         !trimmed.includes(" ")
       ) {
-        return ensureHttps(trimmed)
+        return ensureHttps(trimmed);
       }
     }
   }
 
-  return null
-}
+  return null;
+};
 
-const MAX_RETRIES = 3
+const MAX_RETRIES = 3;
 
 const AdminLogin: React.FC = () => {
-  const theme = useTheme()
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"))
-  const navigate = useNavigate()
-  const { showSnackBar } = useSnackBar()
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const navigate = useNavigate();
+  const { showSnackBar } = useSnackBar();
 
-  const [email, setEmail] = useState("")
-  const [emailError, setEmailError] = useState("")
-  const [password, setPassword] = useState("")
-  const [passwordError, setPasswordError] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
+  const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
-  const [bgUrl, setBgUrl] = useState<string | null>(null)
-  const [loadingBg, setLoadingBg] = useState(true)
-  const [retryCount, setRetryCount] = useState(0)
-  const { user, setUser } = useUser()
+  const [bgUrl, setBgUrl] = useState<string | null>(null);
+  const [loadingBg, setLoadingBg] = useState(true);
+  const [retryCount, setRetryCount] = useState(0);
+  const { user, setUser } = useUser();
 
   useEffect(() => {
-    let mounted = true
+    let mounted = true;
     const fetchArt = async () => {
       if (retryCount > MAX_RETRIES) {
-        setLoadingBg(false)
-        return
+        setLoadingBg(false);
+        return;
       }
       try {
-        const art = await getRandomArt()
-        const url = findValidWebpUrl(art)
+        const art = await getRandomArt();
+        const url = findValidWebpUrl(art);
         if (url && mounted) {
-          setBgUrl(url)
-          setLoadingBg(false)
+          setBgUrl(url);
+          setLoadingBg(false);
         } else {
-          setRetryCount((prev) => prev + 1)
+          setRetryCount((prev) => prev + 1);
         }
       } catch (err) {
         if (mounted) {
-          showSnackBar("Error al cargar la imagen de fondo.")
-          setLoadingBg(false)
+          showSnackBar("Error al cargar la imagen de fondo.");
+          setLoadingBg(false);
         }
       }
-    }
-    fetchArt()
+    };
+    fetchArt();
     return () => {
-      mounted = false
-    }
-  }, [retryCount, showSnackBar])
+      mounted = false;
+    };
+  }, [retryCount, showSnackBar]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    let valid = true
+    e.preventDefault();
+    let valid = true;
     if (!isAValidEmail(email)) {
-      setEmailError("Correo electrónico no válido")
-      valid = false
+      setEmailError("Correo electrónico no válido");
+      valid = false;
     }
     if (!isAValidPassword(password)) {
-      setPasswordError("Contraseña inválida")
-      valid = false
+      setPasswordError("Contraseña inválida");
+      valid = false;
     }
-    if (!valid) return
+    if (!valid) return;
 
-    const resp = await login(email, password)
+    const resp = await login(email, password);
     if (resp.success) {
-      const validUser = resp.result as User
-      setUser(validUser)
-      showSnackBar("Inicio de sesión exitoso")
-      navigate('/');
+      const validUser = resp.result as User;
+      setUser(validUser);
+      showSnackBar("Inicio de sesión exitoso");
+      navigate("/");
     } else {
-      showSnackBar(resp.message)
+      showSnackBar(resp.message);
     }
-  }
+  };
 
   return (
     <Grid2 container sx={{ minHeight: "100vh" }}>
@@ -201,8 +201,8 @@ const AdminLogin: React.FC = () => {
               autoFocus
               value={email}
               onChange={(e) => {
-                setEmail(e.target.value)
-                setEmailError("")
+                setEmail(e.target.value);
+                setEmailError("");
               }}
               error={Boolean(emailError)}
               helperText={emailError}
@@ -217,8 +217,8 @@ const AdminLogin: React.FC = () => {
               autoComplete="current-password"
               value={password}
               onChange={(e) => {
-                setPassword(e.target.value)
-                setPasswordError("")
+                setPassword(e.target.value);
+                setPasswordError("");
               }}
               error={Boolean(passwordError)}
               helperText={passwordError}
@@ -260,7 +260,7 @@ const AdminLogin: React.FC = () => {
         </Box>
       </Grid2>
     </Grid2>
-  )
-}
+  );
+};
 
-export default AdminLogin
+export default AdminLogin;

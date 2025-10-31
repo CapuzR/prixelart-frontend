@@ -4,8 +4,8 @@ import React, {
   useCallback,
   ChangeEvent,
   useMemo,
-} from "react"
-import { useNavigate } from "react-router-dom"
+} from "react";
+import { useNavigate } from "react-router-dom";
 
 // MUI Components
 import {
@@ -36,38 +36,38 @@ import {
   Select,
   TablePagination,
   TableSortLabel,
-} from "@mui/material"
-import EditIcon from "@mui/icons-material/Edit"
-import DeleteIcon from "@mui/icons-material/Delete"
-import AddIcon from "@mui/icons-material/Add"
-import DownloadIcon from "@mui/icons-material/Download"
-import UploadFileIcon from "@mui/icons-material/UploadFile"
-import SearchIcon from "@mui/icons-material/Search"
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp"
-import StarIcon from "@mui/icons-material/Star"
-import CheckCircleIcon from "@mui/icons-material/CheckCircle"
-import CancelIcon from "@mui/icons-material/Cancel"
-import { visuallyHidden } from "@mui/utils"
-import Grid2 from "@mui/material/Grid"
+} from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
+import DownloadIcon from "@mui/icons-material/Download";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
+import SearchIcon from "@mui/icons-material/Search";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import StarIcon from "@mui/icons-material/Star";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
+import { visuallyHidden } from "@mui/utils";
+import Grid2 from "@mui/material/Grid";
 
 // Hooks, Types, Context, API
-import { useSnackBar } from "context/GlobalContext"
-import { Product, Variant, VariantAttribute } from "types/product.types"
-import { PermissionsV2 } from "types/permissions.types"
+import { useSnackBar } from "context/GlobalContext";
+import { Product, Variant, VariantAttribute } from "types/product.types";
+import { PermissionsV2 } from "types/permissions.types";
 
 import {
   fetchProducts,
   updateManyProduct,
   deleteProduct,
-} from "@api/product.api"
-import { getPermissions } from "@api/admin.api"
+} from "@api/product.api";
+import { getPermissions } from "@api/admin.api";
 
-import Title from "@apps/admin/components/Title"
-import ConfirmationDialog from "@components/ConfirmationDialog/ConfirmationDialog"
+import Title from "@apps/admin/components/Title";
+import ConfirmationDialog from "@components/ConfirmationDialog/ConfirmationDialog";
 
-import ExcelJS from "exceljs"
-import * as XLSX from "xlsx"
+import ExcelJS from "exceljs";
+import * as XLSX from "xlsx";
 // // Interface for Product data from API
 
 const VariantDetailsTable: React.FC<{ variants: Variant[] }> = ({
@@ -81,7 +81,7 @@ const VariantDetailsTable: React.FC<{ variants: Variant[] }> = ({
       >
         Este producto no tiene variantes definidas.
       </Typography>
-    )
+    );
   }
   return (
     <Box
@@ -159,292 +159,294 @@ const VariantDetailsTable: React.FC<{ variants: Variant[] }> = ({
         </Table>
       </TableContainer>
     </Box>
-  )
-}
+  );
+};
 
 type ProductSortKeys =
   | keyof Pick<Product, "name" | "category" | "active">
-  | "variantsCount"
+  | "variantsCount";
 
 const ReadProducts: React.FC = () => {
-  const navigate = useNavigate()
-  const { showSnackBar } = useSnackBar()
-  const [permissions, setPermissions] = useState<PermissionsV2 | null>(null)
+  const navigate = useNavigate();
+  const { showSnackBar } = useSnackBar();
+  const [permissions, setPermissions] = useState<PermissionsV2 | null>(null);
 
   // --- State ---
-  const [products, setProducts] = useState<Product[]>([]) // Original data
-  const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [error, setError] = useState<string | null>(null)
-  const [isDeleting, setIsDeleting] = useState<boolean>(false)
-  const [dialogOpen, setDialogOpen] = useState<boolean>(false)
-  const [productToDelete, setProductToDelete] = useState<Product | null>(null)
+  const [products, setProducts] = useState<Product[]>([]); // Original data
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
 
   // UI Control State
-  const [searchTerm, setSearchTerm] = useState("")
-  const [categories, setCategories] = useState<string[]>([])
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categories, setCategories] = useState<string[]>([]);
   const [filters, setFilters] = useState<{
-    category: string[]
-    status: "all" | "active" | "inactive"
-    bestSeller: "all" | "yes" | "no"
+    category: string[];
+    status: "all" | "active" | "inactive";
+    bestSeller: "all" | "yes" | "no";
   }>({
     category: [],
     status: "all",
     bestSeller: "all",
-  })
+  });
   const [sortConfig, setSortConfig] = useState<{
-    key: ProductSortKeys | null
-    direction: "asc" | "desc"
-  }>({ key: "name", direction: "asc" })
-  const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(10)
-  const [expandedRow, setExpandedRow] = useState<string | null>(null) // Store ObjectId as string
+    key: ProductSortKeys | null;
+    direction: "asc" | "desc";
+  }>({ key: "name", direction: "asc" });
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [expandedRow, setExpandedRow] = useState<string | null>(null); // Store ObjectId as string
 
   // --- Fetch Data & Extract Categories ---
   const loadProducts = useCallback(
     async (showLoading = true) => {
-      if (showLoading) setIsLoading(true)
-      setError(null)
+      if (showLoading) setIsLoading(true);
+      setError(null);
       try {
-        const fetchedProducts = (await fetchProducts()) as Product[]
+        const fetchedProducts = (await fetchProducts()) as Product[];
         if (fetchedProducts.some((p) => !p._id))
-          console.error("Some products missing '_id'.")
+          console.error("Some products missing '_id'.");
 
         // Initial sort can happen here or later in useMemo
-        fetchedProducts.sort((a, b) => a.name.localeCompare(b.name))
-        setProducts(fetchedProducts)
+        fetchedProducts.sort((a, b) => a.name.localeCompare(b.name));
+        setProducts(fetchedProducts);
 
         // Extract unique categories
         const uniqueCategories = [
           ...new Set(fetchedProducts.map((p) => p.category).filter(Boolean)),
-        ].sort()
-        setCategories(uniqueCategories)
+        ].sort();
+        setCategories(uniqueCategories);
       } catch (err: any) {
-        const message = err.message || "Error al cargar los productos."
-        setError(message)
-        showSnackBar(message)
-        console.error("Error fetching products:", err)
+        const message = err.message || "Error al cargar los productos.";
+        setError(message);
+        showSnackBar(message);
+        console.error("Error fetching products:", err);
       } finally {
-        if (showLoading) setIsLoading(false)
+        if (showLoading) setIsLoading(false);
       }
     },
-    [showSnackBar]
-  )
+    [showSnackBar],
+  );
 
   const checkAuthAndPermissions = async () => {
-    setError(null)
+    setError(null);
     try {
-      const fetchedPermissions = await getPermissions()
-      setPermissions(fetchedPermissions)
+      const fetchedPermissions = await getPermissions();
+      setPermissions(fetchedPermissions);
     } catch (err: any) {
-      console.error("Permission check failed in Layout:", err)
+      console.error("Permission check failed in Layout:", err);
       if (err.message === "Unauthorized") {
-        setError("Unauthorized access. Redirecting to login...")
-        setTimeout(() => navigate("/admin/inicio", { replace: true }), 1500)
+        setError("Unauthorized access. Redirecting to login...");
+        setTimeout(() => navigate("/admin/inicio", { replace: true }), 1500);
       } else {
-        setError(err.message || "Failed to load permissions. Please try again.")
-        navigate("/admin/inicio", { replace: true })
+        setError(
+          err.message || "Failed to load permissions. Please try again.",
+        );
+        navigate("/admin/inicio", { replace: true });
       }
-      setPermissions(null)
+      setPermissions(null);
     } finally {
     }
-  }
+  };
 
   useEffect(() => {
-    loadProducts()
-    checkAuthAndPermissions()
-  }, [loadProducts])
+    loadProducts();
+    checkAuthAndPermissions();
+  }, [loadProducts]);
 
   // --- Event Handlers ---
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value)
-    setPage(0)
-  }
+    setSearchTerm(event.target.value);
+    setPage(0);
+  };
 
   // Generic filter handler
   const handleFilterChange = (filterName: keyof typeof filters, value: any) => {
     setFilters((prev) => ({
       ...prev,
       [filterName]: value,
-    }))
-    setPage(0)
-  }
+    }));
+    setPage(0);
+  };
 
   const handleSortRequest = (key: ProductSortKeys) => {
-    let direction: "asc" | "desc" = "asc"
+    let direction: "asc" | "desc" = "asc";
     if (sortConfig.key === key && sortConfig.direction === "asc") {
-      direction = "desc"
+      direction = "desc";
     }
-    setSortConfig({ key, direction })
-  }
+    setSortConfig({ key, direction });
+  };
 
   const handleExpandClick = (productIdString: string) => {
-    setExpandedRow(expandedRow === productIdString ? null : productIdString)
-  }
+    setExpandedRow(expandedRow === productIdString ? null : productIdString);
+  };
 
   const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage)
-  }
+    setPage(newPage);
+  };
 
   const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10))
-    setPage(0)
-  }
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   // --- Delete Handling (Keep as is) ---
   const handleOpenDeleteDialog = (product: Product) => {
     if (!product._id) {
-      showSnackBar("Falta ID.")
-      return
+      showSnackBar("Falta ID.");
+      return;
     }
-    setProductToDelete(product)
-    setDialogOpen(true)
-  }
+    setProductToDelete(product);
+    setDialogOpen(true);
+  };
 
   const handleCloseDialog = () => {
-    if (isDeleting) return
-    setDialogOpen(false)
-    setProductToDelete(null)
-  }
+    if (isDeleting) return;
+    setDialogOpen(false);
+    setProductToDelete(null);
+  };
 
   const handleConfirmDelete = async () => {
     if (!productToDelete?._id) {
-      showSnackBar("Error: Producto no seleccionado.")
-      setIsDeleting(false)
-      handleCloseDialog()
-      return
+      showSnackBar("Error: Producto no seleccionado.");
+      setIsDeleting(false);
+      handleCloseDialog();
+      return;
     }
 
-    setIsDeleting(true)
+    setIsDeleting(true);
 
     try {
-      await deleteProduct(productToDelete._id.toString()) // API call
+      await deleteProduct(productToDelete._id.toString()); // API call
 
-      showSnackBar(`Producto "${productToDelete.name}" eliminado.`)
+      showSnackBar(`Producto "${productToDelete.name}" eliminado.`);
 
-      setProducts((prev) => prev.filter((p) => p._id !== productToDelete._id))
+      setProducts((prev) => prev.filter((p) => p._id !== productToDelete._id));
 
-      handleCloseDialog()
+      handleCloseDialog();
     } catch (err: any) {
-      console.error("Error deleting product:", err)
+      console.error("Error deleting product:", err);
 
-      showSnackBar(err.message || "Error al eliminar.")
+      showSnackBar(err.message || "Error al eliminar.");
 
-      handleCloseDialog()
+      handleCloseDialog();
     } finally {
-      setIsDeleting(false)
+      setIsDeleting(false);
     }
-  }
+  };
 
   // --- Update & Create Handling (Keep as is) ---
   const handleUpdate = (productId: string) => {
     if (!productId) {
-      showSnackBar("Falta ID.")
-      return
+      showSnackBar("Falta ID.");
+      return;
     }
-    navigate(`/admin/product/update/${productId}`)
-  } // Adjust route
+    navigate(`/admin/product/update/${productId}`);
+  }; // Adjust route
 
   const handleCreate = () => {
-    navigate("/admin/product/create")
-  }
+    navigate("/admin/product/create");
+  };
 
   // --- Derived Data (Memoized) ---
   const processedProducts = useMemo(() => {
-    let filtered = [...products]
+    let filtered = [...products];
 
     // 1. Search Filter (Name, Category, Description)
     if (searchTerm) {
-      const lowerSearchTerm = searchTerm.toLowerCase()
+      const lowerSearchTerm = searchTerm.toLowerCase();
       filtered = filtered.filter(
         (p) =>
           p.name.toLowerCase().includes(lowerSearchTerm) ||
           p.category.toLowerCase().includes(lowerSearchTerm) ||
-          p.description.toLowerCase().includes(lowerSearchTerm)
-      )
+          p.description.toLowerCase().includes(lowerSearchTerm),
+      );
     }
 
     // 2. Category Filter
     if (filters.category.length > 0) {
-      filtered = filtered.filter((p) => filters.category.includes(p.category))
+      filtered = filtered.filter((p) => filters.category.includes(p.category));
     }
 
     // 3. Status Filter
     if (filters.status !== "all") {
       filtered = filtered.filter((p) =>
-        filters.status === "active" ? p.active : !p.active
-      )
+        filters.status === "active" ? p.active : !p.active,
+      );
     }
 
     // 4. Best Seller Filter
     if (filters.bestSeller !== "all") {
       filtered = filtered.filter((p) =>
-        filters.bestSeller === "yes" ? p.bestSeller : !p.bestSeller
-      )
+        filters.bestSeller === "yes" ? p.bestSeller : !p.bestSeller,
+      );
     }
 
     // 5. Sorting
     if (sortConfig.key) {
       filtered.sort((a, b) => {
-        let aValue: any
-        let bValue: any
+        let aValue: any;
+        let bValue: any;
 
         if (sortConfig.key === "variantsCount") {
-          aValue = a.variants?.length || 0
-          bValue = b.variants?.length || 0
+          aValue = a.variants?.length || 0;
+          bValue = b.variants?.length || 0;
         } else {
-          aValue = a[sortConfig.key!]
-          bValue = b[sortConfig.key!]
+          aValue = a[sortConfig.key!];
+          bValue = b[sortConfig.key!];
         }
 
-        let comparison = 0
+        let comparison = 0;
         if (aValue === null || aValue === undefined)
-          comparison = 1 // Sort nulls/undefined last
-        else if (bValue === null || bValue === undefined) comparison = -1
+          comparison = 1; // Sort nulls/undefined last
+        else if (bValue === null || bValue === undefined) comparison = -1;
         else if (typeof aValue === "string" && typeof bValue === "string") {
-          comparison = aValue.localeCompare(bValue)
+          comparison = aValue.localeCompare(bValue);
         } else if (typeof aValue === "boolean" && typeof bValue === "boolean") {
-          comparison = aValue === bValue ? 0 : aValue ? -1 : 1 // True first for boolean
+          comparison = aValue === bValue ? 0 : aValue ? -1 : 1; // True first for boolean
         } else if (typeof aValue === "number" && typeof bValue === "number") {
-          comparison = aValue - bValue
+          comparison = aValue - bValue;
         } else {
           // Fallback for mixed types or other types (treat as string)
-          comparison = String(aValue).localeCompare(String(bValue))
+          comparison = String(aValue).localeCompare(String(bValue));
         }
 
-        return sortConfig.direction === "asc" ? comparison : -comparison
-      })
+        return sortConfig.direction === "asc" ? comparison : -comparison;
+      });
     }
 
-    return filtered
-  }, [products, searchTerm, filters, sortConfig])
+    return filtered;
+  }, [products, searchTerm, filters, sortConfig]);
 
   const paginatedProducts = useMemo(() => {
     return processedProducts.slice(
       page * rowsPerPage,
-      page * rowsPerPage + rowsPerPage
-    )
-  }, [processedProducts, page, rowsPerPage])
+      page * rowsPerPage + rowsPerPage,
+    );
+  }, [processedProducts, page, rowsPerPage]);
 
   const handleDownloadExcel = async () => {
     if (permissions?.area !== "Master") {
       showSnackBar(
-        "No tienes permiso para realizar una actualización masiva de productos."
-      )
-      return
+        "No tienes permiso para realizar una actualización masiva de productos.",
+      );
+      return;
     }
 
     if (products.length === 0) {
-      showSnackBar("No hay productos para exportar.")
-      return
+      showSnackBar("No hay productos para exportar.");
+      return;
     }
 
-    const workbook = new ExcelJS.Workbook()
-    workbook.creator = "Prixelart"
-    workbook.lastModifiedBy = "Prixelart"
-    workbook.created = new Date()
-    workbook.modified = new Date()
+    const workbook = new ExcelJS.Workbook();
+    workbook.creator = "Prixelart";
+    workbook.lastModifiedBy = "Prixelart";
+    workbook.created = new Date();
+    workbook.modified = new Date();
 
-    const worksheet = workbook.addWorksheet("Productos y Variantes")
+    const worksheet = workbook.addWorksheet("Productos y Variantes");
 
     const headerColumns = [
       { header: "ID Producto", key: "productId", width: 12 },
@@ -466,20 +468,20 @@ const ReadProducts: React.FC = () => {
       { header: "Descuento ID Variante", key: "discountId", width: 6 },
       { header: "Recargo ID Variante", key: "surchargeId", width: 6 },
       { header: "Tipo de Fila", key: "rowType", width: 11 },
-    ]
+    ];
 
-    worksheet.columns = headerColumns
+    worksheet.columns = headerColumns;
 
     worksheet.getRow(1).eachCell((cell) => {
-      cell.font = { bold: true, size: 10, name: "Arial" }
+      cell.font = { bold: true, size: 10, name: "Arial" };
       cell.border = {
         top: { style: "thin" },
         left: { style: "thin" },
         bottom: { style: "thin" },
         right: { style: "thin" },
-      }
-      cell.alignment = { vertical: "middle", horizontal: "center" }
-    })
+      };
+      cell.alignment = { vertical: "middle", horizontal: "center" };
+    });
 
     products.forEach((product) => {
       const productRowData = {
@@ -504,31 +506,31 @@ const ReadProducts: React.FC = () => {
         discountId: "",
         surchargeId: "",
         rowType: "Producto Principal",
-      }
+      };
 
-      const productRow = worksheet.addRow(productRowData)
+      const productRow = worksheet.addRow(productRowData);
       productRow.eachCell((cell) => {
-        cell.font = { size: 10, name: "Arial" }
+        cell.font = { size: 10, name: "Arial" };
         cell.border = {
           top: { style: "thin" },
           left: { style: "thin" },
           bottom: { style: "thin" },
           right: { style: "thin" },
-        }
-        cell.alignment = { vertical: "top", wrapText: true }
-      })
+        };
+        cell.alignment = { vertical: "top", wrapText: true };
+      });
       productRow.getCell("rowType").font = {
         bold: true,
         italic: true,
         size: 10,
         name: "Arial",
-      } // Estilo para 'Tipo de Fila'
+      }; // Estilo para 'Tipo de Fila'
 
       if (product.variants && product.variants.length > 0) {
         product.variants.forEach((variant) => {
           const formattedAttributes = variant.attributes
             .map((attr) => `${attr.name}: ${attr.value}`)
-            .join(", ")
+            .join(", ");
 
           const variantRowData = {
             productId: "",
@@ -552,100 +554,100 @@ const ReadProducts: React.FC = () => {
               ? variant.surchargeId.join(", ")
               : "",
             rowType: "Variante",
-          }
+          };
 
-          const variantRow = worksheet.addRow(variantRowData)
+          const variantRow = worksheet.addRow(variantRowData);
           variantRow.eachCell((cell) => {
-            cell.font = { size: 9, name: "Arial", color: { argb: "FF505050" } }
+            cell.font = { size: 9, name: "Arial", color: { argb: "FF505050" } };
             cell.border = {
               top: { style: "thin" },
               left: { style: "thin" },
               bottom: { style: "thin" },
               right: { style: "thin" },
-            }
-            cell.alignment = { vertical: "top", wrapText: true }
-          })
+            };
+            cell.alignment = { vertical: "top", wrapText: true };
+          });
           variantRow.getCell("rowType").font = {
             bold: true,
             italic: true,
             size: 9,
             name: "Arial",
             color: { argb: "FF505050" },
-          }
-          variantRow.getCell("variantName").value = `  - ${variant.name}`
-        })
+          };
+          variantRow.getCell("variantName").value = `  - ${variant.name}`;
+        });
       }
-    })
+    });
 
     try {
-      const buffer = await workbook.xlsx.writeBuffer()
+      const buffer = await workbook.xlsx.writeBuffer();
       const blob = new Blob([buffer], {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      })
-      const url = window.URL.createObjectURL(blob)
-      const a = document.createElement("a")
-      a.href = url
-      a.download = "productos_y_variantes.xlsx"
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      window.URL.revokeObjectURL(url)
+      });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "productos_y_variantes.xlsx";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Error al generar o descargar el archivo Excel:", error)
-      alert("Hubo un error al descargar el archivo Excel.")
+      console.error("Error al generar o descargar el archivo Excel:", error);
+      alert("Hubo un error al descargar el archivo Excel.");
     }
-  }
+  };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
+    const file = event.target.files?.[0];
 
     if (!file) {
-      showSnackBar("No se seleccionó ningún archivo.")
-      return
+      showSnackBar("No se seleccionó ningún archivo.");
+      return;
     }
 
-    const reader = new FileReader()
+    const reader = new FileReader();
     reader.onload = (e) => {
       try {
-        const data = new Uint8Array(e.target?.result as ArrayBuffer)
-        const workbook = XLSX.read(data, { type: "array" })
-        const sheetName = workbook.SheetNames[0]
-        const worksheet = workbook.Sheets[sheetName]
-        const jsonData: any[] = XLSX.utils.sheet_to_json(worksheet)
+        const data = new Uint8Array(e.target?.result as ArrayBuffer);
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData: any[] = XLSX.utils.sheet_to_json(worksheet);
 
-        console.log("Datos leídos del Excel")
+        console.log("Datos leídos del Excel");
 
-        processAndSendExcelData(jsonData)
+        processAndSendExcelData(jsonData);
       } catch (error) {
-        console.error("Error al leer el archivo Excel:", error)
+        console.error("Error al leer el archivo Excel:", error);
         showSnackBar(
-          "Error al leer el archivo Excel. Asegúrate de que sea un formato válido."
-        )
+          "Error al leer el archivo Excel. Asegúrate de que sea un formato válido.",
+        );
       }
-    }
+    };
 
     reader.onerror = (e) => {
-      console.error("Error al leer el archivo:", e)
-      showSnackBar("Error al leer el archivo. Intenta de nuevo.")
-    }
+      console.error("Error al leer el archivo:", e);
+      showSnackBar("Error al leer el archivo. Intenta de nuevo.");
+    };
 
-    reader.readAsArrayBuffer(file)
-  }
+    reader.readAsArrayBuffer(file);
+  };
 
   const processAndSendExcelData = async (excelData: any[]) => {
     if (!excelData || excelData.length === 0) {
-      showSnackBar("El archivo Excel no contiene datos.")
-      return
+      showSnackBar("El archivo Excel no contiene datos.");
+      return;
     }
 
-    const productsToUpdate: Product[] = []
-    let currentProduct: Product | null = null
+    const productsToUpdate: Product[] = [];
+    let currentProduct: Product | null = null;
 
     for (const row of excelData) {
-      const rowType = row["Tipo de Fila"]
+      const rowType = row["Tipo de Fila"];
       if (rowType === "Producto Principal") {
         if (currentProduct) {
-          productsToUpdate.push(currentProduct)
+          productsToUpdate.push(currentProduct);
         }
         currentProduct = {
           _id: row["ID Producto"],
@@ -668,16 +670,16 @@ const ReadProducts: React.FC = () => {
           mockUp: "",
           sources: { images: [] },
           variants: [],
-        }
+        };
       } else if (rowType === "Variante" && currentProduct) {
-        const attributesString = row["Atributos Variante"] || ""
+        const attributesString = row["Atributos Variante"] || "";
         const attributes: VariantAttribute[] = attributesString
           .split(",")
           .map((attrPair: string) => {
-            const [name, value] = attrPair.split(":").map((s) => s.trim())
-            return { name, value }
+            const [name, value] = attrPair.split(":").map((s) => s.trim());
+            return { name, value };
           })
-          .filter((attr: VariantAttribute) => attr.name && attr.value)
+          .filter((attr: VariantAttribute) => attr.name && attr.value);
 
         const variant: Variant = {
           _id: row["ID Variante"] || undefined,
@@ -695,28 +697,27 @@ const ReadProducts: React.FC = () => {
                 .split(",")
                 .map((s) => s.trim())
             : undefined,
-        }
-        currentProduct.variants?.push(variant)
+        };
+        currentProduct.variants?.push(variant);
       }
     }
 
     if (currentProduct) {
-      productsToUpdate.push(currentProduct)
+      productsToUpdate.push(currentProduct);
     }
 
     try {
-      const response = await updateManyProduct(productsToUpdate)
-      if (response.success)
-      {
-        showSnackBar(response.message)
-        loadProducts()
+      const response = await updateManyProduct(productsToUpdate);
+      if (response.success) {
+        showSnackBar(response.message);
+        loadProducts();
       }
       // showSnackBar("Productos actualizados masivamente con éxito.")
     } catch (error) {
-      console.error("Error al enviar datos al backend:", error)
-      showSnackBar("Error de red o del servidor al actualizar productos.")
+      console.error("Error al enviar datos al backend:", error);
+      showSnackBar("Error de red o del servidor al actualizar productos.");
     }
-  }
+  };
 
   // --- Render Logic ---
   return (
@@ -748,7 +749,7 @@ const ReadProducts: React.FC = () => {
               options={categories}
               value={filters.category}
               onChange={(event, newValue) => {
-                handleFilterChange("category", newValue)
+                handleFilterChange("category", newValue);
               }}
               renderInput={(params) => (
                 <TextField {...params} label="Filtrar por Categoría" />
@@ -1016,10 +1017,10 @@ const ReadProducts: React.FC = () => {
               </TableHead>
               <TableBody>
                 {paginatedProducts.map((product) => {
-                  const isExpanded = expandedRow === product._id?.toString()
+                  const isExpanded = expandedRow === product._id?.toString();
                   // Ensure ID exists before rendering row/handlers
-                  const productIdString = product._id?.toString()
-                  if (!productIdString) return null
+                  const productIdString = product._id?.toString();
+                  if (!productIdString) return null;
 
                   return (
                     <React.Fragment key={productIdString}>
@@ -1167,7 +1168,7 @@ const ReadProducts: React.FC = () => {
                         </TableCell>
                       </TableRow>
                     </React.Fragment>
-                  )
+                  );
                 })}
                 {/* Handle empty state after filtering */}
                 {paginatedProducts.length === 0 && (
@@ -1224,7 +1225,7 @@ const ReadProducts: React.FC = () => {
         isPerformingAction={isDeleting}
       />
     </>
-  )
-}
+  );
+};
 
-export default ReadProducts
+export default ReadProducts;

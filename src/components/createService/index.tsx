@@ -4,12 +4,12 @@ import React, {
   ChangeEvent,
   FormEvent,
   useRef,
-} from "react"
-import axios from "axios"
+} from "react";
+import axios from "axios";
 
-import { useSnackBar, usePrixerCreator, useUser } from "context/GlobalContext"
-import { Service } from "../../types/service.types"
-import { PrixResponse } from "../../types/prixResponse.types"
+import { useSnackBar, usePrixerCreator, useUser } from "context/GlobalContext";
+import { Service } from "../../types/service.types";
+import { PrixResponse } from "../../types/prixResponse.types";
 
 import {
   Box,
@@ -43,108 +43,108 @@ import {
   useMediaQuery,
   CssBaseline,
   Backdrop,
-} from "@mui/material"
-import Grid2 from '@mui/material/Grid';
-import { TransitionProps } from "@mui/material/transitions"
-import DeleteIcon from "@mui/icons-material/Delete"
-import CloseIcon from "@mui/icons-material/Close"
-import AppBar from "@mui/material/AppBar"
-import Toolbar from "@mui/material/Toolbar"
-import { Theme, useTheme } from "@mui/material"
-import { makeStyles } from "tss-react/mui"
+} from "@mui/material";
+import Grid2 from "@mui/material/Grid";
+import { TransitionProps } from "@mui/material/transitions";
+import DeleteIcon from "@mui/icons-material/Delete";
+import CloseIcon from "@mui/icons-material/Close";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import { Theme, useTheme } from "@mui/material";
+import { makeStyles } from "tss-react/mui";
 
-import * as tus from "tus-js-client"
+import * as tus from "tus-js-client";
 import ReactCrop, {
   centerCrop,
   makeAspectCrop,
   Crop,
   PixelCrop,
-} from "react-image-crop"
-import "react-image-crop/dist/ReactCrop.css"
-import { BACKEND_URL } from "@api/utils.api"
-import PhotoCameraBackIcon from "@mui/icons-material/PhotoCameraBack"
-import BrokenImageIcon from "@mui/icons-material/BrokenImage"
-import InfoIcon from "@mui/icons-material/Info"
-import { v4 as uuidv4 } from "uuid"
-import ReactQuill from "react-quill-new"
-import "react-quill-new/dist/quill.snow.css"
-import Copyright from "@components/Copyright/copyright"
+} from "react-image-crop";
+import "react-image-crop/dist/ReactCrop.css";
+import { BACKEND_URL } from "@api/utils.api";
+import PhotoCameraBackIcon from "@mui/icons-material/PhotoCameraBack";
+import BrokenImageIcon from "@mui/icons-material/BrokenImage";
+import InfoIcon from "@mui/icons-material/Info";
+import { v4 as uuidv4 } from "uuid";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
+import Copyright from "@components/Copyright/copyright";
 interface ImageUploadState {
-  id: string
-  url: string
-  file?: File
-  progress?: number
-  error?: string
+  id: string;
+  url: string;
+  file?: File;
+  progress?: number;
+  error?: string;
 }
 
-const SERVICE_IMAGE_ASPECT = 0
+const SERVICE_IMAGE_ASPECT = 0;
 
-const serviceAreas = ["Diseño", "Fotografía", "Artes Plásticas", "Otro"]
+const serviceAreas = ["Diseño", "Fotografía", "Artes Plásticas", "Otro"];
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & { children: React.ReactElement<any, any> },
-  ref: React.Ref<unknown>
+  ref: React.Ref<unknown>,
 ) {
-  return <Slide direction="up" ref={ref} {...props} />
-})
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 export default function CreateService() {
-  const theme = useTheme()
-  const { uploadService, setServiceModal } = usePrixerCreator()
-  const { user } = useUser()
+  const theme = useTheme();
+  const { uploadService, setServiceModal } = usePrixerCreator();
+  const { user } = useUser();
   const formRef = useRef<HTMLFormElement>(null);
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const [title, setTitle] = useState("")
-  const [description, setDescription] = useState("")
-  const [serviceArea, setServiceArea] = useState("")
-  const [location, setLocation] = useState("")
-  const [isLocal, setIsLocal] = useState(false)
-  const [isRemote, setIsRemote] = useState(false)
-  const [priceFrom, setPriceFrom] = useState<number | string>("")
-  const [priceTo, setPriceTo] = useState<number | string | undefined>("")
-  const [productionTime, setProductionTime] = useState("")
-  const [active, setActive] = useState(true)
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [serviceArea, setServiceArea] = useState("");
+  const [location, setLocation] = useState("");
+  const [isLocal, setIsLocal] = useState(false);
+  const [isRemote, setIsRemote] = useState(false);
+  const [priceFrom, setPriceFrom] = useState<number | string>("");
+  const [priceTo, setPriceTo] = useState<number | string | undefined>("");
+  const [productionTime, setProductionTime] = useState("");
+  const [active, setActive] = useState(true);
 
-  const [serviceImages, setServiceImages] = useState<ImageUploadState[]>([])
+  const [serviceImages, setServiceImages] = useState<ImageUploadState[]>([]);
   const [imageToCropDetails, setImageToCropDetails] = useState<{
-    originalFile: File
-    tempId: string
-  } | null>(null)
+    originalFile: File;
+    tempId: string;
+  } | null>(null);
   const [imageSrcForCropper, setImageSrcForCropper] = useState<string | null>(
-    null
-  )
-  const [crop, setCrop] = useState<Crop>()
-  const [completedCrop, setCompletedCrop] = useState<PixelCrop>()
-  const [cropModalOpen, setCropModalOpen] = useState<boolean>(false)
+    null,
+  );
+  const [crop, setCrop] = useState<Crop>();
+  const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
+  const [cropModalOpen, setCropModalOpen] = useState<boolean>(false);
 
-  const imgRef = useRef<HTMLImageElement | null>(null)
-  const previewCanvasRef = useRef<HTMLCanvasElement | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+  const imgRef = useRef<HTMLImageElement | null>(null);
+  const previewCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const [backdrop, setBackdrop] = useState(false)
-  const { showSnackBar } = useSnackBar()
+  const [backdrop, setBackdrop] = useState(false);
+  const { showSnackBar } = useSnackBar();
 
   useEffect(() => {
     if (uploadService) {
-      setTitle("")
-      setDescription("")
-      setServiceArea("")
-      setLocation("")
-      setIsLocal(false)
-      setIsRemote(false)
-      setPriceFrom("")
-      setPriceTo("")
-      setProductionTime("")
-      setActive(true)
-      setServiceImages([])
+      setTitle("");
+      setDescription("");
+      setServiceArea("");
+      setLocation("");
+      setIsLocal(false);
+      setIsRemote(false);
+      setPriceFrom("");
+      setPriceTo("");
+      setProductionTime("");
+      setActive(true);
+      setServiceImages([]);
     }
-  }, [uploadService])
+  }, [uploadService]);
 
   function centerAspectCrop(
     mediaWidth: number,
     mediaHeight: number,
-    aspect: number
+    aspect: number,
   ): Crop {
     if (aspect <= 0) {
       return {
@@ -153,7 +153,7 @@ export default function CreateService() {
         height: 100,
         x: 0,
         y: 0,
-      }
+      };
     }
     return centerCrop(
       makeAspectCrop(
@@ -163,101 +163,101 @@ export default function CreateService() {
         },
         aspect,
         mediaWidth,
-        mediaHeight
+        mediaHeight,
       ),
       mediaWidth,
-      mediaHeight
-    )
+      mediaHeight,
+    );
   }
 
   const onImageLoadInCropper = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    imgRef.current = e.currentTarget
-    const { naturalWidth, naturalHeight } = e.currentTarget
+    imgRef.current = e.currentTarget;
+    const { naturalWidth, naturalHeight } = e.currentTarget;
     if (naturalWidth > 0 && naturalHeight > 0) {
       setCrop(
-        centerAspectCrop(naturalWidth, naturalHeight, SERVICE_IMAGE_ASPECT)
-      )
+        centerAspectCrop(naturalWidth, naturalHeight, SERVICE_IMAGE_ASPECT),
+      );
     } else {
       showSnackBar(
-        "Error al cargar imagen para recorte: dimensiones inválidas."
-      )
-      closeAndResetCropper()
+        "Error al cargar imagen para recorte: dimensiones inválidas.",
+      );
+      closeAndResetCropper();
     }
-  }
+  };
 
   const openCropperWithFile = (file: File, tempId: string) => {
-    setImageToCropDetails({ originalFile: file, tempId })
-    const reader = new FileReader()
+    setImageToCropDetails({ originalFile: file, tempId });
+    const reader = new FileReader();
     reader.addEventListener("load", () => {
-      setImageSrcForCropper(reader.result?.toString() || null)
-      setCropModalOpen(true)
-    })
-    reader.readAsDataURL(file)
-  }
+      setImageSrcForCropper(reader.result?.toString() || null);
+      setCropModalOpen(true);
+    });
+    reader.readAsDataURL(file);
+  };
 
   const handleServiceImageSelect = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       if (serviceImages.length >= 6) {
-        showSnackBar("Has alcanzado el límite de 6 imágenes permitidas.")
-        return
+        showSnackBar("Has alcanzado el límite de 6 imágenes permitidas.");
+        return;
       }
-      const file = event.target.files[0]
+      const file = event.target.files[0];
       if (file.size > 15 * 1024 * 1024) {
-        showSnackBar("El archivo es muy grande. Máximo 15MB.")
-        if (event.target) (event.target as HTMLInputElement).value = ""
-        return
+        showSnackBar("El archivo es muy grande. Máximo 15MB.");
+        if (event.target) (event.target as HTMLInputElement).value = "";
+        return;
       }
       if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
-        showSnackBar("Formato no permitido. Solo JPG, PNG, WEBP.")
-        if (event.target) (event.target as HTMLInputElement).value = ""
-        return
+        showSnackBar("Formato no permitido. Solo JPG, PNG, WEBP.");
+        if (event.target) (event.target as HTMLInputElement).value = "";
+        return;
       }
-      const tempImageId = uuidv4()
-      openCropperWithFile(file, tempImageId)
+      const tempImageId = uuidv4();
+      openCropperWithFile(file, tempImageId);
     }
-    if (event.target) (event.target as HTMLInputElement).value = ""
-  }
+    if (event.target) (event.target as HTMLInputElement).value = "";
+  };
 
   const closeAndResetCropper = () => {
-    setCropModalOpen(false)
-    setImageSrcForCropper(null)
-    setImageToCropDetails(null)
-    setCrop(undefined)
-    setCompletedCrop(undefined)
-    if (imgRef.current) imgRef.current = null
-  }
+    setCropModalOpen(false);
+    setImageSrcForCropper(null);
+    setImageToCropDetails(null);
+    setCrop(undefined);
+    setCompletedCrop(undefined);
+    if (imgRef.current) imgRef.current = null;
+  };
 
   async function canvasPreview(
     image: HTMLImageElement,
     canvas: HTMLCanvasElement,
     crop: PixelCrop,
     scale = 1,
-    rotate = 0
+    rotate = 0,
   ) {
-    const ctx = canvas.getContext("2d")
+    const ctx = canvas.getContext("2d");
     if (!ctx) {
-      throw new Error("No 2d context")
+      throw new Error("No 2d context");
     }
-    const scaleX = image.naturalWidth / image.width
-    const scaleY = image.naturalHeight / image.height
-    const pixelRatio = window.devicePixelRatio || 1
-    canvas.width = Math.floor(crop.width * scaleX * pixelRatio)
-    canvas.height = Math.floor(crop.height * scaleY * pixelRatio)
-    ctx.scale(pixelRatio, pixelRatio)
-    ctx.imageSmoothingQuality = "high"
-    const cropX = crop.x * scaleX
-    const cropY = crop.y * scaleY
-    const rotateRads = (rotate * Math.PI) / 180
-    const centerX = image.naturalWidth / 2
-    const centerY = image.naturalHeight / 2
-    ctx.save()
-    ctx.translate(-cropX, -cropY)
-    ctx.translate(centerX, centerY)
-    ctx.rotate(rotateRads)
-    ctx.scale(scale, scale)
-    ctx.translate(-centerX, -centerY)
-    ctx.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight)
-    ctx.restore()
+    const scaleX = image.naturalWidth / image.width;
+    const scaleY = image.naturalHeight / image.height;
+    const pixelRatio = window.devicePixelRatio || 1;
+    canvas.width = Math.floor(crop.width * scaleX * pixelRatio);
+    canvas.height = Math.floor(crop.height * scaleY * pixelRatio);
+    ctx.scale(pixelRatio, pixelRatio);
+    ctx.imageSmoothingQuality = "high";
+    const cropX = crop.x * scaleX;
+    const cropY = crop.y * scaleY;
+    const rotateRads = (rotate * Math.PI) / 180;
+    const centerX = image.naturalWidth / 2;
+    const centerY = image.naturalHeight / 2;
+    ctx.save();
+    ctx.translate(-cropX, -cropY);
+    ctx.translate(centerX, centerY);
+    ctx.rotate(rotateRads);
+    ctx.scale(scale, scale);
+    ctx.translate(-centerX, -centerY);
+    ctx.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight);
+    ctx.restore();
   }
 
   const handleConfirmCropAndUpload = async () => {
@@ -267,40 +267,44 @@ export default function CreateService() {
       !previewCanvasRef.current ||
       !imageToCropDetails
     ) {
-      showSnackBar("Error: No se pudo procesar el recorte.")
-      return
+      showSnackBar("Error: No se pudo procesar el recorte.");
+      return;
     }
-    await canvasPreview(imgRef.current, previewCanvasRef.current, completedCrop)
+    await canvasPreview(
+      imgRef.current,
+      previewCanvasRef.current,
+      completedCrop,
+    );
     previewCanvasRef.current.toBlob(
       (blob) => {
         if (!blob) {
-          showSnackBar("Error: No se pudo crear el archivo WebP.")
-          return
+          showSnackBar("Error: No se pudo crear el archivo WebP.");
+          return;
         }
-        const { originalFile, tempId } = imageToCropDetails
-        let originalNameWithoutExtension = originalFile.name
-        const lastDotIndex = originalFile.name.lastIndexOf(".")
+        const { originalFile, tempId } = imageToCropDetails;
+        let originalNameWithoutExtension = originalFile.name;
+        const lastDotIndex = originalFile.name.lastIndexOf(".");
         if (lastDotIndex > 0)
           originalNameWithoutExtension = originalFile.name.substring(
             0,
-            lastDotIndex
-          )
-        const webpFileName = `service_${originalNameWithoutExtension.replace(/[^a-zA-Z0-9.]/g, "_")}_${Date.now()}.webp`
+            lastDotIndex,
+          );
+        const webpFileName = `service_${originalNameWithoutExtension.replace(/[^a-zA-Z0-9.]/g, "_")}_${Date.now()}.webp`;
         const croppedWebpFile = new File([blob], webpFileName, {
           type: "image/webp",
-        })
+        });
 
-        closeAndResetCropper()
+        closeAndResetCropper();
         setServiceImages((prev) => [
           ...prev,
           { id: tempId, url: "", file: croppedWebpFile, progress: 0 },
-        ])
-        startTusUpload(croppedWebpFile, tempId)
+        ]);
+        startTusUpload(croppedWebpFile, tempId);
       },
       "image/webp",
-      0.85
-    )
-  }
+      0.85,
+    );
+  };
 
   const startTusUpload = (file: File, imageId: string) => {
     const upload = new tus.Upload(file, {
@@ -313,92 +317,92 @@ export default function CreateService() {
         imageId: imageId,
       },
       onProgress: (bytesUploaded, bytesTotal) => {
-        const percentage = Math.floor((bytesUploaded / bytesTotal) * 100)
+        const percentage = Math.floor((bytesUploaded / bytesTotal) * 100);
         setServiceImages((prev) =>
           prev.map((img) =>
-            img.id === imageId ? { ...img, progress: percentage } : img
-          )
-        )
+            img.id === imageId ? { ...img, progress: percentage } : img,
+          ),
+        );
       },
       onSuccess: async () => {
-        const tusUploadInstance = upload as any
-        let finalS3Url: string | null = null
+        const tusUploadInstance = upload as any;
+        let finalS3Url: string | null = null;
         if (tusUploadInstance._req?._xhr?.getResponseHeader) {
           finalS3Url =
             tusUploadInstance._req._xhr.getResponseHeader("x-final-url") ||
-            tusUploadInstance._req._xhr.getResponseHeader("X-Final-URL")
+            tusUploadInstance._req._xhr.getResponseHeader("X-Final-URL");
         } else if (tusUploadInstance.xhr?.getResponseHeader) {
           finalS3Url =
             tusUploadInstance.xhr.getResponseHeader("x-final-url") ||
-            tusUploadInstance.xhr.getResponseHeader("X-Final-URL")
+            tusUploadInstance.xhr.getResponseHeader("X-Final-URL");
         }
         if (finalS3Url && finalS3Url.startsWith("https://https//")) {
-          finalS3Url = finalS3Url.replace("https://https//", "https://")
+          finalS3Url = finalS3Url.replace("https://https//", "https://");
         }
-        const imageUrl = finalS3Url || upload.url
+        const imageUrl = finalS3Url || upload.url;
 
         if (imageUrl) {
           setServiceImages((prev) =>
             prev.map((img) =>
               img.id === imageId
                 ? { ...img, url: imageUrl, progress: 100, file: undefined }
-                : img
-            )
-          )
-          showSnackBar(`Imagen de servicio subida.`)
+                : img,
+            ),
+          );
+          showSnackBar(`Imagen de servicio subida.`);
         } else {
-          const errorMsg = "Error al obtener URL"
+          const errorMsg = "Error al obtener URL";
           setServiceImages((prev) =>
             prev.map((img) =>
               img.id === imageId
                 ? { ...img, error: errorMsg, file: undefined }
-                : img
-            )
-          )
-          showSnackBar(`Error al obtener URL para la imagen.`)
+                : img,
+            ),
+          );
+          showSnackBar(`Error al obtener URL para la imagen.`);
         }
       },
       onError: (error) => {
-        const errorMsg = error.message || "Error desconocido"
+        const errorMsg = error.message || "Error desconocido";
         setServiceImages((prev) =>
           prev.map((img) =>
             img.id === imageId
               ? { ...img, error: errorMsg, file: undefined }
-              : img
-          )
-        )
-        showSnackBar(`Error al subir imagen: ${errorMsg}`)
+              : img,
+          ),
+        );
+        showSnackBar(`Error al subir imagen: ${errorMsg}`);
       },
-    })
-    upload.start()
-  }
+    });
+    upload.start();
+  };
 
   const handleRemoveServiceImage = (idToRemove: string) => {
-    setServiceImages((prev) => prev.filter((img) => img.id !== idToRemove))
-    showSnackBar("Imagen eliminada de la lista.")
-  }
+    setServiceImages((prev) => prev.filter((img) => img.id !== idToRemove));
+    showSnackBar("Imagen eliminada de la lista.");
+  };
 
   const handleEditorChange = (value: string) => {
-    setDescription(value)
-  }
+    setDescription(value);
+  };
   const handleServiceAreaChange = (e: SelectChangeEvent<string>) => {
-    setServiceArea(e.target.value)
-  }
+    setServiceArea(e.target.value);
+  };
   const handleClose = () => {
-    setServiceModal(false)
-  }
+    setServiceModal(false);
+  };
   const handleActive = () => {
-    setActive(!active)
-  }
+    setActive(!active);
+  };
   const handleIsLocal = () => {
-    setIsLocal(!isLocal)
-  }
+    setIsLocal(!isLocal);
+  };
   const handleIsRemote = () => {
-    setIsRemote(!isRemote)
-  }
+    setIsRemote(!isRemote);
+  };
 
   const handleSubmit = async (event?: FormEvent<HTMLFormElement>) => {
-    if (event) event.preventDefault()
+    if (event) event.preventDefault();
     if (
       !title.trim() ||
       !description.trim() ||
@@ -406,22 +410,22 @@ export default function CreateService() {
       Number(priceFrom) <= 0
     ) {
       showSnackBar(
-        "Por favor completa todos los campos obligatorios (Título, Descripción, Área, Precio Desde)."
-      )
-      return
+        "Por favor completa todos los campos obligatorios (Título, Descripción, Área, Precio Desde).",
+      );
+      return;
     }
     if (
       serviceImages.some(
         (img) =>
-          img.file && typeof img.progress === "number" && img.progress < 100
+          img.file && typeof img.progress === "number" && img.progress < 100,
       )
     ) {
-      showSnackBar("Algunas imágenes aún se están subiendo. Por favor espera.")
-      return
+      showSnackBar("Algunas imágenes aún se están subiendo. Por favor espera.");
+      return;
     }
 
-    setBackdrop(true)
-    setIsSubmitting(true)
+    setBackdrop(true);
+    setIsSubmitting(true);
 
     const payload: Partial<Service> = {
       title: title,
@@ -435,41 +439,41 @@ export default function CreateService() {
       userid: user ? user._id?.toString() : undefined,
       sources: { images: serviceImages },
       active: active,
-    }
+    };
 
     try {
-      console.log("Creating New Service Data:")
-      const base_url = `${import.meta.env.VITE_BACKEND_URL}/service/create`
+      console.log("Creating New Service Data:");
+      const base_url = `${import.meta.env.VITE_BACKEND_URL}/service/create`;
       const response = await axios.post<PrixResponse>(base_url, payload, {
         withCredentials: true,
-      })
+      });
 
       if (response.data.success) {
-        showSnackBar("Servicio creado exitosamente.")
-        onClose()
+        showSnackBar("Servicio creado exitosamente.");
+        onClose();
       } else {
         showSnackBar(
           response.data.message ||
-          "Error al crear el servicio. Intenta de nuevo."
-        )
+            "Error al crear el servicio. Intenta de nuevo.",
+        );
       }
     } catch (err: any) {
-      console.error("Failed to create service:", err)
+      console.error("Failed to create service:", err);
       showSnackBar(
         err?.response?.data?.message ||
-        err.message ||
-        "Error desconocido al crear el servicio."
-      )
+          err.message ||
+          "Error desconocido al crear el servicio.",
+      );
     } finally {
-      setBackdrop(false)
-      setIsSubmitting(false)
+      setBackdrop(false);
+      setIsSubmitting(false);
     }
-  }
+  };
 
-  const onClose = () => setServiceModal(false)
+  const onClose = () => setServiceModal(false);
 
   if (!uploadService) {
-    return null
+    return null;
   }
 
   return (
@@ -513,7 +517,7 @@ export default function CreateService() {
               disabled={
                 isSubmitting ||
                 serviceImages.some(
-                  (img) => img.file && !img.error && img.progress !== 100
+                  (img) => img.file && !img.error && img.progress !== 100,
                 )
               }
               startIcon={
@@ -553,7 +557,7 @@ export default function CreateService() {
                   value={title}
                   placeholder='Ejemplo: "Fotografía de eventos" o "Diseño de logotipos"'
                   onChange={(e) => {
-                    setTitle(e.target.value)
+                    setTitle(e.target.value);
                   }}
                 />
               </Grid2>
@@ -713,7 +717,7 @@ export default function CreateService() {
               </Grid2>
               <Grid2
                 size={{ xs: 12 }}
-              //  sm={4} md={3} lg={2}
+                //  sm={4} md={3} lg={2}
               >
                 <input
                   type="file"
@@ -742,13 +746,10 @@ export default function CreateService() {
               </Grid2>
 
               <Grid2 size={{ xs: 12 }}>
-                <FormControl
-                  variant="outlined"
-                  sx={{ m: 1, width: "100%" }}
-                >
+                <FormControl variant="outlined" sx={{ m: 1, width: "100%" }}>
                   <InputLabel id="serviceAreaLabel">Tipo</InputLabel>
                   <Select
-                    sx={{ width: '100%' }}
+                    sx={{ width: "100%" }}
                     labelId="serviceAreaLabel"
                     id="serviceArea"
                     value={serviceArea}
@@ -798,7 +799,7 @@ export default function CreateService() {
                     <Checkbox
                       checked={active}
                       onChange={() => {
-                        handleActive()
+                        handleActive();
                       }}
                     />
                   }
@@ -810,7 +811,7 @@ export default function CreateService() {
                     <Checkbox
                       checked={isLocal}
                       onChange={() => {
-                        handleIsLocal()
+                        handleIsLocal();
                       }}
                     />
                   }
@@ -822,7 +823,7 @@ export default function CreateService() {
                     <Checkbox
                       checked={isRemote}
                       onChange={() => {
-                        handleIsRemote()
+                        handleIsRemote();
                       }}
                     />
                   }
@@ -978,5 +979,5 @@ export default function CreateService() {
         )}
       </Dialog>
     </div>
-  )
+  );
 }

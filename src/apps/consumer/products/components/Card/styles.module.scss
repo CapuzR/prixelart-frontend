@@ -1,4 +1,4 @@
-@use '../../../../../styles/theme.scss' as theme;
+@use "../../../../../styles/theme.scss" as theme;
 $breakpoint-mobile: 480px;
 
 .card-root {
@@ -7,7 +7,12 @@ $breakpoint-mobile: 480px;
   align-content: space-between;
   align-items: center;
   height: 100%;
-  @include theme.paper(undefined, theme.$box-shadow-heavy, theme.$border-radius-xl, theme.$spacing-md);
+  @include theme.paper(
+    undefined,
+    theme.$box-shadow-heavy,
+    theme.$border-radius-xl,
+    theme.$spacing-md
+  );
 
   &.pointed {
     transition: box-shadow 0.2s ease-in-out;
@@ -34,8 +39,8 @@ $breakpoint-mobile: 480px;
   flex-direction: column;
   gap: 2.5rem;
   padding: theme.$spacing-md;
-  @include respond-below( $breakpoint-mobile) {
-    padding: theme.$spacing-sm
+  @include respond-below($breakpoint-mobile) {
+    padding: theme.$spacing-sm;
   }
 }
 

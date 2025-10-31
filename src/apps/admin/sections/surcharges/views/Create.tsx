@@ -6,22 +6,22 @@ import React, {
   FormEvent,
   SyntheticEvent,
   useMemo,
-} from "react"
-import { useNavigate } from "react-router-dom"
-import { v4 as uuidv4 } from "uuid"
+} from "react";
+import { useNavigate } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 
 // Hooks, Types, Context, API
-import { useSnackBar } from "context/GlobalContext"
+import { useSnackBar } from "context/GlobalContext";
 // --- Import Surcharge specific types ---
 import {
   AdjustmentMethod,
   ApplicableEntity,
   Surcharge,
   Entity,
-} from "types/surcharge.types"
-import { Product } from "types/product.types" // Use detailed Product/Variant
-import { createSurcharge } from "@api/surcharge.api"
-import { fetchProducts } from "@api/product.api"
+} from "types/surcharge.types";
+import { Product } from "types/product.types"; // Use detailed Product/Variant
+import { createSurcharge } from "@api/surcharge.api";
+import { fetchProducts } from "@api/product.api";
 
 // MUI Components (Keep all imports from CreateDiscount)
 import {
@@ -50,41 +50,41 @@ import {
   AccordionSummary,
   AccordionDetails, // Added Accordion components
   Avatar,
-} from "@mui/material"
-import Grid2 from "@mui/material/Grid"
+} from "@mui/material";
+import Grid2 from "@mui/material/Grid";
 
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline"
-import DeleteIcon from "@mui/icons-material/Delete"
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore" // Icon for Accordion
-import WarningAmberIcon from "@mui/icons-material/WarningAmber" // Icon for Error Summary
-import Title from "@apps/admin/components/Title"
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore"; // Icon for Accordion
+import WarningAmberIcon from "@mui/icons-material/WarningAmber"; // Icon for Error Summary
+import Title from "@apps/admin/components/Title";
 
 // Date Picker Components & Dayjs
-import { Dayjs } from "dayjs" // Assuming dayjs is used
+import { Dayjs } from "dayjs"; // Assuming dayjs is used
 import {
   ADJUSTMENT_METHOD_OPTIONS,
   ENTITY_TYPE_OPTIONS,
   formatPrice,
   getProductImageUrl,
   ProductOrVariantOption,
-} from "@apps/admin/utils/discountSurchargeUtils"
-import { DatePicker } from "@mui/lab"
+} from "@apps/admin/utils/discountSurchargeUtils";
+import { DatePicker } from "@mui/lab";
 
 // --- Constants and Types ---
 
 interface OverrideFormState extends ApplicableEntity {
-  tempId: string
+  tempId: string;
 }
 
 interface RecipientFormState extends ApplicableEntity {
-  tempId: string
+  tempId: string;
 }
 
 // --- Updated initial state type for Surcharge ---
 const initialFormState: Omit<Surcharge, "_id" | "applicableProducts"> & {
-  entityOverrides: OverrideFormState[]
-  recipients: RecipientFormState[] // Add recipients
-  applicableProducts: [string, string?][]
+  entityOverrides: OverrideFormState[];
+  recipients: RecipientFormState[]; // Add recipients
+  applicableProducts: [string, string?][];
 } = {
   name: "",
   description: "",
@@ -97,109 +97,110 @@ const initialFormState: Omit<Surcharge, "_id" | "applicableProducts"> & {
   dateRange: undefined,
   entityOverrides: [],
   recipients: [],
-}
+};
 
 // --- Updated ValidationErrors type for Surcharge ---
 interface SurchargeValidationErrors {
-  name?: string
-  description?: string
-  adjustmentMethod?: string
-  defaultValue?: string
-  applicableProducts?: string // For selection requirement
-  dateRange?: string
-  startDate?: string
-  endDate?: string
+  name?: string;
+  description?: string;
+  adjustmentMethod?: string;
+  defaultValue?: string;
+  applicableProducts?: string; // For selection requirement
+  dateRange?: string;
+  startDate?: string;
+  endDate?: string;
   entityOverrides?: {
     [index: number]: {
-      type?: string
-      id?: string
-      adjustmentMethod?: string
-      customValue?: string
-    }
-  }
+      type?: string;
+      id?: string;
+      adjustmentMethod?: string;
+      customValue?: string;
+    };
+  };
   recipients?: {
     [index: number]: {
-      type?: string
-      id?: string
-      adjustmentMethod?: string
-      customValue?: string
-    }
-  } // Add recipients errors
-  summary?: string
+      type?: string;
+      id?: string;
+      adjustmentMethod?: string;
+      customValue?: string;
+    };
+  }; // Add recipients errors
+  summary?: string;
 }
 
 // --- Define helper type for single errors ---
 type SingleRuleErrors = NonNullable<
   SurchargeValidationErrors["entityOverrides"]
->[number] // Can reuse for recipients structure
+>[number]; // Can reuse for recipients structure
 
 // --- Component ---
 const CreateSurcharge: React.FC = () => {
   // Rename component
   // --- Hooks ---
-  const navigate = useNavigate()
-  const { showSnackBar } = useSnackBar()
+  const navigate = useNavigate();
+  const { showSnackBar } = useSnackBar();
 
   // --- State ---
-  const [formData, setFormData] = useState(initialFormState)
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+  const [formData, setFormData] = useState(initialFormState);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [validationErrors, setValidationErrors] =
-    useState<SurchargeValidationErrors | null>(null) // Use new type
-  const [isLoadingItems, setIsLoadingItems] = useState<boolean>(true)
-  const [allProducts, setAllProducts] = useState<Product[]>([])
+    useState<SurchargeValidationErrors | null>(null); // Use new type
+  const [isLoadingItems, setIsLoadingItems] = useState<boolean>(true);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
   // --- Adopted State from CreateDiscount ---
   const [selectedProductVariants, setSelectedProductVariants] = useState<
     ProductOrVariantOption[]
-  >([])
-  const [startDate, setStartDate] = useState<Dayjs | null>(null)
-  const [endDate, setEndDate] = useState<Dayjs | null>(null)
+  >([]);
+  const [startDate, setStartDate] = useState<Dayjs | null>(null);
+  const [endDate, setEndDate] = useState<Dayjs | null>(null);
   const [expandedAccordion, setExpandedAccordion] = useState<string | false>(
-    "applicability"
-  ) // Default expanded section
+    "applicability",
+  ); // Default expanded section
 
   // --- productVariantOptions useMemo (from CreateDiscount) ---
   const productVariantOptions = useMemo((): ProductOrVariantOption[] => {
     // ... Same logic as refactored CreateDiscount/UpdateDiscount ...
     // Calculates price ranges/values and puts them in the label
-    const options: ProductOrVariantOption[] = []
+    const options: ProductOrVariantOption[] = [];
     allProducts.forEach((product) => {
       if (!product._id || !product.variants || product.variants.length === 0)
-        return
-      const productIdStr = product._id.toString()
-      const productImageUrl = getProductImageUrl(product)
+        return;
+      const productIdStr = product._id.toString();
+      const productImageUrl = getProductImageUrl(product);
 
       // Calculate Price Ranges for "Todo el producto"
       let minPublic = Infinity,
         maxPublic = -Infinity,
         minPrixer = Infinity,
-        maxPrixer = -Infinity
-      let validPricesFound = false
+        maxPrixer = -Infinity;
+      let validPricesFound = false;
       product.variants.forEach((variant) => {
-        const publicP = parseFloat(variant.publicPrice)
-        const prixerP = parseFloat(variant.prixerPrice)
+        const publicP = parseFloat(variant.publicPrice);
+        const prixerP = parseFloat(variant.prixerPrice);
         if (!isNaN(publicP)) {
-          minPublic = Math.min(minPublic, publicP)
-          maxPublic = Math.max(maxPublic, publicP)
-          validPricesFound = true
+          minPublic = Math.min(minPublic, publicP);
+          maxPublic = Math.max(maxPublic, publicP);
+          validPricesFound = true;
         }
         if (!isNaN(prixerP)) {
-          minPrixer = Math.min(minPrixer, prixerP)
-          maxPrixer = Math.max(maxPrixer, prixerP)
-          validPricesFound = true
+          minPrixer = Math.min(minPrixer, prixerP);
+          maxPrixer = Math.max(maxPrixer, prixerP);
+          validPricesFound = true;
         }
-      })
-      let priceRangeStr = "(Precios N/A)"
+      });
+      let priceRangeStr = "(Precios N/A)";
       if (validPricesFound) {
         const formatRange = (
           min: number,
           max: number,
-          prefix: string
+          prefix: string,
         ): string => {
-          if (min === Infinity || max === -Infinity) return `${prefix}: USD N/A`
-          if (min === max) return `${prefix}: USD ${min.toFixed(2)}`
-          return `${prefix}: USD ${min.toFixed(2)} - USD ${max.toFixed(2)}`
-        }
-        priceRangeStr = `(${formatRange(minPublic, maxPublic, "Precio Normal")}, ${formatRange(minPrixer, maxPrixer, "PVM")})`
+          if (min === Infinity || max === -Infinity)
+            return `${prefix}: USD N/A`;
+          if (min === max) return `${prefix}: USD ${min.toFixed(2)}`;
+          return `${prefix}: USD ${min.toFixed(2)} - USD ${max.toFixed(2)}`;
+        };
+        priceRangeStr = `(${formatRange(minPublic, maxPublic, "Precio Normal")}, ${formatRange(minPrixer, maxPrixer, "PVM")})`;
       }
 
       options.push({
@@ -209,13 +210,13 @@ const CreateSurcharge: React.FC = () => {
         productId: productIdStr,
         productName: product.name,
         imageUrl: productImageUrl,
-      })
+      });
 
       // Add options for individual variants
       product.variants.forEach((variant) => {
-        if (!variant._id) return
-        const variantImageUrl = getProductImageUrl(product, variant)
-        const variantPriceStr = `(Precio Normal: ${formatPrice(variant.publicPrice)}, PVM: ${formatPrice(variant.prixerPrice)})`
+        if (!variant._id) return;
+        const variantImageUrl = getProductImageUrl(product, variant);
+        const variantPriceStr = `(Precio Normal: ${formatPrice(variant.publicPrice)}, PVM: ${formatPrice(variant.prixerPrice)})`;
         options.push({
           id: `${productIdStr}_${variant._id}`,
           label: `    ↳ ${variant.name || "Variante sin nombre"} ${variantPriceStr}`,
@@ -225,50 +226,50 @@ const CreateSurcharge: React.FC = () => {
           variantId: variant._id,
           variantName: variant.name,
           imageUrl: variantImageUrl,
-        })
-      })
-    })
-    return options
-  }, [allProducts])
+        });
+      });
+    });
+    return options;
+  }, [allProducts]);
 
   // --- Fetch Products and Arts (Adopted from CreateDiscount) ---
   const loadItems = useCallback(async () => {
-    setIsLoadingItems(true)
+    setIsLoadingItems(true);
     try {
       // Only fetch products
       const productsData = (await fetchProducts()) as unknown as Promise<
         Product[]
-      >
+      >;
       setAllProducts(
         (await productsData).filter(
-          (p) => p._id && p.variants && p.variants.length > 0
-        )
-      )
+          (p) => p._id && p.variants && p.variants.length > 0,
+        ),
+      );
     } catch (err: any) {
-      console.error("Error loading products:", err)
-      showSnackBar(err.message || "Error al cargar productos.")
+      console.error("Error loading products:", err);
+      showSnackBar(err.message || "Error al cargar productos.");
     } finally {
-      setIsLoadingItems(false)
+      setIsLoadingItems(false);
     }
-  }, [showSnackBar])
+  }, [showSnackBar]);
   useEffect(() => {
-    loadItems()
-  }, [loadItems])
+    loadItems();
+  }, [loadItems]);
 
   // --- Handlers (Base handlers mostly same as CreateDiscount) ---
   const handleInputChange = (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
-    const target = event.target as HTMLInputElement
-    const { name, value, type } = target
-    const checked = target.checked // For checkboxes
+    const target = event.target as HTMLInputElement;
+    const { name, value, type } = target;
+    const checked = target.checked; // For checkboxes
 
-    const fieldVal = type === "checkbox" ? checked : value
+    const fieldVal = type === "checkbox" ? checked : value;
 
     setFormData((prevData) => ({
       ...prevData,
       [name]: fieldVal,
-    }))
+    }));
 
     // Clear specific validation error
     if (
@@ -276,27 +277,27 @@ const CreateSurcharge: React.FC = () => {
       validationErrors[name as keyof SurchargeValidationErrors]
     ) {
       setValidationErrors((prevErrors) => {
-        if (!prevErrors) return null
-        const updated = { ...prevErrors }
-        delete updated[name as keyof SurchargeValidationErrors]
+        if (!prevErrors) return null;
+        const updated = { ...prevErrors };
+        delete updated[name as keyof SurchargeValidationErrors];
         // Check if any top-level keys remain besides summary
-        const keys = Object.keys(updated).filter((k) => k !== "summary")
-        return keys.length > 0 || updated.summary ? updated : null
-      })
+        const keys = Object.keys(updated).filter((k) => k !== "summary");
+        return keys.length > 0 || updated.summary ? updated : null;
+      });
     }
-  }
+  };
 
   const handleSelectChange = (
-    event: ChangeEvent<{ name?: string; value: unknown }>
+    event: ChangeEvent<{ name?: string; value: unknown }>,
   ) => {
-    const name = event.target.name as keyof typeof formData
-    const value = event.target.value
+    const name = event.target.name as keyof typeof formData;
+    const value = event.target.value;
 
     setFormData((prev) => ({
       ...prev,
       // Assert value type based on known select fields
       [name]: value as AdjustmentMethod | Entity, // Adjust as necessary for other selects
-    }))
+    }));
 
     // Clear specific validation error
     if (
@@ -304,94 +305,94 @@ const CreateSurcharge: React.FC = () => {
       validationErrors[name as keyof SurchargeValidationErrors]
     ) {
       setValidationErrors((prevErrors) => {
-        if (!prevErrors) return null
-        const updated = { ...prevErrors }
-        delete updated[name as keyof SurchargeValidationErrors]
-        const keys = Object.keys(updated).filter((k) => k !== "summary")
-        return keys.length > 0 || updated.summary ? updated : null
-      })
+        if (!prevErrors) return null;
+        const updated = { ...prevErrors };
+        delete updated[name as keyof SurchargeValidationErrors];
+        const keys = Object.keys(updated).filter((k) => k !== "summary");
+        return keys.length > 0 || updated.summary ? updated : null;
+      });
     }
-  }
+  };
 
   const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = event.target
+    const { name, checked } = event.target;
     setFormData((prev) => {
-      const newState = { ...prev, [name]: checked }
+      const newState = { ...prev, [name]: checked };
       if (name === "appliesToAllProducts" && checked) {
-        newState.applicableProducts = []
-        setSelectedProductVariants([])
+        newState.applicableProducts = [];
+        setSelectedProductVariants([]);
       }
       // Removed Arts logic
-      return newState
-    })
+      return newState;
+    });
     // Clear validation
     if (
       name === "appliesToAllProducts" &&
       validationErrors?.applicableProducts
     ) {
       setValidationErrors((prevErrors) => {
-        if (!prevErrors) return null
-        const updated = { ...prevErrors }
-        delete updated.applicableProducts
-        return Object.keys(updated).length > 0 ? updated : null
-      })
+        if (!prevErrors) return null;
+        const updated = { ...prevErrors };
+        delete updated.applicableProducts;
+        return Object.keys(updated).length > 0 ? updated : null;
+      });
     }
-  }
+  };
 
   // --- Product/Variant Handler (from CreateDiscount) ---
   const handleProductVariantChange = (
     event: SyntheticEvent,
-    newValue: ProductOrVariantOption[]
+    newValue: ProductOrVariantOption[],
   ) => {
-    setSelectedProductVariants(newValue) // Update visual selection
+    setSelectedProductVariants(newValue); // Update visual selection
 
-    const finalApplicableVariants = new Set<string>() // Use set for unique "productId_variantId"
+    const finalApplicableVariants = new Set<string>(); // Use set for unique "productId_variantId"
 
     newValue.forEach((option) => {
       if (option.isProduct) {
         // Expand whole product selection
         const product = allProducts.find(
-          (p) => p._id!.toString() === option.productId
-        )
+          (p) => p._id!.toString() === option.productId,
+        );
         if (product?.variants) {
           product.variants.forEach((variant) => {
             if (variant._id)
-              finalApplicableVariants.add(`${product._id}_${variant._id}`)
-          })
+              finalApplicableVariants.add(`${product._id}_${variant._id}`);
+          });
         }
       } else if (option.variantId) {
         // Add specific variant
-        finalApplicableVariants.add(`${option.productId}_${option.variantId}`)
+        finalApplicableVariants.add(`${option.productId}_${option.variantId}`);
       }
-    })
+    });
 
     // Convert Set back to array format for formData
     const newApplicableProducts: [string, string][] = Array.from(
-      finalApplicableVariants
+      finalApplicableVariants,
     ).map((idPair) => {
-      const [prodId, varId] = idPair.split("_")
-      return [prodId, varId]
-    })
+      const [prodId, varId] = idPair.split("_");
+      return [prodId, varId];
+    });
 
     setFormData((prev) => ({
       ...prev,
       applicableProducts: newApplicableProducts,
-    }))
+    }));
 
     // Clear validation
     if (validationErrors?.applicableProducts) {
       setValidationErrors((prevErrors) => {
-        if (!prevErrors) return null
-        const updated = { ...prevErrors }
-        delete updated.applicableProducts
-        return Object.keys(updated).length > 0 ? updated : null
-      })
+        if (!prevErrors) return null;
+        const updated = { ...prevErrors };
+        delete updated.applicableProducts;
+        return Object.keys(updated).length > 0 ? updated : null;
+      });
     }
-  }
+  };
 
   // --- Date Picker Handlers ---
   const handleStartDateChange = (newValue: Dayjs | null) => {
-    setStartDate(newValue)
+    setStartDate(newValue);
     // Clear date-related errors
     if (
       validationErrors?.startDate ||
@@ -399,18 +400,18 @@ const CreateSurcharge: React.FC = () => {
       validationErrors?.dateRange
     ) {
       setValidationErrors((prevErrors) => {
-        if (!prevErrors) return null
-        const updated = { ...prevErrors }
-        delete updated.startDate
-        delete updated.endDate
-        delete updated.dateRange
-        const keys = Object.keys(updated).filter((k) => k !== "summary")
-        return keys.length > 0 || updated.summary ? updated : null
-      })
+        if (!prevErrors) return null;
+        const updated = { ...prevErrors };
+        delete updated.startDate;
+        delete updated.endDate;
+        delete updated.dateRange;
+        const keys = Object.keys(updated).filter((k) => k !== "summary");
+        return keys.length > 0 || updated.summary ? updated : null;
+      });
     }
-  }
+  };
   const handleEndDateChange = (newValue: Dayjs | null) => {
-    setEndDate(newValue)
+    setEndDate(newValue);
     // Clear date-related errors
     if (
       validationErrors?.startDate ||
@@ -418,16 +419,16 @@ const CreateSurcharge: React.FC = () => {
       validationErrors?.dateRange
     ) {
       setValidationErrors((prevErrors) => {
-        if (!prevErrors) return null
-        const updated = { ...prevErrors }
-        delete updated.startDate
-        delete updated.endDate
-        delete updated.dateRange
-        const keys = Object.keys(updated).filter((k) => k !== "summary")
-        return keys.length > 0 || updated.summary ? updated : null
-      })
+        if (!prevErrors) return null;
+        const updated = { ...prevErrors };
+        delete updated.startDate;
+        delete updated.endDate;
+        delete updated.dateRange;
+        const keys = Object.keys(updated).filter((k) => k !== "summary");
+        return keys.length > 0 || updated.summary ? updated : null;
+      });
     }
-  }
+  };
 
   // --- Entity Override Handlers (identical to CreateDiscount) ---
   const handleAddOverride = () => {
@@ -444,109 +445,109 @@ const CreateSurcharge: React.FC = () => {
           name: "",
         },
       ],
-    }))
+    }));
     // Clear general override errors container if present
     if (validationErrors?.entityOverrides) {
       setValidationErrors((prevErrors) => {
-        if (!prevErrors) return null
-        const updated = { ...prevErrors }
-        delete updated.entityOverrides // Remove the container
-        const keys = Object.keys(updated).filter((k) => k !== "summary")
-        return keys.length > 0 || updated.summary ? updated : null
-      })
+        if (!prevErrors) return null;
+        const updated = { ...prevErrors };
+        delete updated.entityOverrides; // Remove the container
+        const keys = Object.keys(updated).filter((k) => k !== "summary");
+        return keys.length > 0 || updated.summary ? updated : null;
+      });
     }
-  }
+  };
 
   const handleOverrideChange = (
     tempId: string,
     field: keyof ApplicableEntity,
-    value: string | number | Entity | AdjustmentMethod
+    value: string | number | Entity | AdjustmentMethod,
   ) => {
     setFormData((prev) => ({
       ...prev,
       entityOverrides: prev.entityOverrides.map((ov: OverrideFormState) =>
-        ov.tempId === tempId ? { ...ov, [field]: value } : ov
+        ov.tempId === tempId ? { ...ov, [field]: value } : ov,
       ),
-    }))
+    }));
     // Clear validation error for the specific field within the specific override
     if (validationErrors?.entityOverrides) {
       const index = formData.entityOverrides.findIndex(
-        (ov: OverrideFormState) => ov.tempId === tempId
-      )
-      if (index === -1) return
+        (ov: OverrideFormState) => ov.tempId === tempId,
+      );
+      if (index === -1) return;
 
-      const errorFieldKey = field as keyof SingleRuleErrors
+      const errorFieldKey = field as keyof SingleRuleErrors;
 
       if (validationErrors.entityOverrides[index]?.[errorFieldKey]) {
         setValidationErrors((prevErrors) => {
-          if (!prevErrors?.entityOverrides?.[index]) return prevErrors // Guard
+          if (!prevErrors?.entityOverrides?.[index]) return prevErrors; // Guard
 
-          const updatedOverrides = { ...prevErrors.entityOverrides }
-          const specificOverrideErrors = { ...updatedOverrides[index] }
+          const updatedOverrides = { ...prevErrors.entityOverrides };
+          const specificOverrideErrors = { ...updatedOverrides[index] };
 
-          delete specificOverrideErrors[errorFieldKey]
+          delete specificOverrideErrors[errorFieldKey];
 
           if (Object.keys(specificOverrideErrors).length === 0) {
-            delete updatedOverrides[index]
+            delete updatedOverrides[index];
           } else {
-            updatedOverrides[index] = specificOverrideErrors
+            updatedOverrides[index] = specificOverrideErrors;
           }
 
           const finalOverrides =
             Object.keys(updatedOverrides).length > 0
               ? updatedOverrides
-              : undefined
-          const newErrors = { ...prevErrors, entityOverrides: finalOverrides }
-          if (!newErrors.entityOverrides) delete newErrors.entityOverrides // Clean up if empty
+              : undefined;
+          const newErrors = { ...prevErrors, entityOverrides: finalOverrides };
+          if (!newErrors.entityOverrides) delete newErrors.entityOverrides; // Clean up if empty
 
-          const keys = Object.keys(newErrors).filter((k) => k !== "summary")
-          return keys.length > 0 || newErrors.summary ? newErrors : null
-        })
+          const keys = Object.keys(newErrors).filter((k) => k !== "summary");
+          return keys.length > 0 || newErrors.summary ? newErrors : null;
+        });
       }
     }
-  }
+  };
 
   const handleRemoveOverride = (tempIdToRemove: string) => {
     // Find index *before* removing from state
     const indexToRemove = formData.entityOverrides.findIndex(
-      (ov: OverrideFormState) => ov.tempId === tempIdToRemove
-    )
+      (ov: OverrideFormState) => ov.tempId === tempIdToRemove,
+    );
 
     setFormData((prev) => ({
       ...prev,
       entityOverrides: prev.entityOverrides.filter(
-        (ov: OverrideFormState) => ov.tempId !== tempIdToRemove
+        (ov: OverrideFormState) => ov.tempId !== tempIdToRemove,
       ),
-    }))
+    }));
 
     // Clear errors related to the removed index and shift subsequent errors
     if (validationErrors?.entityOverrides && indexToRemove !== -1) {
       setValidationErrors((prevErrors) => {
-        if (!prevErrors?.entityOverrides) return prevErrors
+        if (!prevErrors?.entityOverrides) return prevErrors;
 
-        const currentOverrideErrors = { ...prevErrors.entityOverrides }
+        const currentOverrideErrors = { ...prevErrors.entityOverrides };
         const updatedOverrideErrors: SurchargeValidationErrors["entityOverrides"] =
-          {}
-        let errorFound = false
+          {};
+        let errorFound = false;
 
         Object.keys(currentOverrideErrors).forEach((keyIndexStr) => {
-          const keyIndex = parseInt(keyIndexStr, 10)
-          if (keyIndex === indexToRemove) return // Skip removed
+          const keyIndex = parseInt(keyIndexStr, 10);
+          if (keyIndex === indexToRemove) return; // Skip removed
 
-          const newIndex = keyIndex > indexToRemove ? keyIndex - 1 : keyIndex
-          updatedOverrideErrors[newIndex] = currentOverrideErrors[keyIndex]
-          errorFound = true
-        })
+          const newIndex = keyIndex > indexToRemove ? keyIndex - 1 : keyIndex;
+          updatedOverrideErrors[newIndex] = currentOverrideErrors[keyIndex];
+          errorFound = true;
+        });
 
-        const finalOverrides = errorFound ? updatedOverrideErrors : undefined
-        const newErrors = { ...prevErrors, entityOverrides: finalOverrides }
-        if (!newErrors.entityOverrides) delete newErrors.entityOverrides // Clean up if empty
+        const finalOverrides = errorFound ? updatedOverrideErrors : undefined;
+        const newErrors = { ...prevErrors, entityOverrides: finalOverrides };
+        if (!newErrors.entityOverrides) delete newErrors.entityOverrides; // Clean up if empty
 
-        const keys = Object.keys(newErrors).filter((k) => k !== "summary")
-        return keys.length > 0 || newErrors.summary ? newErrors : null
-      })
+        const keys = Object.keys(newErrors).filter((k) => k !== "summary");
+        return keys.length > 0 || newErrors.summary ? newErrors : null;
+      });
     }
-  }
+  };
 
   // --- NEW: Recipient Handlers (Similar to Overrides) ---
   const handleAddRecipient = () => {
@@ -563,148 +564,148 @@ const CreateSurcharge: React.FC = () => {
           name: "",
         },
       ],
-    }))
+    }));
     // Clear general recipient errors container
     if (validationErrors?.recipients) {
       setValidationErrors((prevErrors) => {
-        if (!prevErrors) return null
-        const updated = { ...prevErrors }
-        delete updated.recipients
-        return Object.keys(updated).length > 0 ? updated : null
-      })
+        if (!prevErrors) return null;
+        const updated = { ...prevErrors };
+        delete updated.recipients;
+        return Object.keys(updated).length > 0 ? updated : null;
+      });
     }
-  }
+  };
 
   const handleRecipientChange = (
     tempId: string,
     field: keyof ApplicableEntity,
-    value: string | number | Entity | AdjustmentMethod
+    value: string | number | Entity | AdjustmentMethod,
   ) => {
     setFormData((prev) => ({
       ...prev,
       recipients: prev.recipients.map((rec: RecipientFormState) =>
-        rec.tempId === tempId ? { ...rec, [field]: value } : rec
+        rec.tempId === tempId ? { ...rec, [field]: value } : rec,
       ),
-    }))
+    }));
     // Clear validation error for the specific field within the specific recipient
     if (validationErrors?.recipients) {
       const index = formData.recipients.findIndex(
-        (rec: RecipientFormState) => rec.tempId === tempId
-      )
-      if (index === -1) return
+        (rec: RecipientFormState) => rec.tempId === tempId,
+      );
+      if (index === -1) return;
 
-      const errorFieldKey = field as keyof SingleRuleErrors // Reuse error type
+      const errorFieldKey = field as keyof SingleRuleErrors; // Reuse error type
 
       if (validationErrors.recipients[index]?.[errorFieldKey]) {
         setValidationErrors((prevErrors) => {
-          if (!prevErrors?.recipients?.[index]) return prevErrors // Guard
+          if (!prevErrors?.recipients?.[index]) return prevErrors; // Guard
 
-          const updatedRecipients = { ...prevErrors.recipients }
-          const specificRecipientErrors = { ...updatedRecipients[index] }
+          const updatedRecipients = { ...prevErrors.recipients };
+          const specificRecipientErrors = { ...updatedRecipients[index] };
 
-          delete specificRecipientErrors[errorFieldKey]
+          delete specificRecipientErrors[errorFieldKey];
 
           if (Object.keys(specificRecipientErrors).length === 0) {
-            delete updatedRecipients[index]
+            delete updatedRecipients[index];
           } else {
-            updatedRecipients[index] = specificRecipientErrors
+            updatedRecipients[index] = specificRecipientErrors;
           }
 
           const finalRecipients =
             Object.keys(updatedRecipients).length > 0
               ? updatedRecipients
-              : undefined
-          const newErrors = { ...prevErrors, recipients: finalRecipients }
-          if (!newErrors.recipients) delete newErrors.recipients // Clean up if empty
+              : undefined;
+          const newErrors = { ...prevErrors, recipients: finalRecipients };
+          if (!newErrors.recipients) delete newErrors.recipients; // Clean up if empty
 
-          const keys = Object.keys(newErrors).filter((k) => k !== "summary")
-          return keys.length > 0 || newErrors.summary ? newErrors : null
-        })
+          const keys = Object.keys(newErrors).filter((k) => k !== "summary");
+          return keys.length > 0 || newErrors.summary ? newErrors : null;
+        });
       }
     }
-  }
+  };
 
   const handleRemoveRecipient = (tempIdToRemove: string) => {
     // Find index *before* removing from state
     const indexToRemove = formData.recipients.findIndex(
-      (rec: RecipientFormState) => rec.tempId === tempIdToRemove
-    )
+      (rec: RecipientFormState) => rec.tempId === tempIdToRemove,
+    );
 
     setFormData((prev) => ({
       ...prev,
       recipients: prev.recipients.filter(
-        (rec: RecipientFormState) => rec.tempId !== tempIdToRemove
+        (rec: RecipientFormState) => rec.tempId !== tempIdToRemove,
       ),
-    }))
+    }));
 
     // Clear errors related to the removed index and shift subsequent errors
     if (validationErrors?.recipients && indexToRemove !== -1) {
       setValidationErrors((prevErrors) => {
-        if (!prevErrors?.recipients) return prevErrors
+        if (!prevErrors?.recipients) return prevErrors;
 
-        const currentRecipientErrors = { ...prevErrors.recipients }
+        const currentRecipientErrors = { ...prevErrors.recipients };
         const updatedRecipientErrors: SurchargeValidationErrors["recipients"] =
-          {}
-        let errorFound = false
+          {};
+        let errorFound = false;
 
         Object.keys(currentRecipientErrors).forEach((keyIndexStr) => {
-          const keyIndex = parseInt(keyIndexStr, 10)
-          if (keyIndex === indexToRemove) return // Skip removed
+          const keyIndex = parseInt(keyIndexStr, 10);
+          if (keyIndex === indexToRemove) return; // Skip removed
 
-          const newIndex = keyIndex > indexToRemove ? keyIndex - 1 : keyIndex
-          updatedRecipientErrors[newIndex] = currentRecipientErrors[keyIndex]
-          errorFound = true
-        })
+          const newIndex = keyIndex > indexToRemove ? keyIndex - 1 : keyIndex;
+          updatedRecipientErrors[newIndex] = currentRecipientErrors[keyIndex];
+          errorFound = true;
+        });
 
-        const finalRecipients = errorFound ? updatedRecipientErrors : undefined
-        const newErrors = { ...prevErrors, recipients: finalRecipients }
-        if (!newErrors.recipients) delete newErrors.recipients // Clean up if empty
+        const finalRecipients = errorFound ? updatedRecipientErrors : undefined;
+        const newErrors = { ...prevErrors, recipients: finalRecipients };
+        if (!newErrors.recipients) delete newErrors.recipients; // Clean up if empty
 
-        const keys = Object.keys(newErrors).filter((k) => k !== "summary")
-        return keys.length > 0 || newErrors.summary ? newErrors : null
-      })
+        const keys = Object.keys(newErrors).filter((k) => k !== "summary");
+        return keys.length > 0 || newErrors.summary ? newErrors : null;
+      });
     }
-  }
+  };
   // --- End Recipient Handlers ---
 
   // --- Accordion Handler (from CreateDiscount) ---
   const handleAccordionChange =
     (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
-      setExpandedAccordion(isExpanded ? panel : false)
-    }
+      setExpandedAccordion(isExpanded ? panel : false);
+    };
 
   // --- Validation (Adopted from CreateDiscount, adds Recipients) ---
   const validateForm = (): boolean => {
-    const errors: SurchargeValidationErrors = {} // Use Surcharge type
-    const errorMessages: string[] = [] // For summary
+    const errors: SurchargeValidationErrors = {}; // Use Surcharge type
+    const errorMessages: string[] = []; // For summary
 
     // Basic field validation
     if (!formData.name.trim()) {
-      errors.name = "El nombre es obligatorio."
-      errorMessages.push("Nombre")
+      errors.name = "El nombre es obligatorio.";
+      errorMessages.push("Nombre");
     }
     if (!formData.description.trim()) {
-      errors.description = "La descripción es obligatoria."
-      errorMessages.push("Descripción")
+      errors.description = "La descripción es obligatoria.";
+      errorMessages.push("Descripción");
     }
 
-    const defaultValueNum = Number(formData.defaultValue)
+    const defaultValueNum = Number(formData.defaultValue);
     if (isNaN(defaultValueNum)) {
-      errors.defaultValue = "El valor base debe ser un número."
-      errorMessages.push("Valor Base")
+      errors.defaultValue = "El valor base debe ser un número.";
+      errorMessages.push("Valor Base");
     } else if (
       formData.adjustmentMethod === "percentage" &&
       (defaultValueNum < 0 || defaultValueNum > 1)
     ) {
-      errors.defaultValue = "Para porcentaje, el valor debe estar entre 0 y 1."
-      errorMessages.push("Valor Base (Porcentaje)")
+      errors.defaultValue = "Para porcentaje, el valor debe estar entre 0 y 1.";
+      errorMessages.push("Valor Base (Porcentaje)");
     } else if (
       formData.adjustmentMethod === "absolute" &&
       defaultValueNum < 0
     ) {
       errors.defaultValue =
-        "Para monto absoluto, el valor no puede ser negativo."
-      errorMessages.push("Valor Base (Absoluto)")
+        "Para monto absoluto, el valor no puede ser negativo.";
+      errorMessages.push("Valor Base (Absoluto)");
     }
 
     // Applicability validation
@@ -713,151 +714,153 @@ const CreateSurcharge: React.FC = () => {
       formData.applicableProducts?.length === 0
     ) {
       errors.applicableProducts =
-        "Seleccione productos/variantes o marque 'Aplica a todos'."
-      errorMessages.push("Productos/Variantes")
+        "Seleccione productos/variantes o marque 'Aplica a todos'.";
+      errorMessages.push("Productos/Variantes");
     }
 
     // Date Range validation
     if (startDate && endDate && !startDate.isBefore(endDate)) {
       errors.dateRange =
-        "La fecha de inicio debe ser anterior a la fecha de fin."
-      errors.startDate = " "
-      errors.endDate = " "
-      errorMessages.push("Rango de Fechas")
+        "La fecha de inicio debe ser anterior a la fecha de fin.";
+      errors.startDate = " ";
+      errors.endDate = " ";
+      errorMessages.push("Rango de Fechas");
     } else if ((startDate && !endDate) || (!startDate && endDate)) {
-      errors.dateRange = "Especifique ambas fechas del rango o ninguna."
-      if (startDate && !endDate) errors.endDate = " "
-      if (!startDate && endDate) errors.startDate = " "
-      errorMessages.push("Rango de Fechas (Incompleto)")
+      errors.dateRange = "Especifique ambas fechas del rango o ninguna.";
+      if (startDate && !endDate) errors.endDate = " ";
+      if (!startDate && endDate) errors.startDate = " ";
+      errorMessages.push("Rango de Fechas (Incompleto)");
     }
 
     // Entity Overrides Validation
-    const overrideErrors: SurchargeValidationErrors["entityOverrides"] = {}
-    let hasOverrideError = false
+    const overrideErrors: SurchargeValidationErrors["entityOverrides"] = {};
+    let hasOverrideError = false;
     formData.entityOverrides.forEach((ov, index) => {
-      const currentErrors: SingleRuleErrors = {}
-      let overrideErrorFields: string[] = []
+      const currentErrors: SingleRuleErrors = {};
+      let overrideErrorFields: string[] = [];
       if (!ov.type) {
-        currentErrors.type = "Requerido"
-        overrideErrorFields.push("Tipo Entidad")
+        currentErrors.type = "Requerido";
+        overrideErrorFields.push("Tipo Entidad");
       }
       // ID is optional for overrides
       if (!ov.adjustmentMethod) {
-        currentErrors.adjustmentMethod = "Requerido"
-        overrideErrorFields.push("Método Excep.")
+        currentErrors.adjustmentMethod = "Requerido";
+        overrideErrorFields.push("Método Excep.");
       }
 
-      const customValueNum = Number(ov.customValue)
+      const customValueNum = Number(ov.customValue);
       if (
         ov.customValue === undefined ||
         ov.customValue === null ||
         isNaN(customValueNum)
       ) {
-        currentErrors.customValue = "Valor numérico requerido."
-        overrideErrorFields.push("Valor Excepción")
+        currentErrors.customValue = "Valor numérico requerido.";
+        overrideErrorFields.push("Valor Excepción");
       } else if (
         ov.adjustmentMethod === "percentage" &&
         (customValueNum < 0 || customValueNum > 1)
       ) {
-        currentErrors.customValue = "Valor entre 0 y 1."
-        overrideErrorFields.push("Valor Excepción (%)")
+        currentErrors.customValue = "Valor entre 0 y 1.";
+        overrideErrorFields.push("Valor Excepción (%)");
       } else if (ov.adjustmentMethod === "absolute" && customValueNum < 0) {
-        currentErrors.customValue = "Valor no negativo."
-        overrideErrorFields.push("Valor Excepción ($)")
+        currentErrors.customValue = "Valor no negativo.";
+        overrideErrorFields.push("Valor Excepción ($)");
       }
 
       if (Object.keys(currentErrors).length > 0) {
-        overrideErrors[index] = currentErrors
+        overrideErrors[index] = currentErrors;
         if (!hasOverrideError) {
           errorMessages.push(
-            `Excepción #${index + 1} (${overrideErrorFields.join(", ")})`
-          )
+            `Excepción #${index + 1} (${overrideErrorFields.join(", ")})`,
+          );
         } // Add first override error group to summary
-        hasOverrideError = true
+        hasOverrideError = true;
       }
-    })
+    });
     if (hasOverrideError) {
-      errors.entityOverrides = overrideErrors
+      errors.entityOverrides = overrideErrors;
     }
 
     // --- NEW: Recipients Validation ---
-    const recipientErrors: SurchargeValidationErrors["recipients"] = {}
-    let hasRecipientError = false
+    const recipientErrors: SurchargeValidationErrors["recipients"] = {};
+    let hasRecipientError = false;
     formData.recipients.forEach((rec, index) => {
-      const currentErrors: SingleRuleErrors = {} // Reuse same error structure type
-      let recipientErrorFields: string[] = []
+      const currentErrors: SingleRuleErrors = {}; // Reuse same error structure type
+      let recipientErrorFields: string[] = [];
       if (!rec.type) {
-        currentErrors.type = "Requerido"
-        recipientErrorFields.push("Tipo Entidad")
+        currentErrors.type = "Requerido";
+        recipientErrorFields.push("Tipo Entidad");
       }
       // --- Mandatory ID check for recipients ---
       if (!rec.id?.trim()) {
-        currentErrors.id = "ID Requerido"
-        recipientErrorFields.push("ID Entidad")
+        currentErrors.id = "ID Requerido";
+        recipientErrorFields.push("ID Entidad");
       }
       // --- End Mandatory ID check ---
       if (!rec.adjustmentMethod) {
-        currentErrors.adjustmentMethod = "Requerido"
-        recipientErrorFields.push("Método Dest.")
+        currentErrors.adjustmentMethod = "Requerido";
+        recipientErrorFields.push("Método Dest.");
       }
 
-      const customValueNum = Number(rec.customValue)
+      const customValueNum = Number(rec.customValue);
       if (
         rec.customValue === undefined ||
         rec.customValue === null ||
         isNaN(customValueNum)
       ) {
-        currentErrors.customValue = "Valor numérico requerido."
-        recipientErrorFields.push("Valor Destinatario")
+        currentErrors.customValue = "Valor numérico requerido.";
+        recipientErrorFields.push("Valor Destinatario");
       } else if (
         rec.adjustmentMethod === "percentage" &&
         (customValueNum < 0 || customValueNum > 1)
       ) {
-        currentErrors.customValue = "Valor entre 0 y 1."
-        recipientErrorFields.push("Valor Destinatario (%)")
+        currentErrors.customValue = "Valor entre 0 y 1.";
+        recipientErrorFields.push("Valor Destinatario (%)");
       } else if (rec.adjustmentMethod === "absolute" && customValueNum < 0) {
-        currentErrors.customValue = "Valor no negativo."
-        recipientErrorFields.push("Valor Destinatario ($)")
+        currentErrors.customValue = "Valor no negativo.";
+        recipientErrorFields.push("Valor Destinatario ($)");
       }
 
       if (Object.keys(currentErrors).length > 0) {
-        recipientErrors[index] = currentErrors
+        recipientErrors[index] = currentErrors;
         if (!hasRecipientError) {
           errorMessages.push(
-            `Destinatario #${index + 1} (${recipientErrorFields.join(", ")})`
-          )
+            `Destinatario #${index + 1} (${recipientErrorFields.join(", ")})`,
+          );
         } // Add first recipient error group to summary
-        hasRecipientError = true
+        hasRecipientError = true;
       }
-    })
+    });
     if (hasRecipientError) {
-      errors.recipients = recipientErrors
+      errors.recipients = recipientErrors;
     }
     // --- End Recipients Validation ---
 
     // Add summary message if there are errors
     if (errorMessages.length > 0) {
-      errors.summary = `Por favor, corrija los errores en los siguientes campos: ${errorMessages.join(", ")}.`
+      errors.summary = `Por favor, corrija los errores en los siguientes campos: ${errorMessages.join(", ")}.`;
     }
 
-    setValidationErrors(Object.keys(errors).length > 0 ? errors : null)
+    setValidationErrors(Object.keys(errors).length > 0 ? errors : null);
     if (Object.keys(errors).length > 0) {
-      showSnackBar("Por favor, corrija los errores indicados en el formulario.")
+      showSnackBar(
+        "Por favor, corrija los errores indicados en el formulario.",
+      );
     }
-    return Object.keys(errors).length === 0
-  }
+    return Object.keys(errors).length === 0;
+  };
   // --- END Validation Update ---
 
   // --- Submission (Adds Recipients) ---
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    if (!validateForm()) return
-    setIsSubmitting(true)
+    event.preventDefault();
+    if (!validateForm()) return;
+    setIsSubmitting(true);
 
     // Clean overrides (same logic)
     const finalOverrides: ApplicableEntity[] = formData.entityOverrides.map(
       (override: OverrideFormState) => {
-        const { tempId, ...rest } = override
+        const { tempId, ...rest } = override;
         const overrideData: ApplicableEntity = {
           type: rest.type,
           adjustmentMethod: rest.adjustmentMethod,
@@ -869,34 +872,34 @@ const CreateSurcharge: React.FC = () => {
             !isNaN(Number(rest.customValue))
               ? Number(rest.customValue)
               : undefined,
-        }
+        };
         Object.keys(overrideData).forEach((key) => {
           if (overrideData[key as keyof ApplicableEntity] === undefined) {
-            delete overrideData[key as keyof ApplicableEntity]
+            delete overrideData[key as keyof ApplicableEntity];
           }
-        })
-        return overrideData
-      }
-    )
+        });
+        return overrideData;
+      },
+    );
 
     // Clean recipients
     const finalRecipients: ApplicableEntity[] = formData.recipients.map(
       (rec: RecipientFormState) => {
-        const { tempId, ...rest } = rec
+        const { tempId, ...rest } = rec;
         const recipientData: ApplicableEntity = {
           type: rest.type,
           adjustmentMethod: rest.adjustmentMethod,
           id: rest.id, // Keep ID (mandatory)
           name: rest.name?.trim() || undefined,
           customValue: Number(rest.customValue), // Ensure number
-        }
+        };
         Object.keys(recipientData).forEach((key) => {
           if (recipientData[key as keyof ApplicableEntity] === undefined)
-            delete recipientData[key as keyof ApplicableEntity]
-        })
-        return recipientData
-      }
-    )
+            delete recipientData[key as keyof ApplicableEntity];
+        });
+        return recipientData;
+      },
+    );
 
     // Construct Surcharge payload (REMOVED Arts, uses correct applicableProducts, adds recipients)
     const payload: Omit<Surcharge, "_id"> = {
@@ -916,34 +919,34 @@ const CreateSurcharge: React.FC = () => {
           : undefined,
       entityOverrides: finalOverrides,
       recipients: finalRecipients, // Add recipients
-    }
+    };
 
     try {
       // Use createSurcharge API
-      const response = await createSurcharge(payload)
+      const response = await createSurcharge(payload);
       if (response) {
-        showSnackBar(`Recargo "${formData.name}" creado.`)
-        navigate("/admin/surcharges/read") // Adjust route
+        showSnackBar(`Recargo "${formData.name}" creado.`);
+        navigate("/admin/surcharges/read"); // Adjust route
       } else {
-        throw new Error("La creación del recargo falló (respuesta vacía).")
+        throw new Error("La creación del recargo falló (respuesta vacía).");
       }
     } catch (err: any) {
-      console.error("Failed to create surcharge:", err)
+      console.error("Failed to create surcharge:", err);
       const message =
         err?.response?.data?.message ||
         err.message ||
-        "Error al crear el recargo."
+        "Error al crear el recargo.";
       setValidationErrors((prev) => ({
         ...(prev || {}),
         summary: `Error del servidor: ${message}`,
-      }))
-      showSnackBar(message)
+      }));
+      showSnackBar(message);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
-  const handleCancel = () => navigate("/admin/surcharges/read") // Adjust route
+  const handleCancel = () => navigate("/admin/surcharges/read"); // Adjust route
 
   // --- Render (Adopted from CreateDiscount, adds Recipients section) ---
   return (
@@ -1314,7 +1317,7 @@ const CreateSurcharge: React.FC = () => {
                   {formData.entityOverrides.map(
                     (override: OverrideFormState, index) => {
                       const overrideErrors =
-                        validationErrors?.entityOverrides?.[index] || {}
+                        validationErrors?.entityOverrides?.[index] || {};
                       return (
                         <Box
                           key={override.tempId}
@@ -1364,7 +1367,7 @@ const CreateSurcharge: React.FC = () => {
                                     handleOverrideChange(
                                       override.tempId,
                                       "type",
-                                      e.target.value as Entity
+                                      e.target.value as Entity,
                                     )
                                   }
                                   disabled={isSubmitting}
@@ -1389,7 +1392,7 @@ const CreateSurcharge: React.FC = () => {
                                   handleOverrideChange(
                                     override.tempId,
                                     "id",
-                                    e.target.value
+                                    e.target.value,
                                   )
                                 }
                                 fullWidth
@@ -1421,7 +1424,7 @@ const CreateSurcharge: React.FC = () => {
                                     handleOverrideChange(
                                       override.tempId,
                                       "adjustmentMethod",
-                                      e.target.value as AdjustmentMethod
+                                      e.target.value as AdjustmentMethod,
                                     )
                                   }
                                   disabled={isSubmitting}
@@ -1447,7 +1450,7 @@ const CreateSurcharge: React.FC = () => {
                                   handleOverrideChange(
                                     override.tempId,
                                     "customValue",
-                                    e.target.value
+                                    e.target.value,
                                   )
                                 }
                                 required
@@ -1470,8 +1473,8 @@ const CreateSurcharge: React.FC = () => {
                             </Grid2>
                           </Grid2>
                         </Box>
-                      )
-                    }
+                      );
+                    },
                   )}
                   <Button
                     startIcon={<AddCircleOutlineIcon />}
@@ -1515,7 +1518,7 @@ const CreateSurcharge: React.FC = () => {
                   {formData.recipients.map(
                     (recipient: RecipientFormState, index) => {
                       const recipientErrors =
-                        validationErrors?.recipients?.[index] || {}
+                        validationErrors?.recipients?.[index] || {};
                       return (
                         <Box
                           key={recipient.tempId}
@@ -1568,7 +1571,7 @@ const CreateSurcharge: React.FC = () => {
                                     handleRecipientChange(
                                       recipient.tempId,
                                       "type",
-                                      e.target.value as Entity
+                                      e.target.value as Entity,
                                     )
                                   }
                                   disabled={isSubmitting}
@@ -1594,7 +1597,7 @@ const CreateSurcharge: React.FC = () => {
                                   handleRecipientChange(
                                     recipient.tempId,
                                     "id",
-                                    e.target.value
+                                    e.target.value,
                                   )
                                 }
                                 fullWidth
@@ -1628,7 +1631,7 @@ const CreateSurcharge: React.FC = () => {
                                     handleRecipientChange(
                                       recipient.tempId,
                                       "adjustmentMethod",
-                                      e.target.value as AdjustmentMethod
+                                      e.target.value as AdjustmentMethod,
                                     )
                                   }
                                   disabled={isSubmitting}
@@ -1655,7 +1658,7 @@ const CreateSurcharge: React.FC = () => {
                                   handleRecipientChange(
                                     recipient.tempId,
                                     "customValue",
-                                    e.target.value
+                                    e.target.value,
                                   )
                                 }
                                 required
@@ -1678,8 +1681,8 @@ const CreateSurcharge: React.FC = () => {
                             </Grid2>
                           </Grid2>
                         </Box>
-                      )
-                    }
+                      );
+                    },
                   )}
                   <Button
                     startIcon={<AddCircleOutlineIcon />}
@@ -1734,7 +1737,7 @@ const CreateSurcharge: React.FC = () => {
         </form>
       </Paper>
     </>
-  )
-}
+  );
+};
 
-export default CreateSurcharge // Rename export
+export default CreateSurcharge; // Rename export

@@ -1,66 +1,59 @@
-import React, { useEffect, useState } from "react"
-import { useHistory, useLocation } from "react-router-dom"
-import clsx from "clsx"
-import { makeStyles } from "@material-ui/core/styles"
-import CssBaseline from "@material-ui/core/CssBaseline"
-import Drawer from "@material-ui/core/Drawer"
-import Box from "@material-ui/core/Box"
-import AppBar from "@material-ui/core/AppBar"
-import Toolbar from "@material-ui/core/Toolbar"
-import List from "@material-ui/core/List"
-import Typography from "@material-ui/core/Typography"
-import Divider from "@material-ui/core/Divider"
-import IconButton from "@material-ui/core/IconButton"
-import Badge from "@material-ui/core/Badge"
-import Container from "@material-ui/core/Container"
-import Link from "@material-ui/core/Link"
-import MenuIcon from "@material-ui/icons/Menu"
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft"
-import NotificationsIcon from "@material-ui/icons/Notifications"
-import MainListItems from "./listItems"
-import Dashboard from "./dashboard/dashboard"
-import AdminUser from "./adminUser/adminUser"
-import Products from "./products/products"
-import Consumers from "./consumers/consumers"
-import PaymentMethods from "./orders/paymentMethods"
-import Orders from "./orders/orders"
-import Preferences from "./preferences/Preferences"
-import Testimonials from "../TestimonialsCrud/Testimonials"
-import Prixers from "./prixers/prixers"
-import ShippingMethods from "./shippingMethodCrud/readShippingMethod"
-import Movements from "./movements/readMovements"
-import Fab from "@material-ui/core/Fab"
-import AttachMoneyIcon from "@material-ui/icons/AttachMoney"
-import Modal from "@material-ui/core/Modal"
-import CloseIcon from "@material-ui/icons/Close"
-import Grid from "@material-ui/core/Grid"
-import TextField from "@material-ui/core/TextField"
-import SaveIcon from "@material-ui/icons/Save"
-import Tooltip from "@material-ui/core/Tooltip"
-import validations from "../../shoppingCart/validations"
-import axios from "axios"
+import React, { useEffect, useState } from "react";
+import { useHistory, useLocation } from "react-router-dom";
+import clsx from "clsx";
+import { makeStyles } from "@material-ui/core/styles";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import Drawer from "@material-ui/core/Drawer";
+import Box from "@material-ui/core/Box";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import List from "@material-ui/core/List";
+import Typography from "@material-ui/core/Typography";
+import Divider from "@material-ui/core/Divider";
+import IconButton from "@material-ui/core/IconButton";
+import Badge from "@material-ui/core/Badge";
+import Container from "@material-ui/core/Container";
+import Link from "@material-ui/core/Link";
+import MenuIcon from "@material-ui/icons/Menu";
+import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
+import NotificationsIcon from "@material-ui/icons/Notifications";
+import MainListItems from "./listItems";
+import Dashboard from "./dashboard/dashboard";
+import AdminUser from "./adminUser/adminUser";
+import Products from "./products/products";
+import Consumers from "./consumers/consumers";
+import PaymentMethods from "./orders/paymentMethods";
+import Orders from "./orders/orders";
+import Preferences from "./preferences/Preferences";
+import Testimonials from "../TestimonialsCrud/Testimonials";
+import Prixers from "./prixers/prixers";
+import ShippingMethods from "./shippingMethodCrud/readShippingMethod";
+import Movements from "./movements/readMovements";
+import Fab from "@material-ui/core/Fab";
+import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
+import Modal from "@material-ui/core/Modal";
+import CloseIcon from "@material-ui/icons/Close";
+import Grid from "@material-ui/core/Grid";
+import TextField from "@material-ui/core/TextField";
+import SaveIcon from "@material-ui/icons/Save";
+import Tooltip from "@material-ui/core/Tooltip";
+import validations from "../../shoppingCart/validations";
+import axios from "axios";
 
 function Copyright() {
   return (
-    <Typography
-      variant="body2"
-      color="textSecondary"
-      align="center"
-    >
+    <Typography variant="body2" color="textSecondary" align="center">
       {"Copyright © "}
-      <Link
-        color="inherit"
-        href="https://prixelart.com/"
-      >
+      <Link color="inherit" href="https://prixelart.com/">
         Prixelart C.A.
       </Link>{" "}
       {new Date().getFullYear()}
       {"."}
     </Typography>
-  )
+  );
 }
 
-const drawerWidth = 240
+const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
   floatingButton: {
@@ -171,49 +164,53 @@ const useStyles = makeStyles((theme) => ({
   fixedHeight: {
     height: 500,
   },
-}))
+}));
 
 export default function AdminMain(props) {
-  const classes = useStyles()
-  const [open, setOpen] = useState(false)
-  const [active, setActive] = useState("user")
-  const location = useLocation()
-  const history = useHistory()
-  const [openDollarView, setOpenDollarView] = useState(false)
+  const classes = useStyles();
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState("user");
+  const location = useLocation();
+  const history = useHistory();
+  const [openDollarView, setOpenDollarView] = useState(false);
 
   const handleDrawerOpen = () => {
-    setOpen(true)
-  }
+    setOpen(true);
+  };
   const handleDrawerClose = () => {
-    setOpen(false)
-  }
-  
+    setOpen(false);
+  };
+
   useEffect(() => {
     location.pathname.split("/").length === 7
       ? setActive(
-          location.pathname.split("/")[location.pathname.split("/").length - 5]
+          location.pathname.split("/")[location.pathname.split("/").length - 5],
         )
       : location.pathname.split("/").length === 5
-      ? setActive(
-          location.pathname.split("/")[location.pathname.split("/").length - 3]
-        )
-      : location.pathname.split("/").length === 4 &&
-        setActive(
-          location.pathname.split("/")[location.pathname.split("/").length - 2]
-        )
-  }, [location.pathname])
+        ? setActive(
+            location.pathname.split("/")[
+              location.pathname.split("/").length - 3
+            ],
+          )
+        : location.pathname.split("/").length === 4 &&
+          setActive(
+            location.pathname.split("/")[
+              location.pathname.split("/").length - 2
+            ],
+          );
+  }, [location.pathname]);
 
   useEffect(() => {
-    setOpen(false)
-  }, [active])
+    setOpen(false);
+  }, [active]);
 
   const dollarView = () => {
-    setOpenDollarView(true)
-  }
+    setOpenDollarView(true);
+  };
 
   const handleClose = () => {
-    setOpenDollarView(false)
-  }
+    setOpenDollarView(false);
+  };
 
   return (
     <div className={classes.root}>
@@ -233,7 +230,7 @@ export default function AdminMain(props) {
                 onClick={handleDrawerOpen}
                 className={clsx(
                   classes.menuButton,
-                  open && classes.menuButtonHidden
+                  open && classes.menuButtonHidden,
                 )}
               >
                 <MenuIcon />
@@ -248,11 +245,7 @@ export default function AdminMain(props) {
                 Administración
               </Typography>
               <IconButton color="inherit">
-                <Badge
-                  overlap="rectangular"
-                  badgeContent={4}
-                  color="secondary"
-                >
+                <Badge overlap="rectangular" badgeContent={4} color="secondary">
                   <NotificationsIcon />
                 </Badge>
               </IconButton>
@@ -263,7 +256,7 @@ export default function AdminMain(props) {
             classes={{
               paper: clsx(
                 classes.drawerPaper,
-                !open && classes.drawerPaperClose
+                !open && classes.drawerPaperClose,
               ),
             }}
             open={open}
@@ -285,10 +278,7 @@ export default function AdminMain(props) {
           </Drawer>
           <main className={classes.content}>
             <div className={classes.appBarSpacer} />
-            <Container
-              maxWidth="xl"
-              className={classes.container}
-            >
+            <Container maxWidth="xl" className={classes.container}>
               {active === "user" ? (
                 <AdminUser
                   permissions={props.permissions}
@@ -350,10 +340,7 @@ export default function AdminMain(props) {
             </Container>
           </main>
           {props.permissions?.modifyDollar && (
-            <Tooltip
-              title="Actualizar tasa"
-              style={{ height: 40, width: 40 }}
-            >
+            <Tooltip title="Actualizar tasa" style={{ height: 40, width: 40 }}>
               <Fab
                 color="primary"
                 size="small"
@@ -366,10 +353,7 @@ export default function AdminMain(props) {
             </Tooltip>
           )}
           <Modal open={openDollarView}>
-            <Grid
-              container
-              className={classes.paper2}
-            >
+            <Grid container className={classes.paper2}>
               <Grid
                 item
                 style={{
@@ -392,9 +376,9 @@ export default function AdminMain(props) {
                   value={props.dollarValue}
                   onChange={(e) => {
                     if (e.target.value < 0) {
-                      props.setDollarValue(0)
+                      props.setDollarValue(0);
                     } else {
-                      props.setDollarValue(e.target.value)
+                      props.setDollarValue(e.target.value);
                     }
                   }}
                   error={
@@ -408,12 +392,12 @@ export default function AdminMain(props) {
                   color="primary"
                   size="small"
                   onClick={() => {
-                    props.updateDollarValue()
-                    props.setOpen(true)
+                    props.updateDollarValue();
+                    props.setOpen(true);
                     props.setMessage(
-                      "Tasa del dólar actualizada satisfactoriamente."
-                    )
-                    handleClose()
+                      "Tasa del dólar actualizada satisfactoriamente.",
+                    );
+                    handleClose();
                   }}
                   style={{ marginRight: 10, marginLeft: 10 }}
                 >
@@ -427,5 +411,5 @@ export default function AdminMain(props) {
         history.push({ pathname: "/" })
       )}
     </div>
-  )
+  );
 }

@@ -1,4 +1,4 @@
 export interface Account {
-    _id: string;
-    balance: number;
+  _id: string;
+  balance: number;
 }

@@ -1,4 +1,4 @@
-@use '@/styles/theme.scss' as theme;
+@use "@/styles/theme.scss" as theme;
 
 .catalog {
   overflow: hidden;
@@ -18,7 +18,7 @@
   justify-content: space-around;
   padding: 0 5%;
   @include theme.respond-below(theme.$breakpoint-md) {
-margin-top: 2rem;
+    margin-top: 2rem;
   }
 }
 

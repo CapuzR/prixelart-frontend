@@ -1,5 +1,5 @@
-@use '@/styles/theme.scss' as theme;
-@use '../Details.module.scss';
+@use "@/styles/theme.scss" as theme;
+@use "../Details.module.scss";
 
 .prix-product-container {
   padding: 2 * theme.$spacing-xl;

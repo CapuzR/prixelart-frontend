@@ -1,14 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-import axios, { AxiosRequestConfig } from 'axios';
-import { Stepper, Step, StepLabel, Button } from '@mui/material';
-import ConsumerForm from './Consumer';
-import OrderForm from './Order';
-import styles from './styles.module.scss';
-import { isAValidEmail, isAValidCi, isAValidPhoneNum, isAValidName } from 'utils/validations';
-import { nanoid } from 'nanoid';
-import { useConversionRate, useCurrency, useSnackBar } from 'context/GlobalContext';
-import { Cart } from 'apps/consumer/cart/interfaces';
+import React, { useState, useEffect } from "react";
+import { useHistory } from "react-router-dom";
+import axios, { AxiosRequestConfig } from "axios";
+import { Stepper, Step, StepLabel, Button } from "@mui/material";
+import ConsumerForm from "./Consumer";
+import OrderForm from "./Order";
+import styles from "./styles.module.scss";
+import {
+  isAValidEmail,
+  isAValidCi,
+  isAValidPhoneNum,
+  isAValidName,
+} from "utils/validations";
+import { nanoid } from "nanoid";
+import {
+  useConversionRate,
+  useCurrency,
+  useSnackBar,
+} from "context/GlobalContext";
+import { Cart } from "apps/consumer/cart/interfaces";
 
 //Order: { id: id, lines: line[],  }
 //Line: { item: item, quantity: number, discount: number, subtotal: number }
@@ -19,7 +28,11 @@ interface CheckoutProps {
   setValuesConsumerForm: (values: any) => void;
 }
 
-const Checkout: React.FC<CheckoutProps> = ({ cart, valuesConsumerForm, setValuesConsumerForm }) => {
+const Checkout: React.FC<CheckoutProps> = ({
+  cart,
+  valuesConsumerForm,
+  setValuesConsumerForm,
+}) => {
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
   const { showSnackBar } = useSnackBar();
@@ -49,9 +62,9 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, valuesConsumerForm, setValues
       setLoading(true);
 
       let orderLines = [];
-      let taxv2 = 'getIvaCost(cart)';
-      let subtotalv2 = 'getTotalPrice(cart)';
-      let totalv2 = 'getTotal(cart)';
+      let taxv2 = "getIvaCost(cart)";
+      let subtotalv2 = "getTotalPrice(cart)";
+      let totalv2 = "getTotal(cart)";
 
       cart.lines.map((s) => {
         s.item.product &&
@@ -69,10 +82,10 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, valuesConsumerForm, setValues
         active: true,
         _id: nanoid(6),
         createdBy: {
-          username: 'web',
+          username: "web",
         },
-        prixerId: '',
-        consumerType: 'Particular',
+        prixerId: "",
+        consumerType: "Particular",
         firstname: valuesConsumerForm?.name,
         lastname: valuesConsumerForm?.lastName,
         username: valuesConsumerForm?.username,
@@ -121,12 +134,12 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, valuesConsumerForm, setValues
         shippingCost: shippingCost,
         total: totalv2,
         createdOn: new Date(),
-        createdBy: seller ? { username: seller } : 'Prixelart Page',
-        orderType: 'Particular',
+        createdBy: seller ? { username: seller } : "Prixelart Page",
+        orderType: "Particular",
         consumerId: consumerData._id,
-        status: 'Por producir',
+        status: "Por producir",
         observations: observations,
-        payStatus: 'Pendiente',
+        payStatus: "Pendiente",
         consumerData: {
           consumerId: consumerData._id,
           consumerType: consumerData.consumerType,
@@ -139,30 +152,30 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, valuesConsumerForm, setValues
         movement: {},
       };
 
-      if (orderPaymentMethod.name === 'Balance Prixer') {
+      if (orderPaymentMethod.name === "Balance Prixer") {
         const movement = {
           _id: nanoid(),
           createdOn: new Date(),
-          createdBy: 'Prixelart Page',
+          createdBy: "Prixelart Page",
           date: new Date(),
-          destinatary: JSON.parse(localStorage.getItem('token')).account,
+          destinatary: JSON.parse(localStorage.getItem("token")).account,
           description: `Pago de la orden #${input.orderId}`,
-          type: 'Retiro',
-          value: 'getTotal(cart)',
+          type: "Retiro",
+          value: "getTotal(cart)",
         };
         data.movement = movement;
       }
 
       //Mover al API
-      const base_url = import.meta.env.VITE_BACKEND_URL + '/order/createv2';
+      const base_url = import.meta.env.VITE_BACKEND_URL + "/order/createv2";
       const config: AxiosRequestConfig = {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       };
       const configMulti: AxiosRequestConfig = {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       };
       await axios
@@ -171,16 +184,18 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, valuesConsumerForm, setValues
           if (response.status === 200) {
             if (paymentVoucher !== undefined) {
               const formData = new FormData();
-              formData.append('paymentVoucher', paymentVoucher);
+              formData.append("paymentVoucher", paymentVoucher);
               let ID = input.orderId;
-              const base_url2 = import.meta.env.VITE_BACKEND_URL + '/order/addVoucher/' + ID;
+              const base_url2 =
+                import.meta.env.VITE_BACKEND_URL + "/order/addVoucher/" + ID;
               await axios.put(base_url2, formData, configMulti);
             }
 
             showSnackBar(response.data.info);
-            showSnackBar('¡Gracias por tu compra! Por favor revisa tu correo');
+            showSnackBar("¡Gracias por tu compra! Por favor revisa tu correo");
 
-            const base_url3 = import.meta.env.VITE_BACKEND_URL + '/order/sendEmail';
+            const base_url3 =
+              import.meta.env.VITE_BACKEND_URL + "/order/sendEmail";
             await axios.post(base_url3, input).then(async (response) => {
               if (response.data.success === false) {
                 await axios.post(base_url3, input);
@@ -193,15 +208,15 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, valuesConsumerForm, setValues
         });
 
       setValuesConsumerForm(undefined);
-      history.push({ pathname: '/' });
+      history.push({ pathname: "/" });
       setLoading(false);
     } else {
-      showSnackBar('Por favor selecciona una forma de pago.');
+      showSnackBar("Por favor selecciona una forma de pago.");
     }
   };
 
   return (
-    <div className={styles['checkout-root']}>
+    <div className={styles["checkout-root"]}>
       <Stepper activeStep={activeStep}>
         {steps?.map((label) => (
           <Step key={label}>
@@ -210,7 +225,7 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, valuesConsumerForm, setValues
         ))}
       </Stepper>
 
-      <div className={styles['form-container']}>
+      <div className={styles["form-container"]}>
         {activeStep === 0 ? (
           <ConsumerForm
             setValues={setValuesConsumerForm}
@@ -239,7 +254,7 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, valuesConsumerForm, setValues
         )}
       </div>
 
-      <div className={styles['button-container']}>
+      <div className={styles["button-container"]}>
         <Button disabled={activeStep === 0} onClick={handleBack}>
           Anterior
         </Button>
@@ -263,7 +278,7 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, valuesConsumerForm, setValues
           }
           onClick={activeStep === steps.length - 1 ? createOrder : handleNext}
         >
-          {activeStep === steps.length - 1 ? 'Ordenar' : 'Siguiente'}
+          {activeStep === steps.length - 1 ? "Ordenar" : "Siguiente"}
         </Button>
       </div>
     </div>

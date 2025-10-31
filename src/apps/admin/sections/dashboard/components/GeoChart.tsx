@@ -1,18 +1,18 @@
-import React, { useMemo } from 'react';
-import { Box, CircularProgress } from '@mui/material';
+import React, { useMemo } from "react";
+import { Box, CircularProgress } from "@mui/material";
 import {
   ComposableMap,
   Geographies,
   Geography,
   Marker,
   ZoomableGroup,
-} from 'react-simple-maps';
-import world from 'world-atlas/countries-110m.json';
-import { Order } from 'types/order.types';
+} from "react-simple-maps";
+import world from "world-atlas/countries-110m.json";
+import { Order } from "types/order.types";
 
 const countryCentroids: Record<string, [number, number]> = {
   Venezuela: [-66.9, 10.48],
-  'United States': [-95.71, 37.09],
+  "United States": [-95.71, 37.09],
   Colombia: [-74.07, 4.71],
   Spain: [-3.7, 40.41],
   Panama: [-80.78, 8.53],
@@ -30,7 +30,7 @@ interface GeoChartProps {
 const GeoChart: React.FC<GeoChartProps> = ({ orders, loading }) => {
   const geoData = useMemo(() => {
     const counts: Record<string, number> = {};
-    orders.forEach(order => {
+    orders.forEach((order) => {
       const country = order.shipping?.address?.address?.country;
       if (country) {
         const name = country.trim();
@@ -43,32 +43,46 @@ const GeoChart: React.FC<GeoChartProps> = ({ orders, loading }) => {
         const coords = countryCentroids[name];
         return coords ? { name, count, coordinates: coords } : null;
       })
-      .filter(Boolean) as { name: string; count: number; coordinates: [number, number] }[];
+      .filter(Boolean) as {
+      name: string;
+      count: number;
+      coordinates: [number, number];
+    }[];
   }, [orders]);
 
-  const maxCount = Math.max(...geoData.map(d => d.count), 0);
+  const maxCount = Math.max(...geoData.map((d) => d.count), 0);
 
   return (
-    <Box sx={{ height: 500, display: 'flex', flexDirection: 'column' }}>
+    <Box sx={{ height: 500, display: "flex", flexDirection: "column" }}>
       {loading ? (
-        <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Box
+          sx={{
+            flexGrow: 1,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
           <CircularProgress />
         </Box>
       ) : (
-        <ComposableMap projection="geoMercator" style={{ width: '100%', height: '100%' }}>
+        <ComposableMap
+          projection="geoMercator"
+          style={{ width: "100%", height: "100%" }}
+        >
           <ZoomableGroup center={[-65, 15]} zoom={2.5}>
             <Geographies geography={world}>
               {({ geographies }) =>
-                geographies.map(geo => (
+                geographies.map((geo) => (
                   <Geography
                     key={geo.rsmKey}
                     geography={geo}
                     fill="#EAEAEC"
                     stroke="#D6D6DA"
                     style={{
-                      default: { outline: 'none' },
-                      hover: { fill: '#F53', outline: 'none' },
-                      pressed: { outline: 'none' },
+                      default: { outline: "none" },
+                      hover: { fill: "#F53", outline: "none" },
+                      pressed: { outline: "none" },
                     }}
                   />
                 ))
@@ -91,11 +105,11 @@ const GeoChart: React.FC<GeoChartProps> = ({ orders, loading }) => {
                       x={size / 2}
                       y={size / 2 + 4}
                       style={{
-                        fontFamily: 'system-ui',
-                        fill: '#FFFFFF', // Changed to white
+                        fontFamily: "system-ui",
+                        fill: "#FFFFFF", // Changed to white
                         fontSize: size / 1.8, // Slightly smaller to fit better
-                        fontWeight: 'bold',
-                        pointerEvents: 'none'
+                        fontWeight: "bold",
+                        pointerEvents: "none",
                       }}
                     >
                       {count}
@@ -104,7 +118,11 @@ const GeoChart: React.FC<GeoChartProps> = ({ orders, loading }) => {
                   <text
                     textAnchor="middle"
                     y={-size / 2 - 5}
-                    style={{ fontFamily: 'system-ui', fill: '#5D5A6D', fontSize: 10 }}
+                    style={{
+                      fontFamily: "system-ui",
+                      fill: "#5D5A6D",
+                      fontSize: 10,
+                    }}
                   >
                     {name}
                   </text>

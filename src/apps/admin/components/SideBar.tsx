@@ -1,6 +1,6 @@
-import React, { useState } from "react"
-import { Link as RouterLink, useLocation } from "react-router-dom"
-import { PermissionsV2 } from "types/permissions.types"
+import React, { useState } from "react";
+import { Link as RouterLink, useLocation } from "react-router-dom";
+import { PermissionsV2 } from "types/permissions.types";
 
 import {
   List,
@@ -13,60 +13,60 @@ import {
   Theme,
   useTheme,
   SxProps,
-} from "@mui/material"
+} from "@mui/material";
 
 // --- Icons ---
-import ExpandLess from "@mui/icons-material/ExpandLess"
-import ExpandMore from "@mui/icons-material/ExpandMore"
-import DashboardIcon from "@mui/icons-material/Dashboard"
-import PeopleIcon from "@mui/icons-material/People"
-import AssignmentIndIcon from "@mui/icons-material/AssignmentInd"
-import LocalMallIcon from "@mui/icons-material/LocalMall"
-import DiscountIcon from "@mui/icons-material/Discount"
-import ReceiptIcon from "@mui/icons-material/Receipt"
-import LocalShippingIcon from "@mui/icons-material/LocalShipping"
-import PaymentIcon from "@mui/icons-material/Payment"
-import AccountBalanceIcon from "@mui/icons-material/AccountBalance"
-import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon"
-import WebAssetIcon from "@mui/icons-material/WebAsset"
-import SettingsIcon from "@mui/icons-material/Settings"
-import AddIcon from "@mui/icons-material/Add"
-import ListAltIcon from "@mui/icons-material/ListAlt"
-import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd"
-import ManageAccountsIcon from "@mui/icons-material/ManageAccounts"
-import PriceChangeIcon from "@mui/icons-material/PriceChange"
-import BrushIcon from "@mui/icons-material/Brush"
-import ManageSearchIcon from "@mui/icons-material/ManageSearch"
-import GavelIcon from "@mui/icons-material/Gavel"
-import AttachMoneyIcon from "@mui/icons-material/AttachMoney"
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import PeopleIcon from "@mui/icons-material/People";
+import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
+import LocalMallIcon from "@mui/icons-material/LocalMall";
+import DiscountIcon from "@mui/icons-material/Discount";
+import ReceiptIcon from "@mui/icons-material/Receipt";
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+import PaymentIcon from "@mui/icons-material/Payment";
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
+import WebAssetIcon from "@mui/icons-material/WebAsset";
+import SettingsIcon from "@mui/icons-material/Settings";
+import AddIcon from "@mui/icons-material/Add";
+import ListAltIcon from "@mui/icons-material/ListAlt";
+import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
+import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
+import PriceChangeIcon from "@mui/icons-material/PriceChange";
+import BrushIcon from "@mui/icons-material/Brush";
+import ManageSearchIcon from "@mui/icons-material/ManageSearch";
+import GavelIcon from "@mui/icons-material/Gavel";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 
 interface SidebarProps {
-  permissions: PermissionsV2 | null
-  drawerWidth: number
-  collapsedWidth: number
-  isOpen: boolean
-  onOpen: () => void
-  onClose: () => void
-  openSections: SectionState
-  onSectionClick: (section: keyof SectionState) => void
+  permissions: PermissionsV2 | null;
+  drawerWidth: number;
+  collapsedWidth: number;
+  isOpen: boolean;
+  onOpen: () => void;
+  onClose: () => void;
+  openSections: SectionState;
+  onSectionClick: (section: keyof SectionState) => void;
 }
 
 // --- Updated Section State ---
 export interface SectionState {
-  dashboard: boolean
-  admins: boolean
-  products: boolean
-  art: boolean
-  consumers: boolean
-  orders: boolean
-  shipping: boolean
-  payments: boolean
-  movements: boolean // Now collapsible
-  prixers: boolean
-  testimonials: boolean
-  preferences: boolean
-  discounts: boolean // Added
-  surcharges: boolean // Added
+  dashboard: boolean;
+  admins: boolean;
+  products: boolean;
+  art: boolean;
+  consumers: boolean;
+  orders: boolean;
+  shipping: boolean;
+  payments: boolean;
+  movements: boolean; // Now collapsible
+  prixers: boolean;
+  testimonials: boolean;
+  preferences: boolean;
+  discounts: boolean; // Added
+  surcharges: boolean; // Added
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -79,16 +79,16 @@ const Sidebar: React.FC<SidebarProps> = ({
   openSections,
   onSectionClick,
 }) => {
-  const theme = useTheme()
-  const location = useLocation()
+  const theme = useTheme();
+  const location = useLocation();
 
   const isSelected = (path: string): boolean => {
     // Check for exact match or if the current path starts with the item's path
     return (
       location.pathname === path ||
       (path !== "/admin/dashboard" && location.pathname.startsWith(path))
-    )
-  }
+    );
+  };
 
   // --- Styling Functions (unchanged) ---
   const listItemStyle = (path: string): SxProps<Theme> => ({
@@ -105,7 +105,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       color: theme.palette.primary.main,
       fontWeight: "bold",
     }),
-  })
+  });
 
   const sectionHeaderStyle = (pathPrefix: string): SxProps<Theme> => ({
     // Add these two properties to prevent layout shift during collapse animation
@@ -123,24 +123,24 @@ const Sidebar: React.FC<SidebarProps> = ({
       // Styles when selected
       fontWeight: "medium",
     }),
-  })
+  });
 
   if (!permissions) {
-    return null
+    return null;
   }
 
-  const canViewAdmins = permissions.admins.readAdmins
-  const canViewProducts = permissions.products.readAllProducts
-  const canViewArt = permissions.art.readAllArts
-  const canViewConsumers = permissions.users.readAllUsers
-  const canViewOrders = permissions.orders.readAllOrders
-  const canViewShipping = permissions.shippingMethod.readAllShippingMethod
-  const canViewPayments = permissions.paymentMethods.readAllPaymentMethod
-  const canViewMovements = permissions.movements.readAllMovements
-  const canViewTestimonials = permissions.testimonials.readTestimonials
-  const canViewPreferencesSection = permissions.preferences.readAllBanners
-  const canViewDiscounts = permissions.discounts.readAllDiscounts
-  const canViewSurcharges = permissions.surcharges?.readAllSurcharges
+  const canViewAdmins = permissions.admins.readAdmins;
+  const canViewProducts = permissions.products.readAllProducts;
+  const canViewArt = permissions.art.readAllArts;
+  const canViewConsumers = permissions.users.readAllUsers;
+  const canViewOrders = permissions.orders.readAllOrders;
+  const canViewShipping = permissions.shippingMethod.readAllShippingMethod;
+  const canViewPayments = permissions.paymentMethods.readAllPaymentMethod;
+  const canViewMovements = permissions.movements.readAllMovements;
+  const canViewTestimonials = permissions.testimonials.readTestimonials;
+  const canViewPreferencesSection = permissions.preferences.readAllBanners;
+  const canViewDiscounts = permissions.discounts.readAllDiscounts;
+  const canViewSurcharges = permissions.surcharges?.readAllSurcharges;
 
   return (
     <Box
@@ -162,21 +162,23 @@ const Sidebar: React.FC<SidebarProps> = ({
     >
       <List component="nav" aria-labelledby="admin-sidebar-nav">
         {/* Dashboard */}
-        {permissions.area === "Master" && (
-          <>
-            <ListItemButton
-              component={RouterLink}
-              to="/admin/dashboard"
-              sx={sectionHeaderStyle("/admin/dashboard")}
-            >
-              <ListItemIcon>
-                <DashboardIcon />
-              </ListItemIcon>
-              {isOpen && <ListItemText primary="Dashboard" />}
-            </ListItemButton>
-            <Divider sx={{ my: 1 }} />
-          </>
-        )}
+        {permissions.area === "Master" ||
+          permissions.area === "Ventas" ||
+          (permissions.area === "Administración" && (
+            <>
+              <ListItemButton
+                component={RouterLink}
+                to="/admin/dashboard"
+                sx={sectionHeaderStyle("/admin/dashboard")}
+              >
+                <ListItemIcon>
+                  <DashboardIcon />
+                </ListItemIcon>
+                {isOpen && <ListItemText primary="Dashboard" />}
+              </ListItemButton>
+              <Divider sx={{ my: 1 }} />
+            </>
+          ))}
         {/* Admins Section */}
         {canViewAdmins && (
           <>
@@ -314,7 +316,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     <ListItemText primary="Crear Artes" />
                   </ListItemButton>
                 )}
-                {(permissions.art.readAllArts) && (
+                {permissions.art.readAllArts && (
                   <ListItemButton
                     component={RouterLink}
                     to="/admin/art/read"
@@ -552,7 +554,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     <ListItemText primary="Crear Método de envío" />
                   </ListItemButton>
                 )}
-                {(permissions.shippingMethod.readAllShippingMethod) && (
+                {permissions.shippingMethod.readAllShippingMethod && (
                   <ListItemButton
                     component={RouterLink}
                     to="/admin/shipping-method/read"
@@ -597,7 +599,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     <ListItemText primary="Crear Método de Pago" />
                   </ListItemButton>
                 )}
-                {(permissions.paymentMethods.readAllPaymentMethod) && (
+                {permissions.paymentMethods.readAllPaymentMethod && (
                   <ListItemButton
                     component={RouterLink}
                     to="/admin/payment-method/read"
@@ -692,7 +694,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     <ListItemText primary="Crear Testimonio" />
                   </ListItemButton>
                 )}
-                {(permissions.testimonials.readTestimonials) && (
+                {permissions.testimonials.readTestimonials && (
                   <ListItemButton
                     component={RouterLink}
                     to="/admin/testimonials/read"
@@ -778,7 +780,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
       </List>
     </Box>
-  )
-}
+  );
+};
 
-export default Sidebar
+export default Sidebar;

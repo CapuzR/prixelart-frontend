@@ -1,20 +1,20 @@
-import { useTheme } from "@mui/material/styles"
+import { useTheme } from "@mui/material/styles";
 
-import Grid2 from "@mui/material/Grid"
-import useMediaQuery from "@mui/material/useMediaQuery"
+import Grid2 from "@mui/material/Grid";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
-import { Button, Typography } from "@mui/material"
-import { useNavigate } from "react-router-dom"
+import { Button, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
-import aboutUsBg from "../../../assets/images/about-us-bg.jpg"
-import aboutUs1 from "../../../assets/images/about-us-1.png"
-import aboutUs2 from "../../../assets/images/about-us-2.png"
-import aboutUs3 from "../../../assets/images/about-us-3.png"
+import aboutUsBg from "../../../assets/images/about-us-bg.jpg";
+import aboutUs1 from "../../../assets/images/about-us-1.png";
+import aboutUs2 from "../../../assets/images/about-us-2.png";
+import aboutUs3 from "../../../assets/images/about-us-3.png";
 
 export default function AboutUs() {
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
-  const allImgs = [aboutUs1, aboutUs2, aboutUs3]
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const allImgs = [aboutUs1, aboutUs2, aboutUs3];
 
   return (
     <Grid2
@@ -126,5 +126,5 @@ export default function AboutUs() {
         </Grid2>
       </Grid2>
     </Grid2>
-  )
+  );
 }

@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback, useRef } from "react"
-import { useNavigate, useSearchParams } from "react-router-dom"
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   Box,
   Paper,
@@ -35,16 +35,16 @@ import {
   Dialog,
   DialogContentText,
   Fab,
-} from "@mui/material"
-import { GetApp } from "@mui/icons-material"
-import VisibilityIcon from "@mui/icons-material/Visibility"
-import FilterListOffIcon from "@mui/icons-material/FilterListOff"
-import { visuallyHidden } from "@mui/utils"
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
-import { DatePicker } from "@mui/x-date-pickers/DatePicker"
-import EditIcon from "@mui/icons-material/Edit"
-import { useSnackBar } from "context/GlobalContext"
-import Title from "@apps/admin/components/Title"
+} from "@mui/material";
+import { GetApp } from "@mui/icons-material";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import FilterListOffIcon from "@mui/icons-material/FilterListOff";
+import { visuallyHidden } from "@mui/utils";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import EditIcon from "@mui/icons-material/Edit";
+import { useSnackBar } from "context/GlobalContext";
+import Title from "@apps/admin/components/Title";
 import {
   OrderArchive,
   Status as OrderStatus,
@@ -52,25 +52,25 @@ import {
   Status,
   SelectionClass,
   AttributeName,
-} from "types/orderArchive.types"
-import { getOrderArchives, updateOrderArchive } from "@api/orderArchive.api"
+} from "types/orderArchive.types";
+import { getOrderArchives, updateOrderArchive } from "@api/orderArchive.api";
 import {
   formatCurrency,
   formatDate,
   getCustomerName,
   getPayStatusColor,
   getStatusColor,
-} from "../helpers/orderArchiveHelpers"
-import { format, parseISO, isValid } from "date-fns"
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
+} from "../helpers/orderArchiveHelpers";
+import { format, parseISO, isValid } from "date-fns";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import {
   PickerChangeHandlerContext,
   DateValidationError,
-} from "@mui/x-date-pickers"
-import Grid2 from "@mui/material/Grid"
-import excelJS from "exceljs"
-import { getPermissions } from "@api/admin.api"
-import { PermissionsV2 } from "types/permissions.types"
+} from "@mui/x-date-pickers";
+import Grid2 from "@mui/material/Grid";
+import excelJS from "exceljs";
+import { getPermissions } from "@api/admin.api";
+import { PermissionsV2 } from "types/permissions.types";
 
 const ALL_STATUSES: OrderStatus[] = [
   "Anulado",
@@ -80,18 +80,18 @@ const ALL_STATUSES: OrderStatus[] = [
   "Entregado",
   "En impresión",
   "Por producir",
-]
+];
 const ALL_PAY_STATUSES: OrderPayStatus[] = [
   "Pagado",
   "Anulado",
   "Obsequio",
   "Abonado",
   "Pendiente",
-]
-const FINAL_STATUSES: OrderStatus[] = ["Concretado", "Entregado", "Anulado"]
+];
+const FINAL_STATUSES: OrderStatus[] = ["Concretado", "Entregado", "Anulado"];
 const UPDATABLE_TARGET_STATUSES: OrderStatus[] = ALL_STATUSES.filter(
-  (s) => !FINAL_STATUSES.includes(s) || s === "Concretado"
-)
+  (s) => !FINAL_STATUSES.includes(s) || s === "Concretado",
+);
 
 // --- Sortable Columns ---
 interface HeadCell {
@@ -108,12 +108,12 @@ interface HeadCell {
       >
     | "customerName"
     | "createdBy"
-    | "actions"
-  label: string
-  numeric: boolean
-  sortable: boolean
-  display?: any
-  width?: string | number
+    | "actions";
+  label: string;
+  numeric: boolean;
+  sortable: boolean;
+  display?: any;
+  width?: string | number;
 }
 
 const headCells: readonly HeadCell[] = [
@@ -175,95 +175,95 @@ const headCells: readonly HeadCell[] = [
     sortable: false,
     width: "10%",
   },
-]
+];
 
 type OrderSortKey = keyof Pick<
   OrderArchive,
   "orderId" | "createdOn" | "orderType" | "status" | "payStatus" | "total"
->
-type SortDirection = "asc" | "desc"
+>;
+type SortDirection = "asc" | "desc";
 
 const parseDateParam = (param: string | null): Date | null => {
-  if (!param) return null
-  const date = parseISO(param)
-  return isValid(date) ? date : null
-}
+  if (!param) return null;
+  const date = parseISO(param);
+  return isValid(date) ? date : null;
+};
 
 const ReadOrderArchives: React.FC = () => {
-  const navigate = useNavigate()
-  const { showSnackBar } = useSnackBar()
-  const [searchParams, setSearchParams] = useSearchParams()
-  const [permissions, setPermissions] = useState<PermissionsV2 | null>(null)
+  const navigate = useNavigate();
+  const { showSnackBar } = useSnackBar();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [permissions, setPermissions] = useState<PermissionsV2 | null>(null);
 
   // --- State ---
-  const [orders, setOrders] = useState<OrderArchive[]>([])
-  const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [isFilteringLoading, setIsFilteringLoading] = useState<boolean>(false)
-  const [error, setError] = useState<string | null>(null)
+  const [orders, setOrders] = useState<OrderArchive[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isFilteringLoading, setIsFilteringLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   // --- Pagination State ---
   const [page, setPage] = useState<number>(() =>
-    parseInt(searchParams.get("page") || "0", 10)
-  )
+    parseInt(searchParams.get("page") || "0", 10),
+  );
   const [rowsPerPage, setRowsPerPage] = useState<number>(() =>
-    parseInt(searchParams.get("limit") || "10", 10)
-  )
-  const [totalOrders, setTotalOrders] = useState<number>(0)
+    parseInt(searchParams.get("limit") || "10", 10),
+  );
+  const [totalOrders, setTotalOrders] = useState<number>(0);
 
   // --- Sorting State ---
   const [orderBy, setOrderBy] = useState<OrderSortKey>(
-    () => (searchParams.get("sortBy") as OrderSortKey) || "createdOn"
-  )
+    () => (searchParams.get("sortBy") as OrderSortKey) || "createdOn",
+  );
   const [order, setOrder] = useState<SortDirection>(
-    () => (searchParams.get("sortOrder") as SortDirection) || "desc"
-  )
+    () => (searchParams.get("sortOrder") as SortDirection) || "desc",
+  );
 
   // --- Filtering & Search State ---
   const [searchQuery, setSearchQuery] = useState<string>(
-    () => searchParams.get("search") || ""
-  )
+    () => searchParams.get("search") || "",
+  );
   const [filterStatus, setFilterStatus] = useState<OrderStatus | "">(
-    () => (searchParams.get("status") as OrderStatus) || ""
-  )
+    () => (searchParams.get("status") as OrderStatus) || "",
+  );
   const [filterPayStatus, setFilterPayStatus] = useState<OrderPayStatus | "">(
-    () => (searchParams.get("payStatus") as OrderPayStatus) || ""
-  )
+    () => (searchParams.get("payStatus") as OrderPayStatus) || "",
+  );
   const [startDate, setStartDate] = useState<Date | null>(() =>
-    parseDateParam(searchParams.get("startDate"))
-  )
+    parseDateParam(searchParams.get("startDate")),
+  );
   const [endDate, setEndDate] = useState<Date | null>(() =>
-    parseDateParam(searchParams.get("endDate"))
-  )
+    parseDateParam(searchParams.get("endDate")),
+  );
   const [filterIsNotConcretado, setFilterIsNotConcretado] = useState<boolean>(
-    () => searchParams.get("excludeStatus") === "Concretado"
-  )
+    () => searchParams.get("excludeStatus") === "Concretado",
+  );
 
   // --- Update Status Modal State ---
-  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false)
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
   const [selectedOrderForUpdate, setSelectedOrderForUpdate] =
-    useState<OrderArchive | null>(null)
-  const [newStatus, setNewStatus] = useState<OrderStatus | "">("")
-  const [newPayStatus, setNewPayStatus] = useState<OrderPayStatus | "">()
-  const [isUpdatingStatus, setIsUpdatingStatus] = useState<boolean>(false)
+    useState<OrderArchive | null>(null);
+  const [newStatus, setNewStatus] = useState<OrderStatus | "">("");
+  const [newPayStatus, setNewPayStatus] = useState<OrderPayStatus | "">();
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState<boolean>(false);
 
-  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const isInitialMount = useRef(true)
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isInitialMount = useRef(true);
 
   const readPermissions = async () => {
-    const response = await getPermissions()
-    setPermissions(response)
-  }
+    const response = await getPermissions();
+    setPermissions(response);
+  };
 
   const loadOrders = useCallback(
     async (showInitialLoadingIndicator = true) => {
       const loadingStateSetter = showInitialLoadingIndicator
         ? setIsLoading
-        : setIsFilteringLoading
-      loadingStateSetter(true)
-      if (!showInitialLoadingIndicator) setError(null)
+        : setIsFilteringLoading;
+      loadingStateSetter(true);
+      if (!showInitialLoadingIndicator) setError(null);
 
       try {
-        const apiPage = page + 1
+        const apiPage = page + 1;
         const filters: Record<string, string | undefined> = {
           search: searchQuery || undefined,
           status: filterStatus || undefined,
@@ -271,11 +271,11 @@ const ReadOrderArchives: React.FC = () => {
           startDate: startDate ? format(startDate, "yyyy-MM-dd") : undefined,
           endDate: endDate ? format(endDate, "yyyy-MM-dd") : undefined,
           excludeStatus: filterIsNotConcretado ? "Concretado" : undefined,
-        }
+        };
 
         Object.keys(filters).forEach(
-          (key) => filters[key] === undefined && delete filters[key]
-        )
+          (key) => filters[key] === undefined && delete filters[key],
+        );
 
         const response = await getOrderArchives({
           page: apiPage,
@@ -283,32 +283,32 @@ const ReadOrderArchives: React.FC = () => {
           sortBy: orderBy,
           sortOrder: order,
           ...filters,
-        })
+        });
 
-        setOrders(response.data)
-        setTotalOrders(response.totalCount)
-        if (showInitialLoadingIndicator) setError(null)
+        setOrders(response.data);
+        setTotalOrders(response.totalCount);
+        if (showInitialLoadingIndicator) setError(null);
       } catch (err: any) {
-        const message = err.message || "Error al cargar órdenes."
-        let displayMessage = message
+        const message = err.message || "Error al cargar órdenes.";
+        let displayMessage = message;
         if (err.message?.includes("Network Error")) {
-          displayMessage = "Error de red. Verifique su conexión."
+          displayMessage = "Error de red. Verifique su conexión.";
         } else if (
           err.response?.status === 401 ||
           err.response?.status === 403
         ) {
-          displayMessage = "No autorizado. Por favor, inicie sesión de nuevo."
+          displayMessage = "No autorizado. Por favor, inicie sesión de nuevo.";
         } else if (err.response?.status >= 500) {
-          displayMessage = "Error del servidor. Intente más tarde."
+          displayMessage = "Error del servidor. Intente más tarde.";
         }
 
-        setError(displayMessage)
+        setError(displayMessage);
         if (!showInitialLoadingIndicator) {
-          showSnackBar(`Error al actualizar: ${displayMessage}`)
+          showSnackBar(`Error al actualizar: ${displayMessage}`);
         }
-        console.error("Error fetching order data:", err)
+        console.error("Error fetching order data:", err);
       } finally {
-        loadingStateSetter(false)
+        loadingStateSetter(false);
       }
     },
     [
@@ -323,29 +323,29 @@ const ReadOrderArchives: React.FC = () => {
       startDate,
       endDate,
       filterIsNotConcretado,
-    ]
-  )
+    ],
+  );
 
   // --- URL Parameter Sync ---
   useEffect(() => {
     if (!isInitialMount.current) {
-      const params: Record<string, string> = {}
-      if (page > 0) params.page = String(page)
-      if (rowsPerPage !== 10) params.limit = String(rowsPerPage)
-      if (orderBy !== "createdOn") params.sortBy = orderBy
-      if (order !== "desc") params.sortOrder = order
-      if (searchQuery) params.search = searchQuery
-      if (filterStatus) params.status = filterStatus
-      if (filterPayStatus) params.payStatus = filterPayStatus
+      const params: Record<string, string> = {};
+      if (page > 0) params.page = String(page);
+      if (rowsPerPage !== 10) params.limit = String(rowsPerPage);
+      if (orderBy !== "createdOn") params.sortBy = orderBy;
+      if (order !== "desc") params.sortOrder = order;
+      if (searchQuery) params.search = searchQuery;
+      if (filterStatus) params.status = filterStatus;
+      if (filterPayStatus) params.payStatus = filterPayStatus;
       if (startDate && isValid(startDate))
-        params.startDate = format(startDate, "yyyy-MM-dd")
+        params.startDate = format(startDate, "yyyy-MM-dd");
       if (endDate && isValid(endDate))
-        params.endDate = format(endDate, "yyyy-MM-dd")
-      if (filterIsNotConcretado) params.excludeStatus = "Concretado"
+        params.endDate = format(endDate, "yyyy-MM-dd");
+      if (filterIsNotConcretado) params.excludeStatus = "Concretado";
 
-      setSearchParams(params, { replace: true })
+      setSearchParams(params, { replace: true });
     } else {
-      isInitialMount.current = false
+      isInitialMount.current = false;
     }
   }, [
     page,
@@ -359,207 +359,207 @@ const ReadOrderArchives: React.FC = () => {
     endDate,
     filterIsNotConcretado,
     setSearchParams,
-  ])
+  ]);
 
   useEffect(() => {
-    readPermissions()
-    loadOrders(!orders.length)
-  }, [loadOrders])
+    readPermissions();
+    loadOrders(!orders.length);
+  }, [loadOrders]);
 
   // --- Event Handlers ---
   const triggerSearchOrFilter = useCallback(() => {
-    setPage(0)
-  }, [])
+    setPage(0);
+  }, []);
 
   const handleViewDetail = (id?: string) => {
     if (!id) {
-      showSnackBar("ID de orden no encontrado.")
-      return
+      showSnackBar("ID de orden no encontrado.");
+      return;
     }
-    navigate(`/admin/orderArchives/detail/${id}`)
-  }
+    navigate(`/admin/orderArchives/detail/${id}`);
+  };
 
   const handleOpenUpdateModal = (orderItem: OrderArchive) => {
-    setSelectedOrderForUpdate(orderItem)
-    setNewStatus("")
-    setNewPayStatus("") // ADDED: Reset new pay status
-    setIsUpdateModalOpen(true)
-  }
+    setSelectedOrderForUpdate(orderItem);
+    setNewStatus("");
+    setNewPayStatus(""); // ADDED: Reset new pay status
+    setIsUpdateModalOpen(true);
+  };
 
   const handleCloseUpdateModal = () => {
-    setIsUpdateModalOpen(false)
-    setSelectedOrderForUpdate(null)
-    setNewStatus("")
-    setNewPayStatus("") // ADDED: Reset new pay status
-    setIsUpdatingStatus(false)
-  }
+    setIsUpdateModalOpen(false);
+    setSelectedOrderForUpdate(null);
+    setNewStatus("");
+    setNewPayStatus(""); // ADDED: Reset new pay status
+    setIsUpdatingStatus(false);
+  };
 
   const handleStatusChangeInModal = (event: SelectChangeEvent<OrderStatus>) => {
-    setNewStatus(event.target.value as OrderStatus)
-  }
+    setNewStatus(event.target.value as OrderStatus);
+  };
 
   const handlePayStatusChangeInModal = (
-    event: SelectChangeEvent<OrderPayStatus>
+    event: SelectChangeEvent<OrderPayStatus>,
   ) => {
-    setNewPayStatus(event.target.value as OrderPayStatus)
-  }
+    setNewPayStatus(event.target.value as OrderPayStatus);
+  };
 
   const handleConfirmUpdateStatus = async () => {
     if (!selectedOrderForUpdate?._id) {
-      showSnackBar("Error: Orden no seleccionada.")
-      return
+      showSnackBar("Error: Orden no seleccionada.");
+      return;
     }
 
     const statusChanged =
-      newStatus && newStatus !== selectedOrderForUpdate.status
+      newStatus && newStatus !== selectedOrderForUpdate.status;
     const payStatusChanged =
-      newPayStatus && newPayStatus !== selectedOrderForUpdate.payStatus
+      newPayStatus && newPayStatus !== selectedOrderForUpdate.payStatus;
 
     if (!statusChanged && !payStatusChanged) {
       showSnackBar(
-        "Por favor seleccione un estado o estado de pago diferente al actual."
-      )
-      return
+        "Por favor seleccione un estado o estado de pago diferente al actual.",
+      );
+      return;
     }
 
-    const orderId = selectedOrderForUpdate._id.toString()
-    setIsUpdatingStatus(true)
-    setError(null)
+    const orderId = selectedOrderForUpdate._id.toString();
+    setIsUpdatingStatus(true);
+    setError(null);
 
-    const payload: { status?: OrderStatus; payStatus?: OrderPayStatus } = {}
+    const payload: { status?: OrderStatus; payStatus?: OrderPayStatus } = {};
     if (statusChanged && newStatus) {
       // ensure newStatus is not empty
-      payload.status = newStatus
+      payload.status = newStatus;
     }
     if (payStatusChanged && newPayStatus) {
       // ensure newPayStatus is not empty
-      payload.payStatus = newPayStatus
+      payload.payStatus = newPayStatus;
     }
 
     try {
       // Call your actual API function
-      const updatedOrder = await updateOrderArchive(orderId, payload)
+      const updatedOrder = await updateOrderArchive(orderId, payload);
 
       // Update local state with the complete object returned by the API
       setOrders((prevOrders) =>
         prevOrders.map((o) =>
-          o._id?.toString() === orderId ? updatedOrder : o
-        )
-      )
+          o._id?.toString() === orderId ? updatedOrder : o,
+        ),
+      );
 
-      let updateMessage = `Orden ${selectedOrderForUpdate.orderId} actualizada:`
-      const updates = []
-      if (statusChanged && newStatus) updates.push(`Status a "${newStatus}"`)
+      let updateMessage = `Orden ${selectedOrderForUpdate.orderId} actualizada:`;
+      const updates = [];
+      if (statusChanged && newStatus) updates.push(`Status a "${newStatus}"`);
       if (payStatusChanged && newPayStatus)
-        updates.push(`Status de Pago a "${newPayStatus}"`)
-      updateMessage += " " + updates.join(", ") + "."
+        updates.push(`Status de Pago a "${newPayStatus}"`);
+      updateMessage += " " + updates.join(", ") + ".";
 
-      showSnackBar(updateMessage)
-      handleCloseUpdateModal()
+      showSnackBar(updateMessage);
+      handleCloseUpdateModal();
     } catch (err: any) {
-      console.error("Error updating order status/payStatus:", err)
-      const message = err.message || "Error al actualizar."
+      console.error("Error updating order status/payStatus:", err);
+      const message = err.message || "Error al actualizar.";
       setError(
-        `Error actualizando orden ${selectedOrderForUpdate.orderId}: ${message}`
-      )
-      showSnackBar(`Error: ${message}`)
+        `Error actualizando orden ${selectedOrderForUpdate.orderId}: ${message}`,
+      );
+      showSnackBar(`Error: ${message}`);
     } finally {
-      setIsUpdatingStatus(false)
+      setIsUpdatingStatus(false);
     }
-  }
+  };
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
-    property: OrderSortKey
+    property: OrderSortKey,
   ) => {
-    const isAsc = orderBy === property && order === "asc"
-    setOrder(isAsc ? "desc" : "asc")
-    setOrderBy(property)
-    setPage(0)
-  }
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(property);
+    setPage(0);
+  };
 
   const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage)
-  }
+    setPage(newPage);
+  };
 
   const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    setRowsPerPage(parseInt(event.target.value, 10))
-    setPage(0)
-  }
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value
-    setSearchQuery(value)
+    const value = event.target.value;
+    setSearchQuery(value);
 
     if (debounceTimeoutRef.current) {
-      clearTimeout(debounceTimeoutRef.current)
+      clearTimeout(debounceTimeoutRef.current);
     }
 
     debounceTimeoutRef.current = setTimeout(() => {
-      triggerSearchOrFilter()
-    }, 500)
-  }
+      triggerSearchOrFilter();
+    }, 500);
+  };
 
   const handleSelectFilterChange =
     (setter: React.Dispatch<React.SetStateAction<any>>) =>
     (event: SelectChangeEvent<any>) => {
-      const value = event.target.value
-      setter(value)
+      const value = event.target.value;
+      setter(value);
       if (setter === setFilterStatus && value !== "") {
-        setFilterIsNotConcretado(false)
+        setFilterIsNotConcretado(false);
       }
-      triggerSearchOrFilter()
-    }
+      triggerSearchOrFilter();
+    };
 
   const handleDateFilterChange =
     (setter: React.Dispatch<React.SetStateAction<Date | null>>) =>
     (
       value: unknown,
-      context: PickerChangeHandlerContext<DateValidationError>
+      context: PickerChangeHandlerContext<DateValidationError>,
     ) => {
-      setter(value as Date | null)
-      triggerSearchOrFilter()
-    }
+      setter(value as Date | null);
+      triggerSearchOrFilter();
+    };
 
   const handleNotConcretadoToggle = () => {
-    const newValue = !filterIsNotConcretado
-    setFilterIsNotConcretado(newValue)
+    const newValue = !filterIsNotConcretado;
+    setFilterIsNotConcretado(newValue);
     if (newValue) {
-      setFilterStatus("")
+      setFilterStatus("");
     }
-    triggerSearchOrFilter()
-  }
+    triggerSearchOrFilter();
+  };
 
   const handleClearFilters = () => {
-    setSearchQuery("")
-    setFilterStatus("")
-    setFilterPayStatus("")
-    setStartDate(null)
-    setEndDate(null)
-    setFilterIsNotConcretado(false)
-    setPage(0)
+    setSearchQuery("");
+    setFilterStatus("");
+    setFilterPayStatus("");
+    setStartDate(null);
+    setEndDate(null);
+    setFilterIsNotConcretado(false);
+    setPage(0);
     if (debounceTimeoutRef.current) {
-      clearTimeout(debounceTimeoutRef.current)
+      clearTimeout(debounceTimeoutRef.current);
     }
-  }
+  };
 
   interface EnhancedTableProps {
     onRequestSort: (
       event: React.MouseEvent<unknown>,
-      property: OrderSortKey
-    ) => void
-    order: SortDirection
-    orderBy: string
+      property: OrderSortKey,
+    ) => void;
+    order: SortDirection;
+    orderBy: string;
   }
 
   function EnhancedTableHead(props: EnhancedTableProps) {
-    const { order, orderBy, onRequestSort } = props
+    const { order, orderBy, onRequestSort } = props;
     const createSortHandler =
       (property: OrderSortKey) => (event: React.MouseEvent<unknown>) => {
-        onRequestSort(event, property)
-      }
+        onRequestSort(event, property);
+      };
 
     return (
       <TableHead
@@ -600,11 +600,11 @@ const ReadOrderArchives: React.FC = () => {
           ))}
         </TableRow>
       </TableHead>
-    )
+    );
   }
 
   const renderActiveFilters = () => {
-    const activeFilters: React.ReactNode[] = []
+    const activeFilters: React.ReactNode[] = [];
 
     if (searchQuery) {
       activeFilters.push(
@@ -613,11 +613,11 @@ const ReadOrderArchives: React.FC = () => {
           label={`Buscar: ${searchQuery}`}
           size="small"
           onDelete={() => {
-            setSearchQuery("")
-            triggerSearchOrFilter()
+            setSearchQuery("");
+            triggerSearchOrFilter();
           }}
-        />
-      )
+        />,
+      );
     }
     if (filterIsNotConcretado) {
       activeFilters.push(
@@ -626,8 +626,8 @@ const ReadOrderArchives: React.FC = () => {
           label="Status: Pendientes"
           size="small"
           onDelete={handleNotConcretadoToggle}
-        />
-      )
+        />,
+      );
     }
     if (filterStatus) {
       activeFilters.push(
@@ -636,11 +636,11 @@ const ReadOrderArchives: React.FC = () => {
           label={`Status: ${filterStatus}`}
           size="small"
           onDelete={() => {
-            setFilterStatus("")
-            triggerSearchOrFilter()
+            setFilterStatus("");
+            triggerSearchOrFilter();
           }}
-        />
-      )
+        />,
+      );
     }
     if (filterPayStatus) {
       activeFilters.push(
@@ -649,11 +649,11 @@ const ReadOrderArchives: React.FC = () => {
           label={`Pago: ${filterPayStatus}`}
           size="small"
           onDelete={() => {
-            setFilterPayStatus("")
-            triggerSearchOrFilter()
+            setFilterPayStatus("");
+            triggerSearchOrFilter();
           }}
-        />
-      )
+        />,
+      );
     }
     if (startDate && isValid(startDate)) {
       activeFilters.push(
@@ -662,11 +662,11 @@ const ReadOrderArchives: React.FC = () => {
           label={`Desde: ${format(startDate, "dd/MM/yyyy")}`}
           size="small"
           onDelete={() => {
-            setStartDate(null)
-            triggerSearchOrFilter()
+            setStartDate(null);
+            triggerSearchOrFilter();
           }}
-        />
-      )
+        />,
+      );
     }
     if (endDate && isValid(endDate)) {
       activeFilters.push(
@@ -675,14 +675,14 @@ const ReadOrderArchives: React.FC = () => {
           label={`Hasta: ${format(endDate, "dd/MM/yyyy")}`}
           size="small"
           onDelete={() => {
-            setEndDate(null)
-            triggerSearchOrFilter()
+            setEndDate(null);
+            triggerSearchOrFilter();
           }}
-        />
-      )
+        />,
+      );
     }
 
-    if (activeFilters.length === 0) return null
+    if (activeFilters.length === 0) return null;
 
     return (
       <Stack
@@ -695,8 +695,8 @@ const ReadOrderArchives: React.FC = () => {
         </Typography>
         {activeFilters}
       </Stack>
-    )
-  }
+    );
+  };
 
   const renderContent = () => {
     if (isLoading && orders.length === 0 && !error) {
@@ -704,7 +704,7 @@ const ReadOrderArchives: React.FC = () => {
         <Box sx={{ display: "flex", justifyContent: "center", p: 3 }}>
           <CircularProgress />
         </Box>
-      )
+      );
     }
 
     if (error && orders.length === 0 && !isLoading) {
@@ -715,7 +715,7 @@ const ReadOrderArchives: React.FC = () => {
             Reintentar
           </Button>
         </Alert>
-      )
+      );
     }
 
     if (!isLoading && !isFilteringLoading && orders.length === 0 && !error) {
@@ -723,10 +723,10 @@ const ReadOrderArchives: React.FC = () => {
         <Alert severity="info" sx={{ m: 2 }}>
           No se encontraron órdenes con los filtros aplicados.
         </Alert>
-      )
+      );
     }
 
-    const showSkeletons = isFilteringLoading && orders.length > 0
+    const showSkeletons = isFilteringLoading && orders.length > 0;
 
     return (
       <Paper
@@ -782,7 +782,7 @@ const ReadOrderArchives: React.FC = () => {
                     // Determine if the update action should be enabled
                     const isUpdatable =
                       !FINAL_STATUSES.includes(orderItem.status) ||
-                      permissions?.area === "Master"
+                      permissions?.area === "Master";
 
                     return (
                       <TableRow
@@ -807,8 +807,8 @@ const ReadOrderArchives: React.FC = () => {
                             component="button"
                             variant="body2"
                             onClick={(e) => {
-                              e.stopPropagation()
-                              handleViewDetail(orderItem._id.toString())
+                              e.stopPropagation();
+                              handleViewDetail(orderItem._id.toString());
                             }}
                             sx={{ textAlign: "left" }}
                           >
@@ -823,7 +823,7 @@ const ReadOrderArchives: React.FC = () => {
                         <TableCell
                           sx={{
                             display: headCells.find(
-                              (h) => h.id === "customerName"
+                              (h) => h.id === "customerName",
                             )?.display,
                             whiteSpace: "nowrap",
                             overflow: "hidden",
@@ -921,7 +921,7 @@ const ReadOrderArchives: React.FC = () => {
                           </Box>
                         </TableCell>
                       </TableRow>
-                    )
+                    );
                   })}
             </TableBody>
           </Table>
@@ -939,23 +939,23 @@ const ReadOrderArchives: React.FC = () => {
             `${from}–${to} de ${count !== -1 ? count : `más de ${to}`}`
           }
           getItemAriaLabel={(type) => {
-            if (type === "first") return "Primera página"
-            if (type === "last") return "Última página"
-            if (type === "next") return "Siguiente página"
-            return "Página anterior"
+            if (type === "first") return "Primera página";
+            if (type === "last") return "Última página";
+            if (type === "next") return "Siguiente página";
+            return "Página anterior";
           }}
         />
       </Paper>
-    )
-  }
+    );
+  };
 
   const stripHtml = (html?: string): string => {
-    return html ? html.replace(/<[^>]+>/g, "") : ""
-  }
+    return html ? html.replace(/<[^>]+>/g, "") : "";
+  };
 
   const downloadOrders = async (orders: OrderArchive[]): Promise<void> => {
-    const workbook = new excelJS.Workbook()
-    const worksheet = workbook.addWorksheet(`Pedidos Detallados`)
+    const workbook = new excelJS.Workbook();
+    const worksheet = workbook.addWorksheet(`Pedidos Detallados`);
 
     worksheet.columns = [
       { header: "status", key: "status", width: 16 },
@@ -977,22 +977,22 @@ const ReadOrderArchives: React.FC = () => {
       { header: "Método de entrega", key: "shippingMethod", width: 14 },
       { header: "Fecha de entrega", key: "deliveryDate", width: 11 },
       { header: "Fecha de completado", key: "completionDate", width: 11 },
-    ]
+    ];
 
     worksheet.getRow(1).eachCell((cell: any) => {
-      cell.font = { bold: true }
+      cell.font = { bold: true };
       cell.border = {
         top: { style: "thin" },
         left: { style: "thin" },
         bottom: { style: "thin" },
         right: { style: "thin" },
-      }
+      };
       cell.alignment = {
         vertical: "middle",
         horizontal: "center",
         wrapText: true,
-      }
-    })
+      };
+    });
 
     for (const order of orders) {
       for (const line of order.requests) {
@@ -1028,36 +1028,36 @@ const ReadOrderArchives: React.FC = () => {
                 : "",
           quantity: line.quantity,
           unitPrice: line.product.finalPrice,
-        }
+        };
 
-        const row = worksheet.addRow(rowData)
+        const row = worksheet.addRow(rowData);
         row.eachCell({ includeEmpty: true }, (cell: any) => {
-          cell.font = { bold: true }
+          cell.font = { bold: true };
           cell.border = {
             top: { style: "thin" },
             left: { style: "thin" },
             bottom: { style: "thin" },
             right: { style: "thin" },
-          }
+          };
           cell.alignment = {
             vertical: "middle",
             horizontal: "center",
             wrapText: true,
-          }
-        })
+          };
+        });
       }
     }
 
-    const buffer = await workbook.xlsx.writeBuffer()
+    const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    })
-    const link = document.createElement("a")
-    link.href = URL.createObjectURL(blob)
-    const date = format(new Date(), "dd-MM-yyyy")
-    link.download = `Pedidos ${date}.xlsx`
-    link.click()
-  }
+    });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    const date = format(new Date(), "dd-MM-yyyy");
+    link.download = `Pedidos ${date}.xlsx`;
+    link.click();
+  };
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns} /* adapterLocale={es} */>
       <>
@@ -1283,7 +1283,7 @@ const ReadOrderArchives: React.FC = () => {
                 onChange={handleStatusChangeInModal}
               >
                 {UPDATABLE_TARGET_STATUSES.filter(
-                  (s) => s !== selectedOrderForUpdate?.status
+                  (s) => s !== selectedOrderForUpdate?.status,
                 ).map((statusOption) => (
                   <MenuItem key={statusOption} value={statusOption}>
                     {statusOption}
@@ -1317,7 +1317,7 @@ const ReadOrderArchives: React.FC = () => {
                 onChange={handlePayStatusChangeInModal}
               >
                 {ALL_PAY_STATUSES.filter(
-                  (ps) => ps !== selectedOrderForUpdate?.payStatus
+                  (ps) => ps !== selectedOrderForUpdate?.payStatus,
                 ).map((payStatusOption) => (
                   <MenuItem key={payStatusOption} value={payStatusOption}>
                     {payStatusOption}
@@ -1355,7 +1355,7 @@ const ReadOrderArchives: React.FC = () => {
         </Dialog>
       </>
     </LocalizationProvider>
-  )
-}
+  );
+};
 
-export default ReadOrderArchives
+export default ReadOrderArchives;

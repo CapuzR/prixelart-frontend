@@ -1,29 +1,29 @@
-import React from "react"
-import styles from "./ActionBar.module.scss"
-import Grid2 from "@mui/material/Grid"
+import React from "react";
+import styles from "./ActionBar.module.scss";
+import Grid2 from "@mui/material/Grid";
 
 type OnlyUpperProps = {
-  onUpperAction: (() => void) | undefined
-  upperIcon: React.ReactNode
-  onLowerAction?: never
-  lowerIcon?: never
-}
+  onUpperAction: (() => void) | undefined;
+  upperIcon: React.ReactNode;
+  onLowerAction?: never;
+  lowerIcon?: never;
+};
 
 type OnlyLowerProps = {
-  onLowerAction: (() => void) | undefined
-  lowerIcon: React.ReactNode
-  onUpperAction?: never
-  upperIcon?: never
-}
+  onLowerAction: (() => void) | undefined;
+  lowerIcon: React.ReactNode;
+  onUpperAction?: never;
+  upperIcon?: never;
+};
 
 type BothActionsProps = {
-  onUpperAction: () => void
-  upperIcon: React.ReactNode
-  onLowerAction: () => void
-  lowerIcon: React.ReactNode
-}
+  onUpperAction: () => void;
+  upperIcon: React.ReactNode;
+  onLowerAction: () => void;
+  lowerIcon: React.ReactNode;
+};
 
-type ActionBarProps = OnlyUpperProps | OnlyLowerProps | BothActionsProps
+type ActionBarProps = OnlyUpperProps | OnlyLowerProps | BothActionsProps;
 
 const ActionBar: React.FC<ActionBarProps> = ({
   onUpperAction,
@@ -54,7 +54,7 @@ const ActionBar: React.FC<ActionBarProps> = ({
         </Grid2>
       )}
     </Grid2>
-  )
-}
+  );
+};
 
-export default ActionBar
+export default ActionBar;

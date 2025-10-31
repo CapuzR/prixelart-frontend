@@ -1,34 +1,34 @@
-import { PermissionsV2 } from "../../../../../types/permissions.types"
+import { PermissionsV2 } from "../../../../../types/permissions.types";
 
-type PermissionPath = `${keyof Omit<PermissionsV2, "_id" | "area">}.${string}`
+type PermissionPath = `${keyof Omit<PermissionsV2, "_id" | "area">}.${string}`;
 
 export type PermissionItem = {
-  key: PermissionPath
-  check: (r: PermissionsV2) => boolean
-  label: string
-}
+  key: PermissionPath;
+  check: (r: PermissionsV2) => boolean;
+  label: string;
+};
 
 type PermissionGroup = {
-  title: string
-  check: (r: PermissionsV2) => boolean
-  items: PermissionItem[]
-}
+  title: string;
+  check: (r: PermissionsV2) => boolean;
+  items: PermissionItem[];
+};
 
 const anyPermissionIn = (
-  obj: Record<string, boolean | any> | undefined
+  obj: Record<string, boolean | any> | undefined,
 ): boolean => {
-  if (!obj) return false
+  if (!obj) return false;
   for (const key in obj) {
     if (
       Object.prototype.hasOwnProperty.call(obj, key) &&
       typeof obj[key] === "boolean" &&
       obj[key]
     ) {
-      return true
+      return true;
     }
   }
-  return false
-}
+  return false;
+};
 
 export const permissionGroups: PermissionGroup[] = [
   {
@@ -548,4 +548,4 @@ export const permissionGroups: PermissionGroup[] = [
       },
     ],
   },
-]
+];

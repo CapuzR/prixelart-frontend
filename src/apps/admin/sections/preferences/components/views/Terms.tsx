@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useCallback, FormEvent } from 'react';
+import React, { useState, useEffect, useCallback, FormEvent } from "react";
 
-import ReactMarkdown from 'react-markdown';
-import RemarkGfm from 'remark-gfm'; 
-import ReactMde from 'react-mde';
+import ReactMarkdown from "react-markdown";
+import RemarkGfm from "remark-gfm";
+import ReactMde from "react-mde";
 import "react-mde/lib/styles/css/react-mde-all.css";
 
-import { useSnackBar } from 'context/GlobalContext';
-import { TermsAndConditions } from 'types/preference.types';
+import { useSnackBar } from "context/GlobalContext";
+import { TermsAndConditions } from "types/preference.types";
 
 import {
   Box,
@@ -16,13 +16,13 @@ import {
   CircularProgress,
   Alert,
   Stack,
-  Divider
-} from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import SaveIcon from '@mui/icons-material/Save';
-import CancelIcon from '@mui/icons-material/Cancel';
-import Title from '@apps/admin/components/Title';
-import { getTerms, updateTerms } from '@api/preferences.api';
+  Divider,
+} from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import SaveIcon from "@mui/icons-material/Save";
+import CancelIcon from "@mui/icons-material/Cancel";
+import Title from "@apps/admin/components/Title";
+import { getTerms, updateTerms } from "@api/preferences.api";
 
 const ReadAndUpdateTerms: React.FC = () => {
   // --- Hooks ---
@@ -36,36 +36,40 @@ const ReadAndUpdateTerms: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [errorFetch, setErrorFetch] = useState<string | null>(null);
   const [errorSubmit, setErrorSubmit] = useState<string | null>(null);
-  const [selectedTab, setSelectedTab] = useState<'write' | 'preview'>('write');
+  const [selectedTab, setSelectedTab] = useState<"write" | "preview">("write");
 
   // --- Fetch Data ---
-  const loadTerms = useCallback(async (showLoading = true) => {
-    if (showLoading) setIsLoading(true);
-    setErrorFetch(null);
-    try {
-      const response = await getTerms() as TermsAndConditions;
-      const fetchedTerms = response?.termsAndConditions || "";
-      setTerms(fetchedTerms);
-      setOriginalTerms(fetchedTerms);
-    } catch (err: any) {
-      const message = err.message || "Error al cargar los Términos y Condiciones.";
-      setErrorFetch(message);
-      showSnackBar(message);
-      console.error("Error fetching terms:", err);
-    } finally {
-      if (showLoading) setIsLoading(false);
-    }
-  }, [showSnackBar]);
+  const loadTerms = useCallback(
+    async (showLoading = true) => {
+      if (showLoading) setIsLoading(true);
+      setErrorFetch(null);
+      try {
+        const response = (await getTerms()) as TermsAndConditions;
+        const fetchedTerms = response?.termsAndConditions || "";
+        setTerms(fetchedTerms);
+        setOriginalTerms(fetchedTerms);
+      } catch (err: any) {
+        const message =
+          err.message || "Error al cargar los Términos y Condiciones.";
+        setErrorFetch(message);
+        showSnackBar(message);
+        console.error("Error fetching terms:", err);
+      } finally {
+        if (showLoading) setIsLoading(false);
+      }
+    },
+    [showSnackBar],
+  );
 
   useEffect(() => {
     loadTerms();
   }, [loadTerms]);
 
   const spanishL18n = {
-    write: 'Escribir',
-    preview: 'Vista Previa',
-    uploadingImage: 'Subiendo imagen...',
-    pasteDropSelect: 'Pegar, soltar o seleccionar imagen'
+    write: "Escribir",
+    preview: "Vista Previa",
+    uploadingImage: "Subiendo imagen...",
+    pasteDropSelect: "Pegar, soltar o seleccionar imagen",
   };
 
   // --- Handlers ---
@@ -73,7 +77,7 @@ const ReadAndUpdateTerms: React.FC = () => {
     setOriginalTerms(terms);
     setIsEditing(true);
     setErrorSubmit(null);
-    setSelectedTab('write');
+    setSelectedTab("write");
   };
 
   const handleCancelClick = () => {
@@ -99,7 +103,7 @@ const ReadAndUpdateTerms: React.FC = () => {
     }
     setErrorSubmit(null);
     return true;
-  }
+  };
 
   // --- Submission ---
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -123,7 +127,10 @@ const ReadAndUpdateTerms: React.FC = () => {
       }
     } catch (err: any) {
       console.error("Failed to update terms:", err);
-      const message = err.response?.data?.message || err.message || "Error al actualizar los Términos y Condiciones.";
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        "Error al actualizar los Términos y Condiciones.";
       setErrorSubmit(message);
       showSnackBar(message);
     } finally {
@@ -137,7 +144,14 @@ const ReadAndUpdateTerms: React.FC = () => {
 
       {/* Loading Indicator */}
       {isLoading && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', p: 3 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            p: 3,
+          }}
+        >
           <CircularProgress />
           <Typography sx={{ ml: 2 }}>Cargando...</Typography>
         </Box>
@@ -147,7 +161,9 @@ const ReadAndUpdateTerms: React.FC = () => {
       {errorFetch && !isLoading && (
         <Alert severity="error" sx={{ m: 2 }}>
           {errorFetch}
-          <Button onClick={() => loadTerms()} size="small" sx={{ ml: 1 }}>Reintentar</Button>
+          <Button onClick={() => loadTerms()} size="small" sx={{ ml: 1 }}>
+            Reintentar
+          </Button>
         </Alert>
       )}
 
@@ -157,10 +173,17 @@ const ReadAndUpdateTerms: React.FC = () => {
           {isEditing ? (
             // --- Edit Mode (with Markdown Editor) ---
             <form onSubmit={handleSubmit}>
-              <Typography variant="h6" gutterBottom>Editar Términos y Condiciones (Markdown)</Typography>
+              <Typography variant="h6" gutterBottom>
+                Editar Términos y Condiciones (Markdown)
+              </Typography>
 
               {/* --- React Mde Component --- */}
-              <Box sx={{ mb: 2, '.react-mde .mde-header': { backgroundColor: '#f5f5f5' } }}>
+              <Box
+                sx={{
+                  mb: 2,
+                  ".react-mde .mde-header": { backgroundColor: "#f5f5f5" },
+                }}
+              >
                 <ReactMde
                   value={terms}
                   onChange={handleEditorChange}
@@ -170,18 +193,18 @@ const ReadAndUpdateTerms: React.FC = () => {
                     Promise.resolve(
                       <ReactMarkdown remarkPlugins={[RemarkGfm]}>
                         {markdown}
-                      </ReactMarkdown>
+                      </ReactMarkdown>,
                     )
                   }
                   readOnly={isSubmitting}
                   childProps={{
                     writeButton: {
                       tabIndex: -1,
-                      disabled: isSubmitting
+                      disabled: isSubmitting,
                     },
                     textArea: {
-                      disabled: isSubmitting
-                    }
+                      disabled: isSubmitting,
+                    },
                   }}
                   minEditorHeight={300}
                   heightUnits="px"
@@ -189,14 +212,23 @@ const ReadAndUpdateTerms: React.FC = () => {
                 />
               </Box>
               {/* Helper Text (Manual) */}
-              <Typography variant="caption" display="block" sx={{ mb: 2, color: errorSubmit ? 'error.main' : 'text.secondary' }}>
-                {errorSubmit || "Ingrese los términos y condiciones usando Markdown."}
+              <Typography
+                variant="caption"
+                display="block"
+                sx={{
+                  mb: 2,
+                  color: errorSubmit ? "error.main" : "text.secondary",
+                }}
+              >
+                {errorSubmit ||
+                  "Ingrese los términos y condiciones usando Markdown."}
               </Typography>
-
 
               {/* Submission Error Alert */}
               {errorSubmit && !validateForm() && (
-                <Alert severity="error" sx={{ mb: 2 }}>{errorSubmit}</Alert>
+                <Alert severity="error" sx={{ mb: 2 }}>
+                  {errorSubmit}
+                </Alert>
               )}
 
               <Stack direction="row" justifyContent="flex-end" spacing={2}>
@@ -214,7 +246,13 @@ const ReadAndUpdateTerms: React.FC = () => {
                   variant="contained"
                   color="primary"
                   disabled={isSubmitting || !terms.trim()}
-                  startIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
+                  startIcon={
+                    isSubmitting ? (
+                      <CircularProgress size={20} color="inherit" />
+                    ) : (
+                      <SaveIcon />
+                    )
+                  }
                 >
                   {isSubmitting ? "Guardando..." : "Guardar Cambios"}
                 </Button>
@@ -223,7 +261,12 @@ const ReadAndUpdateTerms: React.FC = () => {
           ) : (
             // --- Read Mode (with Markdown Rendering) ---
             <Box>
-              <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                mb={2}
+              >
                 <Typography variant="h6">Términos Actuales</Typography>
                 <Button
                   variant="outlined"
@@ -236,32 +279,55 @@ const ReadAndUpdateTerms: React.FC = () => {
               <Divider sx={{ mb: 2 }} />
 
               {/* --- Markdown Display --- */}
-              <Box sx={{
-                maxHeight: '60vh',
-                overflowY: 'auto',
-                wordBreak: 'break-word',
-                '& h1': { mb: 2, mt: 3, fontSize: '1.8rem' },
-                '& h2': { mb: 1.5, mt: 2.5, fontSize: '1.5rem' },
-                '& h3': { mb: 1, mt: 2, fontSize: '1.25rem' },
-                '& p': { mb: 1.5, lineHeight: 1.6 },
-                '& ul, & ol': { pl: 3, mb: 1.5 },
-                '& li': { mb: 0.5 },
-                '& strong': { fontWeight: 'bold' },
-                '& em': { fontStyle: 'italic' },
-                '& blockquote': { borderLeft: '4px solid #ccc', pl: 2, ml: 0, color: '#666', fontStyle: 'italic' },
-                '& code': { backgroundColor: '#f5f5f5', p: '2px 4px', borderRadius: '3px', fontFamily: 'monospace' },
-                '& pre > code': { display: 'block', p: 1, overflowX: 'auto' },
-                '& table': { borderCollapse: 'collapse', width: '100%', mb: 2 },
-                '& th, & td': { border: '1px solid #ddd', p: 1, textAlign: 'left' },
-                '& th': { backgroundColor: '#f2f2f2', fontWeight: 'bold' },
-                '& a': { color: 'primary.main', textDecoration: 'underline' }
-              }}>
+              <Box
+                sx={{
+                  maxHeight: "60vh",
+                  overflowY: "auto",
+                  wordBreak: "break-word",
+                  "& h1": { mb: 2, mt: 3, fontSize: "1.8rem" },
+                  "& h2": { mb: 1.5, mt: 2.5, fontSize: "1.5rem" },
+                  "& h3": { mb: 1, mt: 2, fontSize: "1.25rem" },
+                  "& p": { mb: 1.5, lineHeight: 1.6 },
+                  "& ul, & ol": { pl: 3, mb: 1.5 },
+                  "& li": { mb: 0.5 },
+                  "& strong": { fontWeight: "bold" },
+                  "& em": { fontStyle: "italic" },
+                  "& blockquote": {
+                    borderLeft: "4px solid #ccc",
+                    pl: 2,
+                    ml: 0,
+                    color: "#666",
+                    fontStyle: "italic",
+                  },
+                  "& code": {
+                    backgroundColor: "#f5f5f5",
+                    p: "2px 4px",
+                    borderRadius: "3px",
+                    fontFamily: "monospace",
+                  },
+                  "& pre > code": { display: "block", p: 1, overflowX: "auto" },
+                  "& table": {
+                    borderCollapse: "collapse",
+                    width: "100%",
+                    mb: 2,
+                  },
+                  "& th, & td": {
+                    border: "1px solid #ddd",
+                    p: 1,
+                    textAlign: "left",
+                  },
+                  "& th": { backgroundColor: "#f2f2f2", fontWeight: "bold" },
+                  "& a": { color: "primary.main", textDecoration: "underline" },
+                }}
+              >
                 {terms && terms.trim() ? (
                   <ReactMarkdown remarkPlugins={[RemarkGfm]}>
                     {terms}
                   </ReactMarkdown>
                 ) : (
-                  <Typography sx={{ fontStyle: 'italic', color: 'text.secondary' }}>
+                  <Typography
+                    sx={{ fontStyle: "italic", color: "text.secondary" }}
+                  >
                     No hay términos y condiciones definidos.
                   </Typography>
                 )}

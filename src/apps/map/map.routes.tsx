@@ -1,6 +1,6 @@
-import React from 'react';
-import { Route, Routes } from 'react-router-dom';
-import Map from 'apps/map/index';
+import React from "react";
+import { Route, Routes } from "react-router-dom";
+import Map from "apps/map/index";
 
 const MapRoutes = ({}) => {
   return (

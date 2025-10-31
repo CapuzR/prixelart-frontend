@@ -1,14 +1,14 @@
-import React, { useEffect } from "react"
-import Routes from "./routes"
-import { GlobalProvider, useTheme } from "context/GlobalContext"
+import React, { useEffect } from "react";
+import Routes from "./routes";
+import { GlobalProvider, useTheme } from "context/GlobalContext";
 // import ReactGA from 'react-ga';
-import Utility from "@components/Utility"
-import { CartProvider } from "context/CartContext"
-import { LocalizationProvider } from "@mui/x-date-pickers"
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
+import Utility from "@components/Utility";
+import { CartProvider } from "context/CartContext";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 const ThemedApp: React.FC = () => {
-  const { theme } = useTheme()
+  const { theme } = useTheme();
 
   return (
     <div className={`${theme} app`}>
@@ -17,8 +17,8 @@ const ThemedApp: React.FC = () => {
         <Routes />
       </div>
     </div>
-  )
-}
+  );
+};
 
 const App: React.FC = () => {
   // useEffect(() => {
@@ -34,7 +34,7 @@ const App: React.FC = () => {
         </LocalizationProvider>
       </CartProvider>
     </GlobalProvider>
-  )
-}
+  );
+};
 
-export default App
+export default App;

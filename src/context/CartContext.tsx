@@ -1,18 +1,29 @@
-import { Item } from 'types/order.types';
-import { Cart, CartLine } from '../types/cart.types';
-import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { useUser } from './GlobalContext';
-import { Variant, VariantAttribute } from 'types/product.types';
-import { fetchVariantPrice } from '@api/product.api';
-import { User } from 'types/user.types';
+import { Item } from "types/order.types";
+import { Cart, CartLine } from "../types/cart.types";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+  useCallback,
+} from "react";
+import { v4 as uuidv4 } from "uuid";
+import { useUser } from "./GlobalContext";
+import { Variant, VariantAttribute } from "types/product.types";
+import { fetchVariantPrice } from "@api/product.api";
+import { User } from "types/user.types";
 
 interface CartContextType {
   cart: Cart;
-  addOrUpdateItemInCart: (item: Item, quantity?: number, lineId?: string) => void;
+  addOrUpdateItemInCart: (
+    item: Item,
+    quantity?: number,
+    lineId?: string,
+  ) => void;
   updateCartLine: (
     lineId: string,
-    updates: Partial<Pick<CartLine, 'quantity' | 'discount' | 'subtotal'>>
+    updates: Partial<Pick<CartLine, "quantity" | "discount" | "subtotal">>,
   ) => void;
   deleteLineInCart: (line: CartLine) => void;
   emptyCart: () => void;
@@ -22,7 +33,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const useCart = () => {
   const context = useContext(CartContext);
-  if (!context) throw new Error('useCart must be used within a CartProvider');
+  if (!context) throw new Error("useCart must be used within a CartProvider");
   return context;
 };
 
@@ -34,27 +45,33 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
   const { user } = useUser() as { user: User | null | undefined }; // Cast if useUser() has a generic return
 
   const [cart, setCart] = useState<Cart>(() => {
-    const storedCart = localStorage.getItem('cart');
-    console.log('Initializing cart. Stored cart:', storedCart ? 'found' : 'not found');
+    const storedCart = localStorage.getItem("cart");
+    console.log(
+      "Initializing cart. Stored cart:",
+      storedCart ? "found" : "not found",
+    );
     return storedCart
       ? JSON.parse(storedCart)
       : {
-        lines: [],
-        subTotal: 0,
-        totalUnits: 0,
-        cartDiscount: 0,
-        totalDiscount: 0,
-      };
+          lines: [],
+          subTotal: 0,
+          totalUnits: 0,
+          cartDiscount: 0,
+          totalDiscount: 0,
+        };
   });
 
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cart));
+    localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
   const calculateCartTotals = useCallback((lines: CartLine[]) => {
     const subTotal = lines.reduce((sum, line) => sum + line.subtotal, 0);
     const totalUnits = lines.reduce((count, line) => count + line.quantity, 0);
-    const cartDiscount = lines.reduce((discount, line) => discount + line.discount, 0);
+    const cartDiscount = lines.reduce(
+      (discount, line) => discount + line.discount,
+      0,
+    );
     return {
       subTotal,
       totalUnits,
@@ -67,7 +84,7 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
   useEffect(() => {
     // user === undefined could mean user state is still loading
     if (user === undefined) {
-      console.log('User state is undefined, skipping price update.');
+      console.log("User state is undefined, skipping price update.");
       return;
     }
 
@@ -83,9 +100,14 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
         const product = line.item.product;
 
         // Validate necessary data for fetching price
-        if (!product || !product._id || !product.variants || !product.selection) {
+        if (
+          !product ||
+          !product._id ||
+          !product.variants ||
+          !product.selection
+        ) {
           console.warn(
-            `Skipping price update for line ID ${line.id} (Product: ${product?.name || 'N/A'}): missing essential product data (ID, variants, or selection).`
+            `Skipping price update for line ID ${line.id} (Product: ${product?.name || "N/A"}): missing essential product data (ID, variants, or selection).`,
           );
           return line;
         }
@@ -93,14 +115,29 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
         let variantId: string | null = null;
         const currentSelection = product.selection; // e.g., [{ name: "Color", value: "Plateado" }]
 
-        if (Array.isArray(currentSelection) && Array.isArray(product.variants)) {
-          for (const variant of product.variants as Variant[]) { // Added type assertion for variant
-            if (variant && variant._id && Array.isArray(variant.attributes) &&
-              variant.attributes.length === currentSelection.length) {
-              const isMatch = (currentSelection as VariantAttribute[]).every(selAttr => // Type assertion
-                (variant.attributes as VariantAttribute[]).some(varAttr => // Type assertion
-                  varAttr.name === selAttr.name && varAttr.value === selAttr.value
-                )
+        if (
+          Array.isArray(currentSelection) &&
+          Array.isArray(product.variants)
+        ) {
+          for (const variant of product.variants as Variant[]) {
+            // Added type assertion for variant
+            if (
+              variant &&
+              variant._id &&
+              Array.isArray(variant.attributes) &&
+              variant.attributes.length === currentSelection.length
+            ) {
+              const isMatch = (currentSelection as VariantAttribute[]).every(
+                (
+                  selAttr, // Type assertion
+                ) =>
+                  (variant.attributes as VariantAttribute[]).some(
+                    (
+                      varAttr, // Type assertion
+                    ) =>
+                      varAttr.name === selAttr.name &&
+                      varAttr.value === selAttr.value,
+                  ),
               );
               if (isMatch) {
                 variantId = variant._id;
@@ -114,24 +151,33 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
           console.warn(
             `Could not find matching variantId for product "${product.name}" with selection:`,
             currentSelection,
-            "Available variants:", product.variants.map(v => ({ _id: (v as Variant)._id, name: (v as Variant).name, attributes: (v as Variant).attributes }))
+            "Available variants:",
+            product.variants.map((v) => ({
+              _id: (v as Variant)._id,
+              name: (v as Variant).name,
+              attributes: (v as Variant).attributes,
+            })),
           );
           return line;
         }
 
         try {
-          const artId = (line.item.art && '_id' in line.item.art) ? line.item.art._id : undefined;
+          const artId =
+            line.item.art && "_id" in line.item.art
+              ? line.item.art._id
+              : undefined;
 
-          const [_originalApiPrice, userSpecificPrice] = await fetchVariantPrice(
-            String(variantId),
-            String(product._id),
-            artId?.toString()
-          );
+          const [_originalApiPrice, userSpecificPrice] =
+            await fetchVariantPrice(
+              String(variantId),
+              String(product._id),
+              artId?.toString(),
+            );
           const newPriceToUse = userSpecificPrice;
 
           if (Number(line.item.price) !== newPriceToUse) {
             console.log(
-              `Price update for ${product.name} (Variant: ${variantId}): OLD ${line.item.price} -> NEW ${newPriceToUse}`
+              `Price update for ${product.name} (Variant: ${variantId}): OLD ${line.item.price} -> NEW ${newPriceToUse}`,
             );
             pricesActuallyChanged = true;
             return {
@@ -146,7 +192,7 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
         } catch (error) {
           console.error(
             `Error fetching/processing price for product ${product.name}, variant ${variantId}:`,
-            error
+            error,
           );
           return line; // Return original line on error to prevent cart corruption
         }
@@ -167,18 +213,24 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
     updatePricesForCurrentUser();
   }, [user, cart.lines, setCart, calculateCartTotals]); // Added cart.lines to dependencies
 
-  const addOrUpdateItemInCart = async (item: Item, quantity: number = 1, lineId?: string) => {
+  const addOrUpdateItemInCart = async (
+    item: Item,
+    quantity: number = 1,
+    lineId?: string,
+  ) => {
     try {
       const lineDiscount = 0; // Placeholder as per original: await fetchLineDiscount(item, quantity);
 
       const isSameSelection = (
         sel1: { name: string; value: string }[] = [],
-        sel2: { name: string; value: string }[] = []
+        sel2: { name: string; value: string }[] = [],
       ): boolean => {
         if (!sel1 && !sel2) return true;
         if (!sel1 || !sel2) return false;
         if (sel1.length !== sel2.length) return false;
-        return sel1.every(s1 => sel2.some(s2 => s1.name === s2.name && s1.value === s2.value));
+        return sel1.every((s1) =>
+          sel2.some((s2) => s1.name === s2.name && s1.value === s2.value),
+        );
       };
 
       let updatedLines = [...cart.lines];
@@ -187,7 +239,9 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
       // For immediate price correctness upon adding, fetchVariantPrice could also be called here.
 
       if (lineId) {
-        const existingLineIndex = updatedLines.findIndex((line) => line.id === lineId);
+        const existingLineIndex = updatedLines.findIndex(
+          (line) => line.id === lineId,
+        );
         if (existingLineIndex !== -1) {
           const existingLine = updatedLines[existingLineIndex];
           const newQuantity = quantity; // Use the passed quantity for update operations
@@ -199,7 +253,11 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
           const discountOnItemToUpdate = Number(item.discount) || 0;
           const combinedLineDiscount = existingLine.discount + lineDiscount; // Assuming line.discount is per-unit
 
-          const updatedSubtotal = (priceOfItemToUpdate - discountOnItemToUpdate - combinedLineDiscount) * newQuantity;
+          const updatedSubtotal =
+            (priceOfItemToUpdate -
+              discountOnItemToUpdate -
+              combinedLineDiscount) *
+            newQuantity;
 
           updatedLines[existingLineIndex] = {
             ...existingLine,
@@ -209,13 +267,19 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
             subtotal: updatedSubtotal,
           };
         } else {
-          console.warn(`Line with specified lineId "${lineId}" not found. Item not updated.`);
+          console.warn(
+            `Line with specified lineId "${lineId}" not found. Item not updated.`,
+          );
         }
       } else {
-        const existingLineIndex = updatedLines.findIndex((line) =>
-          line.item.product?._id === item.product?._id &&
-          line.item.art?.artId === item.art?.artId &&
-          isSameSelection(line.item.product?.selection as VariantAttribute[], item.product?.selection as VariantAttribute[])
+        const existingLineIndex = updatedLines.findIndex(
+          (line) =>
+            line.item.product?._id === item.product?._id &&
+            line.item.art?.artId === item.art?.artId &&
+            isSameSelection(
+              line.item.product?.selection as VariantAttribute[],
+              item.product?.selection as VariantAttribute[],
+            ),
         );
         if (existingLineIndex !== -1) {
           const existingLine = updatedLines[existingLineIndex];
@@ -223,11 +287,16 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
           // Price from existing line (should be user-specific if effect ran)
           const currentItemPrice = Number(existingLine.item.price);
           // Product discount on existing item (potentially already factored into item.price by effect)
-          const currentItemProductDiscount = Number(existingLine.item.discount) || 0;
+          const currentItemProductDiscount =
+            Number(existingLine.item.discount) || 0;
           const combinedLineDiscount = existingLine.discount + lineDiscount;
 
           // Using original calculation logic here which subtracts item.discount from item.price
-          const updatedSubtotal = (currentItemPrice - currentItemProductDiscount - combinedLineDiscount) * updatedQuantity;
+          const updatedSubtotal =
+            (currentItemPrice -
+              currentItemProductDiscount -
+              combinedLineDiscount) *
+            updatedQuantity;
 
           updatedLines[existingLineIndex] = {
             ...existingLine,
@@ -238,7 +307,8 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
         } else {
           const newItemPrice = Number(item.price);
           const newItemProductDiscount = Number(item.discount) || 0;
-          const subtotalForNewLine = (newItemPrice - newItemProductDiscount - lineDiscount) * quantity;
+          const subtotalForNewLine =
+            (newItemPrice - newItemProductDiscount - lineDiscount) * quantity;
 
           const newLine: CartLine = {
             id: uuidv4(),
@@ -254,13 +324,13 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
       const totals = calculateCartTotals(updatedLines);
       setCart({ lines: updatedLines, ...totals });
     } catch (error) {
-      console.error('Error adding or updating item in cart:', error);
+      console.error("Error adding or updating item in cart:", error);
     }
   };
 
   const updateCartLine = async (
     lineId: string,
-    updates: Partial<Pick<CartLine, 'quantity' | 'discount' | 'subtotal'>>
+    updates: Partial<Pick<CartLine, "quantity" | "discount" | "subtotal">>,
   ) => {
     try {
       const updatedLines = cart.lines.map((line) => {
@@ -268,11 +338,20 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
           const currentItemPrice = Number(line.item.price); // Should be user-specific
           const currentItemProductDiscount = Number(line.item.discount) || 0;
 
-          const updatedQuantity = updates.quantity !== undefined ? updates.quantity : line.quantity;
-          const updatedLineDiscount = updates.discount !== undefined ? updates.discount : line.discount;
+          const updatedQuantity =
+            updates.quantity !== undefined ? updates.quantity : line.quantity;
+          const updatedLineDiscount =
+            updates.discount !== undefined ? updates.discount : line.discount;
 
-          const recalculatedSubtotal = (currentItemPrice - currentItemProductDiscount - updatedLineDiscount) * updatedQuantity;
-          const newSubtotal = updates.subtotal !== undefined ? updates.subtotal : recalculatedSubtotal;
+          const recalculatedSubtotal =
+            (currentItemPrice -
+              currentItemProductDiscount -
+              updatedLineDiscount) *
+            updatedQuantity;
+          const newSubtotal =
+            updates.subtotal !== undefined
+              ? updates.subtotal
+              : recalculatedSubtotal;
 
           return {
             ...line,
@@ -287,17 +366,19 @@ export const CartProvider: React.FC<MyComponentProps> = ({ children }) => {
       const totals = calculateCartTotals(updatedLines);
       setCart({ lines: updatedLines, ...totals });
     } catch (error) {
-      console.error('Error updating cart line:', error);
+      console.error("Error updating cart line:", error);
     }
   };
 
   const deleteLineInCart = async (lineToDelete: CartLine) => {
     try {
-      const updatedLines = cart.lines.filter((cartLine) => cartLine.id !== lineToDelete.id);
+      const updatedLines = cart.lines.filter(
+        (cartLine) => cartLine.id !== lineToDelete.id,
+      );
       const totals = calculateCartTotals(updatedLines);
       setCart({ lines: updatedLines, ...totals });
     } catch (error) {
-      console.error('Error deleting item from cart:', error);
+      console.error("Error deleting item from cart:", error);
     }
   };
 

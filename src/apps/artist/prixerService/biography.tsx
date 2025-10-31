@@ -1,25 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { useTheme } from '@mui/material/styles';
-import axios from 'axios';
-import Paper from '@mui/material/Paper';
-import Button from '@mui/material/Button';
-import Backdrop from '@mui/material/Backdrop';
-import CircularProgress from '@mui/material/CircularProgress';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import Grid2 from '@mui/material/Grid';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import EditIcon from '@mui/icons-material/Edit';
-import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
-import Snackbar from '@mui/material/Snackbar';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
-import Tooltip from '@mui/material/Tooltip';
-import { Slider } from '@mui/material';
-import { useStyles } from './biography.styles';
-import { getUrlParams } from '@utils/util';
+import React, { useState, useEffect } from "react";
+import { useTheme } from "@mui/material/styles";
+import axios from "axios";
+import Paper from "@mui/material/Paper";
+import Button from "@mui/material/Button";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
+import Grid2 from "@mui/material/Grid";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import EditIcon from "@mui/icons-material/Edit";
+import HighlightOffOutlinedIcon from "@mui/icons-material/HighlightOffOutlined";
+import Snackbar from "@mui/material/Snackbar";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import Tooltip from "@mui/material/Tooltip";
+import { Slider } from "@mui/material";
+import { useStyles } from "./biography.styles";
+import { getUrlParams } from "@utils/util";
 
 interface BiographyProps {
   prixerUsername: string;
@@ -31,7 +31,12 @@ interface BioData {
 }
 
 const RenderHTML: React.FC<{ htmlString: string }> = ({ htmlString }) => {
-  return <div dangerouslySetInnerHTML={{ __html: htmlString }} style={{ margin: 10 }} />;
+  return (
+    <div
+      dangerouslySetInnerHTML={{ __html: htmlString }}
+      style={{ margin: 10 }}
+    />
+  );
 };
 
 export default function Biography(props: BiographyProps) {
@@ -40,26 +45,30 @@ export default function Biography(props: BiographyProps) {
   const theme = useTheme();
   const [snackBar, setSnackBar] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [snackBarMessage, setSnackBarMessage] = useState<string>('');
+  const [snackBarMessage, setSnackBarMessage] = useState<string>("");
   const globalParams = getUrlParams();
   const entries = globalParams.entries();
   const firstEntry = entries.next().value as [string, string];
-  const [key, value] = firstEntry || ['', ''];
-  const [data, setData] = useState<BioData>({ biography: '' });
- const [openEdit, setOpenEdit] = useState<boolean>(false);
+  const [key, value] = firstEntry || ["", ""];
+  const [data, setData] = useState<BioData>({ biography: "" });
+  const [openEdit, setOpenEdit] = useState<boolean>(false);
 
-  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
-  const isTab = useMediaQuery(theme.breakpoints.up('xs'));
-  const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  const isTab = useMediaQuery(theme.breakpoints.up("xs"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
   const [disableButton, setDisableButton] = useState(false);
   const [images, setImages] = useState<string[]>([]); // Imágenes visualizadas
   const [newImg, setNewImg] = useState<File[]>([]);
 
   const getBio = async () => {
     setBackdrop(true);
-    const base_url = window.location.pathname.includes('/org=')
-      ? import.meta.env.VITE_BACKEND_URL + '/organization/getBio/' + props.prixerUsername
-      : import.meta.env.VITE_BACKEND_URL + '/prixer/getBio/' + props.prixerUsername;
+    const base_url = window.location.pathname.includes("/org=")
+      ? import.meta.env.VITE_BACKEND_URL +
+        "/organization/getBio/" +
+        props.prixerUsername
+      : import.meta.env.VITE_BACKEND_URL +
+        "/prixer/getBio/" +
+        props.prixerUsername;
     await axios
       .get(base_url)
       .then((response) => {
@@ -81,34 +90,36 @@ export default function Biography(props: BiographyProps) {
     setLoading(true);
     setBackdrop(true);
     setSnackBar(true);
-    setSnackBarMessage('No cierres esta ventana mientras se sube tu biografía, por favor espera.');
+    setSnackBarMessage(
+      "No cierres esta ventana mientras se sube tu biografía, por favor espera.",
+    );
 
-    formData.append('biography', data.biography);
-    const tokenString = localStorage.getItem('token');
+    formData.append("biography", data.biography);
+    const tokenString = localStorage.getItem("token");
     if (tokenString) {
       const token = JSON.parse(tokenString);
-      formData.append('prixerId', token.prixerId);
+      formData.append("prixerId", token.prixerId);
     }
     if (data?.images && data.images.length > 0) {
       data.images.forEach((file: string | null) => {
         if (file !== null) {
-          formData.append('bioImages', file);
+          formData.append("bioImages", file);
         }
       });
     }
     if (newImg.length > 0) {
-      newImg.forEach((file: File) => formData.append('newBioImages', file));
+      newImg.forEach((file: File) => formData.append("newBioImages", file));
     }
-    const espc_url = key.includes('org') ? '/organization' : '/prixer';
-    let ID = '';
+    const espc_url = key.includes("org") ? "/organization" : "/prixer";
+    let ID = "";
     if (tokenString) {
       const token = JSON.parse(tokenString);
-      ID = key.includes('org') ? token.orgId : token.prixerId;
+      ID = key.includes("org") ? token.orgId : token.prixerId;
     }
     const base_url = `${import.meta.env.VITE_BACKEND_URL}${espc_url}/updateBio/${ID}`;
     try {
       const petition = await axios.put(base_url, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        headers: { "Content-Type": "multipart/form-data" },
       });
       if (petition.data.success) {
         setBackdrop(false);
@@ -120,13 +131,13 @@ export default function Biography(props: BiographyProps) {
         getBio();
       } else {
         setSnackBarMessage(
-          'Por favor vuelve a intentarlo, puede que exista algún inconveniente de conexión. Si aún no lo has hecho por favor inicia sesión.'
+          "Por favor vuelve a intentarlo, puede que exista algún inconveniente de conexión. Si aún no lo has hecho por favor inicia sesión.",
         );
         setSnackBar(true);
       }
     } catch (error) {
       console.log(error);
-      setSnackBarMessage('Error al actualizar la biografía.');
+      setSnackBarMessage("Error al actualizar la biografía.");
       setSnackBar(true);
     }
     setLoading(false);
@@ -148,7 +159,7 @@ export default function Biography(props: BiographyProps) {
     e.preventDefault();
     if (images.length === 4) {
       setSnackBar(true);
-      setSnackBarMessage('Has alcanzado el máximo de imágenes (4).');
+      setSnackBarMessage("Has alcanzado el máximo de imágenes (4).");
     } else {
       const file = e.target.files ? e.target.files[0] : null;
       if (file) {
@@ -159,9 +170,14 @@ export default function Biography(props: BiographyProps) {
     }
   };
 
-  const deleteImg = async (e: React.MouseEvent<HTMLButtonElement>, x: string) => {
+  const deleteImg = async (
+    e: React.MouseEvent<HTMLButtonElement>,
+    x: string,
+  ) => {
     e.preventDefault();
-    const filteredPrev = data?.images?.filter((prev: string | null) => prev !== null && prev !== x);
+    const filteredPrev = data?.images?.filter(
+      (prev: string | null) => prev !== null && prev !== x,
+    );
     setData({ ...data, images: filteredPrev });
     const filteredImg = images.filter((img: string) => img !== x);
     setImages(filteredImg);
@@ -208,9 +224,9 @@ export default function Biography(props: BiographyProps) {
         className={className}
         style={{
           ...style,
-          display: 'block',
-          background: 'silver',
-          paddingTop: '1px',
+          display: "block",
+          background: "silver",
+          paddingTop: "1px",
           borderRadius: 50,
         }}
         onClick={onClick}
@@ -225,16 +241,15 @@ export default function Biography(props: BiographyProps) {
         className={className}
         style={{
           ...style,
-          display: 'block',
-          background: 'silver',
+          display: "block",
+          background: "silver",
           borderRadius: 50,
-          paddingTop: '1px',
+          paddingTop: "1px",
         }}
         onClick={onClick}
       />
     );
   }
-
 
   const settings = {
     slidesToShow:
@@ -275,14 +290,14 @@ export default function Biography(props: BiographyProps) {
           <CircularProgress color="inherit" />
         </Backdrop>
       </div>
-      <Grid2 container style={{ justifyContent: 'center', marginBottom: 20 }}>
+      <Grid2 container style={{ justifyContent: "center", marginBottom: 20 }}>
         {openEdit ? (
           <div
             style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              width: '100%',
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              width: "100%",
               marginBottom: 20,
             }}
           >
@@ -290,22 +305,22 @@ export default function Biography(props: BiographyProps) {
               className={classes.paper}
               style={{
                 minHeight: 160,
-                width: isDesktop ? '50%' : '100%',
-                backgroundColor: 'gainsboro',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexDirection: 'column',
+                width: isDesktop ? "50%" : "100%",
+                backgroundColor: "gainsboro",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexDirection: "column",
               }}
               elevation={3}
             >
               <div
                 style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  position: 'relative',
-                  width: '90%',
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  position: "relative",
+                  width: "90%",
                 }}
               >
                 {images.length > 0 ? (
@@ -315,16 +330,16 @@ export default function Biography(props: BiographyProps) {
                         key={i}
                         style={{
                           borderRadius: 40,
-                          display: 'flex',
-                          flexDirection: 'column',
-                          width: '80%',
+                          display: "flex",
+                          flexDirection: "column",
+                          width: "80%",
                         }}
                       >
                         <div
                           style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
                           }}
                         >
                           <IconButton
@@ -337,8 +352,8 @@ export default function Biography(props: BiographyProps) {
                           </IconButton>
                           <img
                             style={{
-                              width: '90%',
-                              objectFit: 'cover',
+                              width: "90%",
+                              objectFit: "cover",
                               borderRadius: 10,
                             }}
                             src={img}
@@ -352,8 +367,8 @@ export default function Biography(props: BiographyProps) {
                   <Typography
                     variant="h4"
                     style={{
-                      color: '#404e5c',
-                      textAlign: 'center',
+                      color: "#404e5c",
+                      textAlign: "center",
                     }}
                     fontWeight="bold"
                   >
@@ -363,7 +378,7 @@ export default function Biography(props: BiographyProps) {
                 <Button
                   className={classes.buttonImgLoader}
                   size="medium"
-                  style={{ display: 'flex', marginTop: 15 }}
+                  style={{ display: "flex", marginTop: 15 }}
                   component="label"
                 >
                   <input
@@ -384,38 +399,44 @@ export default function Biography(props: BiographyProps) {
                 marginBottom: 10,
                 marginTop: 15,
                 maxWidth: 1100,
-                width: isDesktop ? '50%' : '100%',
+                width: isDesktop ? "50%" : "100%",
                 borderRadius: 30,
               }}
               modules={{
                 toolbar: [
                   [{ header: [1, 2, 3, 4, 5, 6, false] }],
-                  ['bold', 'italic', 'underline', 'strike'],
+                  ["bold", "italic", "underline", "strike"],
                   [{ align: [] }],
-                  [{ list: 'ordered' }, { list: 'bullet' }],
+                  [{ list: "ordered" }, { list: "bullet" }],
                 ],
               }}
               value={data.biography}
               onChange={handleEditorChange}
               placeholder="Escribe tu biografía aquí..."
             />
-            <Button color="primary" size="large" onClick={updateBio} disabled={disableButton}>
+            <Button
+              color="primary"
+              size="large"
+              onClick={updateBio}
+              disabled={disableButton}
+            >
               Guardar
             </Button>
           </div>
         ) : data.biography !== undefined &&
-          localStorage.getItem('token') &&
-          JSON.parse(localStorage.getItem('token') as string)?.username === props.prixerUsername ? (
+          localStorage.getItem("token") &&
+          JSON.parse(localStorage.getItem("token") as string)?.username ===
+            props.prixerUsername ? (
           <Paper
             elevation={3}
             className={classes.paper}
-            style={{ width: isDesktop ? '50%' : '100%' }}
+            style={{ width: isDesktop ? "50%" : "100%" }}
           >
             <div
               style={{
-                display: 'flex',
-                justifyContent: 'end',
-                width: '100%',
+                display: "flex",
+                justifyContent: "end",
+                width: "100%",
               }}
             >
               <Tooltip title="Editar biografía">
@@ -431,11 +452,11 @@ export default function Biography(props: BiographyProps) {
             {data.images && data.images.length > 0 && (
               <div
                 style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  position: 'relative',
-                  width: '100%',
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  position: "relative",
+                  width: "100%",
                   marginTop: 20,
                 }}
               >
@@ -448,23 +469,23 @@ export default function Biography(props: BiographyProps) {
                           key={i}
                           style={{
                             borderRadius: 40,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            height: '100%',
-                            width: '90%',
+                            display: "flex",
+                            flexDirection: "column",
+                            height: "100%",
+                            width: "90%",
                           }}
                         >
                           <div
                             style={{
-                              display: 'flex',
-                              flexDirection: 'column',
-                              alignItems: 'center',
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "center",
                             }}
                           >
                             <img
                               style={{
-                                width: '90%',
-                                objectFit: 'cover',
+                                width: "90%",
+                                objectFit: "cover",
                                 borderRadius: 10,
                               }}
                               src={img}
@@ -472,19 +493,20 @@ export default function Biography(props: BiographyProps) {
                             />
                           </div>
                         </div>
-                      )
+                      ),
                   )}
                 </Slider>
               </div>
             )}
-            <div className="ql-editor" style={{ height: 'auto' }}>
+            <div className="ql-editor" style={{ height: "auto" }}>
               <RenderHTML htmlString={data.biography} />
             </div>
           </Paper>
         ) : data.biography === undefined &&
-          localStorage.getItem('token') &&
-          JSON.parse(localStorage.getItem('token') as string)?.username === props.prixerUsername ? (
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
+          localStorage.getItem("token") &&
+          JSON.parse(localStorage.getItem("token") as string)?.username ===
+            props.prixerUsername ? (
+          <div style={{ display: "flex", flexDirection: "column" }}>
             <Typography
               variant="h4"
               color="secondary"
@@ -495,11 +517,7 @@ export default function Biography(props: BiographyProps) {
             >
               No has publicado tu biografía aún.
             </Typography>
-            <Button
-              color="primary"
-              size="large"
-              onClick={() => changeState()}
-            >
+            <Button color="primary" size="large" onClick={() => changeState()}>
               Crear ahora
             </Button>
           </div>
@@ -507,20 +525,19 @@ export default function Biography(props: BiographyProps) {
           <Paper
             elevation={3}
             className={classes.paper}
-            style={{ width: isDesktop ? '50%' : '100%' }}
+            style={{ width: isDesktop ? "50%" : "100%" }}
           >
             {data.images && data.images.length > 0 && (
               <div
                 style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  position: 'relative',
-                  width: '92%',
-                  marginLeft: '4%',
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  position: "relative",
+                  width: "92%",
+                  marginLeft: "4%",
                   marginTop: 20,
                   maxHeight: 200,
-
                 }}
               >
                 <Slider {...setting2}>
@@ -532,28 +549,26 @@ export default function Biography(props: BiographyProps) {
                           key={i}
                           style={{
                             borderRadius: 40,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            height: '100%',
-                            width: '100%',
+                            display: "flex",
+                            flexDirection: "column",
+                            height: "100%",
+                            width: "100%",
                             maxHeight: 200,
-
                           }}
                         >
                           <div
                             style={{
-                              display: 'flex',
-                              flexDirection: 'column',
-                              alignItems: 'center',
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "center",
                               maxHeight: 200,
-
                             }}
                           >
                             <img
                               style={{
-                                width: '100%',
+                                width: "100%",
                                 maxHeight: 200,
-                                objectFit: 'contain',
+                                objectFit: "contain",
                                 borderRadius: 10,
                               }}
                               src={img}
@@ -561,12 +576,12 @@ export default function Biography(props: BiographyProps) {
                             />
                           </div>
                         </div>
-                      )
+                      ),
                   )}
                 </Slider>
               </div>
             )}
-            <div className="ql-editor" style={{ height: 'auto' }}>
+            <div className="ql-editor" style={{ height: "auto" }}>
               <RenderHTML htmlString={data.biography} />
             </div>
           </Paper>

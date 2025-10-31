@@ -1,5 +1,5 @@
-import React from 'react';
-import styles from '../Styles.module.scss';
+import React from "react";
+import styles from "../Styles.module.scss";
 
 interface ControlsProps {
   prevSlide: () => void;
@@ -9,7 +9,7 @@ interface ControlsProps {
 export const Controls: React.FC<ControlsProps> = ({ prevSlide, nextSlide }) => (
   <>
     <button
-      className={`${styles['slider-arrow']} ${styles['slider-arrow-left']}`}
+      className={`${styles["slider-arrow"]} ${styles["slider-arrow-left"]}`}
       onClick={prevSlide}
     >
       <svg
@@ -27,7 +27,7 @@ export const Controls: React.FC<ControlsProps> = ({ prevSlide, nextSlide }) => (
       </svg>
     </button>
     <button
-      className={`${styles['slider-arrow']} ${styles['slider-arrow-right']}`}
+      className={`${styles["slider-arrow"]} ${styles["slider-arrow-right"]}`}
       onClick={nextSlide}
     >
       <svg

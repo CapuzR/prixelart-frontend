@@ -40,9 +40,9 @@ export type UserOptions = Pick<
 >;
 
 export const USER_ROLE_OPTIONS = [
-  { value: 'consumer', label: 'Consumidor' },
-  { value: 'prixer', label: 'Prixer' },
-  { value: 'organization', label: 'Organización' },
+  { value: "consumer", label: "Consumidor" },
+  { value: "prixer", label: "Prixer" },
+  { value: "organization", label: "Organización" },
 ] as const;
 
-export type UserRoles = typeof USER_ROLE_OPTIONS[number]['value'];
+export type UserRoles = (typeof USER_ROLE_OPTIONS)[number]["value"];

@@ -3,13 +3,13 @@ import { ObjectId } from "mongodb";
 export interface PickedProduct
   extends Pick<
     Product,
-    | '_id'
-    | 'name'
-    | 'productionTime'
-    | 'sources'
-    | 'variants'
-    | 'mockUp'
-    | 'sources'
+    | "_id"
+    | "name"
+    | "productionTime"
+    | "sources"
+    | "variants"
+    | "mockUp"
+    | "sources"
   > {
   selection?: VariantAttribute[];
 }

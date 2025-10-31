@@ -1,22 +1,22 @@
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
-import ConsumerRoutes from "apps/consumer/consumer.routes"
-import AppBar from "@components/appBar"
-import ArtistRoutes from "@apps/artist/artist.routes"
-import { Toolbar } from "@mui/material"
+import ConsumerRoutes from "apps/consumer/consumer.routes";
+import AppBar from "@components/appBar";
+import ArtistRoutes from "@apps/artist/artist.routes";
+import { Toolbar } from "@mui/material";
 import {
   Outlet,
   Route,
   Routes as RouterRoutes,
   useLocation,
-} from "react-router-dom"
-import AdminLayout from "@apps/admin/components/AdminLayout"
-import AdminLogin from "@apps/admin/login"
-import AdminNestedRoutes from "@apps/admin/admin.routes"
-import { isAuth } from "@api/utils.api"
-import { useUser } from "@context/GlobalContext"
-import { User } from "types/user.types"
-import AnalyticsTracker from '@components/AnalyticsTracker';
+} from "react-router-dom";
+import AdminLayout from "@apps/admin/components/AdminLayout";
+import AdminLogin from "@apps/admin/login";
+import AdminNestedRoutes from "@apps/admin/admin.routes";
+import { isAuth } from "@api/utils.api";
+import { useUser } from "@context/GlobalContext";
+import { User } from "types/user.types";
+import AnalyticsTracker from "@components/AnalyticsTracker";
 
 const MainLayout = () => {
   const location = useLocation();
@@ -34,7 +34,7 @@ const MainLayout = () => {
           setUser(null);
         }
       } catch (error) {
-        console.error('Error checking authentication:', error);
+        console.error("Error checking authentication:", error);
       }
     };
 
@@ -58,10 +58,10 @@ const Routes = () => {
       event.preventDefault();
     };
 
-    document.addEventListener('contextmenu', disableRightClick);
+    document.addEventListener("contextmenu", disableRightClick);
 
     return () => {
-      document.removeEventListener('contextmenu', disableRightClick);
+      document.removeEventListener("contextmenu", disableRightClick);
     };
   }, []);
 
@@ -76,12 +76,12 @@ const Routes = () => {
           <Route path="*" element={<AdminNestedRoutes />} />
         </Route>
 
-      <Route path="/*" element={<MainLayout />}>
-        {/* <Route path="prixer/*" element={<ArtistRoutes />} /> */}
-        <Route path="*" element={<ConsumerRoutes />} />
-      </Route>
-    </RouterRoutes>
+        <Route path="/*" element={<MainLayout />}>
+          {/* <Route path="prixer/*" element={<ArtistRoutes />} /> */}
+          <Route path="*" element={<ConsumerRoutes />} />
+        </Route>
+      </RouterRoutes>
     </>
-  )
-}
-export default Routes
+  );
+};
+export default Routes;

@@ -1,34 +1,34 @@
-import React, { JSX } from "react"
-import styles from "./styles.module.scss"
+import React, { JSX } from "react";
+import styles from "./styles.module.scss";
 
 interface BaseOverlayProps {
-  children: React.ReactNode
-  coverTarget?: "children" | "parent"
+  children: React.ReactNode;
+  coverTarget?: "children" | "parent";
 }
 
 type OnlyLeftProps = {
-  onClickLeft: () => void
-  iconLeft: JSX.Element
-  onClickRight?: never
-  iconRight?: never
-}
+  onClickLeft: () => void;
+  iconLeft: JSX.Element;
+  onClickRight?: never;
+  iconRight?: never;
+};
 
 type OnlyRightProps = {
-  onClickRight: () => void
-  iconRight: JSX.Element
-  onClickLeft?: never
-  iconLeft?: never
-}
+  onClickRight: () => void;
+  iconRight: JSX.Element;
+  onClickLeft?: never;
+  iconLeft?: never;
+};
 
 type BothActionsProps = {
-  onClickLeft: () => void
-  iconLeft: JSX.Element
-  onClickRight: () => void
-  iconRight: JSX.Element
-}
+  onClickLeft: () => void;
+  iconLeft: JSX.Element;
+  onClickRight: () => void;
+  iconRight: JSX.Element;
+};
 
 type OverlayWithIconProps = BaseOverlayProps &
-  (OnlyLeftProps | OnlyRightProps | BothActionsProps)
+  (OnlyLeftProps | OnlyRightProps | BothActionsProps);
 
 const OverlayWithIcon: React.FC<OverlayWithIconProps> = ({
   children,
@@ -40,7 +40,11 @@ const OverlayWithIcon: React.FC<OverlayWithIconProps> = ({
 }) => {
   return (
     <div
-      style={{ display: "flex", alignContent: 'center', backgroundColor: 'gainsboro'}}
+      style={{
+        display: "flex",
+        alignContent: "center",
+        backgroundColor: "gainsboro",
+      }}
       className={`${styles["hover-overlay-container"]} ${
         coverTarget === "parent" ? styles["cover-parent"] : ""
       }`}
@@ -68,7 +72,7 @@ const OverlayWithIcon: React.FC<OverlayWithIconProps> = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default OverlayWithIcon
+export default OverlayWithIcon;

@@ -1,12 +1,13 @@
-import React from 'react';
-import { makeStyles } from '@mui/styles';
-import { useState, useCallback } from 'react';
-import Cropper from 'react-easy-crop';
+import React from "react";
+import { makeStyles } from "@mui/styles";
+import { useState, useCallback } from "react";
+import Cropper from "react-easy-crop";
 
 // const useStyles = makeStyles((theme) => ({}));
 
 export default function EasyCropper(props) {
-  const { art, ar, croppedArt, setCroppedArt, index, setCroppedAreaPixels } = props;
+  const { art, ar, croppedArt, setCroppedArt, index, setCroppedAreaPixels } =
+    props;
   // const classes = useStyles();
   const [aspect, setAspect] = useState(croppedArt[index].aspect);
   const [crop, setCrop] = useState(croppedArt[index].crop);

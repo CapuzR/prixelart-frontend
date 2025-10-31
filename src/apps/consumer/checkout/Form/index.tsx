@@ -6,7 +6,10 @@ import FormSection from "@apps/consumer/checkout/Form/FormSection";
 import { getFormConfig } from "./formConfig";
 import { useFormContext } from "react-hook-form";
 import { DataLists, FormConfig } from "../../../../types/order.types";
-import { readAllActivePaymentMethods, fetchActiveShippingMethods } from "@api/order.api";
+import {
+  readAllActivePaymentMethods,
+  fetchActiveShippingMethods,
+} from "@api/order.api";
 import { fetchSellers } from "@api/admin.api";
 
 interface FormProps {
@@ -19,14 +22,19 @@ interface Country {
   states: { name: string }[];
 }
 
-const computeStatesFromCountry = (countries: Country[], countryName: string): string[] => {
+const computeStatesFromCountry = (
+  countries: Country[],
+  countryName: string,
+): string[] => {
   const countryObj = countries.find((country) => country.name === countryName);
   return countryObj ? countryObj.states.map((state) => state.name) : [];
 };
 
 function Form({ dataLists, setDataLists }: FormProps) {
   const { setValue, getValues, watch } = useFormContext<FormConfig>();
-  const [formConfig, setFormConfig] = useState<FormConfig>(getFormConfig(dataLists));
+  const [formConfig, setFormConfig] = useState<FormConfig>(
+    getFormConfig(dataLists),
+  );
   const state = watch();
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const lines = state.order?.lines;
@@ -45,7 +53,10 @@ function Form({ dataLists, setDataLists }: FormProps) {
 
   useEffect(() => {
     if (shippingCountry) {
-      const newStates = computeStatesFromCountry(dataLists.countries, shippingCountry);
+      const newStates = computeStatesFromCountry(
+        dataLists.countries,
+        shippingCountry,
+      );
       setFormConfig((prevConfig) => ({
         ...prevConfig,
         shipping: {
@@ -60,11 +71,18 @@ function Form({ dataLists, setDataLists }: FormProps) {
         },
       }));
       if (newStates.length > 0) {
-        const stateValue = shippingCountry === "Venezuela" ? "Miranda" : newStates[0];
+        const stateValue =
+          shippingCountry === "Venezuela" ? "Miranda" : newStates[0];
         setValue("shipping.state", stateValue);
       }
     }
-  }, [shippingCountry, dataLists.countries, setFormConfig, getValues, setValue]);
+  }, [
+    shippingCountry,
+    dataLists.countries,
+    setFormConfig,
+    getValues,
+    setValue,
+  ]);
 
   // Actualizar estados dependiendo del país (para facturación)
 
@@ -72,7 +90,10 @@ function Form({ dataLists, setDataLists }: FormProps) {
 
   useEffect(() => {
     if (billingCountry) {
-      const newStates = computeStatesFromCountry(dataLists.countries, billingCountry);
+      const newStates = computeStatesFromCountry(
+        dataLists.countries,
+        billingCountry,
+      );
       setFormConfig((prevConfig) => ({
         ...prevConfig,
         billing: {
@@ -87,7 +108,8 @@ function Form({ dataLists, setDataLists }: FormProps) {
         },
       }));
       if (newStates.length > 0) {
-        const stateValue = shippingCountry === "Venezuela" ? "Miranda" : newStates[0];
+        const stateValue =
+          shippingCountry === "Venezuela" ? "Miranda" : newStates[0];
         setValue("billing.state", stateValue);
       }
     }
@@ -178,7 +200,9 @@ function Form({ dataLists, setDataLists }: FormProps) {
           return newConfig;
         });
 
-        const estimatedDeliveryDate = getValues("order.shipping.estimatedDeliveryDate");
+        const estimatedDeliveryDate = getValues(
+          "order.shipping.estimatedDeliveryDate",
+        );
         if (!estimatedDeliveryDate) {
           const calculatedDate = calculateEstimatedDeliveryDate(lines);
           if (calculatedDate) {
@@ -192,7 +216,15 @@ function Form({ dataLists, setDataLists }: FormProps) {
 
     fetchData();
     // Added dataLists to the dependency array to ensure fetchData runs if initial dataLists changes
-  }, [lines, setValue, getValues, dataLists, setDataLists, shippingCountry, billingCountry]);
+  }, [
+    lines,
+    setValue,
+    getValues,
+    dataLists,
+    setDataLists,
+    shippingCountry,
+    billingCountry,
+  ]);
 
   const handleSectionToggle = (sectionKey: string) => {
     setActiveSection((prev) => (prev === sectionKey ? null : sectionKey));

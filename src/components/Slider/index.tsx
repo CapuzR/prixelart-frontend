@@ -1,20 +1,20 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Track } from './components/Track';
-import { Controls } from './components/Controls';
-import { helpers } from './helpers';
-import { config } from './config';
-import styles from './Styles.module.scss';
-import { Indicators } from './components/Indicators';
-import { UseIndicatorsType } from './interfaces';
+import React, { useEffect, useState, useRef } from "react";
+import { Track } from "./components/Track";
+import { Controls } from "./components/Controls";
+import { helpers } from "./helpers";
+import { config } from "./config";
+import styles from "./Styles.module.scss";
+import { Indicators } from "./components/Indicators";
+import { UseIndicatorsType } from "./interfaces";
 
 interface SliderProps {
   children: React.ReactNode;
   images: { url: string; width?: string; height?: string }[];
-  fitTo?: 'width' | 'height' | 'square' | 'variable';
+  fitTo?: "width" | "height" | "square" | "variable";
   useIndicators?: UseIndicatorsType;
   childConfig?: {
     qtyPerSlide: number;
-    spacing: 'sm' | 'md' | 'lg' | 'xl' | 'none';
+    spacing: "sm" | "md" | "lg" | "xl" | "none";
   };
   autoplay?: boolean;
   autoplaySpeed?: number;
@@ -26,13 +26,13 @@ interface SliderProps {
 export const Slider: React.FC<SliderProps> = ({
   children,
   images = [],
-  fitTo = 'square',
+  fitTo = "square",
   useIndicators = {
-    type: 'dots',
-    position: 'over',
-    color: { active: 'primary', inactive: 'tertiary' },
+    type: "dots",
+    position: "over",
+    color: { active: "primary", inactive: "tertiary" },
   },
-  childConfig = { qtyPerSlide: 1, spacing: 'none' },
+  childConfig = { qtyPerSlide: 1, spacing: "none" },
   autoplay = config.autoplay,
   autoplaySpeed = config.autoplaySpeed,
   infinite = config.infinite,
@@ -48,12 +48,24 @@ export const Slider: React.FC<SliderProps> = ({
 
   const nextSlide =
     images.length > childConfig.qtyPerSlide
-      ? helpers.nextSlide(currentIndex, images, setCurrentIndex, infinite, quantityPerSlide)
-      : () => { };
+      ? helpers.nextSlide(
+          currentIndex,
+          images,
+          setCurrentIndex,
+          infinite,
+          quantityPerSlide,
+        )
+      : () => {};
   const prevSlide =
     images.length > childConfig.qtyPerSlide
-      ? helpers.prevSlide(currentIndex, images, setCurrentIndex, infinite, quantityPerSlide)
-      : () => { };
+      ? helpers.prevSlide(
+          currentIndex,
+          images,
+          setCurrentIndex,
+          infinite,
+          quantityPerSlide,
+        )
+      : () => {};
 
   const goToSlide = (index: number) => setCurrentIndex(index);
 
@@ -66,17 +78,27 @@ export const Slider: React.FC<SliderProps> = ({
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
       };
     }
-  }, [currentIndex, autoplay, autoplaySpeed, images.length, childConfig.qtyPerSlide]);
+  }, [
+    currentIndex,
+    autoplay,
+    autoplaySpeed,
+    images.length,
+    childConfig.qtyPerSlide,
+  ]);
 
   return (
     <div
-      className={`${styles['custom-slider']}`}
+      className={`${styles["custom-slider"]}`}
       ref={sliderRef}
       onMouseEnter={
-        pauseOnHover ? () => timeoutRef.current && clearTimeout(timeoutRef.current) : undefined
+        pauseOnHover
+          ? () => timeoutRef.current && clearTimeout(timeoutRef.current)
+          : undefined
       }
       onMouseLeave={
-        pauseOnHover ? () => (timeoutRef.current = setTimeout(nextSlide, autoplaySpeed)) : undefined
+        pauseOnHover
+          ? () => (timeoutRef.current = setTimeout(nextSlide, autoplaySpeed))
+          : undefined
       }
     >
       <Track
@@ -84,7 +106,7 @@ export const Slider: React.FC<SliderProps> = ({
         speed={speed}
         qtyPerSlide={quantityPerSlide}
         spacing={childConfig.spacing}
-        dotsPosition={(useIndicators && useIndicators.position) || 'over'}
+        dotsPosition={(useIndicators && useIndicators.position) || "over"}
         trackFormatClass={trackFormatClass}
       >
         {children}
@@ -100,7 +122,7 @@ export const Slider: React.FC<SliderProps> = ({
               currentIndex={currentIndex}
               goToSlide={goToSlide}
               useIndicators={useIndicators}
-              itemsPerSlide={dotsPerSlide+1}
+              itemsPerSlide={dotsPerSlide + 1}
               totalImages={images.length}
             />
           )}

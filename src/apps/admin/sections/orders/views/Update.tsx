@@ -9,13 +9,13 @@ import React, {
   useMemo,
   useRef,
   forwardRef,
-} from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
-import favicon from '../../../../../images/favicon.png';
+} from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
+import favicon from "../../../../../images/favicon.png";
 
 // Hooks, Types, Context, API
-import { useSnackBar, usePrixerCreator, useUser } from 'context/GlobalContext'; // useLoading no se usa directamente aquí
+import { useSnackBar, usePrixerCreator, useUser } from "context/GlobalContext"; // useLoading no se usa directamente aquí
 import {
   Address,
   BasicInfo,
@@ -31,17 +31,21 @@ import {
   PaymentDetails,
   CustomImage,
   // Asumiendo que PaymentVoucher es un string (URL) en tu tipo Order
-} from '../../../../../types/order.types'; // Ajusta la ruta a tus tipos
+} from "../../../../../types/order.types"; // Ajusta la ruta a tus tipos
 import {
   fetchShippingMethods,
   getOrderById,
   readAllPaymentMethods,
   updateOrder,
-} from '@api/order.api'; // Ajusta la ruta a tu API
-import { fetchActiveProducts } from '@api/product.api';
-import { Product, Variant, VariantAttribute } from '../../../../../types/product.types';
-import { Art, PickedArt } from '../../../../../types/art.types';
-import { getArts } from '@api/art.api';
+} from "@api/order.api"; // Ajusta la ruta a tu API
+import { fetchActiveProducts } from "@api/product.api";
+import {
+  Product,
+  Variant,
+  VariantAttribute,
+} from "../../../../../types/product.types";
+import { Art, PickedArt } from "../../../../../types/art.types";
+import { getArts } from "@api/art.api";
 
 // MUI Components
 import {
@@ -90,10 +94,10 @@ import {
   TableContainer,
   TableHead,
   Modal,
-} from '@mui/material';
-import Grid2 from '@mui/material/Grid';
+} from "@mui/material";
+import Grid2 from "@mui/material/Grid";
 
-import { TransitionProps } from '@mui/material/transitions';
+import { TransitionProps } from "@mui/material/transitions";
 import {
   Timeline,
   TimelineConnector,
@@ -102,12 +106,12 @@ import {
   TimelineItem,
   TimelineOppositeContent,
   TimelineSeparator,
-} from '@mui/lab';
-import SaveIcon from '@mui/icons-material/Save';
-import CancelIcon from '@mui/icons-material/Cancel';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import InfoIcon from '@mui/icons-material/Info';
-import DeleteIcon from '@mui/icons-material/Delete';
+} from "@mui/lab";
+import SaveIcon from "@mui/icons-material/Save";
+import CancelIcon from "@mui/icons-material/Cancel";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import InfoIcon from "@mui/icons-material/Info";
+import DeleteIcon from "@mui/icons-material/Delete";
 import {
   CalendarToday,
   PersonOutline,
@@ -119,29 +123,34 @@ import {
   InfoOutlined,
   AddCircleOutline,
   PauseCircleFilled,
-} from '@mui/icons-material';
-import { Theme, useTheme } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
+} from "@mui/icons-material";
+import { Theme, useTheme } from "@mui/material";
+import { makeStyles } from "tss-react/mui";
 
-import * as tus from 'tus-js-client';
-import ReactCrop, { centerCrop, makeAspectCrop, Crop, PixelCrop } from 'react-image-crop';
-import 'react-image-crop/dist/ReactCrop.css';
-import { BACKEND_URL } from '@api/utils.api';
-import PhotoCameraBackIcon from '@mui/icons-material/PhotoCameraBack';
-import BrokenImageIcon from '@mui/icons-material/BrokenImage';
+import * as tus from "tus-js-client";
+import ReactCrop, {
+  centerCrop,
+  makeAspectCrop,
+  Crop,
+  PixelCrop,
+} from "react-image-crop";
+import "react-image-crop/dist/ReactCrop.css";
+import { BACKEND_URL } from "@api/utils.api";
+import PhotoCameraBackIcon from "@mui/icons-material/PhotoCameraBack";
+import BrokenImageIcon from "@mui/icons-material/BrokenImage";
 
-import { getCurrentOrderStatus } from '@apps/consumer/trackOrder/utils';
-import EditableAddressForm from './components/EditableAddressForm';
+import { getCurrentOrderStatus } from "@apps/consumer/trackOrder/utils";
+import EditableAddressForm from "./components/EditableAddressForm";
 
-import { fetchSellers, getPermissions } from '@api/admin.api';
-import { PermissionsV2 } from 'types/permissions.types';
+import { fetchSellers, getPermissions } from "@api/admin.api";
+import { PermissionsV2 } from "types/permissions.types";
 
-import dayjs, { Dayjs } from 'dayjs';
-import 'dayjs/locale/es';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import MDEditor from '@uiw/react-md-editor';
+import dayjs, { Dayjs } from "dayjs";
+import "dayjs/locale/es";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import MDEditor from "@uiw/react-md-editor";
 
 interface MethodOption {
   id: string;
@@ -195,137 +204,146 @@ const VOUCHER_IMAGE_ASPECT = 0;
 
 const useStyles = makeStyles()((theme: Theme) => {
   return {
-    appBar: { position: 'relative' },
+    appBar: { position: "relative" },
     title: { marginLeft: theme.spacing(2), flex: 1 },
     paper: {
       marginTop: theme.spacing(3),
       padding: theme.spacing(2),
-      [theme.breakpoints.up('sm')]: { padding: theme.spacing(3) },
+      [theme.breakpoints.up("sm")]: { padding: theme.spacing(3) },
     },
-    form: { width: '100%' },
+    form: { width: "100%" },
     imagePreviewItem: {
-      width: '100%',
+      width: "100%",
       // paddingTop: "75%",
-      position: 'relative',
-      border: '1px solid gainsboro',
-      borderColor: 'divider',
+      position: "relative",
+      border: "1px solid gainsboro",
+      borderColor: "divider",
       borderRadius: 8,
-      overflow: 'hidden',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '16px',
+      overflow: "hidden",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "16px",
 
-      '& img': {
+      "& img": {
         // position: "absolute",
         top: 0,
         left: 0,
-        width: '100%',
-        height: '100%',
-        objectFit: 'contain',
+        width: "100%",
+        height: "100%",
+        objectFit: "contain",
         // marginTop: 16,
       },
     },
     imageGridItem: {
-      width: 'calc(33.33% - 16px)',
+      width: "calc(33.33% - 16px)",
       minWidth: 100,
-      [theme.breakpoints.down('sm')]: {
-        width: 'calc(50% - 8px)',
+      [theme.breakpoints.down("sm")]: {
+        width: "calc(50% - 8px)",
       },
     },
   };
 });
 
 const getStatusChipProps = (
-  status?: OrderStatus
+  status?: OrderStatus,
 ): { label: string; color: any; icon?: React.ReactElement } => {
   const s = status ?? OrderStatus.Pending;
   switch (s) {
     case OrderStatus.Pending:
-      return { label: 'Por producir', color: 'secondary' };
+      return { label: "Por producir", color: "secondary" };
     case OrderStatus.Impression:
-      return { label: 'En impresión', color: 'info', icon: <CheckCircleIcon /> };
+      return {
+        label: "En impresión",
+        color: "info",
+        icon: <CheckCircleIcon />,
+      };
     case OrderStatus.Production:
       return {
-        label: 'En producción',
-        color: 'info',
+        label: "En producción",
+        color: "info",
         icon: <CheckCircleIcon />,
       };
     case OrderStatus.ReadyToShip:
       return {
-        label: 'Por entregar',
-        color: 'primary',
+        label: "Por entregar",
+        color: "primary",
         icon: <LocalShippingOutlined />,
       };
     case OrderStatus.Delivered:
       return {
-        label: 'Entregado',
-        color: 'success',
+        label: "Entregado",
+        color: "success",
         icon: <LocalShippingOutlined />,
       };
     case OrderStatus.Finished:
       return {
-        label: 'Concretado',
-        color: 'success',
+        label: "Concretado",
+        color: "success",
         icon: <CheckCircleIcon />,
       };
     case OrderStatus.Paused:
       return {
-        label: 'Detenido',
-        color: 'warning',
+        label: "Detenido",
+        color: "warning",
         icon: <PauseCircleFilled />,
       };
     case OrderStatus.Canceled:
-      return { label: 'Anulado', color: 'error', icon: <CancelIcon /> };
+      return { label: "Anulado", color: "error", icon: <CancelIcon /> };
     default:
-      return { label: 'Desconocido', color: 'default' };
+      return { label: "Desconocido", color: "default" };
   }
 };
 
 const getPayStatusChipProps = (
-  status?: GlobalPaymentStatus
+  status?: GlobalPaymentStatus,
 ): { label: string; color: any; icon?: React.ReactElement } => {
   const s = status ?? GlobalPaymentStatus.Pending;
   switch (s) {
     case GlobalPaymentStatus.Pending:
-      return { label: 'Pendiente', color: 'secondary' };
+      return { label: "Pendiente", color: "secondary" };
     case GlobalPaymentStatus.Paid:
-      return { label: 'Pagado', color: 'success', icon: <CheckCircleIcon /> };
+      return { label: "Pagado", color: "success", icon: <CheckCircleIcon /> };
     case GlobalPaymentStatus.Credited:
       return {
-        label: 'Abonado',
-        color: 'info',
+        label: "Abonado",
+        color: "info",
         icon: <CheckCircleIcon />,
       };
     case GlobalPaymentStatus.Cancelled:
       return {
-        label: 'Cancelado',
-        color: 'primary',
+        label: "Cancelado",
+        color: "primary",
         icon: <CancelIcon />,
       };
     default:
-      return { label: 'Pendiente', color: 'default' };
+      return { label: "Pendiente", color: "default" };
   }
 };
 
-const getLatestStatus = (statusHistory?: [OrderStatus, Date][]): OrderStatus => {
+const getLatestStatus = (
+  statusHistory?: [OrderStatus, Date][],
+): OrderStatus => {
   if (!statusHistory || statusHistory.length === 0) return OrderStatus.Pending;
   return statusHistory[statusHistory.length - 1][0];
 };
 
-const formatDate = (date: Date | string | undefined, includeTime: boolean = true): string => {
-  if (!date) return 'N/A';
+const formatDate = (
+  date: Date | string | undefined,
+  includeTime: boolean = true,
+): string => {
+  if (!date) return "N/A";
   const options: Intl.DateTimeFormatOptions = {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   };
   if (includeTime) {
-    options.hour = '2-digit';
-    options.minute = '2-digit';
+    options.hour = "2-digit";
+    options.minute = "2-digit";
   }
-  return new Date(date).toLocaleDateString('es-ES', options);
+  return new Date(date).toLocaleDateString("es-ES", options);
 };
 
 async function canvasPreview(
@@ -333,11 +351,11 @@ async function canvasPreview(
   canvas: HTMLCanvasElement,
   crop: PixelCrop,
   scale = 1,
-  rotate = 0
+  rotate = 0,
 ) {
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext("2d");
   if (!ctx) {
-    throw new Error('No 2d context');
+    throw new Error("No 2d context");
   }
   const scaleX = image.naturalWidth / image.width;
   const scaleY = image.naturalHeight / image.height;
@@ -345,7 +363,7 @@ async function canvasPreview(
   canvas.width = Math.floor(crop.width * scaleX * pixelRatio);
   canvas.height = Math.floor(crop.height * scaleY * pixelRatio);
   ctx.scale(pixelRatio, pixelRatio);
-  ctx.imageSmoothingQuality = 'high';
+  ctx.imageSmoothingQuality = "high";
   const cropX = crop.x * scaleX;
   const cropY = crop.y * scaleY;
   const rotateRads = (rotate * Math.PI) / 180;
@@ -361,21 +379,25 @@ async function canvasPreview(
   ctx.restore();
 }
 
-function centerAspectCrop(mediaWidth: number, mediaHeight: number, aspect: number): Crop {
+function centerAspectCrop(
+  mediaWidth: number,
+  mediaHeight: number,
+  aspect: number,
+): Crop {
   if (aspect <= 0) {
-    return { unit: '%', width: 100, height: 100, x: 0, y: 0 };
+    return { unit: "%", width: 100, height: 100, x: 0, y: 0 };
   }
   return centerCrop(
-    makeAspectCrop({ unit: '%', width: 100 }, aspect, mediaWidth, mediaHeight),
+    makeAspectCrop({ unit: "%", width: 100 }, aspect, mediaWidth, mediaHeight),
     mediaWidth,
-    mediaHeight
+    mediaHeight,
   );
 }
 
 function a11yProps(index: number) {
   return {
     id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`,
   };
 }
 
@@ -419,17 +441,30 @@ export default function UpdateOrder() {
   const { classes } = useStyles();
 
   const [order, setOrder] = useState<Order | null>(null);
-  const [prevStatus, setPrevStatus] = useState<statusGroup>({ status: 0, payStatus: 0 });
-  const [observations, setObservations] = useState<string>('');
-  const [selectedShippingMethod, setSelectedShippingMethod] = useState<MethodOption | null>(null);
-  const [editableClientInfo, setEditableClientInfo] = useState<BasicInfo | null>(null);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<MethodOption | null>(null);
-  const [editableShippingAddress, setEditableShippingAddress] = useState<Address | null>(null);
-  const [editableBillingAddress, setEditableBillingAddress] = useState<Address | null>(null);
-  const [useShippingForBilling, setUseShippingForBilling] = useState<boolean>(true);
+  const [prevStatus, setPrevStatus] = useState<statusGroup>({
+    status: 0,
+    payStatus: 0,
+  });
+  const [observations, setObservations] = useState<string>("");
+  const [selectedShippingMethod, setSelectedShippingMethod] =
+    useState<MethodOption | null>(null);
+  const [editableClientInfo, setEditableClientInfo] =
+    useState<BasicInfo | null>(null);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] =
+    useState<MethodOption | null>(null);
+  const [editableShippingAddress, setEditableShippingAddress] =
+    useState<Address | null>(null);
+  const [editableBillingAddress, setEditableBillingAddress] =
+    useState<Address | null>(null);
+  const [useShippingForBilling, setUseShippingForBilling] =
+    useState<boolean>(true);
   const [sellers, setSellers] = useState<string[]>([]);
-  const [shippingMethodOptions, setShippingMethodOptions] = useState<MethodOption[]>([]);
-  const [paymentMethodOptions, setPaymentMethodOptions] = useState<MethodOption[]>([]);
+  const [shippingMethodOptions, setShippingMethodOptions] = useState<
+    MethodOption[]
+  >([]);
+  const [paymentMethodOptions, setPaymentMethodOptions] = useState<
+    MethodOption[]
+  >([]);
   const [prefDate, setPrefDate] = useState<Dayjs>(dayjs());
 
   const [prevPayments, setPrevPayments] = useState<Payment[]>([]);
@@ -440,21 +475,30 @@ export default function UpdateOrder() {
 
   const [productOptions, setProductOptions] = useState<ProductOption[]>([]);
   const [artOptions, setArtOptions] = useState<ArtOption[]>([]);
-  const [editableOrderLines, setEditableOrderLines] = useState<OrderLineFormState[]>([]);
-  const [displayTotals, setDisplayTotals] = useState<DisplayTotals | null>(null);
+  const [editableOrderLines, setEditableOrderLines] = useState<
+    OrderLineFormState[]
+  >([]);
+  const [displayTotals, setDisplayTotals] = useState<DisplayTotals | null>(
+    null,
+  );
 
   const [openNewPay, setOpenNewPay] = useState<boolean>(false);
-  const [currentVoucherImage, setCurrentVoucherImage] = useState<ImageUploadState | null>(null);
-  const [currentDescription, setCurrentDescription] = useState<string>('');
+  const [currentVoucherImage, setCurrentVoucherImage] =
+    useState<ImageUploadState | null>(null);
+  const [currentDescription, setCurrentDescription] = useState<string>("");
   const [currentAmount, setCurrentAmount] = useState<Number>(0);
   const [currentMethod, setCurrentMethod] = useState<MethodOption | null>(null);
-  const [paymentVouchers, setPaymentVouchers] = useState<ImageUploadState[]>([]);
+  const [paymentVouchers, setPaymentVouchers] = useState<ImageUploadState[]>(
+    [],
+  );
   const [imageToCropDetails, setImageToCropDetails] = useState<{
     originalFile: File;
-    targetType: 'paymentVoucher';
+    targetType: "paymentVoucher";
     tempId: string;
   } | null>(null);
-  const [imageSrcForCropper, setImageSrcForCropper] = useState<string | null>(null);
+  const [imageSrcForCropper, setImageSrcForCropper] = useState<string | null>(
+    null,
+  );
   const [crop, setCrop] = useState<Crop>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
   const [cropModalOpen, setCropModalOpen] = useState<boolean>(false);
@@ -464,15 +508,16 @@ export default function UpdateOrder() {
   const [activeStep, setActiveStep] = React.useState(0);
 
   const isPickupSelected = useMemo(() => {
-    if (!selectedShippingMethod || !selectedShippingMethod.fullMethod) return false;
+    if (!selectedShippingMethod || !selectedShippingMethod.fullMethod)
+      return false;
     const method = selectedShippingMethod.fullMethod as ShippingMethod;
-    const methodName = method.name?.toLowerCase() || '';
-    return methodName.includes('pickup') || methodName.includes('recoger');
+    const methodName = method.name?.toLowerCase() || "";
+    return methodName.includes("pickup") || methodName.includes("recoger");
   }, [selectedShippingMethod]);
 
   const initialOrderLineFormStateForUpdate: Omit<
     OrderLineFormState,
-    'id' | 'status' | 'item' | 'tempId'
+    "id" | "status" | "item" | "tempId"
   > & { item: undefined } = {
     selectedArt: null,
     selectedProduct: null,
@@ -486,15 +531,15 @@ export default function UpdateOrder() {
 
   const createBlankAddress = useCallback((): Address => {
     return {
-      recepient: { name: '', lastName: '', phone: '', email: '' },
+      recepient: { name: "", lastName: "", phone: "", email: "" },
       address: {
-        line1: '',
-        city: '',
-        state: '',
-        country: '',
-        line2: '',
-        reference: '',
-        zipCode: '',
+        line1: "",
+        city: "",
+        state: "",
+        country: "",
+        line2: "",
+        reference: "",
+        zipCode: "",
       },
     };
   }, []);
@@ -517,36 +562,41 @@ export default function UpdateOrder() {
     setIsLoading(true);
     setErrorFetch(null);
     try {
-      const [orderData, shippingMethods, paymentMethods, products, arts] = await Promise.all([
-        getOrderById(id) as Promise<Order>,
-        fetchShippingMethods() as Promise<ShippingMethod[]>,
-        readAllPaymentMethods() as Promise<PaymentMethod[]>,
-        fetchActiveProducts('A-Z') as Promise<Product[]>,
-        getArts() as Promise<Art[]>,
-      ]);
-      if (!orderData) throw new Error('Orden no encontrada.');
+      const [orderData, shippingMethods, paymentMethods, products, arts] =
+        await Promise.all([
+          getOrderById(id) as Promise<Order>,
+          fetchShippingMethods() as Promise<ShippingMethod[]>,
+          readAllPaymentMethods() as Promise<PaymentMethod[]>,
+          fetchActiveProducts("A-Z") as Promise<Product[]>,
+          getArts() as Promise<Art[]>,
+        ]);
+      if (!orderData) throw new Error("Orden no encontrada.");
       if (orderData.payment && !Array.isArray(orderData.payment.payment)) {
         console.warn(
           "API devolvió orderData.payment sin un array 'Payments' válido. " +
-            'Inicializando como array vacío.'
+            "Inicializando como array vacío.",
         );
         orderData.payment.payment = [];
       } else if (!orderData.payment) {
         console.warn(
           "API devolvió orderData sin el objeto 'payment'. " +
-            'Inicializando con valores por defecto. Esto puede indicar un problema.'
+            "Inicializando con valores por defecto. Esto puede indicar un problema.",
         );
       }
       setOrder(orderData);
       setPrevStatus({
         status: orderData?.status[orderData.status.length - 1][0] || 0,
-        payStatus: orderData?.payment.status[orderData.payment.status.length - 1][0] || 0,
+        payStatus:
+          orderData?.payment.status[orderData.payment.status.length - 1][0] ||
+          0,
       });
-      setObservations(orderData.observations || '');
+      setObservations(orderData.observations || "");
       if (orderData.consumerDetails?.basic) {
-        setEditableClientInfo(JSON.parse(JSON.stringify(orderData.consumerDetails.basic)));
+        setEditableClientInfo(
+          JSON.parse(JSON.stringify(orderData.consumerDetails.basic)),
+        );
       } else {
-        setEditableClientInfo({ name: '', lastName: '', email: '', phone: '' });
+        setEditableClientInfo({ name: "", lastName: "", email: "", phone: "" });
       }
       const productOpts = products
         .filter((p) => p._id)
@@ -557,38 +607,40 @@ export default function UpdateOrder() {
         .map((a) => ({
           id: a._id!.toString(),
           label: a.title,
-          thumb: a.squareThumbUrl || a.smallThumbUrl || '',
+          thumb: a.squareThumbUrl || a.smallThumbUrl || "",
           fullArt: a,
         }));
 
       const allArtist = arts.map((art) => art.prixerUsername);
       const onlyPrixers = [...new Set(allArtist)];
 
-      const customImageOptions: ArtOption[] = onlyPrixers.map((prixerUsername) => {
-        const customArtPlaceholder: CustomImage = {
-          artId: `custom-image-${prixerUsername}`,
-          title: `Personalizado de ${prixerUsername}`,
-          prixerUsername: prixerUsername,
-          url: '',
-        };
+      const customImageOptions: ArtOption[] = onlyPrixers.map(
+        (prixerUsername) => {
+          const customArtPlaceholder: CustomImage = {
+            artId: `custom-image-${prixerUsername}`,
+            title: `Personalizado de ${prixerUsername}`,
+            prixerUsername: prixerUsername,
+            url: "",
+          };
 
-        return {
-          id: customArtPlaceholder.artId,
-          label: customArtPlaceholder.title,
-          thumb: favicon,
-          fullArt: customArtPlaceholder,
-        };
-      });
+          return {
+            id: customArtPlaceholder.artId,
+            label: customArtPlaceholder.title,
+            thumb: favicon,
+            fullArt: customArtPlaceholder,
+          };
+        },
+      );
 
       const genericCustom: ArtOption = {
-        id: 'custom-image-without-prixer',
+        id: "custom-image-without-prixer",
         label: `Personalizado`,
         thumb: favicon,
         fullArt: {
           artId: `custom-image-without-prixer`,
           title: `Personalizado`,
-          prixerUsername: '',
-          url: '',
+          prixerUsername: "",
+          url: "",
         },
       };
 
@@ -596,44 +648,51 @@ export default function UpdateOrder() {
       customImageOptions.unshift(genericCustom);
       setArtOptions([...artOpts, ...customImageOptions]);
 
-      const transformedLines: OrderLineFormState[] = orderData.lines.map((line) => {
-        const selectedProductOpt = productOpts.find(
-          (p) => p.id === line.item?.product?._id?.toString()
-        );
-        const variants = selectedProductOpt?.fullProduct.variants || [];
-        const variantOptions = variants
-          .filter((v) => v._id)
-          .map((v) => ({ id: v._id!, label: v.name, fullVariant: v }));
-        const currentVariantOpt =
-          variantOptions.find(
-            (vo) =>
-              vo.fullVariant.attributes.length === (line.item?.product?.selection?.length || 0) &&
-              vo.fullVariant.attributes.every((attr) =>
-                line.item?.product?.selection?.find(
-                  (selAttr) => selAttr.name === attr.name && selAttr.value === attr.value
-                )
-              )
-          ) || null;
+      const transformedLines: OrderLineFormState[] = orderData.lines.map(
+        (line) => {
+          const selectedProductOpt = productOpts.find(
+            (p) => p.id === line.item?.product?._id?.toString(),
+          );
+          const variants = selectedProductOpt?.fullProduct.variants || [];
+          const variantOptions = variants
+            .filter((v) => v._id)
+            .map((v) => ({ id: v._id!, label: v.name, fullVariant: v }));
+          const currentVariantOpt =
+            variantOptions.find(
+              (vo) =>
+                vo.fullVariant.attributes.length ===
+                  (line.item?.product?.selection?.length || 0) &&
+                vo.fullVariant.attributes.every((attr) =>
+                  line.item?.product?.selection?.find(
+                    (selAttr) =>
+                      selAttr.name === attr.name &&
+                      selAttr.value === attr.value,
+                  ),
+                ),
+            ) || null;
 
-        const artIdToFind = line.item?.art
-          ? '_id' in line.item.art
-            ? line.item.art._id?.toString()
-            : 'id' in line.item.art && line.item.art.id
-          : line.item.art && !('_id' in line.item.art)
-            ? line.item.art
-            : undefined;
+          const artIdToFind = line.item?.art
+            ? "_id" in line.item.art
+              ? line.item.art._id?.toString()
+              : "id" in line.item.art && line.item.art.id
+            : line.item.art && !("_id" in line.item.art)
+              ? line.item.art
+              : undefined;
 
-        return {
-          ...line,
-          tempId: line.id || uuidv4(),
-          selectedArt: artIdToFind ? artOpts.find((a) => a.id === artIdToFind) || null : null,
-          selectedProduct: selectedProductOpt || null,
-          selectedVariant: currentVariantOpt,
-          availableVariants: variantOptions,
-          pricePerUnit: line.pricePerUnit,
-          quantity: line.quantity,
-        };
-      });
+          return {
+            ...line,
+            tempId: line.id || uuidv4(),
+            selectedArt: artIdToFind
+              ? artOpts.find((a) => a.id === artIdToFind) || null
+              : null,
+            selectedProduct: selectedProductOpt || null,
+            selectedVariant: currentVariantOpt,
+            availableVariants: variantOptions,
+            pricePerUnit: line.pricePerUnit,
+            quantity: line.quantity,
+          };
+        },
+      );
 
       setEditableOrderLines(transformedLines);
 
@@ -657,7 +716,7 @@ export default function UpdateOrder() {
         shippingOptions.find((opt) =>
           !!orderShip?._id
             ? opt.id === orderShip._id.toString()
-            : opt.fullMethod.name === orderShip?.name
+            : opt.fullMethod.name === orderShip?.name,
         ) || null;
 
       setSelectedShippingMethod(currentSelectedShippingMethod);
@@ -668,7 +727,7 @@ export default function UpdateOrder() {
         ? paymentOptions.find((opt) =>
             !!orderPay?._id
               ? opt.id === orderPay._id.toString()
-              : opt.fullMethod.name === orderPay?.name
+              : opt.fullMethod.name === orderPay?.name,
           ) || null
         : null;
 
@@ -677,23 +736,23 @@ export default function UpdateOrder() {
       setEditableShippingAddress(
         orderData.shipping?.address
           ? JSON.parse(JSON.stringify(orderData.shipping.address))
-          : createBlankAddress()
+          : createBlankAddress(),
       );
 
       setEditableBillingAddress(
         orderData.billing?.address
           ? JSON.parse(JSON.stringify(orderData.billing.address))
-          : createBlankAddress()
+          : createBlankAddress(),
       );
 
       const isInitiallyPickup =
         currentSelectedShippingMethod?.fullMethod &&
         ((currentSelectedShippingMethod.fullMethod as ShippingMethod).name
           ?.toLowerCase()
-          .includes('pickup') ||
+          .includes("pickup") ||
           (currentSelectedShippingMethod.fullMethod as ShippingMethod).name
             ?.toLowerCase()
-            .includes('recoger'));
+            .includes("recoger"));
 
       if (isInitiallyPickup) {
         setUseShippingForBilling(false);
@@ -705,28 +764,34 @@ export default function UpdateOrder() {
         setUseShippingForBilling(
           !!orderData.shipping?.address &&
             !!orderData.billing?.address &&
-            JSON.stringify(orderData.shipping.address) === JSON.stringify(orderData.billing.address)
+            JSON.stringify(orderData.shipping.address) ===
+              JSON.stringify(orderData.billing.address),
         );
       }
 
       const existingVoucherImages: ImageUploadState[] = [];
 
-      if (orderData.payment?.payment && Array.isArray(orderData.payment.payment)) {
+      if (
+        orderData.payment?.payment &&
+        Array.isArray(orderData.payment.payment)
+      ) {
         setPrevPayments(orderData.payment.payment);
-        orderData.payment.payment.forEach((payments: Payment, index: number) => {
-          if (payments.voucher) {
-            existingVoucherImages.push({
-              id: `payments-${payments.id || index}-voucher-${uuidv4()}`, // Ensure unique ID for ImageUploadState
-              url: payments.voucher,
-              isExisting: true,
-            });
-          }
-        });
+        orderData.payment.payment.forEach(
+          (payments: Payment, index: number) => {
+            if (payments.voucher) {
+              existingVoucherImages.push({
+                id: `payments-${payments.id || index}-voucher-${uuidv4()}`, // Ensure unique ID for ImageUploadState
+                url: payments.voucher,
+                isExisting: true,
+              });
+            }
+          },
+        );
       }
       setPaymentVouchers(existingVoucherImages);
     } catch (err: any) {
-      console.error('Failed to load data:', err);
-      const errorMsg = err.message || 'Error al cargar los datos.';
+      console.error("Failed to load data:", err);
+      const errorMsg = err.message || "Error al cargar los datos.";
       setErrorFetch(errorMsg);
       showSnackBar(errorMsg);
     } finally {
@@ -744,19 +809,25 @@ export default function UpdateOrder() {
     if (!order) return setDisplayTotals(null);
     const newSubTotal = editableOrderLines.reduce(
       (sum, line) =>
-        sum + (line?.pricePerUnit ? Number(line?.pricePerUnit) : 0) * (line.quantity || 1),
-      0
+        sum +
+        (line?.pricePerUnit ? Number(line?.pricePerUnit) : 0) *
+          (line.quantity || 1),
+      0,
     );
     const newShippingCost = selectedShippingMethod
-      ? parseFloat((selectedShippingMethod.fullMethod as ShippingMethod).price || '0')
+      ? parseFloat(
+          (selectedShippingMethod.fullMethod as ShippingMethod).price || "0",
+        )
       : order.shippingCost || 0;
     const base = newSubTotal - (order.discount || 0) + newShippingCost;
     const newTaxes: Tax[] = (order.tax || []).map((taxRule) => ({
       ...taxRule,
-      amount: base > 0 ? parseFloat((base * (taxRule.value / 100)).toFixed(2)) : 0,
+      amount:
+        base > 0 ? parseFloat((base * (taxRule.value / 100)).toFixed(2)) : 0,
     }));
     const totalTaxAmount = newTaxes.reduce((sum, t) => sum + t.amount, 0);
-    const newTotal = newSubTotal - (order.discount || 0) + newShippingCost + totalTaxAmount;
+    const newTotal =
+      newSubTotal - (order.discount || 0) + newShippingCost + totalTaxAmount;
     setDisplayTotals({
       subTotal: newSubTotal,
       discount: order.discount || 0,
@@ -785,29 +856,37 @@ export default function UpdateOrder() {
         setEditableBillingAddress(
           order?.billing?.address
             ? JSON.parse(JSON.stringify(order.billing.address))
-            : createBlankAddress()
+            : createBlankAddress(),
         );
       }
     } else {
       if (useShippingForBilling && editableShippingAddress) {
-        setEditableBillingAddress(JSON.parse(JSON.stringify(editableShippingAddress)));
+        setEditableBillingAddress(
+          JSON.parse(JSON.stringify(editableShippingAddress)),
+        );
       } else if (!useShippingForBilling) {
         const shippingAndBillingWereSameOrBillingEmpty =
           (editableShippingAddress &&
             editableBillingAddress &&
             !editableBillingAddress?.address.line1 &&
-            JSON.stringify(editableShippingAddress) === JSON.stringify(editableBillingAddress)) ||
+            JSON.stringify(editableShippingAddress) ===
+              JSON.stringify(editableBillingAddress)) ||
           !editableBillingAddress?.address?.line1;
         if (shippingAndBillingWereSameOrBillingEmpty) {
           setEditableBillingAddress(
             order?.billing?.address
               ? JSON.parse(JSON.stringify(order.billing.address))
-              : createBlankAddress()
+              : createBlankAddress(),
           );
         }
       }
     }
-  }, [isPickupSelected, useShippingForBilling, order, editableBillingAddress?.address?.line1]);
+  }, [
+    isPickupSelected,
+    useShippingForBilling,
+    order,
+    editableBillingAddress?.address?.line1,
+  ]);
 
   const calculatePreferredDate = (lines: OrderLineFormState[]): Dayjs => {
     const today = dayjs();
@@ -818,7 +897,7 @@ export default function UpdateOrder() {
     const productionTimesInDays = lines.map((line) => {
       const timeString = line.selectedProduct?.fullProduct?.productionTime;
 
-      return parseInt(timeString || '0', 10);
+      return parseInt(timeString || "0", 10);
     });
 
     const maxProductionTime = Math.max(...productionTimesInDays);
@@ -829,7 +908,7 @@ export default function UpdateOrder() {
     let daysAdded = 0;
 
     while (daysAdded < maxProductionTime) {
-      deliveryDate = deliveryDate.add(1, 'day');
+      deliveryDate = deliveryDate.add(1, "day");
 
       const dayOfWeek = deliveryDate.day();
 
@@ -841,13 +920,19 @@ export default function UpdateOrder() {
     return deliveryDate;
   };
 
-  const onVoucherImageLoadInCropper = (e: React.SyntheticEvent<HTMLImageElement>) => {
+  const onVoucherImageLoadInCropper = (
+    e: React.SyntheticEvent<HTMLImageElement>,
+  ) => {
     imgRef.current = e.currentTarget;
     const { naturalWidth, naturalHeight } = e.currentTarget;
     if (naturalWidth > 0 && naturalHeight > 0) {
-      setCrop(centerAspectCrop(naturalWidth, naturalHeight, VOUCHER_IMAGE_ASPECT));
+      setCrop(
+        centerAspectCrop(naturalWidth, naturalHeight, VOUCHER_IMAGE_ASPECT),
+      );
     } else {
-      showSnackBarRef.current('Error al cargar imagen para recorte: dimensiones inválidas.');
+      showSnackBarRef.current(
+        "Error al cargar imagen para recorte: dimensiones inválidas.",
+      );
       closeAndResetCropper();
     }
   };
@@ -855,11 +940,11 @@ export default function UpdateOrder() {
   const openVoucherCropperWithFile = (file: File, tempId: string) => {
     setImageToCropDetails({
       originalFile: file,
-      targetType: 'paymentVoucher',
+      targetType: "paymentVoucher",
       tempId,
     });
     const reader = new FileReader();
-    reader.addEventListener('load', () => {
+    reader.addEventListener("load", () => {
       setImageSrcForCropper(reader.result?.toString() || null);
       setCropModalOpen(true);
     });
@@ -869,19 +954,23 @@ export default function UpdateOrder() {
   const handleVoucherImageSelect = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       if (paymentVouchers.length >= 6) {
-        showSnackBarRef.current('Has alcanzado el límite de 6 imágenes de comprobantes.');
+        showSnackBarRef.current(
+          "Has alcanzado el límite de 6 imágenes de comprobantes.",
+        );
         return;
       }
       const file = event.target.files[0];
       if (file.size > 5 * 1024 * 1024) {
         // Límite de 5MB para comprobantes
-        showSnackBarRef.current('El archivo es muy grande. Máximo 5MB para comprobantes.');
-        if (event.target) (event.target as HTMLInputElement).value = '';
+        showSnackBarRef.current(
+          "El archivo es muy grande. Máximo 5MB para comprobantes.",
+        );
+        if (event.target) (event.target as HTMLInputElement).value = "";
         return;
       }
-      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-        showSnackBarRef.current('Formato no permitido. Solo JPG, PNG, WEBP.');
-        if (event.target) (event.target as HTMLInputElement).value = '';
+      if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+        showSnackBarRef.current("Formato no permitido. Solo JPG, PNG, WEBP.");
+        if (event.target) (event.target as HTMLInputElement).value = "";
         return;
       }
       const tempImageId = uuidv4();
@@ -896,8 +985,10 @@ export default function UpdateOrder() {
     setCrop(undefined);
     setCompletedCrop(undefined);
     if (imgRef.current) imgRef.current = null;
-    const fileInput = document.getElementById('voucher-image-input') as HTMLInputElement;
-    if (fileInput) fileInput.value = '';
+    const fileInput = document.getElementById(
+      "voucher-image-input",
+    ) as HTMLInputElement;
+    if (fileInput) fileInput.value = "";
   };
 
   const handleConfirmVoucherCropAndUpload = async () => {
@@ -907,40 +998,49 @@ export default function UpdateOrder() {
       !imgRef.current ||
       !previewCanvasRef.current ||
       !imageToCropDetails ||
-      imageToCropDetails.targetType !== 'paymentVoucher'
+      imageToCropDetails.targetType !== "paymentVoucher"
     ) {
-      showSnackBar('Error: No se pudo procesar el recorte del comprobante.');
+      showSnackBar("Error: No se pudo procesar el recorte del comprobante.");
       return;
     }
-    await canvasPreview(imgRef.current, previewCanvasRef.current, completedCrop);
+    await canvasPreview(
+      imgRef.current,
+      previewCanvasRef.current,
+      completedCrop,
+    );
     previewCanvasRef.current.toBlob(
       (blob) => {
         if (!blob) {
-          showSnackBar('Error: No se pudo crear el archivo WebP del comprobante.');
+          showSnackBar(
+            "Error: No se pudo crear el archivo WebP del comprobante.",
+          );
           return;
         }
         const { originalFile, tempId } = imageToCropDetails;
         let originalNameWithoutExtension = originalFile.name;
-        const lastDotIndex = originalFile.name.lastIndexOf('.');
+        const lastDotIndex = originalFile.name.lastIndexOf(".");
         if (lastDotIndex > 0)
-          originalNameWithoutExtension = originalFile.name.substring(0, lastDotIndex);
-        const webpFileName = `voucher_${originalNameWithoutExtension.replace(/[^a-zA-Z0-9.]/g, '_')}_${Date.now()}.webp`;
+          originalNameWithoutExtension = originalFile.name.substring(
+            0,
+            lastDotIndex,
+          );
+        const webpFileName = `voucher_${originalNameWithoutExtension.replace(/[^a-zA-Z0-9.]/g, "_")}_${Date.now()}.webp`;
         const croppedWebpFile = new File([blob], webpFileName, {
-          type: 'image/webp',
+          type: "image/webp",
         });
 
         closeAndResetCropper();
         setCurrentVoucherImage({
           id: tempId,
-          url: '',
+          url: "",
           file: croppedWebpFile,
           progress: 0,
           isExisting: false,
         });
         startTusUploadForVoucher(croppedWebpFile, tempId);
       },
-      'image/webp',
-      0.85
+      "image/webp",
+      0.85,
     );
   };
 
@@ -952,20 +1052,22 @@ export default function UpdateOrder() {
       metadata: {
         filename: file.name,
         filetype: file.type,
-        context: 'paymentVoucher',
+        context: "paymentVoucher",
         imageId: imageId,
       },
       onProgress: (bytesUploaded, bytesTotal) => {
         const percentage = Math.floor((bytesUploaded / bytesTotal) * 100);
         setPaymentVouchers((prevVouchers) =>
-          prevVouchers.map((img) => (img.id === imageId ? { ...img, progress: percentage } : img))
+          prevVouchers.map((img) =>
+            img.id === imageId ? { ...img, progress: percentage } : img,
+          ),
         );
         // Opcional: Actualizar el progreso del 'currentVoucherImage' si lo estás usando
         // para mostrar el progreso de la imagen individual que se está subiendo.
         setCurrentVoucherImage((prevCurrent) =>
           prevCurrent && prevCurrent.id === imageId
             ? { ...prevCurrent, progress: percentage }
-            : prevCurrent
+            : prevCurrent,
         );
       },
       onSuccess: async () => {
@@ -973,15 +1075,15 @@ export default function UpdateOrder() {
         let finalS3Url: string | null = null;
         if (tusUploadInstance._req?._xhr?.getResponseHeader) {
           finalS3Url =
-            tusUploadInstance._req._xhr.getResponseHeader('x-final-url') ||
-            tusUploadInstance._req._xhr.getResponseHeader('X-Final-URL');
+            tusUploadInstance._req._xhr.getResponseHeader("x-final-url") ||
+            tusUploadInstance._req._xhr.getResponseHeader("X-Final-URL");
         } else if (tusUploadInstance.xhr?.getResponseHeader) {
           finalS3Url =
-            tusUploadInstance.xhr.getResponseHeader('x-final-url') ||
-            tusUploadInstance.xhr.getResponseHeader('X-Final-URL');
+            tusUploadInstance.xhr.getResponseHeader("x-final-url") ||
+            tusUploadInstance.xhr.getResponseHeader("X-Final-URL");
         }
-        if (finalS3Url && finalS3Url.startsWith('https://https//')) {
-          finalS3Url = finalS3Url.replace('https://https//', 'https://');
+        if (finalS3Url && finalS3Url.startsWith("https://https//")) {
+          finalS3Url = finalS3Url.replace("https://https//", "https://");
         }
         const imageUrl = finalS3Url || upload.url; // Fallback a la URL de TUS
 
@@ -996,8 +1098,8 @@ export default function UpdateOrder() {
                     file: undefined,
                     error: undefined,
                   }
-                : img
-            )
+                : img,
+            ),
           );
 
           setCurrentVoucherImage((prevCurrentVoucher) => {
@@ -1009,9 +1111,12 @@ export default function UpdateOrder() {
                 file: undefined,
                 error: undefined,
               };
-            } else if (!prevCurrentVoucher || prevCurrentVoucher.id !== imageId) {
+            } else if (
+              !prevCurrentVoucher ||
+              prevCurrentVoucher.id !== imageId
+            ) {
               console.warn(
-                `[setCurrentVoucherImage onSuccess] 'prevCurrentVoucher' era nulo o su ID no coincidía. Creando/actualizando con imageId: ${imageId}`
+                `[setCurrentVoucherImage onSuccess] 'prevCurrentVoucher' era nulo o su ID no coincidía. Creando/actualizando con imageId: ${imageId}`,
               );
               return {
                 id: imageId,
@@ -1026,7 +1131,7 @@ export default function UpdateOrder() {
 
           showSnackBar(`Comprobante subido.`);
         } else {
-          const errorMsg = 'Error al obtener URL del comprobante';
+          const errorMsg = "Error al obtener URL del comprobante";
           setPaymentVouchers((prevVouchers) =>
             prevVouchers.map((img) =>
               img.id === imageId
@@ -1036,8 +1141,8 @@ export default function UpdateOrder() {
                     file: undefined,
                     progress: undefined,
                   }
-                : img
-            )
+                : img,
+            ),
           );
           setCurrentVoucherImage((prevCurrentVoucher) =>
             prevCurrentVoucher && prevCurrentVoucher.id === imageId
@@ -1047,13 +1152,13 @@ export default function UpdateOrder() {
                   file: undefined,
                   progress: undefined,
                 }
-              : prevCurrentVoucher
+              : prevCurrentVoucher,
           );
           showSnackBar(errorMsg);
         }
       },
       onError: (error) => {
-        const errorMsg = error.message || 'Error desconocido';
+        const errorMsg = error.message || "Error desconocido";
         setPaymentVouchers((prevVouchers) =>
           prevVouchers.map((img) =>
             img.id === imageId
@@ -1063,8 +1168,8 @@ export default function UpdateOrder() {
                   file: undefined,
                   progress: undefined,
                 }
-              : img
-          )
+              : img,
+          ),
         );
         setCurrentVoucherImage((prevCurrentVoucher) =>
           prevCurrentVoucher && prevCurrentVoucher.id === imageId
@@ -1074,7 +1179,7 @@ export default function UpdateOrder() {
                 file: undefined,
                 progress: undefined,
               }
-            : prevCurrentVoucher
+            : prevCurrentVoucher,
         );
         showSnackBar(`Error al subir comprobante: ${errorMsg}`);
       },
@@ -1085,7 +1190,9 @@ export default function UpdateOrder() {
   const handleRemoveVoucherImage = (idToRemove: string) => {
     setPaymentVouchers((prev) => prev.filter((img) => img.id !== idToRemove));
     setPrevPayments((prev) => prev.filter((img) => img.id !== idToRemove));
-    showSnackBar('Comprobante eliminado de la lista (se guardará al actualizar).');
+    showSnackBar(
+      "Comprobante eliminado de la lista (se guardará al actualizar).",
+    );
   };
 
   const handleChangeTab = (event: React.SyntheticEvent, newValue: number) => {
@@ -1099,38 +1206,46 @@ export default function UpdateOrder() {
         ...initialOrderLineFormStateForUpdate,
         tempId: uuidv4(),
         status: [[OrderStatus.Pending, new Date()]],
-        id: '',
+        id: "",
       },
     ]);
   };
 
   const handleRemoveOrderLine = (lineTempIdToRemove: string) => {
-    setEditableOrderLines((prev) => prev.filter((line) => line.tempId !== lineTempIdToRemove));
+    setEditableOrderLines((prev) =>
+      prev.filter((line) => line.tempId !== lineTempIdToRemove),
+    );
   };
 
   const updateEditableLine = (
     lineTempIdToUpdate: string,
-    newValues: Partial<OrderLineFormState>
+    newValues: Partial<OrderLineFormState>,
   ) => {
     setEditableOrderLines((prevLines) =>
       prevLines.map((line) =>
-        line.tempId === lineTempIdToUpdate ? { ...line, ...newValues } : line
-      )
+        line.tempId === lineTempIdToUpdate ? { ...line, ...newValues } : line,
+      ),
     );
   };
 
-  const handleArtSelection = (lineTempIdToUpdate: string, newValue: ArtOption | null) => {
+  const handleArtSelection = (
+    lineTempIdToUpdate: string,
+    newValue: ArtOption | null,
+  ) => {
     updateEditableLine(lineTempIdToUpdate, {
       selectedArt: newValue,
     });
   };
 
-  const handleProductSelection = (lineTempIdToUpdate: string, newValue: ProductOption | null) => {
+  const handleProductSelection = (
+    lineTempIdToUpdate: string,
+    newValue: ProductOption | null,
+  ) => {
     const variants = newValue?.fullProduct.variants || [];
     const variantOptions = variants
       .filter((v) => v._id)
       .map((v) => ({ id: v._id!, label: v.name, fullVariant: v }));
-    const basePrice = parseFloat(newValue?.fullProduct.cost || '0');
+    const basePrice = parseFloat(newValue?.fullProduct.cost || "0");
     updateEditableLine(lineTempIdToUpdate, {
       selectedProduct: newValue,
       availableVariants: variantOptions,
@@ -1139,11 +1254,18 @@ export default function UpdateOrder() {
     });
   };
 
-  const handleVariantSelection = (lineTempIdToUpdate: string, newValue: VariantOption | null) => {
-    const line = editableOrderLines.find((l) => l.tempId === lineTempIdToUpdate);
-    const productBasePrice = parseFloat(line?.selectedProduct?.fullProduct.cost || '0');
+  const handleVariantSelection = (
+    lineTempIdToUpdate: string,
+    newValue: VariantOption | null,
+  ) => {
+    const line = editableOrderLines.find(
+      (l) => l.tempId === lineTempIdToUpdate,
+    );
+    const productBasePrice = parseFloat(
+      line?.selectedProduct?.fullProduct.cost || "0",
+    );
     const pricePerUnit = parseFloat(
-      newValue?.fullVariant.publicPrice || productBasePrice.toString() || '0'
+      newValue?.fullVariant.publicPrice || productBasePrice.toString() || "0",
     );
     updateEditableLine(lineTempIdToUpdate, {
       selectedVariant: newValue,
@@ -1153,7 +1275,7 @@ export default function UpdateOrder() {
 
   const handleQuantityChange = (
     lineTempIdToUpdate: string,
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const q = parseInt(event.target.value, 10);
     const quantity = q >= 1 ? q : 1;
@@ -1167,29 +1289,44 @@ export default function UpdateOrder() {
     return OrderStatus.Pending;
   };
 
-  const getLatestpayOrderStatus = (currentOrder: Order): GlobalPaymentStatus => {
+  const getLatestpayOrderStatus = (
+    currentOrder: Order,
+  ): GlobalPaymentStatus => {
     if (currentOrder.payment.status && currentOrder.payment.status.length > 0) {
-      return currentOrder.payment.status[currentOrder.payment.status.length - 1][0];
+      return currentOrder.payment.status[
+        currentOrder.payment.status.length - 1
+      ][0];
     }
     return GlobalPaymentStatus.Pending;
   };
 
-  const handleOrderStatusChange = (event: SelectChangeEvent<OrderStatus>, currentOrder: Order) => {
+  const handleOrderStatusChange = (
+    event: SelectChangeEvent<OrderStatus>,
+    currentOrder: Order,
+  ) => {
     const newSelectedStatus = event.target.value as OrderStatus;
     const newStatusEntry: [OrderStatus, Date] = [newSelectedStatus, new Date()];
-    const existingStatusHistory = Array.isArray(currentOrder.status) ? currentOrder.status : [];
-    const updatedStatusHistory: [OrderStatus, Date][] = [...existingStatusHistory, newStatusEntry];
+    const existingStatusHistory = Array.isArray(currentOrder.status)
+      ? currentOrder.status
+      : [];
+    const updatedStatusHistory: [OrderStatus, Date][] = [
+      ...existingStatusHistory,
+      newStatusEntry,
+    ];
 
     setOrder({ ...currentOrder, status: updatedStatusHistory });
-    showSnackBar('¡Recuerda guardar los cambios en el botón rojo!');
+    showSnackBar("¡Recuerda guardar los cambios en el botón rojo!");
   };
 
   const handleOrderPayStatusChange = (
     event: SelectChangeEvent<GlobalPaymentStatus>,
-    currentOrder: Order
+    currentOrder: Order,
   ) => {
     const newSelectedStatus = event.target.value as GlobalPaymentStatus;
-    const newStatusEntry: [GlobalPaymentStatus, Date] = [newSelectedStatus, new Date()];
+    const newStatusEntry: [GlobalPaymentStatus, Date] = [
+      newSelectedStatus,
+      new Date(),
+    ];
     const existingStatusHistory = Array.isArray(currentOrder.payment.status)
       ? currentOrder.payment.status
       : [];
@@ -1202,12 +1339,12 @@ export default function UpdateOrder() {
       ...currentOrder,
       payment: { ...currentOrder.payment, status: updatedStatusHistory },
     });
-    showSnackBar('¡Recuerda guardar los cambios en el botón rojo!');
+    showSnackBar("¡Recuerda guardar los cambios en el botón rojo!");
   };
 
   const handleStatusChange = (
     lineTempIdToUpdate: string,
-    event: SelectChangeEvent<OrderStatus>
+    event: SelectChangeEvent<OrderStatus>,
   ) => {
     const newStatus = event.target.value as OrderStatus;
     setEditableOrderLines((prevLines) =>
@@ -1226,20 +1363,26 @@ export default function UpdateOrder() {
           }
         }
         return line;
-      })
+      }),
     );
   };
 
   const handleObservationsChange = (event: ChangeEvent<HTMLTextAreaElement>) =>
     setObservations(event.target.value);
 
-  const handleShippingChange = (event: SyntheticEvent, newValue: MethodOption | null) =>
-    setSelectedShippingMethod(newValue);
+  const handleShippingChange = (
+    event: SyntheticEvent,
+    newValue: MethodOption | null,
+  ) => setSelectedShippingMethod(newValue);
 
-  const handlePaymentChange = (event: SyntheticEvent, newValue: MethodOption | null) =>
-    setSelectedPaymentMethod(newValue);
+  const handlePaymentChange = (
+    event: SyntheticEvent,
+    newValue: MethodOption | null,
+  ) => setSelectedPaymentMethod(newValue);
 
-  const handleClientInfoChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleClientInfoChange = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const { name, value } = event.target;
     setEditableClientInfo((prev) => (prev ? { ...prev, [name]: value } : null));
   };
@@ -1249,16 +1392,20 @@ export default function UpdateOrder() {
   const handleBillingAddressChange = (updatedAddress: Address) => {
     setEditableBillingAddress(updatedAddress);
   };
-  const handleUseShippingForBillingChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleUseShippingForBillingChange = (
+    event: ChangeEvent<HTMLInputElement>,
+  ) => {
     const checked = event.target.checked;
     setUseShippingForBilling(checked);
     if (checked && editableShippingAddress) {
-      setEditableBillingAddress(JSON.parse(JSON.stringify(editableShippingAddress)));
+      setEditableBillingAddress(
+        JSON.parse(JSON.stringify(editableShippingAddress)),
+      );
     } else if (!checked) {
       setEditableBillingAddress(
         order?.billing?.address
           ? JSON.parse(JSON.stringify(order.billing.address))
-          : createBlankAddress()
+          : createBlankAddress(),
       );
     }
   };
@@ -1266,7 +1413,7 @@ export default function UpdateOrder() {
   const validateForm = (): boolean => {
     showSnackBarRef.current;
     if (!selectedShippingMethod) {
-      showSnackBar('Método de envío es requerido.');
+      showSnackBar("Método de envío es requerido.");
       return false;
     }
     return true;
@@ -1286,7 +1433,7 @@ export default function UpdateOrder() {
 
   const handleAddPaymentVoucher = async () => {
     if (!currentAmount || !currentMethod) {
-      showSnackBar('Por favor, completa los campos obligatorios.');
+      showSnackBar("Por favor, completa los campos obligatorios.");
       return;
     }
     if (!currentVoucherImage?.url) return;
@@ -1298,7 +1445,7 @@ export default function UpdateOrder() {
       createdOn: new Date(),
       amount: currentAmount,
       method: currentMethod,
-      metadata: `Voucher linked to ${typeof currentMethod === 'object' ? currentMethod.label : currentMethod}`,
+      metadata: `Voucher linked to ${typeof currentMethod === "object" ? currentMethod.label : currentMethod}`,
     };
 
     const updatedPayments: Payment[] = [...prevPayments, newPayment];
@@ -1306,7 +1453,9 @@ export default function UpdateOrder() {
 
     const updatedPaymentDetails: PaymentDetails = {
       total: order?.payment?.total || Number(currentAmount) || 0,
-      status: order?.payment?.status || [[GlobalPaymentStatus.Pending, new Date()]],
+      status: order?.payment?.status || [
+        [GlobalPaymentStatus.Pending, new Date()],
+      ],
       payment: updatedPayments,
     };
 
@@ -1318,7 +1467,9 @@ export default function UpdateOrder() {
 
     setOrder((currentOrder) => {
       if (!currentOrder) {
-        console.error('Error: El estado de la orden es null, no se puede actualizar.');
+        console.error(
+          "Error: El estado de la orden es null, no se puede actualizar.",
+        );
         return null;
       }
 
@@ -1338,20 +1489,24 @@ export default function UpdateOrder() {
       const response = await updateOrder(id!, payloadForAPI);
 
       if (response) {
-        showSnackBar(`Orden #${order?.number || id} actualizada con nuevo comprobante.`);
+        showSnackBar(
+          `Orden #${order?.number || id} actualizada con nuevo comprobante.`,
+        );
         setCurrentVoucherImage(null);
-        setCurrentDescription('');
+        setCurrentDescription("");
         setCurrentAmount(0);
         setOpenNewPay(false);
       } else {
-        throw new Error('La actualización de la orden no devolvió una respuesta exitosa.');
+        throw new Error(
+          "La actualización de la orden no devolvió una respuesta exitosa.",
+        );
       }
     } catch (err: any) {
-      console.error('Failed to update order with voucher:', err);
+      console.error("Failed to update order with voucher:", err);
       showSnackBar(
         err?.response?.data?.message ||
           err.message ||
-          'Error al actualizar la orden con el comprobante.'
+          "Error al actualizar la orden con el comprobante.",
       );
     } finally {
       setIsSubmitting(false);
@@ -1361,38 +1516,38 @@ export default function UpdateOrder() {
   const getOrderStatusText = (status: OrderStatus): string => {
     switch (Number(status)) {
       case OrderStatus.Pending:
-        return 'Pendiente';
+        return "Pendiente";
       case OrderStatus.Production:
-        return 'En producción';
+        return "En producción";
       case OrderStatus.Impression:
-        return 'En impresión';
+        return "En impresión";
       case OrderStatus.ReadyToShip:
-        return 'Listo para enviar';
+        return "Listo para enviar";
       case OrderStatus.Delivered:
-        return 'Entregado';
+        return "Entregado";
       case OrderStatus.Finished:
-        return 'Concretado';
+        return "Concretado";
       case OrderStatus.Paused:
-        return 'Detenido';
+        return "Detenido";
       case OrderStatus.Canceled:
-        return 'Cancelado';
+        return "Cancelado";
       default:
-        return 'Pendiente';
+        return "Pendiente";
     }
   };
 
   const getOrderPayStatusText = (status: GlobalPaymentStatus): string => {
     switch (Number(status)) {
       case GlobalPaymentStatus.Pending:
-        return 'Pendiente';
+        return "Pendiente";
       case GlobalPaymentStatus.Credited:
-        return 'Abonado';
+        return "Abonado";
       case GlobalPaymentStatus.Paid:
-        return 'Pagado';
+        return "Pagado";
       case OrderStatus.Canceled:
-        return 'Cancelado';
+        return "Cancelado";
       default:
-        return 'Pendiente';
+        return "Pendiente";
     }
   };
 
@@ -1417,7 +1572,7 @@ export default function UpdateOrder() {
         !line.selectedVariant
       ) {
         showSnackBar(
-          `Item #${index + 1}: Variante es requerida para ${line.selectedProduct.label}.`
+          `Item #${index + 1}: Variante es requerida para ${line.selectedProduct.label}.`,
         );
         setIsSubmitting(false);
         return;
@@ -1430,7 +1585,7 @@ export default function UpdateOrder() {
     }
     setErrorSubmit(null);
     if (!order) {
-      setErrorSubmit('Error: Datos de la orden no disponibles.');
+      setErrorSubmit("Error: Datos de la orden no disponibles.");
       setIsSubmitting(false);
       return;
     }
@@ -1445,19 +1600,20 @@ export default function UpdateOrder() {
     const descriptions: string[] = [];
 
     const finalOrderLines: OrderLine[] = editableOrderLines.map((lineState) => {
-      if (!lineState.selectedProduct) throw new Error('Producto no seleccionado en una línea.');
+      if (!lineState.selectedProduct)
+        throw new Error("Producto no seleccionado en una línea.");
       const pricePerUnit = parseFloat(
         lineState.pricePerUnit?.toString() ||
           lineState.selectedVariant?.fullVariant.publicPrice ||
           lineState.selectedProduct.fullProduct.cost ||
-          '0'
+          "0",
       );
       const item: Item = {
-        sku: `${lineState.selectedProduct.id}-${lineState.selectedVariant?.id || 'novar'}-${lineState.selectedArt?.id || 'noart'}`,
+        sku: `${lineState.selectedProduct.id}-${lineState.selectedVariant?.id || "novar"}-${lineState.selectedArt?.id || "noart"}`,
         art: lineState.selectedArt
           ? (() => {
               const fullArt = lineState?.selectedArt?.fullArt;
-              if ('_id' in fullArt) {
+              if ("_id" in fullArt) {
                 return {
                   _id: fullArt._id,
                   artId: fullArt.artId,
@@ -1470,7 +1626,7 @@ export default function UpdateOrder() {
                 return fullArt;
               }
             })()
-          : lineState.item?.art && !('_id' in lineState.item.art)
+          : lineState.item?.art && !("_id" in lineState.item.art)
             ? lineState.item.art
             : undefined,
         product: {
@@ -1485,7 +1641,10 @@ export default function UpdateOrder() {
         price: pricePerUnit.toString(),
       };
       return {
-        id: lineState.id && lineState.id !== lineState.tempId ? lineState.id : uuidv4(),
+        id:
+          lineState.id && lineState.id !== lineState.tempId
+            ? lineState.id
+            : uuidv4(),
         item: item,
         quantity: lineState.quantity || 1,
         pricePerUnit: pricePerUnit,
@@ -1498,79 +1657,133 @@ export default function UpdateOrder() {
 
     if (
       editableClientInfo &&
-      JSON.stringify(editableClientInfo) !== JSON.stringify(order.consumerDetails?.basic)
+      JSON.stringify(editableClientInfo) !==
+        JSON.stringify(order.consumerDetails?.basic)
     ) {
       descriptions.push(
-        `Se actualizó la información del cliente a: ${editableClientInfo.name} ${editableClientInfo.lastName}.`
+        `Se actualizó la información del cliente a: ${editableClientInfo.name} ${editableClientInfo.lastName}.`,
       );
     }
 
     const originalShippingMethodId = order.shipping?.method?._id?.toString();
-    if (selectedShippingMethod && selectedShippingMethod.id !== originalShippingMethodId) {
-      descriptions.push(`El método de envío cambió a: "${selectedShippingMethod.label}".`);
+    if (
+      selectedShippingMethod &&
+      selectedShippingMethod.id !== originalShippingMethodId
+    ) {
+      descriptions.push(
+        `El método de envío cambió a: "${selectedShippingMethod.label}".`,
+      );
     }
 
-    const originalPaymentMethodId = order.payment?.payment?.[0]?.method.name?.toString();
-    if (selectedPaymentMethod && selectedPaymentMethod.label !== originalPaymentMethodId) {
-      descriptions.push(`El método de pago cambió a: "${selectedPaymentMethod.label}".`);
+    const originalPaymentMethodId =
+      order.payment?.payment?.[0]?.method.name?.toString();
+    if (
+      selectedPaymentMethod &&
+      selectedPaymentMethod.label !== originalPaymentMethodId
+    ) {
+      descriptions.push(
+        `El método de pago cambió a: "${selectedPaymentMethod.label}".`,
+      );
     }
 
-    if ((observations || '') !== (order.observations || '')) {
-      descriptions.push('Se modificaron las observaciones de la orden.');
+    if ((observations || "") !== (order.observations || "")) {
+      descriptions.push("Se modificaron las observaciones de la orden.");
     }
 
     const newLatestStatus =
-      order.status && order.status.length > 0 ? order.status[order.status.length - 1][0] : 0;
+      order.status && order.status.length > 0
+        ? order.status[order.status.length - 1][0]
+        : 0;
 
     const newLatestPayStatus =
       order.payment.status && order.payment.status.length > 0
         ? order.payment.status[order.payment.status.length - 1][0]
         : 0;
 
-    if (newLatestStatus !== undefined && prevStatus.status !== newLatestStatus) {
-      const oldStatusText = getOrderStatusText(prevStatus.status as OrderStatus);
+    if (
+      newLatestStatus !== undefined &&
+      prevStatus.status !== newLatestStatus
+    ) {
+      const oldStatusText = getOrderStatusText(
+        prevStatus.status as OrderStatus,
+      );
       const newStatusText = getOrderStatusText(newLatestStatus as OrderStatus);
-      descriptions.push(`El estado del pedido cambió de "${oldStatusText}" a "${newStatusText}".`);
+      descriptions.push(
+        `El estado del pedido cambió de "${oldStatusText}" a "${newStatusText}".`,
+      );
     }
 
-    if (newLatestPayStatus !== undefined && prevStatus.payStatus !== newLatestPayStatus) {
-      const oldPayStatusText = getOrderPayStatusText(prevStatus.payStatus as GlobalPaymentStatus);
-      const newPayStatusText = getOrderPayStatusText(newLatestPayStatus as GlobalPaymentStatus);
+    if (
+      newLatestPayStatus !== undefined &&
+      prevStatus.payStatus !== newLatestPayStatus
+    ) {
+      const oldPayStatusText = getOrderPayStatusText(
+        prevStatus.payStatus as GlobalPaymentStatus,
+      );
+      const newPayStatusText = getOrderPayStatusText(
+        newLatestPayStatus as GlobalPaymentStatus,
+      );
       descriptions.push(
-        `El estado de pago cambió de "${oldPayStatusText}" a "${newPayStatusText}".`
+        `El estado de pago cambió de "${oldPayStatusText}" a "${newPayStatusText}".`,
       );
     }
 
     const originalLinesSimplified = (order.lines || [])
-      .map((l) => ({ sku: l.item.sku, item: l.item, qty: l.quantity, price: l.pricePerUnit }))
+      .map((l) => ({
+        sku: l.item.sku,
+        item: l.item,
+        qty: l.quantity,
+        price: l.pricePerUnit,
+      }))
       .sort((a, b) => a.sku.localeCompare(b.sku));
     const finalLinesSimplified = (finalOrderLines || [])
-      .map((l) => ({ sku: l.item.sku, item: l.item, qty: l.quantity, price: l.pricePerUnit }))
+      .map((l) => ({
+        sku: l.item.sku,
+        item: l.item,
+        qty: l.quantity,
+        price: l.pricePerUnit,
+      }))
       .sort((a, b) => a.sku.localeCompare(b.sku));
 
-    if (JSON.stringify(originalLinesSimplified) !== JSON.stringify(finalLinesSimplified)) {
-      descriptions.push('Se modificaron los productos de la orden.');
+    if (
+      JSON.stringify(originalLinesSimplified) !==
+      JSON.stringify(finalLinesSimplified)
+    ) {
+      descriptions.push("Se modificaron los productos de la orden.");
     }
 
     if (descriptions.length === 0) {
       descriptions.push(
-        'Se guardaron cambios en la orden (sin cambios significativos detectados).'
+        "Se guardaron cambios en la orden (sin cambios significativos detectados).",
       );
     }
 
-    const finalSubTotal = finalOrderLines.reduce((sum, line) => sum + line.subtotal, 0);
-    const finalTotalUnits = finalOrderLines.reduce((sum, line) => sum + line.quantity, 0);
+    const finalSubTotal = finalOrderLines.reduce(
+      (sum, line) => sum + line.subtotal,
+      0,
+    );
+    const finalTotalUnits = finalOrderLines.reduce(
+      (sum, line) => sum + line.quantity,
+      0,
+    );
     const finalShippingCost = selectedShippingMethod
-      ? parseFloat((selectedShippingMethod.fullMethod as ShippingMethod).price || '0')
+      ? parseFloat(
+          (selectedShippingMethod.fullMethod as ShippingMethod).price || "0",
+        )
       : 0;
     const orderDiscount = order.discount || 0;
     const finalTaxes: Tax[] = (order.tax || []).map((taxRule) => {
       const taxableAmount = finalSubTotal - orderDiscount;
-      const amount = (taxableAmount > 0 ? taxableAmount : 0) * (taxRule.value / 100);
+      const amount =
+        (taxableAmount > 0 ? taxableAmount : 0) * (taxRule.value / 100);
       return { ...taxRule, amount };
     });
-    const finalTotalTaxAmount = finalTaxes.reduce((sum, t) => sum + t.amount, 0);
-    const finalTotal = finalSubTotal - orderDiscount + finalShippingCost + finalTotalTaxAmount;
+    const finalTotalTaxAmount = finalTaxes.reduce(
+      (sum, t) => sum + t.amount,
+      0,
+    );
+    const finalTotal =
+      finalSubTotal - orderDiscount + finalShippingCost + finalTotalTaxAmount;
     let finalBillToInfo: BasicInfo | undefined =
       editableClientInfo || order?.consumerDetails?.basic;
     if (
@@ -1607,7 +1820,7 @@ export default function UpdateOrder() {
             address: isPickupSelected ? createBlankAddress() : shippingAddr,
             country: isPickupSelected
               ? createBlankAddress().address.country
-              : shippingAddr.address.country || '',
+              : shippingAddr.address.country || "",
             preferredDeliveryDate: prefDate ? prefDate.toDate() : new Date(),
           }
         : undefined,
@@ -1645,13 +1858,13 @@ export default function UpdateOrder() {
       const response = await updateOrder(id!, payload);
       if (response) {
         showSnackBar(`Orden #${order?.number || id} actualizada.`);
-        navigate('/admin/orders/read');
+        navigate("/admin/orders/read");
       } else {
-        throw new Error('La actualización no devolvió respuesta.');
+        throw new Error("La actualización no devolvió respuesta.");
       }
     } catch (err: any) {
-      console.error('Failed to submit order update:', err);
-      const errorMsg = err.message || 'Error al guardar la orden.';
+      console.error("Failed to submit order update:", err);
+      const errorMsg = err.message || "Error al guardar la orden.";
       setErrorSubmit(errorMsg);
       showSnackBar(errorMsg);
     } finally {
@@ -1665,12 +1878,14 @@ export default function UpdateOrder() {
     primary: string,
     secondary: string | React.ReactNode | undefined,
     isLink: boolean = false,
-    href?: string
+    href?: string,
   ) =>
     secondary ? (
       <ListItem key={itemKey} sx={{ py: 0.5, px: 0 }}>
         {icon && (
-          <ListItemIcon sx={{ minWidth: '36px', color: 'text.secondary' }}>{icon}</ListItemIcon>
+          <ListItemIcon sx={{ minWidth: "36px", color: "text.secondary" }}>
+            {icon}
+          </ListItemIcon>
         )}
         <ListItemText
           primary={primary}
@@ -1683,33 +1898,44 @@ export default function UpdateOrder() {
               secondary
             )
           }
-          primaryTypographyProps={{ variant: 'body2', fontWeight: 'medium' }}
+          primaryTypographyProps={{ variant: "body2", fontWeight: "medium" }}
           secondaryTypographyProps={{
-            variant: 'body2',
-            color: 'text.secondary',
+            variant: "body2",
+            color: "text.secondary",
           }}
         />
       </ListItem>
     ) : null;
 
-  const getOverallOrderStatus = (orderLines: OrderLineFormState[]): OrderStatus => {
+  const getOverallOrderStatus = (
+    orderLines: OrderLineFormState[],
+  ): OrderStatus => {
     if (!orderLines || orderLines.length === 0) return OrderStatus.Pending;
     const statuses = orderLines.map((line) => getLatestStatus(line.status));
-    if (statuses.every((s) => s === OrderStatus.Delivered)) return OrderStatus.Delivered;
-    if (statuses.every((s) => s === OrderStatus.Canceled)) return OrderStatus.Canceled;
-    if (statuses.some((s) => s === OrderStatus.Delivered)) return OrderStatus.Delivered;
-    if (statuses.some((s) => s === OrderStatus.ReadyToShip)) return OrderStatus.ReadyToShip;
-    if (statuses.some((s) => s === OrderStatus.Pending)) return OrderStatus.Pending;
-    if (statuses.some((s) => s === OrderStatus.Impression)) return OrderStatus.Impression;
-    if (statuses.some((s) => s === OrderStatus.Production)) return OrderStatus.Production;
-    if (statuses.some((s) => s === OrderStatus.Finished)) return OrderStatus.Finished;
-    if (statuses.some((s) => s === OrderStatus.Pending)) return OrderStatus.Pending;
+    if (statuses.every((s) => s === OrderStatus.Delivered))
+      return OrderStatus.Delivered;
+    if (statuses.every((s) => s === OrderStatus.Canceled))
+      return OrderStatus.Canceled;
+    if (statuses.some((s) => s === OrderStatus.Delivered))
+      return OrderStatus.Delivered;
+    if (statuses.some((s) => s === OrderStatus.ReadyToShip))
+      return OrderStatus.ReadyToShip;
+    if (statuses.some((s) => s === OrderStatus.Pending))
+      return OrderStatus.Pending;
+    if (statuses.some((s) => s === OrderStatus.Impression))
+      return OrderStatus.Impression;
+    if (statuses.some((s) => s === OrderStatus.Production))
+      return OrderStatus.Production;
+    if (statuses.some((s) => s === OrderStatus.Finished))
+      return OrderStatus.Finished;
+    if (statuses.some((s) => s === OrderStatus.Pending))
+      return OrderStatus.Pending;
     return OrderStatus.Pending;
   };
 
   if (isLoading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+      <Box sx={{ display: "flex", justifyContent: "center", p: 3 }}>
         <CircularProgress />
       </Box>
     );
@@ -1735,12 +1961,16 @@ export default function UpdateOrder() {
 
   const handlePricePerUnitChange = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    line: OrderLineFormState
+    line: OrderLineFormState,
   ) => {
     const newPrice = parseFloat(event.target.value);
     if (!isNaN(newPrice)) {
-      const newSubtotal = (line.quantity || 1) * newPrice - (line.discount || 0);
-      updateLine(line.tempId, { pricePerUnit: newPrice, subtotal: newSubtotal });
+      const newSubtotal =
+        (line.quantity || 1) * newPrice - (line.discount || 0);
+      updateLine(line.tempId, {
+        pricePerUnit: newPrice,
+        subtotal: newSubtotal,
+      });
       updateEditableLine(line.tempId, {
         pricePerUnit: newPrice,
       });
@@ -1768,22 +1998,30 @@ export default function UpdateOrder() {
 
   const recalculateOrderTotals = (order: Order): Order => {
     const subTotal = order.lines.reduce(
-      (sum, line) => sum + (line.quantity * line.pricePerUnit - (line.discount || 0)),
-      0
+      (sum, line) =>
+        sum + (line.quantity * line.pricePerUnit - (line.discount || 0)),
+      0,
     );
 
-    const totalUnits = order.lines.reduce((sum, line) => sum + line.quantity, 0);
+    const totalUnits = order.lines.reduce(
+      (sum, line) => sum + line.quantity,
+      0,
+    );
 
     const orderDiscount = order.discount || 0;
     const shippingCost = order.shippingCost || 0;
 
     const finalTaxes = (order.tax || []).map((taxRule) => {
       const taxableAmount = subTotal - orderDiscount;
-      const amount = (taxableAmount > 0 ? taxableAmount : 0) * (taxRule.value / 100);
+      const amount =
+        (taxableAmount > 0 ? taxableAmount : 0) * (taxRule.value / 100);
       return { ...taxRule, amount };
     });
 
-    const finalTotalTaxAmount = finalTaxes.reduce((sum, t) => sum + (t.amount || 0), 0);
+    const finalTotalTaxAmount = finalTaxes.reduce(
+      (sum, t) => sum + (t.amount || 0),
+      0,
+    );
 
     const total = subTotal - orderDiscount + shippingCost + finalTotalTaxAmount;
 
@@ -1797,20 +2035,29 @@ export default function UpdateOrder() {
     };
   };
 
-  const allowNumericWithDecimal = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const allowNumericWithDecimal = (
+    event: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
     const target = event.target as HTMLInputElement;
     if (
       !/[0-9.]/.test(event.key) &&
-      !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter'].includes(event.key)
+      ![
+        "Backspace",
+        "Delete",
+        "ArrowLeft",
+        "ArrowRight",
+        "Tab",
+        "Enter",
+      ].includes(event.key)
     ) {
       event.preventDefault();
     }
-    if (event.key === '.' && target.value.includes('.')) {
+    if (event.key === "." && target.value.includes(".")) {
       event.preventDefault();
     }
   };
 
-  console.log('Detalles de la orden:', order);
+  console.log("Detalles de la orden:", order);
 
   return (
     <Container maxWidth="lg" sx={{ py: { xs: 2, md: 3 } }}>
@@ -1821,32 +2068,37 @@ export default function UpdateOrder() {
             p: { xs: 2, md: 3 },
             borderRadius: 2,
             // mb: 3,
-            backgroundColor: 'transparent',
+            backgroundColor: "transparent",
           }}
         >
           <Grid2
             container
             sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
               // mb: 2,
-              flexWrap: 'wrap',
+              flexWrap: "wrap",
               gap: 2,
             }}
           >
             <Box>
-              <Typography variant="h4" component="h1" fontWeight="bold" color="secondary">
+              <Typography
+                variant="h4"
+                component="h1"
+                fontWeight="bold"
+                color="secondary"
+              >
                 Orden #{order.number || order._id?.toString().slice(-6)}
               </Typography>
               <Typography
                 variant="body2"
                 color="textSecondary"
-                sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}
+                sx={{ display: "flex", alignItems: "center", mt: 0.5 }}
               >
-                <CalendarToday fontSize="small" sx={{ mr: 0.5 }} /> Creada el:{' '}
+                <CalendarToday fontSize="small" sx={{ mr: 0.5 }} /> Creada el:{" "}
                 {formatDate(order.createdOn)}
-                {order.seller && ' por ' + order.seller}
+                {order.seller && " por " + order.seller}
               </Typography>
             </Box>
             <Button
@@ -1857,26 +2109,37 @@ export default function UpdateOrder() {
                 isSubmitting ||
                 isLoading ||
                 paymentVouchers.some(
-                  (img) => img.file && typeof img.progress === 'number' && img.progress < 100
+                  (img) =>
+                    img.file &&
+                    typeof img.progress === "number" &&
+                    img.progress < 100,
                 )
               }
               startIcon={
-                isSubmitting ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />
+                isSubmitting ? (
+                  <CircularProgress size={20} color="inherit" />
+                ) : (
+                  <SaveIcon />
+                )
               }
             >
-              {isSubmitting ? 'Guardando...' : 'Guardar Cambios'}
+              {isSubmitting ? "Guardando..." : "Guardar Cambios"}
             </Button>
           </Grid2>
           {order.shipping?.preferredDeliveryDate &&
-            getOverallOrderStatus(editableOrderLines) !== OrderStatus.Delivered &&
-            getOverallOrderStatus(editableOrderLines) !== OrderStatus.Canceled && (
+            getOverallOrderStatus(editableOrderLines) !==
+              OrderStatus.Delivered &&
+            getOverallOrderStatus(editableOrderLines) !==
+              OrderStatus.Canceled && (
               <Alert
                 severity="info"
                 icon={<LocalShippingOutlined />}
                 sx={{ borderRadius: 2, mt: 2 }}
               >
                 Fecha estimada de entrega:
-                <strong>{formatDate(order.shipping.preferredDeliveryDate, false)}</strong>
+                <strong>
+                  {formatDate(order.shipping.preferredDeliveryDate, false)}
+                </strong>
               </Alert>
             )}
         </Paper>
@@ -1887,19 +2150,27 @@ export default function UpdateOrder() {
           aria-label="basic tabs example"
         >
           <Tab label="Detalles" {...a11yProps(0)} />
-          {permissions?.orders.readPayDetails && <Tab label="Pago" {...a11yProps(1)} />}
-          {permissions?.orders.readHistory && <Tab label="Historial" {...a11yProps(2)} />}
+          {permissions?.orders.readPayDetails && (
+            <Tab label="Pago" {...a11yProps(1)} />
+          )}
+          {permissions?.orders.readHistory && (
+            <Tab label="Historial" {...a11yProps(2)} />
+          )}
         </Tabs>
 
         <CustomTabPanel value={activeStep} index={0}>
           <Grid2 container spacing={{ xs: 2, md: 3 }}>
             <Grid2 size={{ xs: 12 }} sx={{ mt: 2 }}>
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+              <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
                 {permissions?.orders.updateSeller ? (
-                  <FormControl size="small" disabled={isSubmitting} sx={{ minWidth: 200 }}>
+                  <FormControl
+                    size="small"
+                    disabled={isSubmitting}
+                    sx={{ minWidth: 200 }}
+                  >
                     <InputLabel>Vendedor</InputLabel>
                     <Select
-                      sx={{ width: '100%' }}
+                      sx={{ width: "100%" }}
                       value={order.seller}
                       onChange={(e) => handleSeller(e.target.value)}
                       label="Vendedor"
@@ -1923,13 +2194,18 @@ export default function UpdateOrder() {
                       value={getLatestOrderStatus(order)}
                       label="Estado"
                       onChange={(e) =>
-                        handleOrderStatusChange(e as SelectChangeEvent<OrderStatus>, order)
+                        handleOrderStatusChange(
+                          e as SelectChangeEvent<OrderStatus>,
+                          order,
+                        )
                       }
                     >
                       {Object.values(OrderStatus)
-                        .filter((v) => typeof v === 'number')
+                        .filter((v) => typeof v === "number")
                         .map((statusValue) => {
-                          const props = getStatusChipProps(statusValue as OrderStatus);
+                          const props = getStatusChipProps(
+                            statusValue as OrderStatus,
+                          );
                           return (
                             <MenuItem key={statusValue} value={statusValue}>
                               <Chip
@@ -1940,8 +2216,8 @@ export default function UpdateOrder() {
                                 variant="outlined"
                                 sx={{
                                   mr: 1,
-                                  borderRadius: '4px',
-                                  fontSize: '0.75rem',
+                                  borderRadius: "4px",
+                                  fontSize: "0.75rem",
                                 }}
                               />
                               {/* {props.label} */}
@@ -1950,7 +2226,7 @@ export default function UpdateOrder() {
                         })}
                     </Select>
                     {order.status && order.status.length > 0 && (
-                      <FormHelperText sx={{ textAlign: 'right' }}>
+                      <FormHelperText sx={{ textAlign: "right" }}>
                         Últ. act:
                         {formatDate(order.status[order.status.length - 1][1])}
                       </FormHelperText>
@@ -1959,15 +2235,15 @@ export default function UpdateOrder() {
                 ) : (
                   <Grid2
                     sx={{
-                      display: 'flex',
-                      marginLeft: '1rem',
-                      gap: '0.5rem',
-                      justifyContent: 'center',
-                      alignItems: 'top',
+                      display: "flex",
+                      marginLeft: "1rem",
+                      gap: "0.5rem",
+                      justifyContent: "center",
+                      alignItems: "top",
                     }}
                   >
                     <Typography variant="body2" color="textSecondary">
-                      Estado:{' '}
+                      Estado:{" "}
                     </Typography>
 
                     {Object.values(OrderStatus)
@@ -1984,8 +2260,8 @@ export default function UpdateOrder() {
                             variant="outlined"
                             sx={{
                               mr: 1,
-                              borderRadius: '4px',
-                              fontSize: '0.75rem',
+                              borderRadius: "4px",
+                              fontSize: "0.75rem",
                             }}
                           />
                         );
@@ -2002,14 +2278,16 @@ export default function UpdateOrder() {
                       onChange={(e) =>
                         handleOrderPayStatusChange(
                           e as SelectChangeEvent<GlobalPaymentStatus>,
-                          order
+                          order,
                         )
                       }
                     >
                       {Object.values(GlobalPaymentStatus)
-                        .filter((v) => typeof v === 'number')
+                        .filter((v) => typeof v === "number")
                         .map((statusValue) => {
-                          const props = getPayStatusChipProps(statusValue as GlobalPaymentStatus);
+                          const props = getPayStatusChipProps(
+                            statusValue as GlobalPaymentStatus,
+                          );
                           return (
                             <MenuItem key={statusValue} value={statusValue}>
                               <Chip
@@ -2020,8 +2298,8 @@ export default function UpdateOrder() {
                                 variant="outlined"
                                 sx={{
                                   mr: 1,
-                                  borderRadius: '4px',
-                                  fontSize: '0.75rem',
+                                  borderRadius: "4px",
+                                  fontSize: "0.75rem",
                                 }}
                               />
                             </MenuItem>
@@ -2029,7 +2307,7 @@ export default function UpdateOrder() {
                         })}
                     </Select>
                     {order.status && order.status.length > 0 && (
-                      <FormHelperText sx={{ textAlign: 'right' }}>
+                      <FormHelperText sx={{ textAlign: "right" }}>
                         Últ. act:
                         {formatDate(order.status[order.status.length - 1][1])}
                       </FormHelperText>
@@ -2038,22 +2316,24 @@ export default function UpdateOrder() {
                 ) : (
                   <Grid2
                     sx={{
-                      display: 'flex',
-                      marginLeft: '1rem',
-                      gap: '0.5rem',
-                      justifyContent: 'center',
-                      alignItems: 'top',
+                      display: "flex",
+                      marginLeft: "1rem",
+                      gap: "0.5rem",
+                      justifyContent: "center",
+                      alignItems: "top",
                     }}
                   >
                     <Typography variant="body2" color="textSecondary">
-                      Estado de pago:{' '}
+                      Estado de pago:{" "}
                     </Typography>
 
                     {Object.values(GlobalPaymentStatus)
                       .filter((v) => v === getLatestpayOrderStatus(order))
                       .map(() => {
                         const last = getLatestpayOrderStatus(order);
-                        const props = getPayStatusChipProps(last as GlobalPaymentStatus);
+                        const props = getPayStatusChipProps(
+                          last as GlobalPaymentStatus,
+                        );
                         return (
                           <Chip
                             icon={props.icon}
@@ -2063,8 +2343,8 @@ export default function UpdateOrder() {
                             variant="outlined"
                             sx={{
                               mr: 1,
-                              borderRadius: '4px',
-                              fontSize: '0.75rem',
+                              borderRadius: "4px",
+                              fontSize: "0.75rem",
                             }}
                           />
                         );
@@ -2074,20 +2354,31 @@ export default function UpdateOrder() {
               </Stack>
             </Grid2>
             <Grid2 size={{ xs: 12, lg: 7 }}>
-              <Typography variant="h5" fontWeight="medium" gutterBottom sx={{ mb: 2 }}>
+              <Typography
+                variant="h5"
+                fontWeight="medium"
+                gutterBottom
+                sx={{ mb: 2 }}
+              >
                 Artículos del Pedido
               </Typography>
               {editableOrderLines.map((line, index) => {
                 const lineStatus = getLatestStatus(line.status);
-                const productImageUrl = line.selectedProduct?.fullProduct.sources?.images?.[0]?.url;
+                const productImageUrl =
+                  line.selectedProduct?.fullProduct.sources?.images?.[0]?.url;
                 return (
-                  <Card key={line.tempId} sx={{ mb: 2.5, borderRadius: 2, boxShadow: 2 }}>
+                  <Card
+                    key={line.tempId}
+                    sx={{ mb: 2.5, borderRadius: 2, boxShadow: 2 }}
+                  >
                     <CardHeader
-                      title={`Item #${index + 1}: ${line.selectedProduct?.label || 'Seleccionar Producto'}`}
+                      title={`Item #${index + 1}: ${line.selectedProduct?.label || "Seleccionar Producto"}`}
                       action={
                         <IconButton
                           onClick={() => handleRemoveOrderLine(line.tempId)}
-                          disabled={isSubmitting || editableOrderLines.length <= 1}
+                          disabled={
+                            isSubmitting || editableOrderLines.length <= 1
+                          }
                         >
                           <DeleteIcon color="error" />
                         </IconButton>
@@ -2095,17 +2386,20 @@ export default function UpdateOrder() {
                     />
                     <CardContent sx={{ p: { xs: 2, md: 2.5 } }}>
                       <Grid2 container spacing={2} alignItems="flex-start">
-                        <Grid2 size={{ xs: 12 }} sx={{ textAlign: 'center', mb: { xs: 1, sm: 0 } }}>
+                        <Grid2
+                          size={{ xs: 12 }}
+                          sx={{ textAlign: "center", mb: { xs: 1, sm: 0 } }}
+                        >
                           <Avatar
                             variant="rounded"
                             src={productImageUrl}
-                            alt={line.selectedProduct?.label || 'Producto'}
+                            alt={line.selectedProduct?.label || "Producto"}
                             sx={{
                               width: { xs: 60, sm: 70 },
                               height: { xs: 60, sm: 70 },
-                              m: 'auto',
+                              m: "auto",
                               borderRadius: 1.5,
-                              border: '1px solid #eee',
+                              border: "1px solid #eee",
                             }}
                           />
                         </Grid2>
@@ -2117,30 +2411,47 @@ export default function UpdateOrder() {
                                   fullWidth
                                   options={artOptions}
                                   value={
-                                    line.selectedArt ? line.selectedArt : line.item?.art?.title
+                                    line.selectedArt
+                                      ? line.selectedArt
+                                      : line.item?.art?.title
                                   }
                                   onChange={(e, v) =>
-                                    handleArtSelection(line.tempId, v as ArtOption)
+                                    handleArtSelection(
+                                      line.tempId,
+                                      v as ArtOption,
+                                    )
                                   }
                                   disabled={isSubmitting}
                                   renderOption={(props, option) => (
                                     <Box
                                       component="li"
-                                      sx={{ '& > img': { mr: 2, flexShrink: 0 } }}
+                                      sx={{
+                                        "& > img": { mr: 2, flexShrink: 0 },
+                                      }}
                                       {...props}
-                                      key={typeof option === 'object' ? option.id : index + 1000}
+                                      key={
+                                        typeof option === "object"
+                                          ? option.id
+                                          : index + 1000
+                                      }
                                     >
                                       <Avatar
                                         variant="rounded"
-                                        src={typeof option === 'object' ? option.thumb : favicon}
+                                        src={
+                                          typeof option === "object"
+                                            ? option.thumb
+                                            : favicon
+                                        }
                                         sx={{
                                           width: 24,
                                           height: 24,
                                           mr: 1,
-                                          border: '1px solid lightgrey',
+                                          border: "1px solid lightgrey",
                                         }}
                                       />
-                                      {typeof option === 'object' ? option.label : option}
+                                      {typeof option === "object"
+                                        ? option.label
+                                        : option}
                                     </Box>
                                   )}
                                   renderInput={(params) => (
@@ -2151,7 +2462,7 @@ export default function UpdateOrder() {
                                       helperText={
                                         line.selectedArt?.fullArt.prixerUsername
                                           ? `Artista: ${line.selectedArt.fullArt.prixerUsername}`
-                                          : ''
+                                          : ""
                                       }
                                     />
                                   )}
@@ -2173,7 +2484,9 @@ export default function UpdateOrder() {
                                   fullWidth
                                   options={productOptions}
                                   value={line.selectedProduct}
-                                  onChange={(e, v) => handleProductSelection(line.tempId, v)}
+                                  onChange={(e, v) =>
+                                    handleProductSelection(line.tempId, v)
+                                  }
                                   disabled={isSubmitting}
                                   renderInput={(params) => (
                                     <TextField
@@ -2193,21 +2506,28 @@ export default function UpdateOrder() {
                                     {`Variante: ${
                                       line.item?.product?.selection
                                         ?.map((c) => `${c.name}: ${c.value}`)
-                                        .join(', ') || 'N/A'
+                                        .join(", ") || "N/A"
                                     }`}
                                   </Typography>
                                 </>
                               )}
                             </Grid2>
                           </Grid2>
-                          <Grid2 container spacing={1.5} alignItems="center" sx={{ mt: 1 }}>
+                          <Grid2
+                            container
+                            spacing={1.5}
+                            alignItems="center"
+                            sx={{ mt: 1 }}
+                          >
                             {permissions?.orders.updateItem && (
                               <Grid2 size={{ xs: 12, md: 6 }}>
                                 <Autocomplete
                                   fullWidth
                                   options={line.availableVariants}
                                   value={line.selectedVariant}
-                                  onChange={(e, v) => handleVariantSelection(line.tempId, v)}
+                                  onChange={(e, v) =>
+                                    handleVariantSelection(line.tempId, v)
+                                  }
                                   disabled={
                                     isSubmitting ||
                                     !line.selectedProduct ||
@@ -2220,13 +2540,15 @@ export default function UpdateOrder() {
                                       label="Variante *"
                                       required={
                                         !!(
-                                          line.selectedProduct && line.availableVariants.length > 0
+                                          line.selectedProduct &&
+                                          line.availableVariants.length > 0
                                         )
                                       }
                                       helperText={
-                                        line.availableVariants.length === 0 && line.selectedProduct
-                                          ? 'Sin variantes'
-                                          : ''
+                                        line.availableVariants.length === 0 &&
+                                        line.selectedProduct
+                                          ? "Sin variantes"
+                                          : ""
                                       }
                                     />
                                   )}
@@ -2239,7 +2561,9 @@ export default function UpdateOrder() {
                                   label="Cant."
                                   type="number"
                                   value={line.quantity || 1}
-                                  onChange={(e) => handleQuantityChange(line.tempId, e)}
+                                  onChange={(e) =>
+                                    handleQuantityChange(line.tempId, e)
+                                  }
                                   required
                                   fullWidth
                                   size="small"
@@ -2250,8 +2574,11 @@ export default function UpdateOrder() {
                                 <Typography variant="h6">{`Producto: ${line.quantity}`}</Typography>
                               )}
                             </Grid2>
-                            <Grid2 size={{ xs: 6, md: 3 }} sx={{ textAlign: 'right' }}>
-                              {permissions?.area !== 'Master' ? (
+                            <Grid2
+                              size={{ xs: 6, md: 3 }}
+                              sx={{ textAlign: "right" }}
+                            >
+                              {permissions?.area === "Master" ? (
                                 <TextField
                                   fullWidth
                                   variant="outlined"
@@ -2260,48 +2587,69 @@ export default function UpdateOrder() {
                                   label="Precio unitario"
                                   // defaultValue={(line.pricePerUnit || 0).toFixed(2)}
                                   value={(line.pricePerUnit || 0).toFixed(2)}
-                                  onChange={(e) => handlePricePerUnitChange(e, line)}
+                                  onChange={(e) =>
+                                    handlePricePerUnitChange(e, line)
+                                  }
                                   onKeyDown={allowNumericWithDecimal}
                                   sx={{
                                     mb: 1,
-                                    '& .MuiInputBase-input': {
-                                      textAlign: 'right',
+                                    "& .MuiInputBase-input": {
+                                      textAlign: "right",
                                     },
                                   }}
                                   slotProps={{
                                     input: {
                                       startAdornment: (
-                                        <InputAdornment position="start">$</InputAdornment>
+                                        <InputAdornment position="start">
+                                          $
+                                        </InputAdornment>
                                       ),
                                     },
                                   }}
                                 />
                               ) : (
+                                permissions?.area !== "Master" &&
                                 permissions?.orders.readPayDetails && (
-                                  <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                                  <Typography
+                                    variant="body2"
+                                    sx={{ fontWeight: "medium" }}
+                                  >
                                     $
-                                    {(line?.item?.price ? Number(line?.item?.price) : 0).toFixed(2)}{' '}
+                                    {(line?.item?.price
+                                      ? Number(line?.item?.price)
+                                      : 0
+                                    ).toFixed(2)}{" "}
                                     c/u
                                   </Typography>
                                 )
                               )}
-                              {permissions?.orders.readPayDetails && (
-                                <Typography variant="subtitle2" color="primary.main">
-                                  $
-                                  {(
-                                    (line.quantity || 0) *
-                                    (line?.pricePerUnit ? Number(line?.pricePerUnit) : 0)
-                                  ).toFixed(2)}
-                                </Typography>
-                              )}
+                              {permissions?.area !== "Master" &&
+                                permissions?.orders.readPayDetails && (
+                                  <Typography
+                                    variant="subtitle2"
+                                    color="primary.main"
+                                  >
+                                    $
+                                    {(
+                                      (line.quantity || 0) *
+                                      (line?.pricePerUnit
+                                        ? Number(line?.pricePerUnit)
+                                        : 0)
+                                    ).toFixed(2)}
+                                  </Typography>
+                                )}
                             </Grid2>
                           </Grid2>
                         </Grid2>
                       </Grid2>
-                      <Box sx={{ mt: 2, borderTop: '1px solid #eee', pt: 2 }}>
+                      <Box sx={{ mt: 2, borderTop: "1px solid #eee", pt: 2 }}>
                         <Grid2 container spacing={2}>
                           <Grid2 size={{ xs: 12, md: 6 }}>
-                            <Typography variant="caption" color="text.secondary" gutterBottom>
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                              gutterBottom
+                            >
                               Historial de Estado del Item:
                             </Typography>
                             {line.status && line.status.length > 0 ? (
@@ -2309,18 +2657,20 @@ export default function UpdateOrder() {
                                 position="right"
                                 sx={{
                                   p: 0,
-                                  '& .MuiTimelineOppositeContent-root': {
-                                    flex: '0 0 120px',
+                                  "& .MuiTimelineOppositeContent-root": {
+                                    flex: "0 0 120px",
                                     minWidth: 120,
                                     pr: 1,
                                   },
-                                  '& .MuiTimelineContent-root': { pl: 1 },
+                                  "& .MuiTimelineContent-root": { pl: 1 },
                                 }}
                               >
                                 {line.status
                                   .slice()
                                   .sort(
-                                    (a, b) => new Date(a[1]).getTime() - new Date(b[1]).getTime()
+                                    (a, b) =>
+                                      new Date(a[1]).getTime() -
+                                      new Date(b[1]).getTime(),
                                   )
                                   .map(([st, date], idx, arr) => {
                                     const chip = getStatusChipProps(st);
@@ -2328,12 +2678,17 @@ export default function UpdateOrder() {
                                       <TimelineItem
                                         key={idx}
                                         sx={{
-                                          minHeight: 'auto',
+                                          minHeight: "auto",
                                           mt: idx === 0 ? 0.5 : 0,
                                         }}
                                       >
-                                        <TimelineOppositeContent sx={{ py: 0.2 }}>
-                                          <Typography variant="caption" color="text.secondary">
+                                        <TimelineOppositeContent
+                                          sx={{ py: 0.2 }}
+                                        >
+                                          <Typography
+                                            variant="caption"
+                                            color="text.secondary"
+                                          >
                                             {formatDate(date, true)}
                                           </Typography>
                                         </TimelineOppositeContent>
@@ -2344,42 +2699,66 @@ export default function UpdateOrder() {
                                               color={chip.color as any}
                                               sx={{ p: 0.3 }}
                                             >
-                                              {React.cloneElement(chip.icon || <InfoIcon />, {
-                                                sx: { fontSize: '0.8rem' },
-                                              })}
+                                              {React.cloneElement(
+                                                chip.icon || <InfoIcon />,
+                                                {
+                                                  sx: { fontSize: "0.8rem" },
+                                                },
+                                              )}
                                             </TimelineDot>
                                           </Tooltip>
                                           {idx < arr.length - 1 && (
-                                            <TimelineConnector sx={{ minHeight: '10px' }} />
+                                            <TimelineConnector
+                                              sx={{ minHeight: "10px" }}
+                                            />
                                           )}
                                         </TimelineSeparator>
                                         <TimelineContent sx={{ py: 0.2 }}>
-                                          <Typography variant="caption">{chip.label}</Typography>
+                                          <Typography variant="caption">
+                                            {chip.label}
+                                          </Typography>
                                         </TimelineContent>
                                       </TimelineItem>
                                     );
                                   })}
                               </Timeline>
                             ) : (
-                              <Typography variant="caption" color="text.secondary">
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                              >
                                 Sin historial
                               </Typography>
                             )}
                           </Grid2>
-                          <Grid2 size={{ xs: 12, md: 6 }} sx={{ mt: { xs: 1, md: 0 } }}>
-                            <FormControl size="small" fullWidth disabled={isSubmitting}>
+                          <Grid2
+                            size={{ xs: 12, md: 6 }}
+                            sx={{ mt: { xs: 1, md: 0 } }}
+                          >
+                            <FormControl
+                              size="small"
+                              fullWidth
+                              disabled={isSubmitting}
+                            >
                               <InputLabel>Estado Actual Item</InputLabel>
                               <Select
                                 value={lineStatus}
                                 label="Estado Actual Item"
-                                onChange={(e) => handleStatusChange(line.tempId, e)}
+                                onChange={(e) =>
+                                  handleStatusChange(line.tempId, e)
+                                }
                               >
                                 {Object.values(OrderStatus)
-                                  .filter((v) => typeof v === 'number')
+                                  .filter((v) => typeof v === "number")
                                   .map((statusValue) => {
-                                    const props = getStatusChipProps(statusValue as OrderStatus);
+                                    const props = getStatusChipProps(
+                                      statusValue as OrderStatus,
+                                    );
                                     return (
-                                      <MenuItem key={statusValue} value={statusValue}>
+                                      <MenuItem
+                                        key={statusValue}
+                                        value={statusValue}
+                                      >
                                         <Chip
                                           icon={props.icon}
                                           label={props.label}
@@ -2388,8 +2767,8 @@ export default function UpdateOrder() {
                                           variant="outlined"
                                           sx={{
                                             mr: 1,
-                                            borderRadius: '4px',
-                                            fontSize: '0.75rem',
+                                            borderRadius: "4px",
+                                            fontSize: "0.75rem",
                                           }}
                                         />
                                         {props.label}
@@ -2398,9 +2777,11 @@ export default function UpdateOrder() {
                                   })}
                               </Select>
                               {line.status && line.status.length > 0 && (
-                                <FormHelperText sx={{ textAlign: 'right' }}>
+                                <FormHelperText sx={{ textAlign: "right" }}>
                                   Últ. act:
-                                  {formatDate(line.status[line.status.length - 1][1])}
+                                  {formatDate(
+                                    line.status[line.status.length - 1][1],
+                                  )}
                                 </FormHelperText>
                               )}
                             </FormControl>
@@ -2411,7 +2792,7 @@ export default function UpdateOrder() {
                   </Card>
                 );
               })}
-              {permissions?.area !== 'Master' && (
+              {permissions?.area !== "Master" && (
                 <Button
                   type="button"
                   variant="outlined"
@@ -2425,39 +2806,44 @@ export default function UpdateOrder() {
             </Grid2>
             <Grid2 size={{ xs: 12, lg: 5 }}>
               {permissions?.orders.readPayDetails && (
-                <Paper elevation={1} sx={{ p: { xs: 2, md: 2.5 }, mb: 2.5, borderRadius: 2 }}>
+                <Paper
+                  elevation={1}
+                  sx={{ p: { xs: 2, md: 2.5 }, mb: 2.5, borderRadius: 2 }}
+                >
                   <Typography
                     variant="h6"
                     gutterBottom
-                    sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}
+                    sx={{ display: "flex", alignItems: "center", mb: 1.5 }}
                   >
-                    <ReceiptOutlined sx={{ mr: 1, color: 'primary.main' }} />
+                    <ReceiptOutlined sx={{ mr: 1, color: "primary.main" }} />
                     Resumen del Pedido
                   </Typography>
                   <List dense disablePadding>
                     {renderBasicInfoItem(
-                      'summary-subtotal',
+                      "summary-subtotal",
                       null,
-                      'Subtotal:',
-                      `$${(displayTotals?.subTotal ?? order.subTotal).toFixed(2)}`
+                      "Subtotal:",
+                      `$${(displayTotals?.subTotal ?? order.subTotal).toFixed(2)}`,
                     )}
                     {(displayTotals?.discount ?? order.discount)
                       ? renderBasicInfoItem(
-                          'summary-discount',
+                          "summary-discount",
                           null,
-                          'Descuento:',
+                          "Descuento:",
                           <Typography color="error.main">
                             -$
-                            {(displayTotals?.discount ?? order.discount)?.toFixed(2)}
-                          </Typography>
+                            {(
+                              displayTotals?.discount ?? order.discount
+                            )?.toFixed(2)}
+                          </Typography>,
                         )
                       : null}
                     {(displayTotals?.shippingCost ?? order.shippingCost)
                       ? renderBasicInfoItem(
-                          'summary-shipping',
+                          "summary-shipping",
                           null,
-                          'Costo de Envío:',
-                          `$${(displayTotals?.shippingCost ?? order.shippingCost)?.toFixed(2)}`
+                          "Costo de Envío:",
+                          `$${(displayTotals?.shippingCost ?? order.shippingCost)?.toFixed(2)}`,
                         )
                       : null}
                     {(displayTotals?.taxes ?? order.tax).map((t, idx) =>
@@ -2465,11 +2851,13 @@ export default function UpdateOrder() {
                         `summary-tax-${idx}`,
                         null,
                         `${t.name} (${t.value}%):`,
-                        `$${t.amount.toFixed(2)}`
-                      )
+                        `$${t.amount.toFixed(2)}`,
+                      ),
                     )}
                     <Divider sx={{ my: 1 }} />
-                    <ListItem sx={{ py: 1, px: 0, justifyContent: 'space-between' }}>
+                    <ListItem
+                      sx={{ py: 1, px: 0, justifyContent: "space-between" }}
+                    >
                       <Typography variant="h6" fontWeight="bold">
                         Total:
                       </Typography>
@@ -2477,7 +2865,7 @@ export default function UpdateOrder() {
                         ${(displayTotals?.total ?? order.total).toFixed(2)}
                       </Typography>
                     </ListItem>
-                    <ListItem sx={{ px: 0, justifyContent: 'space-between' }}>
+                    <ListItem sx={{ px: 0, justifyContent: "space-between" }}>
                       <Typography variant="body2">Items Totales:</Typography>
                       <Typography variant="body2">
                         {displayTotals?.totalUnits ?? order.totalUnits}
@@ -2497,9 +2885,9 @@ export default function UpdateOrder() {
                       <Typography
                         variant="h6"
                         gutterBottom
-                        sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
+                        sx={{ display: "flex", alignItems: "center", mb: 1 }}
                       >
-                        <PersonOutline sx={{ mr: 1, color: 'primary.main' }} />
+                        <PersonOutline sx={{ mr: 1, color: "primary.main" }} />
                         Detalles del Cliente
                       </Typography>
                       {editableClientInfo && (
@@ -2536,7 +2924,7 @@ export default function UpdateOrder() {
                             name="email"
                             label="Email Cliente"
                             type="email"
-                            value={editableClientInfo.email || ''}
+                            value={editableClientInfo.email || ""}
                             onChange={handleClientInfoChange}
                             variant="outlined"
                             size="small"
@@ -2558,13 +2946,18 @@ export default function UpdateOrder() {
                       )}
                     </Paper>
                   )}
-                  <Paper elevation={1} sx={{ p: { xs: 2, md: 2.5 }, mb: 2.5, borderRadius: 2 }}>
+                  <Paper
+                    elevation={1}
+                    sx={{ p: { xs: 2, md: 2.5 }, mb: 2.5, borderRadius: 2 }}
+                  >
                     <Typography
                       variant="h6"
                       gutterBottom
-                      sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}
+                      sx={{ display: "flex", alignItems: "center", mb: 1.5 }}
                     >
-                      <LocalShippingOutlined sx={{ mr: 1, color: 'primary.main' }} />
+                      <LocalShippingOutlined
+                        sx={{ mr: 1, color: "primary.main" }}
+                      />
                       Envío y Facturación
                     </Typography>
                     <Autocomplete
@@ -2596,9 +2989,12 @@ export default function UpdateOrder() {
                         />
                       )}
                     />
-                    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
+                    <LocalizationProvider
+                      dateAdapter={AdapterDayjs}
+                      adapterLocale="es"
+                    >
                       <DatePicker
-                        sx={{ width: '100%' }}
+                        sx={{ width: "100%" }}
                         label="Fecha estimada de entrega"
                         value={prefDate}
                         format="DD/MM/YYYY"
@@ -2621,17 +3017,19 @@ export default function UpdateOrder() {
                             isDisabled={isSubmitting}
                           />
                         )}
-                        {!editableShippingAddress?.address?.line1 && !isPickupSelected && (
-                          <FormHelperText error sx={{ mb: 1 }}>
-                            La dirección de envío es requerida y debe estar completa.
-                          </FormHelperText>
-                        )}
+                        {!editableShippingAddress?.address?.line1 &&
+                          !isPickupSelected && (
+                            <FormHelperText error sx={{ mb: 1 }}>
+                              La dirección de envío es requerida y debe estar
+                              completa.
+                            </FormHelperText>
+                          )}
                       </>
                     )}
                     {isPickupSelected && (
                       <Alert severity="info" sx={{ mb: 2 }}>
-                        El método de envío seleccionado es Recogida en Tienda. No se requiere
-                        dirección de envío.
+                        El método de envío seleccionado es Recogida en Tienda.
+                        No se requiere dirección de envío.
                       </Alert>
                     )}
                     <FormControlLabel
@@ -2668,7 +3066,8 @@ export default function UpdateOrder() {
                         )}
                         {!editableBillingAddress?.address?.line1 && (
                           <FormHelperText error>
-                            La dirección de facturación es requerida y debe estar completa.
+                            La dirección de facturación es requerida y debe
+                            estar completa.
                           </FormHelperText>
                         )}
                       </>
@@ -2703,14 +3102,18 @@ export default function UpdateOrder() {
                       )}
                     />
                     {selectedPaymentMethod &&
-                      (selectedPaymentMethod.fullMethod as PaymentMethod).instructions && (
+                      (selectedPaymentMethod.fullMethod as PaymentMethod)
+                        .instructions && (
                         <Typography
                           variant="caption"
                           color="text.secondary"
                           display="block"
                           sx={{ ml: 0.5, mb: 1 }}
                         >
-                          {(selectedPaymentMethod.fullMethod as PaymentMethod).instructions}
+                          {
+                            (selectedPaymentMethod.fullMethod as PaymentMethod)
+                              .instructions
+                          }
                         </Typography>
                       )}
                   </Paper>
@@ -2724,16 +3127,16 @@ export default function UpdateOrder() {
                   <Typography
                     variant="h6"
                     gutterBottom
-                    sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
+                    sx={{ display: "flex", alignItems: "center", mb: 1 }}
                   >
-                    <PersonOutline sx={{ mr: 1, color: 'primary.main' }} />
+                    <PersonOutline sx={{ mr: 1, color: "primary.main" }} />
                     Detalles del Cliente
                   </Typography>
                   {editableClientInfo && (
                     <Typography
                       variant="h6"
                       gutterBottom
-                      sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
+                      sx={{ display: "flex", alignItems: "center", mb: 1 }}
                     >
                       {`Nombre: ${editableClientInfo.name} ${editableClientInfo.lastName}`}
                     </Typography>
@@ -2741,19 +3144,22 @@ export default function UpdateOrder() {
                   <Typography
                     variant="h6"
                     gutterBottom
-                    sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
+                    sx={{ display: "flex", alignItems: "center", mb: 1 }}
                   >
                     {`Método de entrega: ${order.shipping.method.name}`}
                   </Typography>
                 </Paper>
               )}
-              <Paper elevation={1} sx={{ p: { xs: 2, md: 2.5 }, mb: 2.5, borderRadius: 2 }}>
+              <Paper
+                elevation={1}
+                sx={{ p: { xs: 2, md: 2.5 }, mb: 2.5, borderRadius: 2 }}
+              >
                 <Typography
                   variant="h6"
                   gutterBottom
-                  sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
+                  sx={{ display: "flex", alignItems: "center", mb: 1 }}
                 >
-                  <InfoOutlined sx={{ mr: 1, color: 'primary.main' }} />
+                  <InfoOutlined sx={{ mr: 1, color: "primary.main" }} />
                   Observaciones del Cliente
                 </Typography>
                 <TextField
@@ -2769,13 +3175,16 @@ export default function UpdateOrder() {
                 />
               </Paper>
               {order.seller && (
-                <Paper elevation={1} sx={{ p: { xs: 2, md: 2.5 }, borderRadius: 2 }}>
+                <Paper
+                  elevation={1}
+                  sx={{ p: { xs: 2, md: 2.5 }, borderRadius: 2 }}
+                >
                   <Typography
                     variant="h6"
                     gutterBottom
-                    sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
+                    sx={{ display: "flex", alignItems: "center", mb: 1 }}
                   >
-                    <StorefrontOutlined sx={{ mr: 1, color: 'primary.main' }} />
+                    <StorefrontOutlined sx={{ mr: 1, color: "primary.main" }} />
                     Información del Vendedor
                   </Typography>
                   <Typography variant="body2" color="textSecondary">
@@ -2795,11 +3204,12 @@ export default function UpdateOrder() {
                     variant="outlined"
                     sx={{
                       p: prevPayments.length > 0 ? 1 : 2,
-                      minHeight: prevPayments.length > 0 ? 'auto' : 100,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: prevPayments.length > 0 ? 'flex-start' : 'center',
-                      flexWrap: 'wrap',
+                      minHeight: prevPayments.length > 0 ? "auto" : 100,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent:
+                        prevPayments.length > 0 ? "flex-start" : "center",
+                      flexWrap: "wrap",
                       gap: 1,
                     }}
                   >
@@ -2812,15 +3222,17 @@ export default function UpdateOrder() {
                             ) : (
                               <Box
                                 sx={{
-                                  width: '100%',
-                                  height: '100%',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  bgcolor: 'grey.200',
+                                  width: "100%",
+                                  height: "100%",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  bgcolor: "grey.200",
                                 }}
                               >
-                                <BrokenImageIcon sx={{ fontSize: 30, color: 'grey.400' }} />
+                                <BrokenImageIcon
+                                  sx={{ fontSize: 30, color: "grey.400" }}
+                                />
                               </Box>
                             )}
                             <IconButton
@@ -2828,24 +3240,26 @@ export default function UpdateOrder() {
                               onClick={() => handleRemoveVoucherImage(pay.id)}
                               disabled={isSubmitting}
                               sx={{
-                                position: 'absolute',
+                                position: "absolute",
                                 top: 6,
                                 right: 6,
-                                backgroundColor: 'rgba(255,255,255,0.8)',
-                                '&:hover': {
-                                  backgroundColor: 'rgba(255,255,255,1)',
+                                backgroundColor: "rgba(255,255,255,0.8)",
+                                "&:hover": {
+                                  backgroundColor: "rgba(255,255,255,1)",
                                 },
                                 p: 0.2,
                               }}
                               color="error"
                             >
-                              <DeleteIcon sx={{ fontSize: '1rem' }} />
+                              <DeleteIcon sx={{ fontSize: "1rem" }} />
                             </IconButton>
                             <Grid2 size={{ xs: 12 }}>
                               <Typography color="secondary">
                                 Método de pago: {pay.method?.label}
                               </Typography>
-                              <Typography color="secondary">Monto: ${pay.amount}</Typography>
+                              <Typography color="secondary">
+                                Monto: ${pay.amount}
+                              </Typography>
                               <Typography color="secondary">
                                 Descripción: {pay.description}
                               </Typography>
@@ -2854,13 +3268,15 @@ export default function UpdateOrder() {
                         </Box>
                       ))
                     ) : (
-                      <Typography sx={{ color: 'text.secondary', fontStyle: 'italic' }}>
+                      <Typography
+                        sx={{ color: "text.secondary", fontStyle: "italic" }}
+                      >
                         No se han cargado comprobantes de pago aún.
                       </Typography>
                     )}
                   </Paper>
                   <Button
-                    sx={{ margin: '2rem auto', width: '100%' }}
+                    sx={{ margin: "2rem auto", width: "100%" }}
                     onClick={() => setOpenNewPay(true)}
                     variant="outlined"
                     startIcon={<AddCircleOutline />}
@@ -2876,12 +3292,12 @@ export default function UpdateOrder() {
                   >
                     <Box
                       sx={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
                         width: 800,
-                        bgcolor: 'background.paper',
+                        bgcolor: "background.paper",
                         boxShadow: 24,
                         borderRadius: 2,
                         pt: 2,
@@ -2892,7 +3308,7 @@ export default function UpdateOrder() {
                       <Typography
                         variant="h5"
                         gutterBottom
-                        sx={{ margin: 2, textAlign: 'center' }}
+                        sx={{ margin: 2, textAlign: "center" }}
                         color="secondary"
                       >
                         Registrar nuevo pago
@@ -2903,55 +3319,72 @@ export default function UpdateOrder() {
                             variant="outlined"
                             sx={{
                               p: 2,
-                              display: 'flex',
-                              flexDirection: 'column',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              height: '100%',
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              height: "100%",
                               minHeight: 200,
                             }}
                           >
                             {currentVoucherImage ? (
-                              <Box sx={{ mb: 2, width: '100%', textAlign: 'center' }}>
+                              <Box
+                                sx={{
+                                  mb: 2,
+                                  width: "100%",
+                                  textAlign: "center",
+                                }}
+                              >
                                 <img
                                   src={currentVoucherImage.url}
                                   alt="Previsualización"
                                   style={{
-                                    maxWidth: '100%',
+                                    maxWidth: "100%",
                                     maxHeight: 150,
-                                    objectFit: 'contain',
+                                    objectFit: "contain",
                                   }}
                                 />
-                                <Typography variant="caption" display="block" sx={{ mt: 0.5 }}>
+                                <Typography
+                                  variant="caption"
+                                  display="block"
+                                  sx={{ mt: 0.5 }}
+                                >
                                   {currentVoucherImage?.file?.name.slice(12)}
                                 </Typography>
                               </Box>
                             ) : (
                               <Typography
                                 sx={{
-                                  color: 'text.secondary',
-                                  fontStyle: 'italic',
+                                  color: "text.secondary",
+                                  fontStyle: "italic",
                                   mb: 2,
                                 }}
                               >
                                 Sube una imagen del comprobante.
                               </Typography>
                             )}
-                            <Grid2 size={{ xs: 12 }} sx={{ margin: '40px auto' }}>
+                            <Grid2
+                              size={{ xs: 12 }}
+                              sx={{ margin: "40px auto" }}
+                            >
                               <input
                                 type="file"
                                 accept="image/png, image/jpeg, image/webp"
                                 onChange={handleVoucherImageSelect}
-                                style={{ display: 'none' }}
+                                style={{ display: "none" }}
                                 id="voucher-image-input"
-                                disabled={isSubmitting || paymentVouchers.length >= 6}
+                                disabled={
+                                  isSubmitting || paymentVouchers.length >= 6
+                                }
                               />
                               <label htmlFor="voucher-image-input">
                                 <Button
                                   variant="outlined"
                                   component="span"
                                   startIcon={<PhotoCameraBackIcon />}
-                                  disabled={isSubmitting || paymentVouchers.length >= 6}
+                                  disabled={
+                                    isSubmitting || paymentVouchers.length >= 6
+                                  }
                                   fullWidth
                                 >
                                   Añadir Comprobante
@@ -2982,12 +3415,20 @@ export default function UpdateOrder() {
 
                         <Grid2 size={{ xs: 12, md: 8 }}>
                           <Stack spacing={2}>
-                            <FormControl fullWidth variant="outlined" disabled={isSubmitting}>
-                              <InputLabel id="payment-method-label">Método de Pago</InputLabel>
+                            <FormControl
+                              fullWidth
+                              variant="outlined"
+                              disabled={isSubmitting}
+                            >
+                              <InputLabel id="payment-method-label">
+                                Método de Pago
+                              </InputLabel>
                               <Select
                                 labelId="payment-method-label"
                                 value={currentMethod?.label}
-                                onChange={(e) => handleSelectedMethod(e.target.value)}
+                                onChange={(e) =>
+                                  handleSelectedMethod(e.target.value)
+                                }
                                 label="Método de Pago"
                               >
                                 {paymentMethodOptions.map((method) => (
@@ -3004,10 +3445,16 @@ export default function UpdateOrder() {
                               required
                               type="number"
                               value={currentAmount}
-                              onChange={(e) => setCurrentAmount(Number(e.target.value))}
+                              onChange={(e) =>
+                                setCurrentAmount(Number(e.target.value))
+                              }
                               disabled={isSubmitting}
                               InputProps={{
-                                startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                                startAdornment: (
+                                  <InputAdornment position="start">
+                                    $
+                                  </InputAdornment>
+                                ),
                               }}
                             />
 
@@ -3016,7 +3463,9 @@ export default function UpdateOrder() {
                               variant="outlined"
                               fullWidth
                               value={currentDescription}
-                              onChange={(e) => setCurrentDescription(e.target.value)}
+                              onChange={(e) =>
+                                setCurrentDescription(e.target.value)
+                              }
                               disabled={isSubmitting}
                             />
                             <Button
@@ -3024,8 +3473,10 @@ export default function UpdateOrder() {
                               color="primary"
                               startIcon={<SaveIcon />}
                               onClick={handleAddPaymentVoucher}
-                              disabled={isSubmitting || !currentAmount || !currentMethod}
-                              sx={{ alignSelf: 'flex-start' }}
+                              disabled={
+                                isSubmitting || !currentAmount || !currentMethod
+                              }
+                              sx={{ alignSelf: "flex-start" }}
                             >
                               Guardar registro de Pago
                             </Button>
@@ -3043,7 +3494,11 @@ export default function UpdateOrder() {
           <CustomTabPanel value={activeStep} index={2}>
             <TableContainer component={Paper}>
               <Table>
-                <TableHead sx={{ backgroundColor: (theme) => theme.palette.action.hover }}>
+                <TableHead
+                  sx={{
+                    backgroundColor: (theme) => theme.palette.action.hover,
+                  }}
+                >
                   <TableRow>
                     <TableCell align="center">Fecha</TableCell>
                     <TableCell align="center">Descripción</TableCell>
@@ -3056,17 +3511,17 @@ export default function UpdateOrder() {
                     order.history.map((mov) => (
                       <TableRow>
                         <TableCell align="center">
-                          <Typography style={{ fontSize: '14px' }}>
+                          <Typography style={{ fontSize: "14px" }}>
                             {new Date(mov.timestamp)
-                              .toLocaleString('en-GB', {
-                                timeZone: 'UTC',
+                              .toLocaleString("en-GB", {
+                                timeZone: "UTC",
                               })
                               .slice(0, 10)}
                           </Typography>
                         </TableCell>
 
                         <TableCell align="center">
-                          <Typography style={{ fontSize: '14px' }}>
+                          <Typography style={{ fontSize: "14px" }}>
                             <div data-color-mode="light">
                               <MDEditor.Markdown source={mov.description} />
                             </div>
@@ -3076,7 +3531,7 @@ export default function UpdateOrder() {
                         <TableCell align="center">
                           <Typography
                             style={{
-                              fontSize: '14px',
+                              fontSize: "14px",
                             }}
                           >
                             {mov.user}
@@ -3099,24 +3554,24 @@ export default function UpdateOrder() {
 
       {imageSrcForCropper &&
         imageToCropDetails &&
-        imageToCropDetails.targetType === 'paymentVoucher' && (
+        imageToCropDetails.targetType === "paymentVoucher" && (
           <Dialog
             open={cropModalOpen}
             onClose={closeAndResetCropper}
             maxWidth="lg"
             PaperProps={{
-              sx: { minWidth: { xs: '90vw', sm: '70vw', md: '50vw' } },
+              sx: { minWidth: { xs: "90vw", sm: "70vw", md: "50vw" } },
             }}
           >
             <DialogTitle>
               Recortar Comprobante (Aspecto
-              {VOUCHER_IMAGE_ASPECT === 0 ? 'Libre' : 'Definido'})
+              {VOUCHER_IMAGE_ASPECT === 0 ? "Libre" : "Definido"})
             </DialogTitle>
             <DialogContent
               sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
                 p: { xs: 1, sm: 2 },
               }}
             >
@@ -3124,7 +3579,9 @@ export default function UpdateOrder() {
                 crop={crop}
                 onChange={(_, percentCrop) => setCrop(percentCrop)}
                 onComplete={(c) => setCompletedCrop(c)}
-                aspect={VOUCHER_IMAGE_ASPECT > 0 ? VOUCHER_IMAGE_ASPECT : undefined}
+                aspect={
+                  VOUCHER_IMAGE_ASPECT > 0 ? VOUCHER_IMAGE_ASPECT : undefined
+                }
                 minWidth={100}
                 minHeight={100}
                 keepSelection
@@ -3134,13 +3591,13 @@ export default function UpdateOrder() {
                   src={imageSrcForCropper}
                   onLoad={onVoucherImageLoadInCropper}
                   style={{
-                    maxHeight: '70vh',
-                    maxWidth: '100%',
-                    objectFit: 'contain',
+                    maxHeight: "70vh",
+                    maxWidth: "100%",
+                    objectFit: "contain",
                   }}
                 />
               </ReactCrop>
-              <canvas ref={previewCanvasRef} style={{ display: 'none' }} />
+              <canvas ref={previewCanvasRef} style={{ display: "none" }} />
             </DialogContent>
             <DialogActions sx={{ p: { xs: 1, sm: 2 } }}>
               <Button onClick={closeAndResetCropper} disabled={isSubmitting}>
@@ -3149,7 +3606,11 @@ export default function UpdateOrder() {
               <Button
                 onClick={handleConfirmVoucherCropAndUpload}
                 variant="contained"
-                disabled={!completedCrop?.width || !completedCrop?.height || isSubmitting}
+                disabled={
+                  !completedCrop?.width ||
+                  !completedCrop?.height ||
+                  isSubmitting
+                }
               >
                 Confirmar y Subir Comprobante
               </Button>

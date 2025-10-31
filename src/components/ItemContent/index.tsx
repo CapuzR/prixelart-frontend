@@ -1,21 +1,21 @@
-import { Item } from "types/order.types"
-import styles from "./styles.module.scss"
-import { Typography } from "@mui/material"
-import Grid2 from "@mui/material/Grid"
-import useMediaQuery from "@mui/material/useMediaQuery"
-import { useTheme } from "@mui/material/styles"
+import { Item } from "types/order.types";
+import styles from "./styles.module.scss";
+import { Typography } from "@mui/material";
+import Grid2 from "@mui/material/Grid";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
 
 export interface ItemContentProps {
-  item: Item
-  direction?: "row" | "column"
+  item: Item;
+  direction?: "row" | "column";
 }
 
 export default function ItemContent({
   item,
   direction = "row",
 }: ItemContentProps) {
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const getSelectedAttributes = () => {
     return (item.product?.selection || [])
@@ -25,18 +25,18 @@ export default function ItemContent({
         <Typography key={index} variant={isMobile ? "subtitle2" : "h5"}>
           <strong>{attr.name}</strong>: {attr.value}
         </Typography>
-      ))
-  }
+      ));
+  };
 
   return (
     <Grid2
       container
       className={`${styles["content-section"]} ${styles[direction]}`}
       spacing={5}
-      sx={{ flexDirection: isMobile ? "column" : "row", gap: '1rem' }}
+      sx={{ flexDirection: isMobile ? "column" : "row", gap: "1rem" }}
     >
       <Grid2
-        size={{ xs: 12}}
+        size={{ xs: 12 }}
         className={`${styles["product-section"]} ${direction === "row" && styles["paper"]}`}
       >
         <Typography variant={isMobile ? "subtitle2" : "h5"} color="inherit">
@@ -59,5 +59,5 @@ export default function ItemContent({
         )}
       </Grid2>
     </Grid2>
-  )
+  );
 }

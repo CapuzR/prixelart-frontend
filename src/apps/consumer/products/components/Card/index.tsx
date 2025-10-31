@@ -1,29 +1,29 @@
-import Button from "components/Button"
-import Typography from "@mui/material/Typography"
-import Grid2 from "@mui/material/Grid"
-import { WhatsApp, AddShoppingCart } from "@mui/icons-material"
-import { formatNumberString, formatRange } from "utils/formats"
-import { Slider } from "components/Slider"
-import { Image } from "components/Image"
-import utils from "utils/utils.js"
+import Button from "components/Button";
+import Typography from "@mui/material/Typography";
+import Grid2 from "@mui/material/Grid";
+import { WhatsApp, AddShoppingCart } from "@mui/icons-material";
+import { formatNumberString, formatRange } from "utils/formats";
+import { Slider } from "components/Slider";
+import { Image } from "components/Image";
+import utils from "utils/utils.js";
 
-import styles from "./styles.module.scss"
-import { Product } from "../../../../../types/product.types"
-import { queryCreator } from "@apps/consumer/flow/helpers"
-import { useNavigate } from "react-router-dom"
-import { useEffect, useState } from "react"
-import { fetchVariantPrice } from "@api/product.api"
-import { useUser } from "@context/GlobalContext"
-import MDEditor from "@uiw/react-md-editor"
+import styles from "./styles.module.scss";
+import { Product } from "../../../../../types/product.types";
+import { queryCreator } from "@apps/consumer/flow/helpers";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { fetchVariantPrice } from "@api/product.api";
+import { useUser } from "@context/GlobalContext";
+import MDEditor from "@uiw/react-md-editor";
 
 interface CardProps {
-  product: Product
-  currency: "USD" | "Bs"
-  conversionRate: number
-  handleDetails: (product: Product) => void
-  isCart?: boolean
-  onProductSelect?: (product: Product) => void
-  isMobile: boolean
+  product: Product;
+  currency: "USD" | "Bs";
+  conversionRate: number;
+  handleDetails: (product: Product) => void;
+  isCart?: boolean;
+  onProductSelect?: (product: Product) => void;
+  isMobile: boolean;
 }
 export default function Card({
   product,
@@ -34,16 +34,16 @@ export default function Card({
   onProductSelect,
   isMobile,
 }: CardProps) {
-  const navigate = useNavigate()
-  const { user } = useUser()
+  const navigate = useNavigate();
+  const { user } = useUser();
 
   const [priceInfo, setPriceInfo] = useState<{
-    baseMin: number | null
-    baseMax: number | null
-    finalMin: number | null
-    finalMax: number | null
-    isLoading: boolean
-    error: string | null
+    baseMin: number | null;
+    baseMax: number | null;
+    finalMin: number | null;
+    finalMax: number | null;
+    isLoading: boolean;
+    error: string | null;
   }>({
     baseMin: null,
     baseMax: null,
@@ -51,7 +51,7 @@ export default function Card({
     finalMax: null,
     isLoading: true,
     error: null,
-  })
+  });
 
   useEffect(() => {
     if (!product?._id || !product.variants || product.variants.length === 0) {
@@ -62,59 +62,60 @@ export default function Card({
         finalMax: null,
         isLoading: false,
         error: "Producto sin variantes válidas.",
-      })
-      return
+      });
+      return;
     }
 
-    let isMounted = true
+    let isMounted = true;
     const calculatePrices = async () => {
-      setPriceInfo((prev) => ({ ...prev, isLoading: true, error: null }))
+      setPriceInfo((prev) => ({ ...prev, isLoading: true, error: null }));
 
       try {
-        const priceField = user?.prixer ? "prixerPrice" : "publicPrice"
+        const priceField = user?.prixer ? "prixerPrice" : "publicPrice";
         const basePrices = (product.variants || [])
           .map((v) => formatNumberString(v[priceField]))
-          .filter((p) => !isNaN(p))
+          .filter((p) => !isNaN(p));
 
         const currentBaseMin =
-          basePrices.length > 0 ? Math.min(...basePrices) : null
+          basePrices.length > 0 ? Math.min(...basePrices) : null;
         const currentBaseMax =
-          basePrices.length > 0 ? Math.max(...basePrices) : null
+          basePrices.length > 0 ? Math.max(...basePrices) : null;
 
         const pricePromises = (product.variants ?? []).map(
           async (variant): Promise<[number, number] | null> => {
             const hasDiscount =
-              Array.isArray(variant.discountId) && variant.discountId.length > 0
+              Array.isArray(variant.discountId) &&
+              variant.discountId.length > 0;
 
             if (hasDiscount && variant._id && product._id) {
               const fetchedPrices = await fetchVariantPrice(
                 variant._id,
-                product._id.toString()
-              )
-              return fetchedPrices
+                product._id.toString(),
+              );
+              return fetchedPrices;
             } else {
-              const priceNum = formatNumberString(variant[priceField])
-              if (isNaN(priceNum)) return null
-              return [priceNum, priceNum]
+              const priceNum = formatNumberString(variant[priceField]);
+              if (isNaN(priceNum)) return null;
+              return [priceNum, priceNum];
             }
-          }
-        )
+          },
+        );
 
-        const results = await Promise.all(pricePromises)
+        const results = await Promise.all(pricePromises);
 
         const validFinalPrices = results
           .filter(
             (result): result is [number, number] =>
-              result !== null && !isNaN(result[1])
+              result !== null && !isNaN(result[1]),
           )
-          .map((result) => result[1])
+          .map((result) => result[1]);
 
         if (validFinalPrices.length === 0) {
-          throw new Error("No se pudieron determinar los precios finales.")
+          throw new Error("No se pudieron determinar los precios finales.");
         }
 
-        const currentFinalMin = Math.min(...validFinalPrices)
-        const currentFinalMax = Math.max(...validFinalPrices)
+        const currentFinalMin = Math.min(...validFinalPrices);
+        const currentFinalMax = Math.max(...validFinalPrices);
 
         if (isMounted) {
           setPriceInfo({
@@ -124,10 +125,10 @@ export default function Card({
             finalMax: currentFinalMax,
             isLoading: false,
             error: null,
-          })
+          });
         }
       } catch (err) {
-        console.error("Error calculating product prices:", err)
+        console.error("Error calculating product prices:", err);
         if (isMounted) {
           setPriceInfo({
             baseMin: null,
@@ -137,59 +138,59 @@ export default function Card({
             isLoading: false,
             error:
               err instanceof Error ? err.message : "Error al calcular precios.",
-          })
+          });
         }
       }
-    }
+    };
 
-    calculatePrices()
+    calculatePrices();
 
     return () => {
-      isMounted = false
-    }
-  }, [product, user])
+      isMounted = false;
+    };
+  }, [product, user]);
 
   function handleProductSelection(): void {
     const queryString = queryCreator(
       undefined,
       product._id?.toString(),
       undefined,
-      undefined
-    )
+      undefined,
+    );
 
-    navigate(`/crear-prix?${queryString}`)
+    navigate(`/crear-prix?${queryString}`);
   }
 
   const renderPrice = () => {
     if (priceInfo.isLoading) {
-      return "Cargando precio..."
+      return "Cargando precio...";
     }
     if (priceInfo.error) {
-      return "Precio no disponible"
+      return "Precio no disponible";
     }
     if (priceInfo.finalMin === null) {
-      return "Precio no disponible"
+      return "Precio no disponible";
     }
 
     const finalPriceString = formatRange(
       priceInfo.finalMin,
       priceInfo.finalMax,
       currency,
-      conversionRate
-    )
+      conversionRate,
+    );
 
     const baseRangeDiffers =
       priceInfo.baseMin !== null &&
       (priceInfo.baseMin !== priceInfo.finalMin ||
-        priceInfo.baseMax !== priceInfo.finalMax)
+        priceInfo.baseMax !== priceInfo.finalMax);
 
     if (baseRangeDiffers) {
       const basePriceString = formatRange(
         priceInfo.baseMin,
         priceInfo.baseMax,
         currency,
-        conversionRate
-      )
+        conversionRate,
+      );
 
       return (
         <span
@@ -204,7 +205,7 @@ export default function Card({
         `,
           }}
         />
-      )
+      );
     } else {
       return (
         <span
@@ -212,9 +213,9 @@ export default function Card({
             __html: `<span>${finalPriceString}</span>`,
           }}
         />
-      )
+      );
     }
-  }
+  };
 
   return (
     <Grid2
@@ -242,9 +243,11 @@ export default function Card({
       </Grid2>
 
       <Grid2 size={{ xs: 12, sm: 4 }}>
-        <Slider images={product?.sources?.images?.filter(image => image?.url)}>
+        <Slider
+          images={product?.sources?.images?.filter((image) => image?.url)}
+        >
           {product?.sources?.images
-            ?.filter((image) => image?.url) 
+            ?.filter((image) => image?.url)
             .map((image, i) => (
               <Image key={i} src={image.url} alt={product?.name} />
             ))}
@@ -295,13 +298,13 @@ export default function Card({
           color="primary"
           className={styles["waButton"]}
           onClick={() => {
-            const url = `${window.location}/producto/${product._id}`
-            window.open(utils.generateWaProductMessage(product, url), "_blank")
+            const url = `${window.location}/producto/${product._id}`;
+            window.open(utils.generateWaProductMessage(product, url), "_blank");
           }}
         >
           <WhatsApp /> Info
         </Button>
       </Grid2>
     </Grid2>
-  )
+  );
 }

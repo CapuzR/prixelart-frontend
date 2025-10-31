@@ -1,4 +1,4 @@
-@use '@/styles/theme.scss' as theme;
+@use "@/styles/theme.scss" as theme;
 .content-section {
   display: flex;
   flex-direction: column;
@@ -35,7 +35,12 @@
 }
 
 .paper {
-  @include theme.paper(undefined, theme.$box-shadow-medium, theme.$border-radius-md, theme.$spacing-md);
+  @include theme.paper(
+    undefined,
+    theme.$box-shadow-medium,
+    theme.$border-radius-md,
+    theme.$spacing-md
+  );
 }
 
 .art-section {

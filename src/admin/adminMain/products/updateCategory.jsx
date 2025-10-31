@@ -1,23 +1,23 @@
-import React from "react"
-import { useState, useEffect } from "react"
-import { makeStyles } from "@material-ui/core/styles"
-import { useHistory } from "react-router-dom"
+import React from "react";
+import { useState, useEffect } from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import { useHistory } from "react-router-dom";
 
-import Title from "../Title"
-import axios from "axios"
-import TextField from "@material-ui/core/TextField"
-import Button from "@material-ui/core/Button"
-import Grid from "@material-ui/core/Grid"
-import Snackbar from "@material-ui/core/Snackbar"
-import CircularProgress from "@material-ui/core/CircularProgress"
-import { useTheme } from "@material-ui/core/styles"
-import useMediaQuery from "@material-ui/core/useMediaQuery"
-import FormControl from "@material-ui/core/FormControl"
-import Checkbox from "@material-ui/core/Checkbox"
-import Backdrop from "@material-ui/core/Backdrop"
-import Divider from "@material-ui/core/Divider"
-import HighlightOffOutlinedIcon from "@material-ui/icons/HighlightOffOutlined"
-import IconButton from "@material-ui/core/IconButton"
+import Title from "../Title";
+import axios from "axios";
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
+import Grid from "@material-ui/core/Grid";
+import Snackbar from "@material-ui/core/Snackbar";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import { useTheme } from "@material-ui/core/styles";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import FormControl from "@material-ui/core/FormControl";
+import Checkbox from "@material-ui/core/Checkbox";
+import Backdrop from "@material-ui/core/Backdrop";
+import Divider from "@material-ui/core/Divider";
+import HighlightOffOutlinedIcon from "@material-ui/icons/HighlightOffOutlined";
+import IconButton from "@material-ui/core/IconButton";
 
 const useStyles = makeStyles((theme) => ({
   seeMore: {
@@ -58,154 +58,151 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
     padding: "5px",
   },
-}))
+}));
 
 export default function UpdateCategory(props) {
-  const classes = useStyles()
-  const theme = useTheme()
-  const history = useHistory()
+  const classes = useStyles();
+  const theme = useTheme();
+  const history = useHistory();
 
-  const isDesktop = useMediaQuery(theme.breakpoints.up("md"))
-  const [active, setActive] = useState(props.category.active)
-  const [name, setName] = useState(props.category.name)
-  const [appliedProducts, setAppliedProducts] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [buttonState, setButtonState] = useState(false)
-  const [products, setProducts] = useState()
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  const [active, setActive] = useState(props.category.active);
+  const [name, setName] = useState(props.category.name);
+  const [appliedProducts, setAppliedProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [buttonState, setButtonState] = useState(false);
+  const [products, setProducts] = useState();
   const [loadIcon, setLoadIcon] = useState({
     icon: [],
     filename: "",
-  })
+  });
   const [loadImage, setLoadImage] = useState({
     image: [],
     filename: "",
-  })
-  const [image, setImage] = useState()
-  const [icon, setIcon] = useState()
+  });
+  const [image, setImage] = useState();
+  const [icon, setIcon] = useState();
 
   //Error states.
-  const [errorMessage, setErrorMessage] = useState()
-  const [snackBarError, setSnackBarError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState();
+  const [snackBarError, setSnackBarError] = useState(false);
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!name) {
-      setErrorMessage("Por favor completa todos los campos requeridos.")
-      setSnackBarError(true)
+      setErrorMessage("Por favor completa todos los campos requeridos.");
+      setSnackBarError(true);
     } else {
-      setLoading(true)
-      setButtonState(true)
+      setLoading(true);
+      setButtonState(true);
       const data = {
         name: name,
         active: active,
         appliedProducts: appliedProducts,
-      }
+      };
       const base_url =
         process.env.REACT_APP_BACKEND_URL +
         "/product/update-category/" +
-        props.category._id
-      const response = await axios.put(base_url, data)
+        props.category._id;
+      const response = await axios.put(base_url, data);
       if (response.data.success === false) {
-        setLoading(false)
-        setButtonState(false)
-        setErrorMessage(response.data.message)
-        setSnackBarError(true)
+        setLoading(false);
+        setButtonState(false);
+        setErrorMessage(response.data.message);
+        setSnackBarError(true);
       } else {
-        setErrorMessage("¡Categoría actualizada exitosamente!")
-        setSnackBarError(true)
-        setActive(false)
-        setName()
-        setAppliedProducts([])
-        history.push("/admin/product/read")
+        setErrorMessage("¡Categoría actualizada exitosamente!");
+        setSnackBarError(true);
+        setActive(false);
+        setName();
+        setAppliedProducts([]);
+        history.push("/admin/product/read");
       }
     }
-  }
+  };
 
   const getProducts = async () => {
-    setLoading(true)
-    const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-allv1"
+    setLoading(true);
+    const base_url = process.env.REACT_APP_BACKEND_URL + "/product/read-allv1";
     await axios
       .post(
         base_url,
         { adminToken: localStorage.getItem("adminTokenV") },
-        { withCredentials: true }
+        { withCredentials: true },
       )
       .then((response) => {
-        setProducts(response.data.products)
+        setProducts(response.data.products);
       })
       .catch((error) => {
-        console.log(error)
-      })
-    setLoading(false)
-  }
+        console.log(error);
+      });
+    setLoading(false);
+  };
 
   const checkCategories = (product) => {
-    const categoryId = props.category._id
+    const categoryId = props.category._id;
     const hasCategory =
       product.categories?.some((category) => category._id === categoryId) ||
-      false
+      false;
     const isProductApplied = appliedProducts.some(
-      (item) => item._id === product._id
-    )
-    return hasCategory || isProductApplied
-  }
+      (item) => item._id === product._id,
+    );
+    return hasCategory || isProductApplied;
+  };
 
   const handleProduct = (product) => {
     if (appliedProducts.length === 0) {
-      setAppliedProducts([{ name: product.name, _id: product._id }])
+      setAppliedProducts([{ name: product.name, _id: product._id }]);
     } else {
       const isProductApplied = appliedProducts.some(
-        (item) => item._id === product._id
-      )
+        (item) => item._id === product._id,
+      );
 
       if (isProductApplied) {
         setAppliedProducts(
-          appliedProducts.filter((item) => item._id !== product._id)
-        )
+          appliedProducts.filter((item) => item._id !== product._id),
+        );
       } else {
         setAppliedProducts([
           ...appliedProducts,
           { name: product.name, _id: product._id },
-        ])
+        ]);
       }
     }
-  }
+  };
 
   useEffect(() => {
-    getProducts()
-  }, [])
+    getProducts();
+  }, []);
 
   const convertToBase64 = (blob) => {
     return new Promise((resolve) => {
-      var reader = new FileReader()
+      var reader = new FileReader();
       reader.onload = function () {
-        resolve(reader.result)
-      }
-      reader.readAsDataURL(blob)
-    })
-  }
+        resolve(reader.result);
+      };
+      reader.readAsDataURL(blob);
+    });
+  };
 
   const loadImg = async (e, type) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    const file = e.target.files[0]
-    const resizedString = await convertToBase64(file)
+    const file = e.target.files[0];
+    const resizedString = await convertToBase64(file);
 
     if (type === "icon") {
-      setLoadIcon({ loader: resizedString, filename: file.name })
+      setLoadIcon({ loader: resizedString, filename: file.name });
     } else {
-      setLoadImage({ loader: resizedString, filename: file.name })
+      setLoadImage({ loader: resizedString, filename: file.name });
     }
-  }
+  };
 
   return (
     <React.Fragment>
       {
-        <Backdrop
-          className={classes.backdrop}
-          open={loading}
-        >
+        <Backdrop className={classes.backdrop} open={loading}>
           <CircularProgress />
         </Backdrop>
       }
@@ -224,7 +221,7 @@ export default function UpdateCategory(props) {
             color="primary"
             inputProps={{ "aria-label": "secondary checkbox" }}
             onChange={() => {
-              active ? setActive(false) : setActive(true)
+              active ? setActive(false) : setActive(true);
             }}
           />
           Habilitado
@@ -246,7 +243,7 @@ export default function UpdateCategory(props) {
                 label="Nombre"
                 value={name}
                 onChange={(e) => {
-                  setName(e.target.value)
+                  setName(e.target.value);
                 }}
               />
             </FormControl>
@@ -275,7 +272,7 @@ export default function UpdateCategory(props) {
                     className={classes.buttonImgLoader}
                     style={{ color: "#d33f49" }}
                     onClick={() => {
-                      setIcon()
+                      setIcon();
                     }}
                   >
                     <HighlightOffOutlinedIcon />
@@ -305,7 +302,7 @@ export default function UpdateCategory(props) {
                 accept="image/*"
                 hidden
                 onChange={(a) => {
-                  loadImg(a, "icon")
+                  loadImg(a, "icon");
                 }}
               />
             </Button>
@@ -330,37 +327,27 @@ export default function UpdateCategory(props) {
                 accept="image/*"
                 hidden
                 onChange={(a) => {
-                  loadImg(a, "img")
+                  loadImg(a, "img");
                 }}
               />
             </Button>
           </Grid>
         </Grid>
-        <Divider
-          light
-          variant="fullWidth"
-        />
+        <Divider light variant="fullWidth" />
 
-        <Grid
-          container
-          spacing={2}
-          style={{ marginTop: 20 }}
-        >
-          <Grid
-            item
-            xs={12}
-          >
+        <Grid container spacing={2} style={{ marginTop: 20 }}>
+          <Grid item xs={12}>
             <Checkbox
               checked={appliedProducts.length === products?.length}
               color="primary"
               inputProps={{ "aria-label": "secondary checkbox" }}
               onChange={() => {
                 if (appliedProducts.length !== products.length) {
-                  let v1 = []
-                  products.map((product) => v1.push(product.name))
-                  setAppliedProducts(v1)
+                  let v1 = [];
+                  products.map((product) => v1.push(product.name));
+                  setAppliedProducts(v1);
                 } else if (appliedProducts.length === products.length) {
-                  setAppliedProducts([])
+                  setAppliedProducts([]);
                 }
               }}
             />
@@ -368,16 +355,13 @@ export default function UpdateCategory(props) {
           </Grid>
           {products &&
             products.map((product) => (
-              <Grid
-                item
-                xs={3}
-              >
+              <Grid item xs={3}>
                 <Checkbox
                   checked={checkCategories(product)}
                   color="primary"
                   inputProps={{ "aria-label": "secondary checkbox" }}
                   onChange={() => {
-                    handleProduct(product)
+                    handleProduct(product);
                   }}
                 />
                 {product.name}
@@ -402,5 +386,5 @@ export default function UpdateCategory(props) {
         className={classes.snackbar}
       />
     </React.Fragment>
-  )
+  );
 }

@@ -1,31 +1,31 @@
-import { useEffect } from "react"
-import { useState } from "react"
-import axios from "axios"
-import { useParams, useNavigate } from "react-router-dom"
+import { useEffect } from "react";
+import { useState } from "react";
+import axios from "axios";
+import { useParams, useNavigate } from "react-router-dom";
 
-import { validatePasswordDetailed } from "utils/validations"
-import Copyright from "components/Copyright/copyright"
+import { validatePasswordDetailed } from "utils/validations";
+import Copyright from "components/Copyright/copyright";
 
 //material-ui
-import Avatar from "@mui/material/Avatar"
-import Button from "@mui/material/Button"
-import CssBaseline from "@mui/material/CssBaseline"
-import Grid2 from "@mui/material/Grid"
-import Box from "@mui/material/Box"
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined"
-import Typography from "@mui/material/Typography"
-import Container from "@mui/material/Container"
-import IconButton from "@mui/material/IconButton"
-import OutlinedInput from "@mui/material/OutlinedInput"
-import InputLabel from "@mui/material/InputLabel"
-import InputAdornment from "@mui/material/InputAdornment"
-import FormControl from "@mui/material/FormControl"
-import Visibility from "@mui/icons-material/Visibility"
-import VisibilityOff from "@mui/icons-material/VisibilityOff"
-import { Theme } from "@mui/material"
-import { makeStyles } from "tss-react/mui"
-import { useSnackBar, useBackdrop } from "context/GlobalContext"
-import FormHelperText from "@mui/material/FormHelperText"
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import CssBaseline from "@mui/material/CssBaseline";
+import Grid2 from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
+import IconButton from "@mui/material/IconButton";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import InputLabel from "@mui/material/InputLabel";
+import InputAdornment from "@mui/material/InputAdornment";
+import FormControl from "@mui/material/FormControl";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { Theme } from "@mui/material";
+import { makeStyles } from "tss-react/mui";
+import { useSnackBar, useBackdrop } from "context/GlobalContext";
+import FormHelperText from "@mui/material/FormHelperText";
 
 const useStyles = makeStyles()((theme: Theme) => {
   return {
@@ -49,99 +49,101 @@ const useStyles = makeStyles()((theme: Theme) => {
       marginBottom: "16px",
       marginLeft: "0px",
     },
-  }
-})
+  };
+});
 
 export default function PasswordReset() {
-  const { classes } = useStyles()
-  const navigate = useNavigate()
-  const { token } = useParams<{ token: string }>() // Get username from URL
-  const [newPassword, setNewPassword] = useState("")
-  const [showNewPassword, setShowNewPassword] = useState(false)
+  const { classes } = useStyles();
+  const navigate = useNavigate();
+  const { token } = useParams<{ token: string }>(); // Get username from URL
+  const [newPassword, setNewPassword] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
   // const token = props.match.params.token
 
   //Error states.
-  const [passwordError, setPasswordError] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [passwordError, setPasswordError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { showSnackBar } = useSnackBar()
-  const { showBackdrop, closeBackdrop } = useBackdrop()
+  const { showSnackBar } = useSnackBar();
+  const { showBackdrop, closeBackdrop } = useBackdrop();
   //FALTA AGREGAR AQUI LA VALIDACION DE QUE EL LINK EXISTE.
   useEffect(() => {
     if (!token) {
-      showSnackBar("Token inválido o expirado. Por favor inténtalo de nuevo.")
+      showSnackBar("Token inválido o expirado. Por favor inténtalo de nuevo.");
     } else {
-      showBackdrop()
-      checkToken()
+      showBackdrop();
+      checkToken();
     }
-  }, [])
+  }, []);
 
   const checkToken = async () => {
     try {
-      const base_url = import.meta.env.VITE_BACKEND_URL + "/pw-token-check"
+      const base_url = import.meta.env.VITE_BACKEND_URL + "/pw-token-check";
       const data = {
         token: token,
-      }
-      const response = await axios.post(base_url, data)
+      };
+      const response = await axios.post(base_url, data);
       if (response) {
-        showSnackBar(response.data.message)
+        showSnackBar(response.data.message);
       }
     } catch (error) {
-      showSnackBar("Error al verificar el token. Inténtalo más tarde.")
+      showSnackBar("Error al verificar el token. Inténtalo más tarde.");
     } finally {
-      closeBackdrop()
+      closeBackdrop();
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
     if (passwordError || !newPassword) {
-      showSnackBar("Por favor, introduce una contraseña válida.")
+      showSnackBar("Por favor, introduce una contraseña válida.");
     }
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
-      const base_url = import.meta.env.VITE_BACKEND_URL + "/reset-password"
-      const response = await axios.post(base_url, { token, newPassword })
+      const base_url = import.meta.env.VITE_BACKEND_URL + "/reset-password";
+      const response = await axios.post(base_url, { token, newPassword });
 
       if (response.data.success) {
-        showSnackBar(response.data.message || "¡Contraseña cambiada con éxito!")
-        navigate("/iniciar")
+        showSnackBar(
+          response.data.message || "¡Contraseña cambiada con éxito!",
+        );
+        navigate("/iniciar");
       } else {
         showSnackBar(
           response.data.message ||
-            "No se pudo cambiar la contraseña. Inténtalo de nuevo."
-        )
+            "No se pudo cambiar la contraseña. Inténtalo de nuevo.",
+        );
       }
     } catch (error) {
-      console.error(error)
-      showSnackBar("Ocurrió un error en el servidor.")
+      console.error(error);
+      showSnackBar("Ocurrió un error en el servidor.");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   //New password
   const handleNewPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    setNewPassword(value)
+    const value = e.target.value;
+    setNewPassword(value);
     if (value) {
-      const errorMessage = validatePasswordDetailed(value)
-      setPasswordError(errorMessage)
+      const errorMessage = validatePasswordDetailed(value);
+      setPasswordError(errorMessage);
     } else {
-      setPasswordError("")
+      setPasswordError("");
     }
-  }
+  };
 
   const handleClickShowNewPassword = () => {
-    setShowNewPassword(!showNewPassword)
-  }
+    setShowNewPassword(!showNewPassword);
+  };
 
   const handleMouseDownNewPassword = (
-    event: React.MouseEvent<HTMLButtonElement>
+    event: React.MouseEvent<HTMLButtonElement>,
   ) => {
-    event.preventDefault()
-  }
+    event.preventDefault();
+  };
 
   return (
     <Container component="main" maxWidth="xs">
@@ -200,5 +202,5 @@ export default function PasswordReset() {
         <Copyright />
       </Box>
     </Container>
-  )
+  );
 }

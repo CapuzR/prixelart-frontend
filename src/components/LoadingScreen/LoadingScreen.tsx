@@ -1,4 +1,4 @@
-import './LoadingScreen.module.scss'; // SCSS for loading screen styles
+import "./LoadingScreen.module.scss"; // SCSS for loading screen styles
 
 const LoadingScreen = () => {
   return (

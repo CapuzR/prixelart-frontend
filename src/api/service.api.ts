@@ -24,7 +24,7 @@ export const fetchActiveServices = async (): Promise<Service[]> => {
 
 /** Get a single service by its ID (public) */
 export const fetchServiceDetails = async (
-  serviceId: string
+  serviceId: string,
 ): Promise<Service> => {
   const url = `${BACKEND_URL}/service/readService/${serviceId}`;
   try {
@@ -41,7 +41,7 @@ export const fetchServiceDetails = async (
 
 /** Get all services created by a specific Prixer (public) */
 export const fetchServicesByPrixer = async (
-  prixerId: string
+  prixerId: string,
 ): Promise<Service[]> => {
   const url = `${BACKEND_URL}/service/getServiceByPrixer/${prixerId}`;
   try {
@@ -59,7 +59,7 @@ export const fetchServicesByPrixer = async (
 
 /** Get all services by an arbitrary user ID (public) */
 export const fetchServicesByUser = async (
-  userId: string | ObjectId
+  userId: string | ObjectId,
 ): Promise<Service[]> => {
   const url = `${BACKEND_URL}/service/by-user/${userId}`;
   try {
@@ -82,7 +82,7 @@ const authOpts = { withCredentials: true };
 
 /** Create a new service (user must be logged in) */
 export const createService = async (
-  data: Partial<Service>
+  data: Partial<Service>,
 ): Promise<Service> => {
   const url = `${BACKEND_URL}/service/create`;
   try {
@@ -116,7 +116,7 @@ export const fetchMyServices = async (): Promise<Service[]> => {
 /** Update one of your services (user must be logged in) */
 export const updateMyService = async (
   serviceId: string,
-  data: Partial<Service>
+  data: Partial<Service>,
 ): Promise<Service> => {
   const url = `${BACKEND_URL}/service/updateMyService/${serviceId}`;
   try {
@@ -165,9 +165,7 @@ export const fetchAllServices = async (): Promise<Service[]> => {
 };
 
 /** Disable (soft‐delete) a service (admin only) */
-export const disableService = async (
-  serviceId: string
-): Promise<Service> => {
+export const disableService = async (serviceId: string): Promise<Service> => {
   const url = `${BACKEND_URL}/service/disable/${serviceId}`;
   try {
     const res = await axios.put<PrixResponse>(url, {}, authOpts);

@@ -1,33 +1,33 @@
-import { ObjectId } from "mongodb"
-import { PickedArt } from "./art.types"
-import { PickedProduct } from "./product.types"
-import { UserRoles } from "./user.types"
+import { ObjectId } from "mongodb";
+import { PickedArt } from "./art.types";
+import { PickedProduct } from "./product.types";
+import { UserRoles } from "./user.types";
 export interface Order {
-  _id?: ObjectId
-  number?: number
-  lines: OrderLine[]
-  createdOn: Date
-  createdBy?: string
-  updates?: [Date, string][]
+  _id?: ObjectId;
+  number?: number;
+  lines: OrderLine[];
+  createdOn: Date;
+  createdBy?: string;
+  updates?: [Date, string][];
   history?: HistoryEntry[];
-  consumerDetails?: ConsumerDetails
-  payment: PaymentDetails
-  shipping: ShippingDetails
-  billing: BillingDetails
-  totalUnits: number
-  status: [OrderStatus, Date][]
+  consumerDetails?: ConsumerDetails;
+  payment: PaymentDetails;
+  shipping: ShippingDetails;
+  billing: BillingDetails;
+  totalUnits: number;
+  status: [OrderStatus, Date][];
   // paymentStatus: [GlobalPaymentStatus, Date][]
-  subTotal: number
-  discount?: number
-  surcharge?: number
-  shippingCost?: number
-  tax: Tax[]
-  totalWithoutTax: number // Base Imponible
-  total: number // Final order total (subTotal + tax + shipping - discount)
+  subTotal: number;
+  discount?: number;
+  surcharge?: number;
+  shippingCost?: number;
+  tax: Tax[];
+  totalWithoutTax: number; // Base Imponible
+  total: number; // Final order total (subTotal + tax + shipping - discount)
 
-  seller?: string
-  observations?: string
-  changeDescriptions?: string[]
+  seller?: string;
+  observations?: string;
+  changeDescriptions?: string[];
 }
 
 export interface HistoryEntry {
@@ -36,75 +36,75 @@ export interface HistoryEntry {
   description: string;
 }
 export interface ConsumerDetails {
-  basic: BasicInfo
-  selectedAddress: BasicAddress
-  addresses: Address[]
-  paymentMethods: PaymentMethod[]
-  consumerType?: UserRoles[]
+  basic: BasicInfo;
+  selectedAddress: BasicAddress;
+  addresses: Address[];
+  paymentMethods: PaymentMethod[];
+  consumerType?: UserRoles[];
 }
 
 export interface Payment {
-  id: string
-  description: string
-  voucher?: string // IMG ***
-  metadata?: string
-  amount?: string
-  createdOn: Date
-  lastFourDigits?: string
-  method: PaymentMethod
+  id: string;
+  description: string;
+  voucher?: string; // IMG ***
+  metadata?: string;
+  amount?: string;
+  createdOn: Date;
+  lastFourDigits?: string;
+  method: PaymentMethod;
 }
 
 export interface PaymentDetails {
-  total: number
-  payment: Payment[]
-  status: [GlobalPaymentStatus, Date][]
+  total: number;
+  payment: Payment[];
+  status: [GlobalPaymentStatus, Date][];
 }
 
 export interface ShippingDetails {
-  method: ShippingMethod
-  country: string
-  address: Address
-  preferredDeliveryDate?: Date
-  estimatedShippingDate?: Date
-  estimatedDeliveryDate?: Date
+  method: ShippingMethod;
+  country: string;
+  address: Address;
+  preferredDeliveryDate?: Date;
+  estimatedShippingDate?: Date;
+  estimatedDeliveryDate?: Date;
 }
 
 export interface BillingDetails {
-  billTo?: BasicInfo
-  address?: Address
+  billTo?: BasicInfo;
+  address?: Address;
 }
 
 export interface Address {
-  recepient: BasicInfo
-  address: BasicAddress
+  recepient: BasicInfo;
+  address: BasicAddress;
 }
 
 export interface BasicAddress {
-  line1: string
-  line2?: string
-  reference?: string
-  city: string
-  state: string
-  country: string
-  zipCode?: string
+  line1: string;
+  line2?: string;
+  reference?: string;
+  city: string;
+  state: string;
+  country: string;
+  zipCode?: string;
 }
 
 export interface BasicInfo {
-  id?: string
-  name: string
-  lastName: string
-  email?: string
-  phone: string
-  shortAddress?: string
+  id?: string;
+  name: string;
+  lastName: string;
+  email?: string;
+  phone: string;
+  shortAddress?: string;
 }
 
 export interface ShippingMethod {
-  _id?: ObjectId
-  active: boolean
-  name: string
-  createdOn: Date
-  createdBy: String
-  price: string
+  _id?: ObjectId;
+  active: boolean;
+  name: string;
+  createdOn: Date;
+  createdBy: String;
+  price: string;
 }
 
 export enum OrderStatus {
@@ -128,13 +128,13 @@ export enum GlobalPaymentStatus {
 }
 
 export interface PaymentMethod {
-  _id?: ObjectId
-  active: boolean
-  createdBy: string
-  createdOn: Date
-  name: string
-  label?: string
-  instructions?: string
+  _id?: ObjectId;
+  active: boolean;
+  createdBy: string;
+  createdOn: Date;
+  name: string;
+  label?: string;
+  instructions?: string;
   // lastFourDigits?: string; // Optional, last four digits of a card
   // voucher?: Payment; // Optional, voucher for bank transfer or task payment
   // metadata?: string;
@@ -142,73 +142,73 @@ export interface PaymentMethod {
 }
 
 export interface Tax {
-  id?: string
-  name: string // Nombre del impuesto (e.g. IVA)
-  value: number // Porcentaje
-  amount: number // Monto en fiat
+  id?: string;
+  name: string; // Nombre del impuesto (e.g. IVA)
+  value: number; // Porcentaje
+  amount: number; // Monto en fiat
 }
 
 export interface OrderLine {
-  id: string // Unique identifier, same as CartLine
-  item: Item // The purchased item, same as CartLine
-  quantity: number // Quantity purchased
-  pricePerUnit: number // The price of one unit at the time of purchase
-  discount?: number // Discount applied to the line
-  surcharge?: number // Surcharge applied to the line
-  subtotal: number // Total for the line (quantity * pricePerUnit - discount)
-  status: [OrderStatus, Date][]
+  id: string; // Unique identifier, same as CartLine
+  item: Item; // The purchased item, same as CartLine
+  quantity: number; // Quantity purchased
+  pricePerUnit: number; // The price of one unit at the time of purchase
+  discount?: number; // Discount applied to the line
+  surcharge?: number; // Surcharge applied to the line
+  subtotal: number; // Total for the line (quantity * pricePerUnit - discount)
+  status: [OrderStatus, Date][];
 }
 
 export interface CustomImage {
-  artId: string
-  url: string
-  title: string
-  description?: string
-  prixerUsername: string
+  artId: string;
+  url: string;
+  title: string;
+  description?: string;
+  prixerUsername: string;
 }
 
 export interface Item {
-  sku: string
-  art?: PickedArt | CustomImage
-  product: PickedProduct
-  price: string
-  discount?: number
-  surcharge?: number
+  sku: string;
+  art?: PickedArt | CustomImage;
+  product: PickedProduct;
+  price: string;
+  discount?: number;
+  surcharge?: number;
 }
 
 export interface CheckoutState {
-  activeStep: number
-  basic: any
-  billing: any
-  dataLists: DataLists
-  general: any
-  order: any
-  discount: any
-  surcharge: any
-  paymentMethods: any
-  shipping: any
+  activeStep: number;
+  basic: any;
+  billing: any;
+  dataLists: DataLists;
+  general: any;
+  order: any;
+  discount: any;
+  surcharge: any;
+  paymentMethods: any;
+  shipping: any;
 }
 
 export interface DataLists {
-  shippingMethods: ShippingMethod[]
-  paymentMethods: PaymentMethod[]
+  shippingMethods: ShippingMethod[];
+  paymentMethods: PaymentMethod[];
   countries: {
-    code2: string
-    code3: string
-    name: string
-    capital: string
-    region: string
-    active?: boolean
-    subregion: string
+    code2: string;
+    code3: string;
+    name: string;
+    capital: string;
+    region: string;
+    active?: boolean;
+    subregion: string;
     states: {
-      code: string
-      name: string
-      subdivision: string
-    }[]
-  }[]
-  billingStates?: string[]
-  shippingStates?: string[]
-  sellers: string[]
+      code: string;
+      name: string;
+      subdivision: string;
+    }[];
+  }[];
+  billingStates?: string[];
+  shippingStates?: string[];
+  sellers: string[];
 }
 
 //Reducer actions
@@ -235,67 +235,67 @@ type CheckoutAction =
   | { type: "SET_CONSUMER_BASIC"; payload: Partial<ConsumerDetails["basic"]> }
   | { type: "SET_CONSUMER_ADDRESS"; payload: BasicAddress }
   | {
-      type: "SET_CONSUMER_PAYMENT_METHODS"
-      payload: ConsumerDetails["paymentMethods"]
+      type: "SET_CONSUMER_PAYMENT_METHODS";
+      payload: ConsumerDetails["paymentMethods"];
     }
-  | { type: "OTHER_ACTIONS"; payload?: any }
+  | { type: "OTHER_ACTIONS"; payload?: any };
 
 // Type for the errorCheck function used in form fields
-type FormFieldErrorCheck = (value: any, data?: any) => boolean
+type FormFieldErrorCheck = (value: any, data?: any) => boolean;
 
 export type OnConditionChangeHandler = (
   conditionValue: any,
   helpers: {
-    getValues: (path?: string) => any
-    setValue: (path: string, value: any) => void
-  }
+    getValues: (path?: string) => any;
+    setValue: (path: string, value: any) => void;
+  },
 ) => {
-  disabled?: boolean
-  value?: any
-}
+  disabled?: boolean;
+  value?: any;
+};
 
 interface FormFieldConfig {
-  label: string
-  errorCheck?: FormFieldErrorCheck
-  helperText?: string
-  width?: number
-  adornment?: React.ReactNode
-  multiline?: boolean
-  minRows?: number
-  required?: boolean
-  type?: string // e.g., 'dropdown', 'date'
-  options?: string[]
-  actionType?: CheckoutAction["type"]
-  renderKey?: string
-  dataKey?: string
-  tooltip?: string
-  [key: string]: any
+  label: string;
+  errorCheck?: FormFieldErrorCheck;
+  helperText?: string;
+  width?: number;
+  adornment?: React.ReactNode;
+  multiline?: boolean;
+  minRows?: number;
+  required?: boolean;
+  type?: string; // e.g., 'dropdown', 'date'
+  options?: string[];
+  actionType?: CheckoutAction["type"];
+  renderKey?: string;
+  dataKey?: string;
+  tooltip?: string;
+  [key: string]: any;
 
-  conditionedBy?: string | string[]
-  onConditionChange?: OnConditionChangeHandler
+  conditionedBy?: string | string[];
+  onConditionChange?: OnConditionChangeHandler;
 }
 
 interface CheckboxConfig {
-  label: string
-  type: string
-  activeFields: string[]
-  checked?: boolean
+  label: string;
+  type: string;
+  activeFields: string[];
+  checked?: boolean;
 }
 
 interface FormSectionConfig {
-  title: string
-  fieldsTitle?: string
-  fields: { [fieldKey: string]: FormFieldConfig }
-  actionType?: CheckoutAction["type"]
-  additionalFieldsPosition?: string
-  additional?: { [fieldKey: string]: FormFieldConfig }
-  checkboxes?: CheckboxConfig[]
-  defaultCheckbox?: string
-  headerLabel?: string
-  headerValue?: string[]
-  [key: string]: any
+  title: string;
+  fieldsTitle?: string;
+  fields: { [fieldKey: string]: FormFieldConfig };
+  actionType?: CheckoutAction["type"];
+  additionalFieldsPosition?: string;
+  additional?: { [fieldKey: string]: FormFieldConfig };
+  checkboxes?: CheckboxConfig[];
+  defaultCheckbox?: string;
+  headerLabel?: string;
+  headerValue?: string[];
+  [key: string]: any;
 }
 
 export interface FormConfig {
-  [sectionKey: string]: FormSectionConfig
+  [sectionKey: string]: FormSectionConfig;
 }

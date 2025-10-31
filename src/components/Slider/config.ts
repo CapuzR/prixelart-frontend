@@ -6,5 +6,5 @@ export const config = {
   dots: true,
   speed: 500,
   pauseOnHover: true,
-  aspectRatio: 'square',
+  aspectRatio: "square",
 };

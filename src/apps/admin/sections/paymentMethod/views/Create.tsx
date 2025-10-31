@@ -1,10 +1,10 @@
-import React, { useState, ChangeEvent, FormEvent } from "react"
-import { useNavigate } from "react-router-dom"
+import React, { useState, ChangeEvent, FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 
 // Hooks, Types, Context, API
-import { useSnackBar } from "context/GlobalContext"
-import { PaymentMethod } from "types/order.types"
-import { createPaymentMethod } from "@api/order.api"
+import { useSnackBar } from "context/GlobalContext";
+import { PaymentMethod } from "types/order.types";
+import { createPaymentMethod } from "@api/order.api";
 
 // MUI Components
 import {
@@ -19,9 +19,9 @@ import {
   Alert,
   Stack,
   FormHelperText,
-} from "@mui/material"
-import Grid2 from "@mui/material/Grid"
-import Title from "@apps/admin/components/Title"
+} from "@mui/material";
+import Grid2 from "@mui/material/Grid";
+import Title from "@apps/admin/components/Title";
 
 // --- Type Definitions ---
 // Define the initial state structure including optional instructions
@@ -32,39 +32,39 @@ const initialFormState: Pick<
   name: "",
   active: true, // Default to active
   instructions: "", // Add instructions field
-}
+};
 
 // Validation Errors Type
 interface PaymentMethodValidationErrors {
-  name?: string
-  instructions?: string // Add instructions error type
+  name?: string;
+  instructions?: string; // Add instructions error type
 }
 
 // --- Component ---
 const CreatePaymentMethod: React.FC = () => {
   // --- Hooks ---
-  const navigate = useNavigate()
-  const { showSnackBar } = useSnackBar()
+  const navigate = useNavigate();
+  const { showSnackBar } = useSnackBar();
 
   // --- State ---
-  const [formData, setFormData] = useState(initialFormState)
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+  const [formData, setFormData] = useState(initialFormState);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   // Use validationErrors object state
   const [validationErrors, setValidationErrors] =
-    useState<PaymentMethodValidationErrors | null>(null)
+    useState<PaymentMethodValidationErrors | null>(null);
 
   // --- Handlers ---
   const handleInputChange = (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
-    const target = event.target as HTMLInputElement
-    const { name, value, type } = target
-    const checked = type === "checkbox" ? target.checked : undefined
+    const target = event.target as HTMLInputElement;
+    const { name, value, type } = target;
+    const checked = type === "checkbox" ? target.checked : undefined;
 
     setFormData((prevData) => ({
       ...prevData,
       [name]: type === "checkbox" ? checked : value,
-    }))
+    }));
 
     // Clear validation error for the specific field on change
     if (
@@ -72,38 +72,38 @@ const CreatePaymentMethod: React.FC = () => {
       validationErrors[name as keyof PaymentMethodValidationErrors]
     ) {
       setValidationErrors((prevErrors) => {
-        const updatedErrors = { ...prevErrors }
-        delete updatedErrors[name as keyof PaymentMethodValidationErrors]
-        return Object.keys(updatedErrors).length === 0 ? null : updatedErrors
-      })
+        const updatedErrors = { ...prevErrors };
+        delete updatedErrors[name as keyof PaymentMethodValidationErrors];
+        return Object.keys(updatedErrors).length === 0 ? null : updatedErrors;
+      });
     }
-  }
+  };
 
   // --- Validation ---
   const validateForm = (): boolean => {
-    const errors: PaymentMethodValidationErrors = {}
+    const errors: PaymentMethodValidationErrors = {};
 
     if (!formData.name.trim()) {
-      errors.name = "El nombre del método de pago es obligatorio."
+      errors.name = "El nombre del método de pago es obligatorio.";
     }
     // Add validation for instructions  (e.g., length limit)
     // if (formData.instructions && formData.instructions.length > 500) {
     //     errors.instructions = "Las instrucciones son demasiado largas (máx 500 caracteres).";
     // }
 
-    setValidationErrors(Object.keys(errors).length > 0 ? errors : null)
-    return Object.keys(errors).length === 0
-  }
+    setValidationErrors(Object.keys(errors).length > 0 ? errors : null);
+    return Object.keys(errors).length === 0;
+  };
 
   // --- Submission ---
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
+    event.preventDefault();
     if (!validateForm()) {
-      showSnackBar("Por favor, corrija los errores indicados.")
-      return
+      showSnackBar("Por favor, corrija los errores indicados.");
+      return;
     }
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     // Prepare payload including instructions
     const payload: Pick<PaymentMethod, "name" | "active" | "instructions"> = {
@@ -111,32 +111,32 @@ const CreatePaymentMethod: React.FC = () => {
       active: formData.active,
       // Include instructions, send undefined if empty/whitespace only
       instructions: formData.instructions?.trim() || undefined,
-    }
+    };
 
     try {
-      console.log("Submitting Payment Method Data:", payload)
-      const response = await createPaymentMethod(payload as PaymentMethod) // API call, might need cast
+      console.log("Submitting Payment Method Data:", payload);
+      const response = await createPaymentMethod(payload as PaymentMethod); // API call, might need cast
 
       if (response) {
-        showSnackBar(`Método de pago "${formData.name}" creado exitosamente.`)
-        navigate("/admin/payment-method/read") // Adjust route
+        showSnackBar(`Método de pago "${formData.name}" creado exitosamente.`);
+        navigate("/admin/payment-method/read"); // Adjust route
       } else {
         throw new Error(
-          "La creación del método de pago no devolvió una respuesta esperada."
-        )
+          "La creación del método de pago no devolvió una respuesta esperada.",
+        );
       }
     } catch (err: any) {
-      console.error("Failed to create payment method:", err)
-      const message = err.message || "Error al crear el método de pago."
+      console.error("Failed to create payment method:", err);
+      const message = err.message || "Error al crear el método de pago.";
       // Show error related to name field or a general alert
-      setValidationErrors((prev) => ({ ...(prev || {}), name: message }))
-      showSnackBar(message)
+      setValidationErrors((prev) => ({ ...(prev || {}), name: message }));
+      showSnackBar(message);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
-  const handleCancel = () => navigate("/admin/payment-method/read") // Adjust route
+  const handleCancel = () => navigate("/admin/payment-method/read"); // Adjust route
 
   // --- Render ---
   return (
@@ -243,7 +243,7 @@ const CreatePaymentMethod: React.FC = () => {
         </form>
       </Paper>
     </>
-  )
-}
+  );
+};
 
-export default CreatePaymentMethod
+export default CreatePaymentMethod;

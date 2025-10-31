@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback, useRef } from "react"
-import { useNavigate } from "react-router-dom"
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
   Alert,
@@ -36,71 +36,71 @@ import {
   TextField,
   Tooltip,
   Typography,
-} from "@mui/material"
-import Grid2 from "@mui/material/Grid"
-import AddIcon from "@mui/icons-material/Add"
-import DeleteIcon from "@mui/icons-material/Delete"
-import FilterListOffIcon from "@mui/icons-material/FilterListOff"
-import { visuallyHidden } from "@mui/utils"
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
-import { useSnackBar } from "context/GlobalContext"
-import Title from "@apps/admin/components/Title"
-import { Movement } from "types/movement.types"
-import { getMovements, reverseMovement } from "@api/movement.api"
-import { User } from "types/user.types"
-import { getUsers } from "@api/user.api"
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers"
+} from "@mui/material";
+import Grid2 from "@mui/material/Grid";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+import FilterListOffIcon from "@mui/icons-material/FilterListOff";
+import { visuallyHidden } from "@mui/utils";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { useSnackBar } from "context/GlobalContext";
+import Title from "@apps/admin/components/Title";
+import { Movement } from "types/movement.types";
+import { getMovements, reverseMovement } from "@api/movement.api";
+import { User } from "types/user.types";
+import { getUsers } from "@api/user.api";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import {
   CalendarToday,
   PersonOutline,
   ReceiptOutlined,
   StorefrontOutlined,
-} from "@mui/icons-material"
+} from "@mui/icons-material";
 
-import { getOrderById } from "@api/order.api"
+import { getOrderById } from "@api/order.api";
 
 import {
   Order,
   OrderStatus,
   CustomImage,
-} from "../../../../../types/order.types"
+} from "../../../../../types/order.types";
 
-import { Product, Variant } from "../../../../../types/product.types"
-import { Art } from "../../../../../types/art.types"
+import { Product, Variant } from "../../../../../types/product.types";
+import { Art } from "../../../../../types/art.types";
 
 interface UserAccountMap {
   [accountId: string]: {
-    name: string
-    avatar?: string
-  }
+    name: string;
+    avatar?: string;
+  };
 }
 
-const formatCurrency = (value: number): string => `$${value.toFixed(2)}`
+const formatCurrency = (value: number): string => `$${value.toFixed(2)}`;
 const formatDate = (date?: Date): string =>
-  date ? new Date(date).toLocaleString() : "N/A"
+  date ? new Date(date).toLocaleString() : "N/A";
 
 interface HeadCell {
-  id: keyof Movement | "actions"
-  label: string
-  numeric: boolean
-  sortable: boolean
+  id: keyof Movement | "actions";
+  label: string;
+  numeric: boolean;
+  sortable: boolean;
 }
 
 interface ProductOption {
-  id: string
-  label: string
-  fullProduct: Product
+  id: string;
+  label: string;
+  fullProduct: Product;
 }
 interface ArtOption {
-  id: string
-  label: string
-  thumb: string
-  fullArt: Art | CustomImage
+  id: string;
+  label: string;
+  thumb: string;
+  fullArt: Art | CustomImage;
 }
 interface VariantOption {
-  id: string
-  label: string
-  fullVariant: Variant
+  id: string;
+  label: string;
+  fullVariant: Variant;
 }
 
 const headCells: readonly HeadCell[] = [
@@ -111,58 +111,59 @@ const headCells: readonly HeadCell[] = [
   { id: "order", numeric: false, label: "Orden Asociada", sortable: true },
   { id: "value", numeric: true, label: "Valor", sortable: true },
   { id: "actions", numeric: false, label: "Acciones", sortable: false },
-]
+];
 
-type Sort = "asc" | "desc"
+type Sort = "asc" | "desc";
 
 const ReadMovements: React.FC = () => {
-  const navigate = useNavigate()
-  const { showSnackBar } = useSnackBar()
+  const navigate = useNavigate();
+  const { showSnackBar } = useSnackBar();
 
-  const [movements, setMovements] = useState<Movement[]>([])
-  const [ownerInfoMap, setOwnerInfoMap] = useState<UserAccountMap>({})
-  const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [error, setError] = useState<string | null>(null)
+  const [movements, setMovements] = useState<Movement[]>([]);
+  const [ownerInfoMap, setOwnerInfoMap] = useState<UserAccountMap>({});
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const [page, setPage] = useState<number>(0)
-  const [rowsPerPage, setRowsPerPage] = useState<number>(10)
-  const [totalMovements, setTotalMovements] = useState<number>(0)
+  const [page, setPage] = useState<number>(0);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
+  const [totalMovements, setTotalMovements] = useState<number>(0);
 
-  const [orderBy, setOrderBy] = useState<keyof Movement>("date")
-  const [order, setOrder] = useState<Sort>("desc")
+  const [orderBy, setOrderBy] = useState<keyof Movement>("date");
+  const [order, setOrder] = useState<Sort>("desc");
 
-  const [searchQuery, setSearchQuery] = useState<string>("")
-  const [localSearch, setLocalSearch] = useState<string>("")
-  const [filterType, setFilterType] = useState<string>("")
-  const [startDate, setStartDate] = useState<Date | null>(null)
-  const [endDate, setEndDate] = useState<Date | null>(null)
-  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [localSearch, setLocalSearch] = useState<string>("");
+  const [filterType, setFilterType] = useState<string>("");
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const [modal, setModal] = useState<boolean>(false)
-  const [delMovModal, setdelMovModal] = useState<boolean>(false)
+  const [modal, setModal] = useState<boolean>(false);
+  const [delMovModal, setdelMovModal] = useState<boolean>(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | undefined>(
-    undefined
-  )
+    undefined,
+  );
   const [selectedMov, setSelectedMov] = useState<Movement | undefined>(
-    undefined
-  )
+    undefined,
+  );
 
-  const [selectedOrderId, setSelectedOrderId] = useState<string | null>()
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>();
 
   const openModal = () => {
-    setModal(!modal)
-  }
+    setModal(!modal);
+  };
 
   const openDelMovModal = () => {
-    setdelMovModal(!delMovModal)
-  }
+    setdelMovModal(!delMovModal);
+  };
 
   const getLatestStatus = (
-    statusHistory?: [OrderStatus, Date][]
+    statusHistory?: [OrderStatus, Date][],
   ): OrderStatus => {
-    if (!statusHistory || statusHistory.length === 0) return OrderStatus.Pending
-    return statusHistory[statusHistory.length - 1][0]
-  }
+    if (!statusHistory || statusHistory.length === 0)
+      return OrderStatus.Pending;
+    return statusHistory[statusHistory.length - 1][0];
+  };
 
   const renderBasicInfoItem = (
     itemKey: React.Key,
@@ -170,7 +171,7 @@ const ReadMovements: React.FC = () => {
     primary: string,
     secondary: string | React.ReactNode | undefined,
     isLink: boolean = false,
-    href?: string
+    href?: string,
   ) =>
     secondary ? (
       <ListItem key={itemKey} sx={{ py: 0.5, px: 0 }}>
@@ -197,14 +198,14 @@ const ReadMovements: React.FC = () => {
           }}
         />
       </ListItem>
-    ) : null
+    ) : null;
 
   const loadMovementsAndUsers = useCallback(
     async (showLoadingIndicator = true) => {
-      if (showLoadingIndicator) setIsLoading(true)
+      if (showLoadingIndicator) setIsLoading(true);
 
       try {
-        const apiPage = page + 1
+        const apiPage = page + 1;
         const response = await getMovements({
           page: apiPage,
           limit: rowsPerPage,
@@ -214,28 +215,28 @@ const ReadMovements: React.FC = () => {
           type: filterType,
           dateFrom: startDate?.toISOString(),
           dateTo: endDate?.toISOString(),
-        })
+        });
 
-        setMovements(response.data)
-        setTotalMovements(response.totalCount)
-        setError(null)
+        setMovements(response.data);
+        setTotalMovements(response.totalCount);
+        setError(null);
 
         const accountIds = [
           ...new Set(
-            response.data.map((m) => m.destinatary).filter((id) => !!id)
+            response.data.map((m) => m.destinatary).filter((id) => !!id),
           ),
-        ] as string[]
+        ] as string[];
 
         if (accountIds.length > 0) {
-          const idsToFetch = accountIds.filter((id) => !ownerInfoMap[id])
+          const idsToFetch = accountIds.filter((id) => !ownerInfoMap[id]);
           if (idsToFetch.length > 0) {
-            const allUsers = (await getUsers()) as User[]
+            const allUsers = (await getUsers()) as User[];
             const relevantUsers = allUsers.filter(
-              (user) => user.account && idsToFetch.includes(user.account)
-            )
+              (user) => user.account && idsToFetch.includes(user.account),
+            );
 
             setOwnerInfoMap((prevMap) => {
-              const newMap = { ...prevMap }
+              const newMap = { ...prevMap };
               relevantUsers.forEach((user) => {
                 if (user?.account) {
                   newMap[user.account] = {
@@ -244,25 +245,25 @@ const ReadMovements: React.FC = () => {
                       user.username ||
                       "Usuario Desconocido",
                     avatar: user?.avatar || user.prixer?.avatar,
-                  }
+                  };
                 }
-              })
-              return newMap
-            })
+              });
+              return newMap;
+            });
           }
         }
       } catch (err: any) {
-        const message = err.message || "Error al cargar movimientos."
-        setError(message)
+        const message = err.message || "Error al cargar movimientos.";
+        setError(message);
         if (!showLoadingIndicator) {
-          showSnackBar(`Error al actualizar: ${message}`)
+          showSnackBar(`Error al actualizar: ${message}`);
         }
-        console.error("Error fetching filtered/paginated data:", err)
+        console.error("Error fetching filtered/paginated data:", err);
       } finally {
         if (showLoadingIndicator || movements.length === 0) {
-          setIsLoading(false)
+          setIsLoading(false);
         } else {
-          setIsLoading(false)
+          setIsLoading(false);
         }
       }
     },
@@ -276,147 +277,152 @@ const ReadMovements: React.FC = () => {
       filterType,
       startDate,
       endDate,
-    ]
-  )
+    ],
+  );
 
   const loadOrder = async () => {
     if (!selectedOrderId) {
-      return
+      return;
     }
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const orderData = await getOrderById(selectedOrderId)
-      if (!orderData) throw new Error("Orden no encontrada.")
+      const orderData = await getOrderById(selectedOrderId);
+      if (!orderData) throw new Error("Orden no encontrada.");
       if (orderData.payment && !Array.isArray(orderData.payment.payment)) {
         console.warn(
           "API devolvió orderData.payment sin un array 'Payments' válido. " +
-            "Inicializando como array vacío."
-        )
-        orderData.payment.payment = []
+            "Inicializando como array vacío.",
+        );
+        orderData.payment.payment = [];
       } else if (!orderData.payment) {
         console.warn(
           "API devolvió orderData sin el objeto 'payment'. " +
-            "Inicializando con valores por defecto. Esto puede indicar un problema."
-        )
+            "Inicializando con valores por defecto. Esto puede indicar un problema.",
+        );
       }
-      setSelectedOrder(orderData)
+      setSelectedOrder(orderData);
     } catch (err: any) {
-      console.error("Failed to load data:", err)
-      const errorMsg = err.message || "Error al cargar los datos."
-      showSnackBar(errorMsg)
+      console.error("Failed to load data:", err);
+      const errorMsg = err.message || "Error al cargar los datos.";
+      showSnackBar(errorMsg);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    loadOrder()
-  }, [selectedOrderId])
+    loadOrder();
+  }, [selectedOrderId]);
 
   useEffect(() => {
-    loadMovementsAndUsers()
-  }, [loadMovementsAndUsers])
+    loadMovementsAndUsers();
+  }, [loadMovementsAndUsers]);
 
-  const handleCreate = () => navigate("/admin/movements/create")
+  const handleCreate = () => navigate("/admin/movements/create");
 
   const handleDelete = (movement: Movement) => {
-    setSelectedMov(movement)
-    openDelMovModal()
-  }
+    setSelectedMov(movement);
+    openDelMovModal();
+  };
 
   const deleteMovement = async () => {
     if (selectedMov === undefined) {
-      return
+      return;
     }
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       if (selectedMov && selectedMov._id) {
-      const response = await reverseMovement(selectedMov?._id)
-      if (response) {
-        showSnackBar(`Movimiento "${selectedMov?._id?.slice(-6)}..." revertido exitosamente.`);
-        navigate("/admin/movements/read");}
-    } else {
-        throw new Error("La reversión del movimiento no devolvió una respuesta esperada.");
-    }
+        const response = await reverseMovement(selectedMov?._id);
+        if (response) {
+          showSnackBar(
+            `Movimiento "${selectedMov?._id?.slice(-6)}..." revertido exitosamente.`,
+          );
+          navigate("/admin/movements/read");
+        }
+      } else {
+        throw new Error(
+          "La reversión del movimiento no devolvió una respuesta esperada.",
+        );
+      }
     } catch (err: any) {
-      console.error("Failed to load data:", err)
-      const errorMsg = err.message || "Error al cargar los datos."
-      showSnackBar(errorMsg)
+      console.error("Failed to load data:", err);
+      const errorMsg = err.message || "Error al cargar los datos.";
+      showSnackBar(errorMsg);
     } finally {
-      setIsLoading(false)
-      openDelMovModal()
-      setSelectedMov(undefined)
+      setIsLoading(false);
+      openDelMovModal();
+      setSelectedMov(undefined);
     }
-  }
+  };
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
-    property: keyof Movement
+    property: keyof Movement,
   ) => {
-    const isAsc = orderBy === property && order === "asc"
-    setOrder(isAsc ? "desc" : "asc")
-    setOrderBy(property)
-    setPage(0)
-  }
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(property);
+    setPage(0);
+  };
 
   const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage)
-  }
+    setPage(newPage);
+  };
 
   const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    setRowsPerPage(parseInt(event.target.value, 10))
-    setPage(0)
-  }
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value
-    setLocalSearch(value)
+    const value = event.target.value;
+    setLocalSearch(value);
 
     if (debounceTimeoutRef.current) {
-      clearTimeout(debounceTimeoutRef.current)
+      clearTimeout(debounceTimeoutRef.current);
     }
 
     debounceTimeoutRef.current = setTimeout(() => {
-      setPage(0)
-      setSearchQuery(value)
-        }, 500)
-  }
+      setPage(0);
+      setSearchQuery(value);
+    }, 500);
+  };
 
   const handleFilterChange =
     (setter: React.Dispatch<React.SetStateAction<any>>) => (event: any) => {
-      const value = event?.target?.value ?? event
-      setter(value)
-      setPage(0)
-    }
+      const value = event?.target?.value ?? event;
+      setter(value);
+      setPage(0);
+    };
 
   const handleClearFilters = () => {
-    setSearchQuery("")
-    setLocalSearch("")
-    setFilterType("")
-    setStartDate(null)
-    setEndDate(null)
-    setPage(0)
+    setSearchQuery("");
+    setLocalSearch("");
+    setFilterType("");
+    setStartDate(null);
+    setEndDate(null);
+    setPage(0);
     if (debounceTimeoutRef.current) {
-      clearTimeout(debounceTimeoutRef.current)
+      clearTimeout(debounceTimeoutRef.current);
     }
-  }
+  };
   interface EnhancedTableProps {
     onRequestSort: (
       event: React.MouseEvent<unknown>,
-      property: keyof Movement
-    ) => void
-    order: Sort
-    orderBy: string
+      property: keyof Movement,
+    ) => void;
+    order: Sort;
+    orderBy: string;
   }
 
   function EnhancedTableHead(props: EnhancedTableProps) {
-    const { order, orderBy, onRequestSort } = props
+    const { order, orderBy, onRequestSort } = props;
     const createSortHandler =
       (property: keyof Movement) => (event: React.MouseEvent<unknown>) => {
-        onRequestSort(event, property)
-      }
+        onRequestSort(event, property);
+      };
 
     return (
       <TableHead
@@ -453,7 +459,7 @@ const ReadMovements: React.FC = () => {
           ))}
         </TableRow>
       </TableHead>
-    )
+    );
   }
 
   // --- Render Logic ---
@@ -468,7 +474,7 @@ const ReadMovements: React.FC = () => {
             Reintentar
           </Button>
         </Alert>
-      )
+      );
     }
     // No data found after load/filter
     if (!isLoading && movements.length === 0 && !error) {
@@ -476,10 +482,10 @@ const ReadMovements: React.FC = () => {
         <Alert severity="info" sx={{ m: 2 }}>
           No se encontraron movimientos con los filtros aplicados.
         </Alert>
-      )
+      );
     }
     // If loading but we already have *some* data (paging/sorting/filtering), show skeletons
-    const showSkeletons = isLoading && movements.length > 0
+    const showSkeletons = isLoading && movements.length > 0;
 
     return (
       <Paper sx={{ width: "100%", mb: 2 }}>
@@ -507,9 +513,9 @@ const ReadMovements: React.FC = () => {
                 : movements.map((movement) => {
                     const destinataryInfo = movement.destinatary
                       ? ownerInfoMap[movement.destinatary]
-                      : null
+                      : null;
                     const isDestinataryLoading =
-                      movement.destinatary && !destinataryInfo
+                      movement.destinatary && !destinataryInfo;
 
                     return (
                       <TableRow
@@ -574,8 +580,8 @@ const ReadMovements: React.FC = () => {
                               variant="body2"
                               onClick={
                                 () => {
-                                  setSelectedOrderId(movement.order)
-                                  openModal()
+                                  setSelectedOrderId(movement.order);
+                                  openModal();
                                 }
                                 //     navigate(
                                 //       `/admin/order/detail/${movement.order}`
@@ -623,7 +629,7 @@ const ReadMovements: React.FC = () => {
                           </Box>
                         </TableCell>
                       </TableRow>
-                    )
+                    );
                   })}
             </TableBody>
           </Table>
@@ -643,8 +649,8 @@ const ReadMovements: React.FC = () => {
           }
         />
       </Paper>
-    )
-  }
+    );
+  };
 
   return (
     // Wrap with LocalizationProvider for Date Pickers
@@ -936,7 +942,7 @@ const ReadMovements: React.FC = () => {
                         "summary-subtotal",
                         null,
                         "Subtotal:",
-                        `$${selectedOrder.subTotal.toFixed(2)}`
+                        `$${selectedOrder.subTotal.toFixed(2)}`,
                       )}
                       {selectedOrder.discount
                         ? renderBasicInfoItem(
@@ -946,7 +952,7 @@ const ReadMovements: React.FC = () => {
                             <Typography color="error.main">
                               -$
                               {selectedOrder.discount?.toFixed(2)}
-                            </Typography>
+                            </Typography>,
                           )
                         : null}
                       {selectedOrder.shippingCost
@@ -954,7 +960,7 @@ const ReadMovements: React.FC = () => {
                             "summary-shipping",
                             null,
                             "Costo de Envío:",
-                            `$${selectedOrder.shippingCost?.toFixed(2)}`
+                            `$${selectedOrder.shippingCost?.toFixed(2)}`,
                           )
                         : null}
                       {selectedOrder.tax.map((t, idx) =>
@@ -962,8 +968,8 @@ const ReadMovements: React.FC = () => {
                           `summary-tax-${idx}`,
                           null,
                           `${t.name} (${t.value}%):`,
-                          `$${t.amount.toFixed(2)}`
-                        )
+                          `$${t.amount.toFixed(2)}`,
+                        ),
                       )}
                       <Divider sx={{ my: 1 }} />
                       <ListItem
@@ -1058,10 +1064,10 @@ const ReadMovements: React.FC = () => {
             <Typography>
               {`Se eliminará el movimiento #${selectedMov?._id?.slice(-6)} del historial y se
               revertirá su valor ($${selectedMov?.value}) del balance del prixer 
-              ${selectedMov?.destinatary ? ownerInfoMap[selectedMov?.destinatary]?.name : 'indeterminado'}.`}
+              ${selectedMov?.destinatary ? ownerInfoMap[selectedMov?.destinatary]?.name : "indeterminado"}.`}
             </Typography>
             <Grid2
-              sx={{ mt: 2, justifyContent: "center", gap: 2, display: 'flex' }}
+              sx={{ mt: 2, justifyContent: "center", gap: 2, display: "flex" }}
             >
               <Button
                 color="secondary"
@@ -1084,7 +1090,7 @@ const ReadMovements: React.FC = () => {
         </Box>
       </Modal>
     </LocalizationProvider>
-  )
-}
+  );
+};
 
-export default ReadMovements
+export default ReadMovements;

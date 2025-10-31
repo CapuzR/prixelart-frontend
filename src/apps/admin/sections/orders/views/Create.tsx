@@ -6,20 +6,20 @@ import React, {
   useEffect,
   useMemo,
   useState,
-} from "react"
-import { useNavigate } from "react-router-dom"
-import Grid2 from "@mui/material/Grid"
-import { v4 as uuidv4 } from "uuid"
-import favicon from "../../../../../images/favicon.png"
+} from "react";
+import { useNavigate } from "react-router-dom";
+import Grid2 from "@mui/material/Grid";
+import { v4 as uuidv4 } from "uuid";
+import favicon from "../../../../../images/favicon.png";
 
-import { useSnackBar } from "context/GlobalContext"
+import { useSnackBar } from "context/GlobalContext";
 import {
   fetchShippingMethods,
   readAllPaymentMethods,
   createOrder,
-} from "@api/order.api"
-import { fetchActiveProducts } from "@api/product.api"
-import { getArts } from "@api/art.api"
+} from "@api/order.api";
+import { fetchActiveProducts } from "@api/product.api";
+import { getArts } from "@api/art.api";
 
 import {
   Alert,
@@ -44,20 +44,20 @@ import {
   Stack,
   TextField,
   Typography,
-} from "@mui/material"
-import { createFilterOptions } from "@mui/material/Autocomplete"
-import ReceiptLongIcon from "@mui/icons-material/ReceiptLong"
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline"
-import DeleteIcon from "@mui/icons-material/Delete"
-import SaveIcon from "@mui/icons-material/Save"
-import CancelIcon from "@mui/icons-material/Cancel"
-import LocalShippingOutlined from "@mui/icons-material/LocalShippingOutlined"
-import ReceiptOutlined from "@mui/icons-material/ReceiptOutlined"
-import PersonOutline from "@mui/icons-material/PersonOutline"
-import InfoOutlined from "@mui/icons-material/InfoOutlined"
+} from "@mui/material";
+import { createFilterOptions } from "@mui/material/Autocomplete";
+import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import DeleteIcon from "@mui/icons-material/Delete";
+import SaveIcon from "@mui/icons-material/Save";
+import CancelIcon from "@mui/icons-material/Cancel";
+import LocalShippingOutlined from "@mui/icons-material/LocalShippingOutlined";
+import ReceiptOutlined from "@mui/icons-material/ReceiptOutlined";
+import PersonOutline from "@mui/icons-material/PersonOutline";
+import InfoOutlined from "@mui/icons-material/InfoOutlined";
 
-import EditableAddressForm from "./components/EditableAddressForm"
-import Title from "@apps/admin/components/Title"
+import EditableAddressForm from "./components/EditableAddressForm";
+import Title from "@apps/admin/components/Title";
 
 // Types
 import {
@@ -76,62 +76,62 @@ import {
   ShippingDetails,
   ShippingMethod,
   Tax,
-} from "types/order.types"
-import { Product, Variant } from "types/product.types"
-import { Art } from "types/art.types"
-import { UserOptions } from "types/user.types"
-import dayjs, { Dayjs } from "dayjs"
-import "dayjs/locale/es"
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
-import { DatePicker } from "@mui/x-date-pickers/DatePicker"
-import { getUsers } from "@api/user.api"
+} from "types/order.types";
+import { Product, Variant } from "types/product.types";
+import { Art } from "types/art.types";
+import { UserOptions } from "types/user.types";
+import dayjs, { Dayjs } from "dayjs";
+import "dayjs/locale/es";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { getUsers } from "@api/user.api";
 // --- Helper Interfaces ---
 interface MethodOption {
-  id: string
-  label: string
-  fullMethod: ShippingMethod | PaymentMethod
+  id: string;
+  label: string;
+  fullMethod: ShippingMethod | PaymentMethod;
 }
 interface ProductOption {
-  id: string
-  label: string
-  fullProduct: Product
+  id: string;
+  label: string;
+  fullProduct: Product;
 }
 interface ArtOption {
-  id: string
-  label: string
-  thumb: string
-  fullArt: Art | CustomImage
+  id: string;
+  label: string;
+  thumb: string;
+  fullArt: Art | CustomImage;
 }
 interface PrixerOption {
-  id: string
-  label: string
-  username: string
+  id: string;
+  label: string;
+  username: string;
   // fullData: Prixer
 }
 interface VariantOption {
-  id: string
-  label: string
-  fullVariant: Variant
+  id: string;
+  label: string;
+  fullVariant: Variant;
 }
 
 interface OrderLineFormState extends Partial<OrderLine> {
-  tempId: string
-  selectedPrixer: PrixerOption | null
-  selectedArt: ArtOption | null
-  selectedProduct: ProductOption | null
-  selectedVariant: VariantOption | null
-  availableVariants: VariantOption[]
-  quantity: number
-  pricePerUnit: number
+  tempId: string;
+  selectedPrixer: PrixerOption | null;
+  selectedArt: ArtOption | null;
+  selectedProduct: ProductOption | null;
+  selectedVariant: VariantOption | null;
+  availableVariants: VariantOption[];
+  quantity: number;
+  pricePerUnit: number;
 }
 
 interface EditablePriceFieldsProps {
-  line: OrderLineFormState
-  updateLine: (tempId: string, values: Partial<OrderLineFormState>) => void
+  line: OrderLineFormState;
+  updateLine: (tempId: string, values: Partial<OrderLineFormState>) => void;
 }
 
-dayjs.locale("es")
+dayjs.locale("es");
 
 const initialLine: Omit<OrderLineFormState, "tempId"> = {
   selectedPrixer: null,
@@ -141,84 +141,85 @@ const initialLine: Omit<OrderLineFormState, "tempId"> = {
   availableVariants: [],
   quantity: 1,
   pricePerUnit: 0,
-}
+};
 
 const formatDate = (
   date: Date | string | undefined,
-  includeTime: boolean = true
+  includeTime: boolean = true,
 ) => {
-  if (!date) return "N/A"
+  if (!date) return "N/A";
   const opts: Intl.DateTimeFormatOptions = {
     year: "numeric",
     month: "long",
     day: "numeric",
-  }
+  };
   if (includeTime) {
-    opts.hour = "2-digit"
-    opts.minute = "2-digit"
+    opts.hour = "2-digit";
+    opts.minute = "2-digit";
   }
-  return new Date(date).toLocaleDateString("es-ES", opts)
-}
+  return new Date(date).toLocaleDateString("es-ES", opts);
+};
 
 const CreateOrder: React.FC = () => {
-  const navigate = useNavigate()
-  const { showSnackBar } = useSnackBar()
+  const navigate = useNavigate();
+  const { showSnackBar } = useSnackBar();
 
   // --- Form State ---
-  const [observations, setObservations] = useState<string>("")
+  const [observations, setObservations] = useState<string>("");
   const [editableClientInfo, setEditableClientInfo] = useState<BasicInfo>({
     name: "",
     lastName: "",
     email: "",
     phone: "",
-  })
+  });
 
   const [shippingMethod, setShippingMethod] = useState<MethodOption | null>(
-    null
-  )
-  const [paymentMethod, setPaymentMethod] = useState<MethodOption | null>(null)
-  const [useBasicForShipping, setUseBasicForShipping] = useState<boolean>(false)
+    null,
+  );
+  const [paymentMethod, setPaymentMethod] = useState<MethodOption | null>(null);
+  const [useBasicForShipping, setUseBasicForShipping] =
+    useState<boolean>(false);
   const [useShippingForBilling, setUseShippingForBilling] =
-    useState<boolean>(true)
+    useState<boolean>(true);
 
   const [shippingMethodOptions, setShippingMethodOptions] = useState<
     MethodOption[]
-  >([])
+  >([]);
   const [paymentMethodOptions, setPaymentMethodOptions] = useState<
     MethodOption[]
-  >([])
+  >([]);
 
-  const [productOptions, setProductOptions] = useState<ProductOption[]>([])
-  const [artOptions, setArtOptions] = useState<ArtOption[]>([])
-  const [prixerOptions, setPrixerOptions] = useState<PrixerOption[]>([])
-  const [userOptions, setUserOptions] = useState<UserOptions[]>([])
+  const [productOptions, setProductOptions] = useState<ProductOption[]>([]);
+  const [artOptions, setArtOptions] = useState<ArtOption[]>([]);
+  const [prixerOptions, setPrixerOptions] = useState<PrixerOption[]>([]);
+  const [userOptions, setUserOptions] = useState<UserOptions[]>([]);
   const [orderLines, setOrderLines] = useState<OrderLineFormState[]>([
     { ...initialLine, tempId: uuidv4() },
-  ])
-  const [prefDate, setPrefDate] = useState<Dayjs>(dayjs())
+  ]);
+  const [prefDate, setPrefDate] = useState<Dayjs>(dayjs());
 
   const [editableShippingAddress, setEditableShippingAddress] =
-    useState<Address | null>(null)
+    useState<Address | null>(null);
   const [editableBillingAddress, setEditableBillingAddress] =
-    useState<Address | null>(null)
+    useState<Address | null>(null);
 
   const [displayTotals, setDisplayTotals] = useState<{
-    subTotal: number
-    discount: number
-    shippingCost: number
-    taxes: Tax[]
-    total: number
-    totalUnits: number
-  } | null>(null)
+    subTotal: number;
+    discount: number;
+    shippingCost: number;
+    taxes: Tax[];
+    total: number;
+    totalUnits: number;
+  } | null>(null);
 
-  const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
-  const [errorFetch, setErrorFetch] = useState<string | null>(null)
-  const [errorSubmit, setErrorSubmit] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [errorFetch, setErrorFetch] = useState<string | null>(null);
+  const [errorSubmit, setErrorSubmit] = useState<string | null>(null);
 
   const handleAutocompleteChange = (
     event: React.SyntheticEvent,
-    newValue: UserOptions | string | null
+    newValue: UserOptions | string | null,
   ) => {
     if (typeof newValue === "string") {
       setEditableClientInfo({
@@ -226,14 +227,14 @@ const CreateOrder: React.FC = () => {
         lastName: "",
         email: "",
         phone: "",
-      })
+      });
     } else if (newValue) {
       setEditableClientInfo({
         name: newValue.firstName || "",
         lastName: newValue.lastName || "",
         email: newValue.email || "",
         phone: newValue.phone || "",
-      })
+      });
       const shippingAddr: Address | null = newValue.shippingAddress
         ? {
             recepient: {
@@ -252,7 +253,7 @@ const CreateOrder: React.FC = () => {
               country: "",
             },
           }
-        : createBlankAddress()
+        : createBlankAddress();
 
       const billingAddr: Address | null = newValue.billingAddress
         ? {
@@ -272,41 +273,41 @@ const CreateOrder: React.FC = () => {
               country: "",
             },
           }
-        : createBlankAddress()
+        : createBlankAddress();
 
-      setEditableShippingAddress(shippingAddr)
-      setEditableBillingAddress(billingAddr)
+      setEditableShippingAddress(shippingAddr);
+      setEditableBillingAddress(billingAddr);
     } else {
-      setEditableClientInfo({ name: "", lastName: "", email: "", phone: "" })
-      setEditableShippingAddress(createBlankAddress())
-      setEditableBillingAddress(createBlankAddress())
+      setEditableClientInfo({ name: "", lastName: "", email: "", phone: "" });
+      setEditableShippingAddress(createBlankAddress());
+      setEditableBillingAddress(createBlankAddress());
     }
-  }
+  };
 
-  const filter = createFilterOptions<UserOptions>()
+  const filter = createFilterOptions<UserOptions>();
 
   const handleInputChange = (
     event: React.SyntheticEvent,
-    newInputValue: string
+    newInputValue: string,
   ) => {
     setEditableClientInfo((prev) => ({
       ...prev,
       name: newInputValue,
-    }))
-  }
+    }));
+  };
 
   const isPickupSelected = useMemo(() => {
-    if (!shippingMethod) return false
+    if (!shippingMethod) return false;
     const name =
-      (shippingMethod.fullMethod as ShippingMethod).name?.toLowerCase() || ""
-    return name.includes("pickup") || name.includes("recoger")
-  }, [shippingMethod])
+      (shippingMethod.fullMethod as ShippingMethod).name?.toLowerCase() || "";
+    return name.includes("pickup") || name.includes("recoger");
+  }, [shippingMethod]);
 
   useEffect(() => {
     if (isPickupSelected) {
-      setUseShippingForBilling(false)
+      setUseShippingForBilling(false);
     }
-  }, [isPickupSelected])
+  }, [isPickupSelected]);
 
   // --- Create Blank Address Helper ---
   const createBlankAddress = useCallback(
@@ -322,13 +323,13 @@ const CreateOrder: React.FC = () => {
         zipCode: "",
       },
     }),
-    [editableClientInfo]
-  )
+    [editableClientInfo],
+  );
 
   // --- Load Options ---
   const loadData = useCallback(async () => {
-    setIsLoading(true)
-    setErrorFetch(null)
+    setIsLoading(true);
+    setErrorFetch(null);
     try {
       const [shippingMethods, paymentMethods, products, arts, clients] =
         await Promise.all([
@@ -337,7 +338,7 @@ const CreateOrder: React.FC = () => {
           fetchActiveProducts("A-Z"),
           getArts(),
           getUsers(),
-        ])
+        ]);
 
       setShippingMethodOptions(
         shippingMethods
@@ -346,20 +347,24 @@ const CreateOrder: React.FC = () => {
             id: s._id!.toString(),
             label: `${s.name} ($${s.price})`,
             fullMethod: s,
-          }))
-      )
+          })),
+      );
       setPaymentMethodOptions(
         paymentMethods
           .filter((p) => p.active)
-          .map((p) => ({ id: p._id!.toString(), label: p.name, fullMethod: p }))
-      )
+          .map((p) => ({
+            id: p._id!.toString(),
+            label: p.name,
+            fullMethod: p,
+          })),
+      );
       setProductOptions(
         products.map((p) => ({
           id: p._id!.toString(),
           label: p.name,
           fullProduct: p,
-        }))
-      )
+        })),
+      );
 
       const reducedUsers: UserOptions[] = clients.map((user) => ({
         _id: user._id,
@@ -369,19 +374,19 @@ const CreateOrder: React.FC = () => {
         phone: user.phone,
         shippingAddress: user.shippingAddress,
         billingAddress: user.billingAddress,
-      }))
+      }));
 
-      setUserOptions(reducedUsers)
+      setUserOptions(reducedUsers);
 
       const existingArts = arts.map((a) => ({
         id: a._id!.toString(),
         label: a.title,
         thumb: a.squareThumbUrl || a.smallThumbUrl || "",
         fullArt: a,
-      }))
+      }));
 
-      const allArtist = arts.map((art) => art.prixerUsername)
-      const onlyPrixers = [...new Set(allArtist)]
+      const allArtist = arts.map((art) => art.prixerUsername);
+      const onlyPrixers = [...new Set(allArtist)];
 
       const customImageOptions: ArtOption[] = onlyPrixers.map(
         (prixerUsername) => {
@@ -390,16 +395,16 @@ const CreateOrder: React.FC = () => {
             title: `Personalizado de ${prixerUsername}`,
             prixerUsername: prixerUsername,
             url: "",
-          }
+          };
 
           return {
             id: customArtPlaceholder.artId,
             label: customArtPlaceholder.title,
             thumb: favicon,
             fullArt: customArtPlaceholder,
-          }
-        }
-      )
+          };
+        },
+      );
 
       const genericCustom: ArtOption = {
         id: "custom-image-without-prixer",
@@ -411,51 +416,51 @@ const CreateOrder: React.FC = () => {
           prixerUsername: "",
           url: "",
         },
-      }
-      customImageOptions.unshift(genericCustom)
-      setArtOptions([...existingArts, ...customImageOptions])
+      };
+      customImageOptions.unshift(genericCustom);
+      setArtOptions([...existingArts, ...customImageOptions]);
 
       const onlyPrixersv2: PrixerOption[] = onlyPrixers.map((prixer, i) => {
         return {
           id: (1000 + i).toString(),
           label: prixer,
           username: prixer,
-        }
-      })
-      setPrixerOptions(onlyPrixersv2)
+        };
+      });
+      setPrixerOptions(onlyPrixersv2);
 
-      setEditableShippingAddress(createBlankAddress())
-      setEditableBillingAddress(createBlankAddress())
+      setEditableShippingAddress(createBlankAddress());
+      setEditableBillingAddress(createBlankAddress());
     } catch (err: any) {
-      console.error(err)
-      setErrorFetch("Error cargando datos.")
-      showSnackBar("Error cargando datos.")
+      console.error(err);
+      setErrorFetch("Error cargando datos.");
+      showSnackBar("Error cargando datos.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }, [showSnackBar])
+  }, [showSnackBar]);
 
   useEffect(() => {
-    loadData()
-  }, [])
+    loadData();
+  }, []);
 
   // --- Totals Calculation ---
   useEffect(() => {
     const sub = orderLines.reduce(
       (sum, l) => sum + (l.pricePerUnit || 0) * (l.quantity || 0),
-      0
-    )
+      0,
+    );
     const ship = shippingMethod
       ? parseFloat((shippingMethod.fullMethod as ShippingMethod).price)
-      : 0
-    const disc = 0
-    const base = sub - disc + ship
-    const taxes: Tax[] = []
+      : 0;
+    const disc = 0;
+    const base = sub - disc + ship;
+    const taxes: Tax[] = [];
     const computed: Tax[] = taxes.map((t) => ({
       ...t,
       amount: base > 0 ? parseFloat((base * (t.value / 100)).toFixed(2)) : 0,
-    }))
-    const totalTax = computed.reduce((s, t) => s + t.amount, 0)
+    }));
+    const totalTax = computed.reduce((s, t) => s + t.amount, 0);
     setDisplayTotals({
       subTotal: sub,
       discount: disc,
@@ -463,63 +468,63 @@ const CreateOrder: React.FC = () => {
       taxes: computed,
       total: sub - disc + ship + totalTax,
       totalUnits: orderLines.reduce((u, l) => u + (l.quantity || 0), 0),
-    })
+    });
 
-    const newPrefDate = calculatePreferredDate(orderLines)
-    setPrefDate(newPrefDate)
-  }, [orderLines, shippingMethod])
+    const newPrefDate = calculatePreferredDate(orderLines);
+    setPrefDate(newPrefDate);
+  }, [orderLines, shippingMethod]);
 
   const calculatePreferredDate = (lines: OrderLineFormState[]): Dayjs => {
-    const today = dayjs()
+    const today = dayjs();
     if (!lines || lines.length === 0) {
-      return today
+      return today;
     }
 
     const productionTimesInDays = lines.map((line) => {
-      const timeString = line.selectedProduct?.fullProduct?.productionTime
+      const timeString = line.selectedProduct?.fullProduct?.productionTime;
 
-      return parseInt(timeString || "0", 10)
-    })
+      return parseInt(timeString || "0", 10);
+    });
 
-    const maxProductionTime = Math.max(...productionTimesInDays)
+    const maxProductionTime = Math.max(...productionTimesInDays);
 
-    let deliveryDate = dayjs()
-    let daysAdded = 0
+    let deliveryDate = dayjs();
+    let daysAdded = 0;
 
     while (daysAdded < maxProductionTime) {
-      deliveryDate = deliveryDate.add(1, "day")
+      deliveryDate = deliveryDate.add(1, "day");
 
-      const dayOfWeek = deliveryDate.day()
+      const dayOfWeek = deliveryDate.day();
 
       if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-        daysAdded++
+        daysAdded++;
       }
     }
 
-    return deliveryDate
-  }
+    return deliveryDate;
+  };
 
   useEffect(() => {
     const sub = orderLines.reduce(
       (sum, l) => sum + (l.pricePerUnit || 0) * (l.quantity || 0),
-      0
-    )
+      0,
+    );
     const ship = shippingMethod
       ? parseFloat((shippingMethod.fullMethod as ShippingMethod).price)
-      : 0
-    const disc = 0
-    const base = sub - disc + ship
+      : 0;
+    const disc = 0;
+    const base = sub - disc + ship;
 
     // — build the two taxes we always need —
-    const taxesToApply: Tax[] = [{ name: "IVA", value: 16, amount: 0 }]
+    const taxesToApply: Tax[] = [{ name: "IVA", value: 16, amount: 0 }];
 
     // — compute each tax amount off the same base —
     const computedTaxes = taxesToApply.map((t) => ({
       ...t,
       amount: base > 0 ? parseFloat(((base * t.value) / 100).toFixed(2)) : 0,
-    }))
+    }));
 
-    const totalTax = computedTaxes.reduce((sum, t) => sum + t.amount, 0)
+    const totalTax = computedTaxes.reduce((sum, t) => sum + t.amount, 0);
 
     setDisplayTotals({
       subTotal: sub,
@@ -528,87 +533,87 @@ const CreateOrder: React.FC = () => {
       taxes: computedTaxes,
       total: base + totalTax,
       totalUnits: orderLines.reduce((u, l) => u + (l.quantity || 0), 0),
-    })
-  }, [orderLines, shippingMethod, paymentMethod])
+    });
+  }, [orderLines, shippingMethod, paymentMethod]);
 
   // --- Line Handlers ---
   const handleAddLine = () =>
-    setOrderLines((prev) => [...prev, { ...initialLine, tempId: uuidv4() }])
+    setOrderLines((prev) => [...prev, { ...initialLine, tempId: uuidv4() }]);
 
   const handleRemoveLine = (tempId: string) =>
-    setOrderLines((prev) => prev.filter((l) => l.tempId !== tempId))
+    setOrderLines((prev) => prev.filter((l) => l.tempId !== tempId));
 
   const updateLine = (tempId: string, values: Partial<OrderLineFormState>) => {
     setOrderLines((prev) =>
-      prev.map((l) => (l.tempId === tempId ? { ...l, ...values } : l))
-    )
-  }
+      prev.map((l) => (l.tempId === tempId ? { ...l, ...values } : l)),
+    );
+  };
 
   const handlePrixer = (tempId: string, v: PrixerOption | null) => {
-    updateLine(tempId, { selectedPrixer: v })
-    if (v !== null) filterArts(v.username)
-  }
+    updateLine(tempId, { selectedPrixer: v });
+    if (v !== null) filterArts(v.username);
+  };
 
   const filterArts = (prixer: string) => {
     const artsV1 = artOptions.filter(
-      (art) => art.fullArt.prixerUsername === prixer
-    )
-    return artsV1
-  }
+      (art) => art.fullArt.prixerUsername === prixer,
+    );
+    return artsV1;
+  };
 
   const handleArt = (tempId: string, v: ArtOption | null) =>
-    updateLine(tempId, { selectedArt: v })
+    updateLine(tempId, { selectedArt: v });
 
   const handleProduct = (tempId: string, v: ProductOption | null) => {
-    const variants = v?.fullProduct.variants || []
+    const variants = v?.fullProduct.variants || [];
     const opts = variants.map((vt) => ({
       id: vt._id!,
       label: vt.name,
       fullVariant: vt,
-    }))
-    const price = parseFloat(v?.fullProduct.cost || "0")
+    }));
+    const price = parseFloat(v?.fullProduct.cost || "0");
     updateLine(tempId, {
       selectedProduct: v,
       availableVariants: opts,
       selectedVariant: null,
       pricePerUnit: price,
-    })
-  }
+    });
+  };
 
   const handleVariant = (tempId: string, v: VariantOption | null) => {
-    const price = parseFloat(v?.fullVariant.publicPrice || "0")
-    updateLine(tempId, { selectedVariant: v, pricePerUnit: price })
-  }
+    const price = parseFloat(v?.fullVariant.publicPrice || "0");
+    updateLine(tempId, { selectedVariant: v, pricePerUnit: price });
+  };
   const handleQty = (
     lineTempId: string,
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
-    const q = parseInt(event.target.value, 10) || 1
-    updateLine(lineTempId, { quantity: q })
-  }
+    const q = parseInt(event.target.value, 10) || 1;
+    updateLine(lineTempId, { quantity: q });
+  };
 
   // --- Other Handlers ---
   const handleShipChange = (_: SyntheticEvent, v: MethodOption | null) =>
-    setShippingMethod(v)
+    setShippingMethod(v);
   const handlePayChange = (_: SyntheticEvent, v: MethodOption | null) =>
-    setPaymentMethod(v)
+    setPaymentMethod(v);
   const handleObs = (e: ChangeEvent<HTMLTextAreaElement>) =>
-    setObservations(e.target.value)
+    setObservations(e.target.value);
   const handleClientChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setEditableClientInfo((prev) => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setEditableClientInfo((prev) => ({ ...prev, [name]: value }));
+  };
   const handleShipAddrChange = (addr: Address) =>
-    setEditableShippingAddress(addr)
+    setEditableShippingAddress(addr);
   const handleBillAddrChange = (addr: Address) =>
-    setEditableBillingAddress(addr)
+    setEditableBillingAddress(addr);
   const handleUseShipBill = (e: ChangeEvent<HTMLInputElement>) => {
-    setUseShippingForBilling(e.target.checked)
+    setUseShippingForBilling(e.target.checked);
     if (e.target.checked && editableShippingAddress)
-      setEditableBillingAddress(editableShippingAddress)
-  }
+      setEditableBillingAddress(editableShippingAddress);
+  };
   const handleUseBasicShip = (e: ChangeEvent<HTMLInputElement>) => {
-    setUseBasicForShipping(e.target.checked)
+    setUseBasicForShipping(e.target.checked);
     if (e.target.checked && editableShippingAddress) {
       setEditableShippingAddress((prevState) =>
         !prevState
@@ -622,8 +627,8 @@ const CreateOrder: React.FC = () => {
                 email: editableClientInfo.email,
                 phone: editableClientInfo.phone,
               },
-            }
-      )
+            },
+      );
     } else if (!e.target.checked) {
       setEditableShippingAddress((prevState) =>
         !prevState
@@ -637,22 +642,22 @@ const CreateOrder: React.FC = () => {
                 email: "",
                 phone: "",
               },
-            }
-      )
+            },
+      );
     }
-  }
+  };
 
   const handlePricePerUnitChange = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    line: any
+    line: any,
   ) => {
-    updateLine(line.tempId, { pricePerUnit: parseFloat(event.target.value) })
-  }
+    updateLine(line.tempId, { pricePerUnit: parseFloat(event.target.value) });
+  };
 
   const allowNumericWithDecimal = (
-    event: React.KeyboardEvent<HTMLInputElement>
+    event: React.KeyboardEvent<HTMLInputElement>,
   ) => {
-    const target = event.target as HTMLInputElement // Type assertion
+    const target = event.target as HTMLInputElement; // Type assertion
     if (
       !/[0-9.]/.test(event.key) &&
       ![
@@ -664,55 +669,55 @@ const CreateOrder: React.FC = () => {
         "Enter",
       ].includes(event.key)
     ) {
-      event.preventDefault()
+      event.preventDefault();
     }
     if (event.key === "." && target.value.includes(".")) {
-      event.preventDefault()
+      event.preventDefault();
     }
-  }
+  };
   // --- Validation ---
   const validateForm = (): boolean => {
     if (!shippingMethod) {
-      showSnackBar("Método envío requerido.")
-      return false
+      showSnackBar("Método envío requerido.");
+      return false;
     }
     if (!paymentMethod) {
-      showSnackBar("Método pago requerido.")
-      return false
+      showSnackBar("Método pago requerido.");
+      return false;
     }
     if (!useShippingForBilling && !editableBillingAddress?.address.line1) {
-      showSnackBar("Dirección facturación incompleta.")
-      return false
+      showSnackBar("Dirección facturación incompleta.");
+      return false;
     }
     if (!isPickupSelected && !editableShippingAddress?.address.line1) {
-      showSnackBar("Dirección envío incompleta.")
-      return false
+      showSnackBar("Dirección envío incompleta.");
+      return false;
     }
     for (const [i, line] of orderLines.entries()) {
       if (!line.selectedProduct) {
-        showSnackBar(`Item #${i + 1}: producto requerido.`)
-        return false
+        showSnackBar(`Item #${i + 1}: producto requerido.`);
+        return false;
       }
       if (
         line.selectedProduct.fullProduct.variants!.length > 0 &&
         !line.selectedVariant
       ) {
-        showSnackBar(`Item #${i + 1}: variante requerida.`)
-        return false
+        showSnackBar(`Item #${i + 1}: variante requerida.`);
+        return false;
       }
       if (!line.quantity || line.quantity < 1) {
-        showSnackBar(`Item #${i + 1}: cantidad inválida.`)
-        return false
+        showSnackBar(`Item #${i + 1}: cantidad inválida.`);
+        return false;
       }
     }
-    return true
-  }
+    return true;
+  };
 
   const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault()
-    if (!validateForm()) return
-    setIsSubmitting(true)
-    setErrorSubmit(null)
+    e.preventDefault();
+    if (!validateForm()) return;
+    setIsSubmitting(true);
+    setErrorSubmit(null);
     if (
       !editableClientInfo ||
       !shippingMethod ||
@@ -721,22 +726,22 @@ const CreateOrder: React.FC = () => {
       !editableShippingAddress
     ) {
       showSnackBar(
-        "Error: Faltan datos esenciales (cliente, envío, pago, dirección o totales)."
-      )
-      setIsSubmitting(false)
-      return
+        "Error: Faltan datos esenciales (cliente, envío, pago, dirección o totales).",
+      );
+      setIsSubmitting(false);
+      return;
     }
 
     if (!isPickupSelected && !editableShippingAddress?.address?.line1) {
-      showSnackBar("Error: Dirección de envío requerida.")
-      setIsSubmitting(false)
-      return
+      showSnackBar("Error: Dirección de envío requerida.");
+      setIsSubmitting(false);
+      return;
     }
 
     if (!useShippingForBilling && !editableBillingAddress?.address?.line1) {
-      showSnackBar("Error: Dirección de facturación requerida.")
-      setIsSubmitting(false)
-      return
+      showSnackBar("Error: Dirección de facturación requerida.");
+      setIsSubmitting(false);
+      return;
     }
 
     try {
@@ -745,7 +750,7 @@ const CreateOrder: React.FC = () => {
         selectedAddress: editableShippingAddress.address,
         addresses: [editableShippingAddress],
         paymentMethods: [paymentMethod.fullMethod as PaymentMethod],
-      }
+      };
 
       const mainPayment: Payment = {
         id: uuidv4(),
@@ -754,24 +759,24 @@ const CreateOrder: React.FC = () => {
         method: paymentMethod.fullMethod as PaymentMethod,
         amount: displayTotals.total.toString(),
         voucher: undefined,
-      }
+      };
 
       const paymentDetails: PaymentDetails = {
         status: [[GlobalPaymentStatus.Pending, new Date()]],
         total: displayTotals.total,
         payment: [],
-      }
+      };
 
       const finalShippingAddress = isPickupSelected
         ? createBlankAddress()
-        : editableShippingAddress
+        : editableShippingAddress;
 
       const shippingDetails: ShippingDetails = {
         method: shippingMethod.fullMethod as ShippingMethod,
         country: finalShippingAddress.address.country,
         address: finalShippingAddress,
         preferredDeliveryDate: prefDate ? prefDate.toDate() : new Date(),
-      }
+      };
 
       const billingDetails: BillingDetails = {
         billTo: useShippingForBilling
@@ -782,13 +787,13 @@ const CreateOrder: React.FC = () => {
         address: useShippingForBilling
           ? finalShippingAddress
           : editableBillingAddress || createBlankAddress(),
-      }
+      };
 
       const lines: OrderLine[] = orderLines.map((l) => {
         if (!l.selectedProduct) {
           throw new Error(
-            "Error interno: Producto no seleccionado en una línea."
-          )
+            "Error interno: Producto no seleccionado en una línea.",
+          );
         }
 
         return {
@@ -797,7 +802,7 @@ const CreateOrder: React.FC = () => {
             sku: `${l.selectedProduct.id}-${l.selectedVariant?.id || "novar"}-${l.selectedArt?.id || "noart"}`,
             art: l.selectedArt
               ? (() => {
-                  const fullArt = l.selectedArt.fullArt
+                  const fullArt = l.selectedArt.fullArt;
                   if ("_id" in fullArt) {
                     return {
                       _id: fullArt._id,
@@ -806,9 +811,9 @@ const CreateOrder: React.FC = () => {
                       largeThumbUrl: fullArt.largeThumbUrl,
                       prixerUsername: fullArt.prixerUsername,
                       exclusive: fullArt.exclusive,
-                    }
+                    };
                   } else {
-                    return fullArt
+                    return fullArt;
                   }
                 })()
               : undefined,
@@ -827,8 +832,8 @@ const CreateOrder: React.FC = () => {
           pricePerUnit: l.pricePerUnit,
           subtotal: l.pricePerUnit * l.quantity,
           status: [[OrderStatus.Pending, new Date()]],
-        }
-      })
+        };
+      });
 
       const payload: Order = {
         lines,
@@ -847,22 +852,22 @@ const CreateOrder: React.FC = () => {
         totalWithoutTax: displayTotals.subTotal,
         total: displayTotals.total,
         observations: observations || undefined,
-      }
+      };
 
-      await createOrder(payload as Order)
-      showSnackBar("Orden creada exitosamente.")
-      navigate("/admin/orders/read")
+      await createOrder(payload as Order);
+      showSnackBar("Orden creada exitosamente.");
+      navigate("/admin/orders/read");
     } catch (err: any) {
-      console.error("Error al crear la orden:", err)
-      const errorMsg = err.message || "Error al crear la orden."
-      setErrorSubmit(errorMsg)
-      showSnackBar(errorMsg)
+      console.error("Error al crear la orden:", err);
+      const errorMsg = err.message || "Error al crear la orden.";
+      setErrorSubmit(errorMsg);
+      showSnackBar(errorMsg);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
-  const handleCancel = () => navigate("/admin/orders/read")
+  const handleCancel = () => navigate("/admin/orders/read");
 
   // --- Render ---
   if (isLoading)
@@ -870,7 +875,7 @@ const CreateOrder: React.FC = () => {
       <Box sx={{ display: "flex", justifyContent: "center", p: 3 }}>
         <CircularProgress />
       </Box>
-    )
+    );
   if (errorFetch)
     return (
       <Alert severity="error" sx={{ m: 2 }}>
@@ -879,7 +884,7 @@ const CreateOrder: React.FC = () => {
           Reintentar
         </Button>
       </Alert>
-    )
+    );
 
   return (
     <Container maxWidth="lg" sx={{ py: { xs: 2, md: 3 } }}>
@@ -1154,7 +1159,9 @@ const CreateOrder: React.FC = () => {
                 ))}
                 <ListItem sx={{ px: 0 }}>
                   <ListItemText primary="Envío:" />
-                  <Typography>${displayTotals?.shippingCost.toFixed(2)}</Typography>
+                  <Typography>
+                    ${displayTotals?.shippingCost.toFixed(2)}
+                  </Typography>
                 </ListItem>
 
                 <Divider sx={{ my: 1 }} />
@@ -1189,12 +1196,12 @@ const CreateOrder: React.FC = () => {
                     typeof option === "string" ? option : option.firstName || ""
                   }
                   filterOptions={(options, params) => {
-                    const filtered = filter(options, params)
-                    const { inputValue } = params
+                    const filtered = filter(options, params);
+                    const { inputValue } = params;
                     const isExisting = options.some(
-                      (option) => inputValue === option.firstName
-                    )
-                    return filtered
+                      (option) => inputValue === option.firstName,
+                    );
+                    return filtered;
                   }}
                   renderOption={(props, option) => (
                     <li
@@ -1442,7 +1449,7 @@ const CreateOrder: React.FC = () => {
         )}
       </form>
     </Container>
-  )
-}
+  );
+};
 
-export default CreateOrder
+export default CreateOrder;

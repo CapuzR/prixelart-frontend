@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Container,
   Typography,
@@ -7,97 +7,97 @@ import {
   Alert,
   Box,
   Paper,
-} from "@mui/material"
+} from "@mui/material";
 
-import Grid2 from "@mui/material/Grid"
+import Grid2 from "@mui/material/Grid";
 
-import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline"
-import StorefrontIcon from "@mui/icons-material/Storefront"
-import { Service } from "types/service.types"
-import { fetchActiveServices } from "@api/service.api"
-import { fetchAllPrixersActive } from "@api/prixer.api"
-import ServiceCardMui from "./components/ServiceCardMui"
-import { User } from "types/user.types"
-import ServiceDetailsModal from "./components/ServiceDetailsModal"
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import StorefrontIcon from "@mui/icons-material/Storefront";
+import { Service } from "types/service.types";
+import { fetchActiveServices } from "@api/service.api";
+import { fetchAllPrixersActive } from "@api/prixer.api";
+import ServiceCardMui from "./components/ServiceCardMui";
+import { User } from "types/user.types";
+import ServiceDetailsModal from "./components/ServiceDetailsModal";
 
-import useMediaQuery from "@mui/material/useMediaQuery"
-import { useTheme } from "@mui/material/styles"
-import ScrollToTopButton from "@components/ScrollToTop"
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
+import ScrollToTopButton from "@components/ScrollToTop";
 
 const AllServicesDisplay: React.FC = () => {
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const [rawServices, setRawServices] = useState<Service[]>([])
+  const [rawServices, setRawServices] = useState<Service[]>([]);
   const [prixerDetailsMap, setPrixerDetailsMap] = useState<
     Map<string, { username: string; avatar?: string }>
-  >(new Map())
-  const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [error, setError] = useState<string | null>(null)
+  >(new Map());
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [selectedServiceForModal, setSelectedServiceForModal] =
-    useState<Service | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+    useState<Service | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const handleOpenModal = (service: Service) => {
-    setSelectedServiceForModal(service)
-    setIsModalOpen(true)
-  }
+    setSelectedServiceForModal(service);
+    setIsModalOpen(true);
+  };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false)
-    setSelectedServiceForModal(null)
-  }
+    setIsModalOpen(false);
+    setSelectedServiceForModal(null);
+  };
 
   const loadAllData = useCallback(async () => {
-    setIsLoading(true)
-    setError(null)
+    setIsLoading(true);
+    setError(null);
     try {
       const [fetchedServices, fetchedUsers] = await Promise.all([
         fetchActiveServices(),
         fetchAllPrixersActive() as Promise<User[]>,
-      ])
+      ]);
 
       const newPrixerDetailsMap = new Map<
         string,
         { username: string; avatar?: string }
-      >()
+      >();
       fetchedUsers.forEach((user) => {
         if (user?.prixer?._id) {
           newPrixerDetailsMap.set(user.prixer._id.toString(), {
             username: user.username,
             avatar: user.prixer.avatar || user.avatar,
-          })
+          });
         }
-      })
-      setPrixerDetailsMap(newPrixerDetailsMap)
+      });
+      setPrixerDetailsMap(newPrixerDetailsMap);
       const displayableServices = fetchedServices.filter((service) => {
         const isActiveAndVisible =
           service.active &&
-          (service.visible === true || service.visible === undefined)
-        if (!isActiveAndVisible) return false
+          (service.visible === true || service.visible === undefined);
+        if (!isActiveAndVisible) return false;
         const prixerIdString =
           typeof service.userid === "string"
             ? service.userid
-            : typeof service.prixer === "string" && service.prixer
+            : typeof service.prixer === "string" && service.prixer;
 
-        return prixerIdString ? newPrixerDetailsMap.has(prixerIdString) : false
-      })
+        return prixerIdString ? newPrixerDetailsMap.has(prixerIdString) : false;
+      });
 
-      setRawServices(displayableServices)
+      setRawServices(displayableServices);
     } catch (err) {
-      console.error("Failed to load services or prixer data:", err)
+      console.error("Failed to load services or prixer data:", err);
       setError(
-        err instanceof Error ? err.message : "An unknown error occurred."
-      )
+        err instanceof Error ? err.message : "An unknown error occurred.",
+      );
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    loadAllData()
-  }, [loadAllData])
+    loadAllData();
+  }, [loadAllData]);
 
   if (isLoading) {
     return (
@@ -112,7 +112,7 @@ const AllServicesDisplay: React.FC = () => {
           Cargando servicios...
         </Typography>
       </Box>
-    )
+    );
   }
 
   if (error) {
@@ -131,7 +131,7 @@ const AllServicesDisplay: React.FC = () => {
           {error}
         </Alert>
       </Container>
-    )
+    );
   }
 
   const servicesToDisplay = rawServices
@@ -139,17 +139,17 @@ const AllServicesDisplay: React.FC = () => {
       const prixerIdString =
         typeof service.userid === "string"
           ? service.userid
-          : typeof service.prixer === "string" && service.prixer?.toString()
+          : typeof service.prixer === "string" && service.prixer?.toString();
 
       const prixerDetails = prixerIdString
         ? prixerDetailsMap.get(prixerIdString)
-        : undefined
+        : undefined;
 
       if (!prixerDetails) {
         console.warn(
-          `Skipping service "${service.title}" due to missing prixer details for ID: ${prixerIdString}`
-        )
-        return null
+          `Skipping service "${service.title}" due to missing prixer details for ID: ${prixerIdString}`,
+        );
+        return null;
       }
 
       return (
@@ -168,9 +168,9 @@ const AllServicesDisplay: React.FC = () => {
             onViewDetails={handleOpenModal}
           />
         </Grid2>
-      )
+      );
     })
-    .filter(Boolean)
+    .filter(Boolean);
 
   if (servicesToDisplay.length === 0) {
     return (
@@ -187,16 +187,16 @@ const AllServicesDisplay: React.FC = () => {
           </Typography>
         </Paper>
       </Container>
-    )
+    );
   }
 
   const selectedPrixerDetails = selectedServiceForModal?.prixer
     ? prixerDetailsMap.get(
         typeof selectedServiceForModal.prixer === "string"
           ? selectedServiceForModal.prixer
-          : (selectedServiceForModal.prixer as any)?._id?.toString()
+          : (selectedServiceForModal.prixer as any)?._id?.toString(),
       )
-    : undefined
+    : undefined;
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
@@ -231,7 +231,7 @@ const AllServicesDisplay: React.FC = () => {
       />
       <ScrollToTopButton />
     </Container>
-  )
-}
+  );
+};
 
-export default AllServicesDisplay
+export default AllServicesDisplay;

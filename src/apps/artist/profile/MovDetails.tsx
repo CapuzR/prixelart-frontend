@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from "react"
-import Grid2 from "@mui/material/Grid"
-import Paper from "@mui/material/Paper"
-import { Typography } from "@mui/material"
-import IconButton from "@mui/material/IconButton"
-import CloseIcon from "@mui/icons-material/Close"
-import Img from "react-cool-img"
-import useMediaQuery from "@mui/material/useMediaQuery"
-import { Theme, useTheme } from "@mui/material"
+import React, { useState, useEffect } from "react";
+import Grid2 from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+import { Typography } from "@mui/material";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
+import Img from "react-cool-img";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { Theme, useTheme } from "@mui/material";
 
-import axios from "axios"
-import { makeStyles } from "tss-react/mui"
-import { ObjectId } from "mongodb"
-import { Order } from "types/order.types"
-import { useUser } from "@context/GlobalContext"
+import axios from "axios";
+import { makeStyles } from "tss-react/mui";
+import { ObjectId } from "mongodb";
+import { Order } from "types/order.types";
+import { useUser } from "@context/GlobalContext";
 
-import favicon from "../../../images/favicon.png"
+import favicon from "../../../images/favicon.png";
 
 const useStyles = makeStyles()((theme: Theme) => {
   return {
@@ -35,57 +35,57 @@ const useStyles = makeStyles()((theme: Theme) => {
       flexDirection: "row",
       marginBottom: 20,
     },
-  }
-})
+  };
+});
 interface MovDetailsProps {
-  orderId: string | ObjectId | undefined
-  handleClose: () => void
-  type: string | undefined
+  orderId: string | ObjectId | undefined;
+  handleClose: () => void;
+  type: string | undefined;
 }
 export default function MovOrder(props: MovDetailsProps) {
-  const { classes } = useStyles()
-  const theme = useTheme()
-  const { user } = useUser()
-  const [order, setOrder] = useState<Order>()
-  const [discountList, setDiscountList] = useState([])
-  const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"))
+  const { classes } = useStyles();
+  const theme = useTheme();
+  const { user } = useUser();
+  const [order, setOrder] = useState<Order>();
+  const [discountList, setDiscountList] = useState([]);
+  const isDeskTop = useMediaQuery(theme.breakpoints.up("sm"));
 
   const getDiscounts = async () => {
-    const base_url = import.meta.env.VITE_BACKEND_URL + "/discount/read-allv2"
+    const base_url = import.meta.env.VITE_BACKEND_URL + "/discount/read-allv2";
     await axios
       .post(base_url)
       .then((response) => {
-        setDiscountList(response.data.discounts)
+        setDiscountList(response.data.discounts);
       })
       .catch((error) => {
-        console.log(error)
-      })
-  }
+        console.log(error);
+      });
+  };
 
   const getOrderDetail = async () => {
     const url =
-      import.meta.env.VITE_BACKEND_URL + "/order/read/" + props.orderId
+      import.meta.env.VITE_BACKEND_URL + "/order/read/" + props.orderId;
     await axios
       .get(url)
       .then((response) => {
-        setOrder(response.data.result)
+        setOrder(response.data.result);
       })
       .catch((error) => {
-        console.log(error)
-      })
-  }
+        console.log(error);
+      });
+  };
 
   useEffect(() => {
-    getDiscounts()
-    getOrderDetail()
-  }, [])
+    getDiscounts();
+    getOrderDetail();
+  }, []);
 
   function handleKeyDown(event: any) {
     if (event.key === "Escape") {
-      props.handleClose()
-    } else return
+      props.handleClose();
+    } else return;
   }
-  document.addEventListener("keydown", handleKeyDown)
+  document.addEventListener("keydown", handleKeyDown);
 
   return (
     <React.Fragment>
@@ -203,7 +203,7 @@ export default function MovOrder(props: MovDetailsProps) {
                           >
                             {attribute.name}: {attribute.value}
                           </p>
-                        )
+                        ),
                       )}
                       <div style={{ marginTop: 10 }}>
                         {"Cantidad: " + orderLine.quantity}
@@ -215,7 +215,7 @@ export default function MovOrder(props: MovDetailsProps) {
                             {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
-                            }
+                            },
                           )}
                       </div>
                       {/* {typeof orderLine.discount === 'string' &&  (
@@ -235,13 +235,13 @@ export default function MovOrder(props: MovDetailsProps) {
                             {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
-                            }
+                            },
                           )}
                       </strong>
                     </div>
                   </div>
                 </>
-              )
+              ),
           )
         ) : (
           <div
@@ -350,7 +350,7 @@ export default function MovOrder(props: MovDetailsProps) {
                         >
                           {attribute.name}: {attribute.value}
                         </p>
-                      )
+                      ),
                     )}
                     <div>{"Cantidad: " + orderLine.quantity}</div>
                     <div>
@@ -422,5 +422,5 @@ export default function MovOrder(props: MovDetailsProps) {
         )}
       </Grid2>
     </React.Fragment>
-  )
+  );
 }

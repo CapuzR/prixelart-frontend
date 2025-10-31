@@ -1,4 +1,11 @@
-const UnitPrice = (product, art, currency, dollarValue, discountList, prixer) => {
+const UnitPrice = (
+  product,
+  art,
+  currency,
+  dollarValue,
+  discountList,
+  prixer,
+) => {
   let { base, final } = 0;
 
   if (product.modifyPrice) {
@@ -21,13 +28,13 @@ const UnitPrice = (product, art, currency, dollarValue, discountList, prixer) =>
 
   if (
     prixer === undefined &&
-    typeof product.discount === 'string' &&
+    typeof product.discount === "string" &&
     product.modifyPrice === (false || undefined)
   ) {
     let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
-    if (dis?.type === 'Porcentaje') {
+    if (dis?.type === "Porcentaje") {
       final = final - (final / 100) * dis?.value;
-    } else if (dis?.type === 'Monto') {
+    } else if (dis?.type === "Monto") {
       final = final - dis?.value;
     }
   }
@@ -38,7 +45,7 @@ const UnitPrice = (product, art, currency, dollarValue, discountList, prixer) =>
     final = final * dollarValue;
   }
   console.log(final);
-  return final?.toLocaleString('de-DE', {
+  return final?.toLocaleString("de-DE", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
@@ -52,7 +59,7 @@ const UnitPriceSug = (
   discountList,
   prixer,
   org,
-  consumerType
+  consumerType,
 ) => {
   // console.log(product, " producto")
   // console.log(art, " art")
@@ -66,7 +73,7 @@ const UnitPriceSug = (
   let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
   if (product.publicEquation === 0) {
     let price = 0;
-    return price.toLocaleString('de-DE', {
+    return price.toLocaleString("de-DE", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
@@ -75,25 +82,25 @@ const UnitPriceSug = (
       price = UnitPriceForOrg(product, art, prixer, org, consumerType);
     } else {
       let prxEq =
-        typeof product.prixerEquation === 'number'
+        typeof product.prixerEquation === "number"
           ? product.prixerEquation
-          : Number(product.prixerEquation?.replace(/[,]/gi, '.'));
+          : Number(product.prixerEquation?.replace(/[,]/gi, "."));
       let prxFr =
-        typeof product.prixerPrice.from === 'number'
+        typeof product.prixerPrice.from === "number"
           ? product.prixerPrice.from
-          : Number(product.prixerPrice.from?.replace(/[,]/gi, '.'));
+          : Number(product.prixerPrice.from?.replace(/[,]/gi, "."));
       let pubEq =
-        typeof product.publicEquation === 'number'
+        typeof product.publicEquation === "number"
           ? product.publicEquation
-          : Number(product.publicEquation?.replace(/[,]/gi, '.'));
+          : Number(product.publicEquation?.replace(/[,]/gi, "."));
       let pubFr =
-        typeof product.publicPrice.from === 'number'
+        typeof product.publicPrice.from === "number"
           ? product.publicPrice.from
-          : Number(product.publicPrice.from?.replace(/[,]/gi, '.'));
+          : Number(product.publicPrice.from?.replace(/[,]/gi, "."));
 
-      if (typeof product.selection === 'string' && prixer !== undefined) {
+      if (typeof product.selection === "string" && prixer !== undefined) {
         base = pubEq ? prxEq - prxEq / 10 : prxFr - prxFr / 10;
-      } else if (typeof product.selection === 'string') {
+      } else if (typeof product.selection === "string") {
         base = pubEq ? pubEq - pubEq / 10 : pubFr - pubFr / 10;
       } else if (prixer !== undefined) {
         base = prxEq ? prxEq - prxEq / 10 : prxFr - prxFr / 10;
@@ -101,28 +108,32 @@ const UnitPriceSug = (
         base = pubEq ? pubEq - pubEq / 10 : pubFr - pubFr / 10;
       }
       // refinar esta función
-      if (prixer !== undefined && prixer !== art.prixerUsername && prixer !== art.owner) {
+      if (
+        prixer !== undefined &&
+        prixer !== art.prixerUsername &&
+        prixer !== art.owner
+      ) {
         price = base / (1 - art.comission / 100);
       } else if (prixer === art.prixerUsername || prixer === art.owner) {
         price = base;
       }
 
-      if (prixer === undefined && typeof product.discount === 'string') {
-        if (dis?.type === 'Porcentaje') {
+      if (prixer === undefined && typeof product.discount === "string") {
+        if (dis?.type === "Porcentaje") {
           price = Number(price - (price / 100) * dis?.value);
-        } else if (dis?.type === 'Monto') {
+        } else if (dis?.type === "Monto") {
           price = Number(price - dis?.value);
         }
       } else if (prixer === undefined) {
         price = base / (1 - art.comission / 100);
-        console.log(price, 'precio normal');
+        console.log(price, "precio normal");
       }
     }
     // Incluir recargo si es a PrixelartPrefit
     if (currency) {
       price = price * (dollarValue || 1);
     }
-    return price.toLocaleString('de-DE', {
+    return price.toLocaleString("de-DE", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
@@ -131,32 +142,36 @@ const UnitPriceSug = (
 
 const UnitPriceForOrg = (product, art, prixer, org, consumerType) => {
   let { base, price } = 0;
-  if (org !== undefined && org?.agreement.base === 'pvprixer') {
+  if (org !== undefined && org?.agreement.base === "pvprixer") {
     base =
-      product.prixerEquation !== '' && product.prixerEquation !== undefined
+      product.prixerEquation !== "" && product.prixerEquation !== undefined
         ? Number(
-            product.prixerEquation.replace(/[,]/gi, '.') -
-              product.prixerEquation.replace(/[,]/gi, '.') / 10
+            product.prixerEquation.replace(/[,]/gi, ".") -
+              product.prixerEquation.replace(/[,]/gi, ".") / 10,
           )
         : Number(
-            product.prixerPrice.from.replace(/[,]/gi, '.') -
-              product.prixerPrice.from.replace(/[,]/gi, '.') / 10
+            product.prixerPrice.from.replace(/[,]/gi, ".") -
+              product.prixerPrice.from.replace(/[,]/gi, ".") / 10,
           );
-  } else if (org !== undefined && org?.agreement.base === 'pvm') {
+  } else if (org !== undefined && org?.agreement.base === "pvm") {
     base =
-      product.prixerEquation !== '' && product.prixerEquation !== undefined
-        ? Number(product.prixerEquation.replace(/[,]/gi, '.'))
-        : Number(product.prixerPrice.from.replace(/[,]/gi, '.'));
-  } else if (org !== undefined && org.agreement.base === 'pvp') {
+      product.prixerEquation !== "" && product.prixerEquation !== undefined
+        ? Number(product.prixerEquation.replace(/[,]/gi, "."))
+        : Number(product.prixerPrice.from.replace(/[,]/gi, "."));
+  } else if (org !== undefined && org.agreement.base === "pvp") {
     base =
-      product.publicEquation !== '' && product.publicEquation !== undefined
-        ? Number(product.publicEquation.replace(/[,]/gi, '.'))
-        : Number(product.publicPrice.from.replace(/[,]/gi, '.'));
+      product.publicEquation !== "" && product.publicEquation !== undefined
+        ? Number(product.publicEquation.replace(/[,]/gi, "."))
+        : Number(product.publicPrice.from.replace(/[,]/gi, "."));
   }
-  const applied = org?.agreement.appliedProducts.find((el) => el.id === product._id);
-  const varApplied = applied.variants?.find((v) => v.name.includes(product.selection));
+  const applied = org?.agreement.appliedProducts.find(
+    (el) => el.id === product._id,
+  );
+  const varApplied = applied.variants?.find((v) =>
+    v.name.includes(product.selection),
+  );
   let percentage =
-    product.selection !== undefined && typeof product.selection === 'string'
+    product.selection !== undefined && typeof product.selection === "string"
       ? varApplied?.cporg
       : applied.cporg;
 
@@ -169,7 +184,7 @@ const UnitPriceForOrg = (product, art, prixer, org, consumerType) => {
     }
   }
   price = base / (1 - Number(percentage) / 100);
-  console.log(price, 'final price ORG');
+  console.log(price, "final price ORG");
   return price;
 };
 
@@ -185,10 +200,10 @@ const getVariantPrice = (product, art) => {
     price = base;
   }
   let dis = discountList?.filter((dis) => dis._id === product.discount)[0];
-  if (typeof product.discount === 'string') {
-    if (dis?.type === 'Porcentaje') {
+  if (typeof product.discount === "string") {
+    if (dis?.type === "Porcentaje") {
       price = Number(price - (price / 100) * dis?.value);
-    } else if (dis?.type === 'Monto') {
+    } else if (dis?.type === "Monto") {
       price = Number(price - dis?.value);
     }
   }
@@ -197,7 +212,7 @@ const getVariantPrice = (product, art) => {
   if (currency) {
     price = price * dollarValue;
   }
-  return price.toLocaleString('de-DE', {
+  return price.toLocaleString("de-DE", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
@@ -213,7 +228,7 @@ const getComission = (
   prixer,
   surchargeList,
   org,
-  consumerType
+  consumerType,
 ) => {
   // parameters:
   // producto
@@ -230,16 +245,18 @@ const getComission = (
   let { unit, total } = 0;
   if (org !== undefined) {
     unit = UnitPriceForOrg(item, art, prixer, org, consumerType);
-    const applied = org?.agreement.appliedProducts.find((el) => el.id === item._id);
+    const applied = org?.agreement.appliedProducts.find(
+      (el) => el.id === item._id,
+    );
     const varApplied = applied?.variants.find((v) => v.name === item.selection);
 
     let percentage =
-      item.selection !== undefined && typeof item.selection === 'string'
+      item.selection !== undefined && typeof item.selection === "string"
         ? varApplied?.cporg
         : applied?.cporg || 10;
     total = (unit / 100) * percentage;
 
-    if (consumerType && consumerType !== 'Particular') {
+    if (consumerType && consumerType !== "Particular") {
       let consumer = consumerType.toLowerCase();
       for (const p in org.agreement.considerations) {
         const prop = p.toLowerCase();
@@ -251,21 +268,29 @@ const getComission = (
     }
   } else {
     unit = Number(
-      UnitPrice(item, art, currency, dollarValue, discountList, prixer, consumerType).replace(
-        /[,]/gi,
-        '.'
-      )
+      UnitPrice(
+        item,
+        art,
+        currency,
+        dollarValue,
+        discountList,
+        prixer,
+        consumerType,
+      ).replace(/[,]/gi, "."),
     );
     total = (unit / 100) * art.comission * quantity;
   }
   let surcharge;
   if (surchargeList && surchargeList?.length > 0) {
     surchargeList.map((sur) => {
-      if (sur.appliedUsers.includes(art.prixerUsername) || sur.appliedUsers.includes(art.owner)) {
-        if (sur.type === 'Porcentaje') {
+      if (
+        sur.appliedUsers.includes(art.prixerUsername) ||
+        sur.appliedUsers.includes(art.owner)
+      ) {
+        if (sur.type === "Porcentaje") {
           surcharge = total - (total / 100) * sur.value;
           total = surcharge;
-        } else if (sur.type === 'Monto') {
+        } else if (sur.type === "Monto") {
           total = total - sur.value;
         }
       }
@@ -287,22 +312,26 @@ const getComissionv2 = (
   consumerType,
   prixer,
   org,
-  surchargeList
+  surchargeList,
 ) => {
   let total = 0;
   let unit = product.finalPrice;
 
   if (org !== undefined) {
-    const applied = org?.agreement.appliedProducts.find((el) => el.id === product._id);
-    const varApplied = applied?.variants.find((v) => v.name === product.selection);
+    const applied = org?.agreement.appliedProducts.find(
+      (el) => el.id === product._id,
+    );
+    const varApplied = applied?.variants.find(
+      (v) => v.name === product.selection,
+    );
 
     let percentage =
-      product.selection !== undefined && typeof product.selection === 'string'
+      product.selection !== undefined && typeof product.selection === "string"
         ? varApplied?.cporg
         : applied?.cporg || 10;
     total = (unit / 100) * percentage;
 
-    if (consumerType && consumerType !== 'Particular') {
+    if (consumerType && consumerType !== "Particular") {
       let consumer = consumerType.toLowerCase();
       for (const p in org.agreement.considerations) {
         const prop = p.toLowerCase();
@@ -319,19 +348,26 @@ const getComissionv2 = (
   let surcharge;
   if (surchargeList && surchargeList?.length > 0) {
     surchargeList.map((sur) => {
-      if (sur.appliedUsers.includes(art.prixerUsername) || sur.appliedUsers.includes(art.owner)) {
-        if (sur.type === 'Porcentaje') {
+      if (
+        sur.appliedUsers.includes(art.prixerUsername) ||
+        sur.appliedUsers.includes(art.owner)
+      ) {
+        if (sur.type === "Porcentaje") {
           surcharge = total - (total / 100) * sur.value;
           total = surcharge;
-        } else if (sur.type === 'Monto') {
+        } else if (sur.type === "Monto") {
           total = total - sur.value;
         }
       }
     });
   }
-  console.log(total, 'comisión calculada');
+  console.log(total, "comisión calculada");
 
-  if (prixer !== undefined && prixer !== art.prixerUsername && prixer !== art.owner) {
+  if (
+    prixer !== undefined &&
+    prixer !== art.prixerUsername &&
+    prixer !== art.owner
+  ) {
     return 0;
   } else {
     if (currency) {
@@ -342,28 +378,30 @@ const getComissionv2 = (
 
 const getPVPtext = (product, currency, dollarValue, discountList) => {
   let dollar =
-    typeof dollarValue === 'string' ? Number(dollarValue.replace(/[,]/gi, '.')) : dollarValue;
+    typeof dollarValue === "string"
+      ? Number(dollarValue.replace(/[,]/gi, "."))
+      : dollarValue;
   let pubEq =
-    typeof product?.publicEquation === 'string'
-      ? Number(product?.publicEquation.replace(/[,]/gi, '.'))
+    typeof product?.publicEquation === "string"
+      ? Number(product?.publicEquation.replace(/[,]/gi, "."))
       : product?.publicEquation;
 
   let pubFr =
-    typeof product.publicPrice.from === 'number'
+    typeof product.publicPrice.from === "number"
       ? product.publicPrice.from
-      : Number(product.publicPrice.from?.replace(/[,]/gi, '.'));
+      : Number(product.publicPrice.from?.replace(/[,]/gi, "."));
 
   let pubTo =
     product.publicPrice.to !== null && product.publicPrice.to !== undefined
-      ? typeof product.publicPrice?.to === 'number'
+      ? typeof product.publicPrice?.to === "number"
         ? product.publicPrice.to
-        : Number(product.publicPrice.to.replace(/[,]/gi, '.'))
+        : Number(product.publicPrice.to.replace(/[,]/gi, "."))
       : pubFr;
   if (
     product?.discount !== undefined &&
-    typeof product?.discount === 'string' &&
+    typeof product?.discount === "string" &&
     product.publicEquation !== undefined &&
-    product?.publicEquation !== '' &&
+    product?.publicEquation !== "" &&
     currency
   ) {
     let dis = discountList?.filter((dis) => dis._id === product?.discount)[0];
@@ -371,41 +409,43 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
       <>
         <del>
           PVP: Bs
-          {Number(pubEq * dollar).toLocaleString('de-DE', {
+          {Number(pubEq * dollar).toLocaleString("de-DE", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           })}
         </del>
         <div
           style={{
-            backgroundColor: '#d33f49',
+            backgroundColor: "#d33f49",
             padding: 3,
             width: 180,
-            textAlign: 'center',
-            color: 'white',
-            fontWeight: 'bold',
+            textAlign: "center",
+            color: "white",
+            fontWeight: "bold",
             borderRadius: 8,
           }}
         >
-          Descuento de {dis?.type === 'Porcentaje' && '%' + dis?.value}
-          {dis?.type === 'Monto' &&
-            Number(dis?.value * dollar).toLocaleString('de-DE', {
+          Descuento de {dis?.type === "Porcentaje" && "%" + dis?.value}
+          {dis?.type === "Monto" &&
+            Number(dis?.value * dollar).toLocaleString("de-DE", {
               minimumFractionDigits: 2,
             })}
         </div>
-        {dis?.type === 'Porcentaje' && (
+        {dis?.type === "Porcentaje" && (
           <div>
             PVP: Bs
-            {Number((pubEq - (pubEq / 100) * dis?.value) * dollar).toLocaleString('de-DE', {
+            {Number(
+              (pubEq - (pubEq / 100) * dis?.value) * dollar,
+            ).toLocaleString("de-DE", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
           </div>
         )}
-        {dis?.type === 'Monto' && (
+        {dis?.type === "Monto" && (
           <div>
             PVP: Bs
-            {Number((pubEq - dis?.value) * dollar).toLocaleString('de-DE', {
+            {Number((pubEq - dis?.value) * dollar).toLocaleString("de-DE", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
@@ -415,7 +455,7 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
     );
   } else if (
     product?.discount !== undefined &&
-    typeof product?.discount === 'string' &&
+    typeof product?.discount === "string" &&
     product.publicEquation !== undefined
   ) {
     let dis = discountList?.filter((dis) => dis._id === product?.discount)[0];
@@ -423,38 +463,41 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
       <>
         <del>
           PVP: $
-          {pubEq.toLocaleString('de-DE', {
+          {pubEq.toLocaleString("de-DE", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           })}
         </del>
         <div
           style={{
-            backgroundColor: '#d33f49',
+            backgroundColor: "#d33f49",
             padding: 3,
             width: 180,
-            textAlign: 'center',
-            color: 'white',
-            fontWeight: 'bold',
+            textAlign: "center",
+            color: "white",
+            fontWeight: "bold",
             borderRadius: 8,
           }}
         >
-          Descuento de {dis?.type === 'Porcentaje' && '%' + dis?.value}
-          {dis?.type === 'Monto' && Number(dis?.value)}
+          Descuento de {dis?.type === "Porcentaje" && "%" + dis?.value}
+          {dis?.type === "Monto" && Number(dis?.value)}
         </div>
-        {dis?.type === 'Porcentaje' && (
+        {dis?.type === "Porcentaje" && (
           <div>
             PVP: $
-            {Number(pubEq - (pubEq / 100) * dis?.value).toLocaleString('de-DE', {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
+            {Number(pubEq - (pubEq / 100) * dis?.value).toLocaleString(
+              "de-DE",
+              {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              },
+            )}
           </div>
         )}
-        {dis?.type === 'Monto' && (
+        {dis?.type === "Monto" && (
           <div>
             PVP: $
-            {Number(pubEq - dis?.value).toLocaleString('de-DE', {
+            {Number(pubEq - dis?.value).toLocaleString("de-DE", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
@@ -464,8 +507,8 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
     );
   } else if (
     product?.discount !== undefined &&
-    typeof product?.discount === 'string' &&
-    typeof product.publicPrice.to === 'string' &&
+    typeof product?.discount === "string" &&
+    typeof product.publicPrice.to === "string" &&
     product.publicPrice.to.length > 0 &&
     currency
   ) {
@@ -474,12 +517,12 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
       <>
         <del>
           PVP: Bs
-          {Number(pubFr * dollar).toLocaleString('de-DE', {
+          {Number(pubFr * dollar).toLocaleString("de-DE", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           }) +
-            ' - ' +
-            Number(pubTo * dollar).toLocaleString('de-DE', {
+            " - " +
+            Number(pubTo * dollar).toLocaleString("de-DE", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
@@ -487,45 +530,49 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
 
         <div
           style={{
-            backgroundColor: '#d33f49',
+            backgroundColor: "#d33f49",
             padding: 3,
             width: 180,
-            textAlign: 'center',
-            color: 'white',
-            fontWeight: 'bold',
+            textAlign: "center",
+            color: "white",
+            fontWeight: "bold",
             borderRadius: 8,
           }}
         >
-          Descuento de {dis?.type === 'Porcentaje' && '%' + dis?.value}
-          {dis?.type === 'Monto' &&
-            Number(dis?.value * dollar).toLocaleString('de-DE', {
+          Descuento de {dis?.type === "Porcentaje" && "%" + dis?.value}
+          {dis?.type === "Monto" &&
+            Number(dis?.value * dollar).toLocaleString("de-DE", {
               minimumFractionDigits: 2,
             })}
         </div>
 
-        {dis?.type === 'Porcentaje' && (
+        {dis?.type === "Porcentaje" && (
           <div>
             PVP: Bs
-            {Number((pubFr - (pubFr / 100) * dis?.value) * dollar).toLocaleString('de-DE', {
+            {Number(
+              (pubFr - (pubFr / 100) * dis?.value) * dollar,
+            ).toLocaleString("de-DE", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             }) +
-              ' - ' +
-              Number((pubTo - (pubTo / 100) * dis?.value) * dollar).toLocaleString('de-DE', {
+              " - " +
+              Number(
+                (pubTo - (pubTo / 100) * dis?.value) * dollar,
+              ).toLocaleString("de-DE", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}
           </div>
         )}
-        {dis?.type === 'Monto' && (
+        {dis?.type === "Monto" && (
           <div>
             PVP: $
-            {Number((pubFr - dis?.value) * dollar).toLocaleString('de-DE', {
+            {Number((pubFr - dis?.value) * dollar).toLocaleString("de-DE", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             }) +
-              ' - ' +
-              Number((pubTo - dis?.value) * dollar).toLocaleString('de-DE', {
+              " - " +
+              Number((pubTo - dis?.value) * dollar).toLocaleString("de-DE", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}
@@ -535,7 +582,7 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
     );
   } else if (
     product?.discount !== undefined &&
-    typeof product?.discount === 'string' &&
+    typeof product?.discount === "string" &&
     typeof product.publicPrice.to !== undefined
   ) {
     let dis = discountList?.filter((dis) => dis._id === product?.discount)[0];
@@ -543,12 +590,12 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
       <>
         <del>
           PVP: $
-          {Number(pubFr).toLocaleString('de-DE', {
+          {Number(pubFr).toLocaleString("de-DE", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           }) +
-            ' - ' +
-            Number(pubTo).toLocaleString('de-DE', {
+            " - " +
+            Number(pubTo).toLocaleString("de-DE", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
@@ -556,42 +603,48 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
 
         <div
           style={{
-            backgroundColor: '#d33f49',
+            backgroundColor: "#d33f49",
             padding: 3,
             width: 180,
-            textAlign: 'center',
-            color: 'white',
-            fontWeight: 'bold',
+            textAlign: "center",
+            color: "white",
+            fontWeight: "bold",
             borderRadius: 8,
           }}
         >
-          Descuento de {dis?.type === 'Porcentaje' && '%' + dis?.value}
-          {dis?.type === 'Monto' && dis?.value}
+          Descuento de {dis?.type === "Porcentaje" && "%" + dis?.value}
+          {dis?.type === "Monto" && dis?.value}
         </div>
 
-        {dis?.type === 'Porcentaje' && (
+        {dis?.type === "Porcentaje" && (
           <div>
             PVP: $
-            {Number(pubFr - (pubFr / 100) * dis?.value).toLocaleString('de-DE', {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }) +
-              ' - ' +
-              Number(pubTo - (pubTo / 100) * dis?.value).toLocaleString('de-DE', {
+            {Number(pubFr - (pubFr / 100) * dis?.value).toLocaleString(
+              "de-DE",
+              {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
-              })}
+              },
+            ) +
+              " - " +
+              Number(pubTo - (pubTo / 100) * dis?.value).toLocaleString(
+                "de-DE",
+                {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                },
+              )}
           </div>
         )}
-        {dis?.type === 'Monto' && (
+        {dis?.type === "Monto" && (
           <div>
             PVP: $
-            {Number(pubFr - dis?.value).toLocaleString('de-DE', {
+            {Number(pubFr - dis?.value).toLocaleString("de-DE", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             }) +
-              ' - ' +
-              Number(pubTo - dis?.value).toLocaleString('de-DE', {
+              " - " +
+              Number(pubTo - dis?.value).toLocaleString("de-DE", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}
@@ -599,13 +652,17 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
         )}
       </>
     );
-  } else if (product?.discount !== undefined && typeof product?.discount === 'string' && currency) {
+  } else if (
+    product?.discount !== undefined &&
+    typeof product?.discount === "string" &&
+    currency
+  ) {
     let dis = discountList?.filter((dis) => dis._id === product?.discount)[0];
     return (
       <>
         <del>
           PVP: Bs
-          {Number(pubFr * dollar).toLocaleString('de-DE', {
+          {Number(pubFr * dollar).toLocaleString("de-DE", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           })}
@@ -613,36 +670,38 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
 
         <div
           style={{
-            backgroundColor: '#d33f49',
+            backgroundColor: "#d33f49",
             padding: 3,
             width: 180,
-            textAlign: 'center',
-            color: 'white',
-            fontWeight: 'bold',
+            textAlign: "center",
+            color: "white",
+            fontWeight: "bold",
             borderRadius: 8,
           }}
         >
-          Descuento de {dis?.type === 'Porcentaje' && '%' + dis?.value}
-          {dis?.type === 'Monto' &&
-            Number(dis?.value * dollar).toLocaleString('de-DE', {
+          Descuento de {dis?.type === "Porcentaje" && "%" + dis?.value}
+          {dis?.type === "Monto" &&
+            Number(dis?.value * dollar).toLocaleString("de-DE", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
         </div>
 
-        {dis?.type === 'Porcentaje' && (
+        {dis?.type === "Porcentaje" && (
           <div>
             PVP: Bs
-            {Number((pubFr - (pubFr / 100) * dis?.value) * dollar).toLocaleString('de-DE', {
+            {Number(
+              (pubFr - (pubFr / 100) * dis?.value) * dollar,
+            ).toLocaleString("de-DE", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
           </div>
         )}
-        {dis?.type === 'Monto' && (
+        {dis?.type === "Monto" && (
           <div>
             PVP: $
-            {Number((pubFr - dis?.value) * dollar).toLocaleString('de-DE', {
+            {Number((pubFr - dis?.value) * dollar).toLocaleString("de-DE", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
@@ -650,13 +709,16 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
         )}
       </>
     );
-  } else if (product?.discount !== undefined && typeof product?.discount === 'string') {
+  } else if (
+    product?.discount !== undefined &&
+    typeof product?.discount === "string"
+  ) {
     let dis = discountList?.filter((dis) => dis._id === product?.discount)[0];
     return (
       <>
         <del>
           PVP: $
-          {Number(pubFr).toLocaleString('de-DE', {
+          {Number(pubFr).toLocaleString("de-DE", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           })}
@@ -664,32 +726,35 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
 
         <div
           style={{
-            backgroundColor: '#d33f49',
+            backgroundColor: "#d33f49",
             padding: 3,
             width: 180,
-            textAlign: 'center',
-            color: 'white',
-            fontWeight: 'bold',
+            textAlign: "center",
+            color: "white",
+            fontWeight: "bold",
             borderRadius: 8,
           }}
         >
-          Descuento de {dis?.type === 'Porcentaje' && '%' + dis?.value}
-          {dis?.type === 'Monto' && dis?.value}
+          Descuento de {dis?.type === "Porcentaje" && "%" + dis?.value}
+          {dis?.type === "Monto" && dis?.value}
         </div>
 
-        {dis?.type === 'Porcentaje' && (
+        {dis?.type === "Porcentaje" && (
           <div>
             PVP: $
-            {Number(pubFr - (pubFr / 100) * dis?.value).toLocaleString('de-DE', {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
+            {Number(pubFr - (pubFr / 100) * dis?.value).toLocaleString(
+              "de-DE",
+              {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              },
+            )}
           </div>
         )}
-        {dis?.type === 'Monto' && (
+        {dis?.type === "Monto" && (
           <div>
             PVP: $
-            {Number(pubFr - dis?.value).toLocaleString('de-DE', {
+            {Number(pubFr - dis?.value).toLocaleString("de-DE", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
@@ -697,18 +762,21 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
         )}
       </>
     );
-  } else if (product?.publicEquation !== '' && currency) {
+  } else if (product?.publicEquation !== "" && currency) {
     return (
-      'PVP: Bs' +
-      Number(pubEq * dollar).toLocaleString('de-DE', {
+      "PVP: Bs" +
+      Number(pubEq * dollar).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
     );
-  } else if (product?.publicEquation !== undefined && product?.publicEquation !== '') {
+  } else if (
+    product?.publicEquation !== undefined &&
+    product?.publicEquation !== ""
+  ) {
     return (
-      'PVP: $' +
-      pubEq.toLocaleString('de-DE', {
+      "PVP: $" +
+      pubEq.toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
@@ -720,13 +788,13 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
     currency
   ) {
     return (
-      'PVP: Bs' +
-      Number(pubFr * dollar).toLocaleString('de-DE', {
+      "PVP: Bs" +
+      Number(pubFr * dollar).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       }) +
-      ' - ' +
-      Number(pubTo * dollar).toLocaleString('de-DE', {
+      " - " +
+      Number(pubTo * dollar).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
@@ -737,29 +805,29 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
     product.publicPrice.to !== product.publicPrice.from
   ) {
     return (
-      'PVP: $' +
-      Number(pubFr).toLocaleString('de-DE', {
+      "PVP: $" +
+      Number(pubFr).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       }) +
-      ' - ' +
-      Number(pubTo)?.toLocaleString('de-DE', {
+      " - " +
+      Number(pubTo)?.toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
     );
   } else if (currency) {
     return (
-      'PVP: Bs' +
-      Number(pubFr * dollar).toLocaleString('de-DE', {
+      "PVP: Bs" +
+      Number(pubFr * dollar).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
     );
   } else {
     return (
-      'PVP: $' +
-      Number(pubFr).toLocaleString('de-DE', {
+      "PVP: $" +
+      Number(pubFr).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
@@ -769,36 +837,38 @@ const getPVPtext = (product, currency, dollarValue, discountList) => {
 
 const getPVMtext = (product, currency, dollarValue, discountList) => {
   let dollar =
-    typeof dollarValue === 'string' ? Number(dollarValue.replace(/[,]/gi, '.')) : dollarValue;
+    typeof dollarValue === "string"
+      ? Number(dollarValue.replace(/[,]/gi, "."))
+      : dollarValue;
   let prxEq =
-    typeof product?.prixerEquation === 'string'
-      ? Number(product?.prixerEquation.replace(/[,]/gi, '.'))
+    typeof product?.prixerEquation === "string"
+      ? Number(product?.prixerEquation.replace(/[,]/gi, "."))
       : product?.prixerEquation;
 
   let prxFr =
-    typeof product.prixerPrice.from === 'number'
+    typeof product.prixerPrice.from === "number"
       ? product.prixerPrice.from
-      : Number(product.prixerPrice.from?.replace(/[,]/gi, '.'));
+      : Number(product.prixerPrice.from?.replace(/[,]/gi, "."));
 
   let prxTo =
     product.prixerPrice.to !== null && product.prixerPrice.to !== undefined
-      ? typeof product.prixerPrice.to === 'number'
+      ? typeof product.prixerPrice.to === "number"
         ? product.prixerPrice.to
-        : Number(product.prixerPrice.to.replace(/[,]/gi, '.'))
+        : Number(product.prixerPrice.to.replace(/[,]/gi, "."))
       : prxFr;
-  if (prxEq !== '' && currency) {
+  if (prxEq !== "" && currency) {
     return (
-      'PVM: Bs' +
-      (prxEq * dollar).toLocaleString('de-DE', {
+      "PVM: Bs" +
+      (prxEq * dollar).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
     );
   }
-  if (product?.prixerEquation !== undefined && product?.prixerEquation !== '') {
+  if (product?.prixerEquation !== undefined && product?.prixerEquation !== "") {
     return (
-      'PVM: $' +
-      prxEq.toLocaleString('de-DE', {
+      "PVM: $" +
+      prxEq.toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
@@ -809,26 +879,29 @@ const getPVMtext = (product, currency, dollarValue, discountList) => {
     currency
   ) {
     return (
-      'PVM: Bs' +
-      (Number(prxFr) * dollar).toLocaleString('de-DE', {
+      "PVM: Bs" +
+      (Number(prxFr) * dollar).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       }) +
-      ' - ' +
-      Number(product.prixerPrice?.to * dollar).toLocaleString('de-DE', {
+      " - " +
+      Number(product.prixerPrice?.to * dollar).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
     );
-  } else if (product.attributes.length > 0 && product.prixerPrice.to !== product.prixerPrice.from) {
+  } else if (
+    product.attributes.length > 0 &&
+    product.prixerPrice.to !== product.prixerPrice.from
+  ) {
     return (
-      'PVM: $' +
-      Number(prxFr).toLocaleString('de-DE', {
+      "PVM: $" +
+      Number(prxFr).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       }) +
-      ' - ' +
-      Number(prxTo).toLocaleString('de-DE', {
+      " - " +
+      Number(prxTo).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
@@ -836,8 +909,8 @@ const getPVMtext = (product, currency, dollarValue, discountList) => {
   } else if (currency) {
     {
       return (
-        'PVM: Bs' +
-        Number(prxFr * dollar).toLocaleString('de-DE', {
+        "PVM: Bs" +
+        Number(prxFr * dollar).toLocaleString("de-DE", {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         })
@@ -845,8 +918,8 @@ const getPVMtext = (product, currency, dollarValue, discountList) => {
     }
   } else {
     return (
-      'PVM: $' +
-      Number(prxFr).toLocaleString('de-DE', {
+      "PVM: $" +
+      Number(prxFr).toLocaleString("de-DE", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
@@ -856,28 +929,32 @@ const getPVMtext = (product, currency, dollarValue, discountList) => {
 
 const getPVP = (item, currency, dollarValue, discountList) => {
   let { base, prev, final } = 0;
-  let dis = discountList?.filter((dis) => dis._id === item.product?.discount)[0];
+  let dis = discountList?.filter(
+    (dis) => dis._id === item.product?.discount,
+  )[0];
   let pubEq =
-    typeof item.product.publicEquation === 'number'
+    typeof item.product.publicEquation === "number"
       ? item.product.publicEquation
-      : Number(item.product.publicEquation?.replace(/[,]/gi, '.'));
+      : Number(item.product.publicEquation?.replace(/[,]/gi, "."));
   let pubFr =
-    typeof item.product.publicPrice.from === 'number'
+    typeof item.product.publicPrice.from === "number"
       ? item.product.publicPrice.from
-      : Number(item.product.publicPrice.from?.replace(/[,]/gi, '.'));
+      : Number(item.product.publicPrice.from?.replace(/[,]/gi, "."));
 
   base = pubEq || pubFr;
 
   prev = base - base / 10;
 
   if (base !== 0) {
-    prev = prev / (1 - (item.art?.comission !== undefined ? item.art.comission : 10) / 100);
+    prev =
+      prev /
+      (1 - (item.art?.comission !== undefined ? item.art.comission : 10) / 100);
     final = prev;
 
-    if (typeof item.product?.discount === 'string') {
-      if (dis?.type === 'Porcentaje') {
+    if (typeof item.product?.discount === "string") {
+      if (dis?.type === "Porcentaje") {
         final = prev - (base / 100) * dis.value;
-      } else if (dis?.type === 'Monto') {
+      } else if (dis?.type === "Monto") {
         final = prev - dis.value;
       }
     }
@@ -891,18 +968,24 @@ const getPVM = (item, currency, dollarValue, discountList, prixer) => {
   let { base, prev, final } = 0;
   let dis = discountList?.filter((dis) => dis._id === item.product.discount)[0];
   let prxEq =
-    typeof item.product.prixerEquation === 'number'
+    typeof item.product.prixerEquation === "number"
       ? item.product.prixerEquation
-      : Number(item.product.prixerEquation?.replace(/[,]/gi, '.'));
+      : Number(item.product.prixerEquation?.replace(/[,]/gi, "."));
   let prxFr =
-    typeof item.product.prixerPrice.from === 'number'
+    typeof item.product.prixerPrice.from === "number"
       ? item.product.prixerPrice.from
-      : Number(item.product.prixerPrice.from?.replace(/[,]/gi, '.'));
+      : Number(item.product.prixerPrice.from?.replace(/[,]/gi, "."));
 
   base = prxEq || prxFr;
   prev = base - base / 10;
-  if (item.art !== undefined && item.art.prixerUsername !== prixer && item.art.owner !== prixer) {
-    prev = prev / (1 - (item.art?.comission !== undefined ? item.art.comission : 10) / 100);
+  if (
+    item.art !== undefined &&
+    item.art.prixerUsername !== prixer &&
+    item.art.owner !== prixer
+  ) {
+    prev =
+      prev /
+      (1 - (item.art?.comission !== undefined ? item.art.comission : 10) / 100);
   }
   final = prev;
   // if (typeof item.product.discount === "string") {
@@ -921,17 +1004,17 @@ const getTotalUnitsPVP = (state, currency, dollarValue, discountList) => {
   let prices = [0];
   state.map((item) => {
     let pubEq =
-      typeof item.product.publicEquation === 'number'
+      typeof item.product.publicEquation === "number"
         ? item.product.publicEquation
         : Number(item.product.publicEquation);
     let pubFr =
-      typeof item.product.publicPrice.from === 'number'
+      typeof item.product.publicPrice.from === "number"
         ? item.product.publicPrice.from
-        : Number(item.product.publicPrice.from?.replace(/[,]/gi, '.'));
+        : Number(item.product.publicPrice.from?.replace(/[,]/gi, "."));
 
-    if (item.product && item.art && typeof item.product.discount === 'string') {
+    if (item.product && item.art && typeof item.product.discount === "string") {
       let dis = discountList?.find(({ _id }) => _id === item.product.discount);
-      if (dis?.type === 'Porcentaje') {
+      if (dis?.type === "Porcentaje") {
         const base = pubEq || pubFr;
         let prev = base - base / 10;
         prev = prev / (1 - item.art.comission / 100);
@@ -941,7 +1024,7 @@ const getTotalUnitsPVP = (state, currency, dollarValue, discountList) => {
           final = item.product.finalPrice;
         }
         prices.push(Number(final) * (item.quantity || 1));
-      } else if (dis?.type === 'Monto') {
+      } else if (dis?.type === "Monto") {
         const base = pubEq || pubFr;
         let prev = base - base / 10;
         prev = prev / (1 - item.art.comission / 100);
@@ -956,7 +1039,10 @@ const getTotalUnitsPVP = (state, currency, dollarValue, discountList) => {
       const base = pubEq ? pubEq : pubFr;
       let final = base - base / 10;
       final = final / (1 - item.art.comission / 100);
-      if (item.product.finalPrice !== undefined && item.product.finalPrice !== null) {
+      if (
+        item.product.finalPrice !== undefined &&
+        item.product.finalPrice !== null
+      ) {
         final = item.product.finalPrice;
       }
       prices.push(final * (item.quantity || 1));
@@ -971,17 +1057,23 @@ const getTotalUnitsPVP = (state, currency, dollarValue, discountList) => {
   } else return total;
 };
 
-const getTotalUnitsPVM = (state, currency, dollarValue, discountList, prixer) => {
+const getTotalUnitsPVM = (
+  state,
+  currency,
+  dollarValue,
+  discountList,
+  prixer,
+) => {
   let prices = [];
   state.map((item) => {
     let prxEq =
-      typeof item.product.prixerEquation === 'number'
+      typeof item.product.prixerEquation === "number"
         ? item.product.prixerEquation
-        : Number(item.product.prixerEquation?.replace(/[,]/gi, '.'));
+        : Number(item.product.prixerEquation?.replace(/[,]/gi, "."));
     let prxFr =
-      typeof item.product.prixerPrice.from === 'number'
+      typeof item.product.prixerPrice.from === "number"
         ? item.product.prixerPrice.from
-        : Number(item.product.prixerPrice.from?.replace(/[,]/gi, '.'));
+        : Number(item.product.prixerPrice.from?.replace(/[,]/gi, "."));
     // if (item.product && item.art && typeof item.product.discount === "string") {
     //   let dis = discountList?.filter(
     //     (dis) => dis._id === item.product.discount
@@ -1016,7 +1108,10 @@ const getTotalUnitsPVM = (state, currency, dollarValue, discountList, prixer) =>
       let final = (base - base / 10) / (1 - item.art.comission / 100);
       if (item.product.finalPrice !== undefined) {
         final = item.product.finalPrice;
-      } else if (item.art.prixerUsername !== prixer && item.art.owner !== prixer) {
+      } else if (
+        item.art.prixerUsername !== prixer &&
+        item.art.owner !== prixer
+      ) {
         final = final / (1 - item.art.comission / 100);
       }
       prices.push(final * (item.quantity || 1));

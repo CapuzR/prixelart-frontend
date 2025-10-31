@@ -1,5 +1,5 @@
-import { Box, Button } from '@mui/material';
-import { JSX, useMemo } from 'react';
+import { Box, Button } from "@mui/material";
+import { JSX, useMemo } from "react";
 
 interface PaginationBarProps {
   setPageNumber: (page: number) => void;
@@ -32,12 +32,12 @@ export default function PaginationBar({
   return (
     <Box
       sx={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignSelf: 'center',
+        display: "flex",
+        justifyContent: "center",
+        alignSelf: "center",
         pt: 1,
         mb: 2,
-        width: '100%',
+        width: "100%",
       }}
     >
       {pageNumber > 3 && (
@@ -45,7 +45,7 @@ export default function PaginationBar({
           <Button sx={{ minWidth: 30, mr: 1 }} onClick={() => setPageNumber(1)}>
             1
           </Button>
-          <Box sx={{ display: 'flex', alignItems: 'center', mr: 1 }}>...</Box>
+          <Box sx={{ display: "flex", alignItems: "center", mr: 1 }}>...</Box>
         </>
       )}
 
@@ -54,12 +54,12 @@ export default function PaginationBar({
           <Box
             key={page}
             sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
               width: 80,
               mr: 1,
-              bgcolor: 'rgb(238, 238, 238)',
+              bgcolor: "rgb(238, 238, 238)",
               borderRadius: 1,
             }}
           >
@@ -73,13 +73,16 @@ export default function PaginationBar({
           >
             {page}
           </Button>
-        )
+        ),
       )}
 
       {pageNumber < noOfPages - 2 && (
         <>
-          <Box sx={{ display: 'flex', alignItems: 'center', mr: 1 }}>...</Box>
-          <Button sx={{ minWidth: 30, mr: 1 }} onClick={() => setPageNumber(noOfPages)}>
+          <Box sx={{ display: "flex", alignItems: "center", mr: 1 }}>...</Box>
+          <Button
+            sx={{ minWidth: 30, mr: 1 }}
+            onClick={() => setPageNumber(noOfPages)}
+          >
             {noOfPages}
           </Button>
         </>

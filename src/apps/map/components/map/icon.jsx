@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 export const Icon = ({
   icon,
@@ -32,8 +32,16 @@ export const Icon = ({
       y: rawMapRef.current?.height,
     };
 
-    const size = calculateIconRelation(originalMapSize, originalIconSize, screenMapSize);
-    const position = calculateIconRelation(originalMapSize, originalIconPosition, screenMapSize);
+    const size = calculateIconRelation(
+      originalMapSize,
+      originalIconSize,
+      screenMapSize,
+    );
+    const position = calculateIconRelation(
+      originalMapSize,
+      originalIconPosition,
+      screenMapSize,
+    );
 
     setIconRelatives({ size, position });
   };
@@ -50,13 +58,13 @@ export const Icon = ({
 
   return (
     <a href="" onClick={handleClick}>
-      {icon.type === 'text' ? (
+      {icon.type === "text" ? (
         <div
           style={{
-            position: 'absolute',
+            position: "absolute",
             top: iconRelatives.position?.y,
             left: iconRelatives.position?.x,
-            fontSize: '0.6rem',
+            fontSize: "0.6rem",
           }}
         >
           {icon.text}
@@ -68,7 +76,7 @@ export const Icon = ({
           ref={iconRef}
           style={{
             width: iconRelatives.size?.x,
-            position: 'absolute',
+            position: "absolute",
             top: iconRelatives.position?.y || 0,
             left: iconRelatives.position?.x || 0,
           }}

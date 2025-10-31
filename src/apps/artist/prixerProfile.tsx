@@ -1,29 +1,29 @@
-import React, { useState } from "react"
-import { useNavigate } from "react-router-dom"
-import UserData from "./userData/userData"
-import Container from "@mui/material/Container"
-import CssBaseline from "@mui/material/CssBaseline"
-import { useTheme } from "@mui/styles"
-import Biography from "./prixerService/biography"
-import useStyles from "./prixerProfile.styles"
-import { getUrlParams } from "@utils/util"
-import ArtsGrid from "@apps/consumer/art/components/ArtsGrid/ArtsGrid"
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import UserData from "./userData/userData";
+import Container from "@mui/material/Container";
+import CssBaseline from "@mui/material/CssBaseline";
+import { useTheme } from "@mui/styles";
+import Biography from "./prixerService/biography";
+import useStyles from "./prixerProfile.styles";
+import { getUrlParams } from "@utils/util";
+import ArtsGrid from "@apps/consumer/art/components/ArtsGrid/ArtsGrid";
 
 const PrixerProfile: React.FC = () => {
-  const classes = useStyles()
+  const classes = useStyles();
 
-  const globalParams = getUrlParams()
+  const globalParams = getUrlParams();
   const username: string | null = window.location.pathname.includes("org")
     ? globalParams.get("/org")
-    : globalParams.get("/prixer")
-  const [feed, setFeed] = useState<string>("Artes")
+    : globalParams.get("/prixer");
+  const [feed, setFeed] = useState<string>("Artes");
 
   const showPrixerGrid = () => {
     switch (feed) {
       case "Settings":
-        return <div></div>
+        return <div></div>;
       case "Artes":
-        return <ArtsGrid />
+        return <ArtsGrid />;
         {
           /* YAVA
       case 'Servicios':
@@ -37,11 +37,11 @@ const PrixerProfile: React.FC = () => {
         */
         }
       case "Bio":
-        return <Biography prixerUsername={username || ""} />
+        return <Biography prixerUsername={username || ""} />;
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   return (
     <Container component="main" maxWidth="xl" className={classes.paper}>
@@ -73,7 +73,7 @@ const PrixerProfile: React.FC = () => {
         />
       </Grid2> */}
     </Container>
-  )
-}
+  );
+};
 
-export default PrixerProfile
+export default PrixerProfile;

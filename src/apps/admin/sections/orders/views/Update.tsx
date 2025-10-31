@@ -619,14 +619,14 @@ export default function UpdateOrder() {
           ? '_id' in line.item.art
             ? line.item.art._id?.toString()
             : 'id' in line.item.art && line.item.art.id
-          : undefined;
+          : line.item.art && !('_id' in line.item.art)
+            ? line.item.art
+            : undefined;
 
         return {
           ...line,
           tempId: line.id || uuidv4(),
-          selectedArt: artIdToFind
-            ? artOpts.find((a) => a.id === artIdToFind) || null
-            : null,
+          selectedArt: artIdToFind ? artOpts.find((a) => a.id === artIdToFind) || null : null,
           selectedProduct: selectedProductOpt || null,
           selectedVariant: currentVariantOpt,
           availableVariants: variantOptions,
@@ -1470,7 +1470,9 @@ export default function UpdateOrder() {
                 return fullArt;
               }
             })()
-          : undefined,
+          : lineState.item?.art && !('_id' in lineState.item.art)
+            ? lineState.item.art
+            : undefined,
         product: {
           _id: lineState.selectedProduct.fullProduct._id,
           name: lineState.selectedProduct.fullProduct.name,
@@ -1844,8 +1846,7 @@ export default function UpdateOrder() {
               >
                 <CalendarToday fontSize="small" sx={{ mr: 0.5 }} /> Creada el:{' '}
                 {formatDate(order.createdOn)}
-                {order.seller &&
-                  " por " + order.seller}
+                {order.seller && ' por ' + order.seller}
               </Typography>
             </Box>
             <Button
@@ -2742,7 +2743,7 @@ export default function UpdateOrder() {
                     gutterBottom
                     sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
                   >
-                  {`Método de entrega: ${order.shipping.method.name}`}
+                    {`Método de entrega: ${order.shipping.method.name}`}
                   </Typography>
                 </Paper>
               )}

@@ -2060,7 +2060,7 @@ export default function UpdateOrder() {
   console.log("Detalles de la orden:", order);
 
   return (
-    <Container maxWidth="lg" sx={{ py: { xs: 2, md: 3 } }}>
+    <Container maxWidth="lg" sx={{ p: { xs: 0, md: 3 } }}>
       <form onSubmit={handleSubmit} id="update-order-form">
         <Paper
           elevation={0}

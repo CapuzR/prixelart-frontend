@@ -26,7 +26,7 @@ import {
 } from "@mui/icons-material";
 
 import { isAValidEmail, isAValidPassword } from "utils/validations";
-
+import {  Button as ButtonV2 } from "@/components/ui/button";
 import Copyright from "@components/Copyright/copyright";
 import { Art } from "../../../types/art.types"; // Ensure this Art type is compatible with findValidWebpUrl
 import { useSnackBar } from "context/GlobalContext";
@@ -325,6 +325,9 @@ export default function AdminLogin() {
                   >
                     Inicia sesión
                   </Button>
+                  <ButtonV2>
+                    Inicia sesión
+                  </ButtonV2>
                 </Grid2>
                 <Grid2
                   size={{ xs: 12, sm: 10, md: 8, lg: 6 }}

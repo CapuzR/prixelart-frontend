@@ -6,6 +6,8 @@ import theme from "./theme";
 import App from "./App";
 import axios from "axios";
 
+import "./styles/index.css";
+
 axios.defaults.withCredentials = true;
 
 const root = ReactDOM.createRoot(

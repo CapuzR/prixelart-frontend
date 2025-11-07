@@ -23,8 +23,6 @@ import {
 } from "@api/product.api";
 import { formatNumberString } from "@utils/formats";
 
-ReactGA.initialize("G-0RWP9B33D8");
-
 interface DetailsProps {
   productId?: string;
 }

@@ -8,8 +8,6 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/styles';
 import ReactGA from 'react-ga';
 
-ReactGA.initialize('G-0RWP9B33D8');
-
 export default function CBFooter() {
   const theme = useTheme();
   const isTab = useMediaQuery(theme.breakpoints.down('sm'));

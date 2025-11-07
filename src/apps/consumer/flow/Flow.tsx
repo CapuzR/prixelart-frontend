@@ -23,7 +23,6 @@ import { fetchActiveProductDetails, fetchVariantPrice } from "@api/product.api";
 import { Item } from "types/order.types";
 import { useTheme } from "@mui/material";
 import { useMediaQuery } from "@mui/material";
-ReactGA.initialize("G-0RWP9B33D8");
 
 const Flow = () => {
   const theme = useTheme();

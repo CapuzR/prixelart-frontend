@@ -28,7 +28,6 @@ import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import MDEditor from '@uiw/react-md-editor';
 import ReactGA from 'react-ga';
-ReactGA.initialize('G-0RWP9B33D8');
 
 const useStyles = makeStyles((theme) => ({
   typography: { fontFamily: 'Lastik' },

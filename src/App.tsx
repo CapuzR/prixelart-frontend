@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import Routes from "./routes";
 import { GlobalProvider, useTheme } from "context/GlobalContext";
-// import ReactGA from 'react-ga';
+import ReactGA from 'react-ga4';
 import Utility from "@components/Utility";
 import { CartProvider } from "context/CartContext";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -21,10 +21,9 @@ const ThemedApp: React.FC = () => {
 };
 
 const App: React.FC = () => {
-  // useEffect(() => {
-  //   ReactGA.initialize('G-0RWP9B33D8');
-  //   ReactGA.pageview(window.location.pathname + window.location.search);
-  // }, []);
+  useEffect(() => {
+    ReactGA.initialize('G-0RWP9B33D8');
+  }, []);
 
   return (
     <GlobalProvider>

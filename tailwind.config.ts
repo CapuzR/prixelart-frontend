@@ -1,5 +1,5 @@
 import type { Config } from 'tailwindcss';
-
+const path = require('path');
 /**
  * Función auxiliar para generar la paleta de colores completa (ej. primary-50, primary-100...)
  * Lee las variables --color-primary-50, etc., definidas en tu archivo index.css.
@@ -60,9 +60,15 @@ const strokeTokens = {
 
 const config: Config = {
   darkMode: "class",
-  content: [
+  prefix: 'tw-',
+    content: [
     "./index.html",
+    "./src/App.tsx",
+    "./src/main.tsx",
     "./src/**/*.{js,ts,jsx,tsx}",
+    "./src/pages/*.{js,ts,jsx,tsx}",
+    "./src/components/**/*.{js,ts,jsx,tsx}",
+    "./src/lib/*.{js,ts,jsx,tsx}"
   ],
   theme: {
     extend: {
@@ -74,7 +80,7 @@ const config: Config = {
         foreground: 'rgb(var(--foreground) / <alpha-value>)',
         
         primary: {
-          DEFAULT: 'rgb(var(--primary) / <alpha-value>)',
+          default: 'rgb(var(--primary) / <alpha-value>)',
           foreground: 'rgb(var(--primary-foreground) / <alpha-value>)',
           ...generateColorPalette('primary'),
         },
@@ -84,7 +90,7 @@ const config: Config = {
           ...generateColorPalette('secondary'),
         },
         destructive: {
-          DEFAULT: 'rgb(var(--destructive) / <alpha-value>)',
+          DEFAULT: 'rgb(var(--color-primary-600) / <alpha-value>)',
           foreground: 'rgb(var(--destructive-foreground) / <alpha-value>)',
         },
         muted: {

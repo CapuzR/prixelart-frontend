@@ -25,7 +25,7 @@ const Prixers: React.FC = () => {
         paddingBottom: 4,
       }}
     >
-      <CssBaseline />
+      {/* <CssBaseline /> */}
       <Box sx={{ textAlign: "center", mb: 4 }}>
         <Typography
           variant={isMobile ? "h4" : "h3"}

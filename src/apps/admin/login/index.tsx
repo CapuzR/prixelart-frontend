@@ -1,6 +1,6 @@
-import { useEffect, useState, FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
-import Grid2 from "@mui/material/Grid"; // Assuming this is Material UI's Unstable_Grid2 or similar
+import { useEffect, useState, FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Grid2 from '@mui/material/Grid'; // Assuming this is Material UI's Unstable_Grid2 or similar
 import {
   Avatar,
   Button,
@@ -16,29 +16,28 @@ import {
   Paper,
   Box,
   CircularProgress, // Added
-} from "@mui/material";
-import { useTheme } from "@mui/material/styles"; // Added
+} from '@mui/material';
+import { useTheme } from '@mui/material/styles'; // Added
 
-import {
-  LockOutlined as LockOutlinedIcon,
-  Visibility,
-  VisibilityOff,
-} from "@mui/icons-material";
+import { LockOutlined as LockOutlinedIcon, Visibility, VisibilityOff } from '@mui/icons-material';
 
-import { isAValidEmail, isAValidPassword } from "utils/validations";
-import {  Button as ButtonV2 } from "@/components/ui/button";
-import Copyright from "@components/Copyright/copyright";
-import { Art } from "../../../types/art.types"; // Ensure this Art type is compatible with findValidWebpUrl
-import { useSnackBar } from "context/GlobalContext";
-import { getRandomArt } from "@api/art.api";
-import { adminLogin } from "@api/utils.api";
+import { isAValidEmail, isAValidPassword } from 'utils/validations';
+
+import { Button as ButtonV2 } from '@/components/ui/button';
+import { LogIn } from 'lucide-react';
+
+import Copyright from '@components/Copyright/copyright';
+import { Art } from '../../../types/art.types'; // Ensure this Art type is compatible with findValidWebpUrl
+import { useSnackBar } from 'context/GlobalContext';
+import { getRandomArt } from '@api/art.api';
+import { adminLogin } from '@api/utils.api';
 
 // Helper functions and const for background fetching
 const MAX_RETRIES = 3;
 
 const ensureHttps = (url: string): string => {
   let fullUrl = url.trim();
-  if (!/^https?:\/\//i.test(fullUrl) && !fullUrl.startsWith("/")) {
+  if (!/^https?:\/\//i.test(fullUrl) && !fullUrl.startsWith('/')) {
     fullUrl = `https://${fullUrl}`;
   }
   return fullUrl;
@@ -49,22 +48,18 @@ const findValidWebpUrl = (art?: Art): string | null => {
 
   // These keys are expected in your Art type from ../../../types/art.types
   const props: (keyof Art)[] = [
-    "largeThumbUrl",
-    "mediumThumbUrl",
-    "thumbnailUrl",
-    "smallThumbUrl",
-    "squareThumbUrl",
+    'largeThumbUrl',
+    'mediumThumbUrl',
+    'thumbnailUrl',
+    'smallThumbUrl',
+    'squareThumbUrl',
   ];
 
   for (const key of props) {
     const value = art[key];
-    if (typeof value === "string") {
+    if (typeof value === 'string') {
       const trimmed = value.trim();
-      if (
-        trimmed &&
-        trimmed.toLowerCase().endsWith(".webp") &&
-        !trimmed.includes(" ")
-      ) {
+      if (trimmed && trimmed.toLowerCase().endsWith('.webp') && !trimmed.includes(' ')) {
         return ensureHttps(trimmed);
       }
     }
@@ -74,13 +69,13 @@ const findValidWebpUrl = (art?: Art): string | null => {
 
 export default function AdminLogin() {
   const { showSnackBar } = useSnackBar();
-  const isMobile = useMediaQuery("(max-width:480px)");
-  const isTab = useMediaQuery("(max-width: 900px)");
+  const isMobile = useMediaQuery('(max-width:480px)');
+  const isTab = useMediaQuery('(max-width: 900px)');
   const theme = useTheme(); // Initialize theme
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   // State for background image fetching
@@ -91,12 +86,12 @@ export default function AdminLogin() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!email || !password) {
-      showSnackBar("Por favor completa todos los campos requeridos.");
+      showSnackBar('Por favor completa todos los campos requeridos.');
     } else {
       const resp = await adminLogin(email, password);
       if (resp.success) {
-        showSnackBar("Inicio de sesión completado.");
-        navigate("/admin/dashboard");
+        showSnackBar('Inicio de sesión completado.');
+        navigate('/admin/dashboard');
       } else {
         showSnackBar(resp.message);
       }
@@ -133,9 +128,9 @@ export default function AdminLogin() {
           // loadingBg remains true for the next attempt
         }
       } catch (error) {
-        console.error("Error obteniendo arte aleatorio para fondo:", error);
+        console.error('Error obteniendo arte aleatorio para fondo:', error);
         if (mounted) {
-          showSnackBar("Error al cargar la imagen de fondo.");
+          showSnackBar('Error al cargar la imagen de fondo.');
           setLoadingBg(false); // Stop loading on error; no further retries for this error
         }
       }
@@ -166,7 +161,7 @@ export default function AdminLogin() {
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
     if (!isAValidEmail(e.target.value) && e.target.value) {
-      showSnackBar("Por favor introduce un correo electrónico válido.");
+      showSnackBar('Por favor introduce un correo electrónico válido.');
     }
   };
 
@@ -174,7 +169,7 @@ export default function AdminLogin() {
     setPassword(e.target.value);
     if (!isAValidPassword(e.target.value) && e.target.value) {
       showSnackBar(
-        "Disculpa, tu contraseña debe tener entre 8 y 15 caracteres, incluyendo al menos: una minúscula, una mayúscula, un número y un caracter especial.",
+        'Disculpa, tu contraseña debe tener entre 8 y 15 caracteres, incluyendo al menos: una minúscula, una mayúscula, un número y un caracter especial.'
       );
     }
   };
@@ -184,19 +179,18 @@ export default function AdminLogin() {
   };
 
   const forgotPassword = () => {
-    navigate({ pathname: "/olvido-contraseña" });
+    navigate({ pathname: '/olvido-contraseña' });
   };
 
   return (
     <Grid2
       container
       sx={{
-        height: "100vh",
-        justifyContent: "center",
-        marginTop: isMobile ? "60px" : undefined,
+        height: '100vh',
+        justifyContent: 'center',
+        marginTop: isMobile ? '60px' : undefined,
       }}
     >
-      <CssBaseline />
       <Grid2
         // Assuming Grid2's `size` prop API is as used in your original component.
         // For standard MUI Unstable_ this would typically be xs={12} lg={7} directly on Grid2.
@@ -205,22 +199,19 @@ export default function AdminLogin() {
           lg: 7,
         }}
         sx={{
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          width: isTab ? "100%" : undefined, // Retained from original
-          height: isTab ? "40vh" : "100%", // Retained from original
-          backgroundImage: bgUrl ? `url(${bgUrl})` : "none", // Updated
-          backgroundColor:
-            loadingBg && !bgUrl ? theme.palette.grey[200] : undefined, // Updated
-          display: "flex", // Added to center CircularProgress
-          alignItems: "center", // Added to center CircularProgress
-          justifyContent: "center", // Added to center CircularProgress
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          width: isTab ? '100%' : undefined,
+          height: isTab ? '40vh' : '100%',
+          backgroundImage: bgUrl ? `url(${bgUrl})` : 'none',
+          backgroundColor: loadingBg && !bgUrl ? theme.palette.grey[200] : undefined,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
       >
-        {loadingBg && ( // Display loader when background is loading
-          <CircularProgress />
-        )}
+        {loadingBg && <CircularProgress />}
       </Grid2>
       <Grid2 size={{ xs: 12, lg: 5 }} component={Paper} elevation={6} square>
         <Box
@@ -228,16 +219,16 @@ export default function AdminLogin() {
             mt: isTab ? 4 : 8,
             mx: 4,
             mb: -8,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            height: "calc(100vh - 164px)", // Consider this with marginTop for overall viewport height
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            height: 'calc(100vh - 164px)',
           }}
         >
           <Avatar
             sx={{
               m: 1,
-              bgcolor: "secondary.main",
+              bgcolor: 'secondary.main',
             }}
           >
             <LockOutlinedIcon />
@@ -246,11 +237,11 @@ export default function AdminLogin() {
           <Grid2
             container
             sx={{
-              display: "flex",
-              flexDirection: "column",
-              height: "100%",
-              justifyContent: "space-between",
-              width: "100%",
+              display: 'flex',
+              flexDirection: 'column',
+              height: '100%',
+              justifyContent: 'space-between',
+              width: '100%',
               pt: 1,
             }}
           >
@@ -259,16 +250,16 @@ export default function AdminLogin() {
               onSubmit={handleSubmit}
               noValidate
               sx={{
-                width: "100%",
+                width: '100%',
               }}
             >
               <Grid2
                 container
                 spacing={2}
                 sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignContent: "center",
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignContent: 'center',
                 }}
               >
                 <Grid2 size={{ xs: 12, sm: 10, md: 8, lg: 6 }}>
@@ -278,22 +269,20 @@ export default function AdminLogin() {
                       id="email"
                       value={email}
                       label="Correo electrónico"
-                      error={email !== "" && !isAValidEmail(email)}
+                      error={email !== '' && !isAValidEmail(email)}
                       onChange={handleEmailChange}
                     />
                   </FormControl>
                 </Grid2>
                 <Grid2 size={{ xs: 12, sm: 10, md: 8, lg: 6 }}>
                   <FormControl variant="outlined" fullWidth>
-                    <InputLabel htmlFor="outlined-adornment-password">
-                      Contraseña
-                    </InputLabel>
+                    <InputLabel htmlFor="outlined-adornment-password">Contraseña</InputLabel>
                     <OutlinedInput
                       id="outlined-adornment-password"
-                      type={showPassword ? "text" : "password"}
+                      type={showPassword ? 'text' : 'password'}
                       value={password}
                       label="Contraseña"
-                      error={password !== "" && !isAValidPassword(password)}
+                      error={password !== '' && !isAValidPassword(password)}
                       onChange={handlePasswordChange}
                       endAdornment={
                         <InputAdornment position="end">
@@ -311,30 +300,32 @@ export default function AdminLogin() {
                 </Grid2>
                 <Grid2
                   size={{ xs: 12, sm: 10, md: 8, lg: 6 }}
-                  sx={{ textAlign: "center" }}
+                  sx={{ textAlign: 'center', mt: 3, mb: 2, width: '100%' }}
                 >
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    sx={{
-                      mt: 3,
-                      mb: 2,
-                      width: "100%",
-                    }}
-                  >
-                    Inicia sesión
-                  </Button>
-                  <ButtonV2>
+                  <ButtonV2 variant="default" type="submit">
                     Inicia sesión
                   </ButtonV2>
+                  {/* <ButtonV2 variant="secondary" type="submit"  className='mt-[16px]'>
+                    Inicia sesión
+                  </ButtonV2>
+                  <ButtonV2 variant="default" type="submit" className='mt-[16px]'>
+                    Inicia sesión
+                    <LogIn className="size-7 ml-[8px]" />
+                  </ButtonV2>
+                  <ButtonV2 variant="secondary" type="submit" className='mt-[16px]'>
+                    Inicia sesión
+                    <LogIn className="size-7 ml-[8px]" />
+                  </ButtonV2>
+                  <ButtonV2 variant="iconPrimary" type="submit" className='mt-[16px]'>
+                    <LogIn className='w-[18px] h-[18px]' />
+                  </ButtonV2>
+                  <ButtonV2 variant="iconSecondary" type="submit" className='mt-[16px] ml-[16px]'>
+                    <LogIn className='w-[18px] h-[18px]' />
+                  </ButtonV2> */}
                 </Grid2>
-                <Grid2
-                  size={{ xs: 12, sm: 10, md: 8, lg: 6 }}
-                  sx={{ textAlign: "center" }}
-                >
+                <Grid2 size={{ xs: 12, sm: 10, md: 8, lg: 6 }} sx={{ textAlign: 'center' }}>
                   <Link href="#" onClick={forgotPassword} variant="body2">
-                    {"¿Olvidaste tu contraseña? Recupérala"}
+                    {'¿Olvidaste tu contraseña? Recupérala'}
                   </Link>
                 </Grid2>
               </Grid2>
@@ -342,10 +333,10 @@ export default function AdminLogin() {
             <Grid2
               size={{ xs: 12 }}
               sx={{
-                margin: "auto 0 0",
-                transform: "translateY(-64px)",
-                width: "100%",
-                textAlign: "center",
+                margin: 'auto 0 0',
+                transform: 'translateY(-64px)',
+                width: '100%',
+                textAlign: 'center',
               }}
             >
               <Copyright />

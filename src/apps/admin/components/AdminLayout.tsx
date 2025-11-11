@@ -158,7 +158,7 @@ const AdminLayout: React.FC = () => {
 
   return (
     <Box sx={{ display: "flex" }}>
-      <CssBaseline />
+    {/* <CssBaseline /> */}
 
       <Sidebar
         permissions={permissions}

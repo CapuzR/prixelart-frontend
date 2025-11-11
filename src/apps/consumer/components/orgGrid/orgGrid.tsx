@@ -42,7 +42,7 @@ const OrgGrid: React.FC = () => {
   return (
     <>
       <Container component="main" maxWidth="sm" className={classes.paper}>
-        <CssBaseline />
+        {/* <CssBaseline /> */}
         <div className={classes.root}>
           <Backdrop className={classes.backdrop} open={backdrop}>
             <CircularProgress color="inherit" />

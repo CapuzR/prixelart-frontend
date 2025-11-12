@@ -18,11 +18,36 @@ import { useSnackBar } from 'context/GlobalContext';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 
+import ReactGA from 'react-ga4';
+
 interface CheckoutProps {
   setChecking: React.Dispatch<React.SetStateAction<boolean>>;
   checking?: boolean;
   fromPrixItem?: boolean;
 }
+
+const getErrorMessages = (errors: object): string[] => {
+  const messages: string[] = [];
+
+  const traverse = (obj: any) => {
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        const value = obj[key];
+
+        if (value && typeof value === 'object') {
+          if (value.message && typeof value.message === 'string') {
+            messages.push(value.message);
+          } else {
+            traverse(value);
+          }
+        }
+      }
+    }
+  };
+
+  traverse(errors);
+  return messages;
+};
 
 const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem }) => {
   const { cart, emptyCart } = useCart();
@@ -75,10 +100,44 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
   };
   const [activeStep, setActiveStep] = useState(getInitialStep());
 
+  useEffect(() => {
+    const stepLabel = steps[activeStep];
+
+    ReactGA.event({
+      category: 'Checkout',
+      action: 'step_view',
+      label: `step_${activeStep}_${stepLabel.replace(/\s+/g, '_').toLowerCase()}`,
+    });
+  }, [activeStep, steps]);
+
   const handleNext = async () => {
     const isValid = await methods.trigger();
     if (isValid) {
+      const stepLabel = steps[activeStep];
+      const stepName = stepLabel.replace(/\s+/g, '_').toLowerCase();
+
+      ReactGA.event({
+        category: 'Checkout',
+        action: 'step_complete',
+        label: `step_${activeStep}_${stepName}`,
+      });
+
       setActiveStep((prev) => prev + 1);
+    } else {
+      const stepLabel = steps[activeStep];
+      const stepName = stepLabel.replace(/\s+/g, '_').toLowerCase();
+
+      const errorMessages = getErrorMessages(methods.formState.errors);
+
+      const errorString = errorMessages.join(' | ');
+
+      ReactGA.event({
+        category: 'Checkout',
+        action: 'validation_error',
+        label: `step_${activeStep}_${stepName} | errors: ${errorString || 'unknown_errors'}`,
+      });
+
+      console.warn('GA Event: Validation Error', `Step: ${stepName}`, `Errors: ${errorString}`);
     }
   };
 
@@ -96,14 +155,42 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
 
     const parsedData = parseOrder(checkoutData);
 
-    const response = await createOrderByUser(parsedData);
+    ReactGA.event({
+      category: 'Checkout',
+      action: 'attempt_purchase',
+      label: `step_${activeStep}_confirmacion`,
+    });
+    try {
+      const response = await createOrderByUser(parsedData);
 
-    if (response.success === true) {
-      emptyCart();
-      showSnackBar(
-        'Orden realizada exitosamente! Pronto serás contactado por un miembro del equipo de Prixelart para coordinar la entrega.'
-      );
-      navigate('/');
+      if (response.success === true) {
+        ReactGA.event({
+          category: 'Checkout',
+          action: 'purchase_success',
+          label: 'orden_completada',
+          value: parseFloat(checkoutData.order.total) || 0,
+        });
+
+        emptyCart();
+        showSnackBar(
+          'Orden realizada exitosamente! Pronto serás contactado por un miembro del equipo de Prixelart para coordinar la entrega.'
+        );
+        navigate('/');
+      } else {
+        ReactGA.event({
+          category: 'Checkout',
+          action: 'purchase_failure',
+          label: response.info || 'api_error_desconocido',
+        });
+      }
+    } catch (error) {
+      ReactGA.event({
+        category: 'Checkout',
+        action: 'purchase_failure',
+        label: 'network_or_exception_error',
+      });
+      console.error('Error creating order:', error);
+      showSnackBar('Hubo un error inesperado al procesar tu orden.');
     }
   };
 
@@ -141,8 +228,12 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
           </Grid2>
         ) : isMobile && activeStep === 1 ? (
           <FormProvider {...methods}>
-            <Form dataLists={dataLists} setDataLists={setDataLists} isMobile={isMobile}
-              fromPrixItem={fromPrixItem} />
+            <Form
+              dataLists={dataLists}
+              setDataLists={setDataLists}
+              isMobile={isMobile}
+              fromPrixItem={fromPrixItem}
+            />
           </FormProvider>
         ) : isMobile && activeStep === 2 ? (
           (() => {
@@ -193,8 +284,12 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
           })()
         ) : activeStep === 0 ? (
           <FormProvider {...methods}>
-            <Form dataLists={dataLists} setDataLists={setDataLists} isMobile={isMobile}
-              fromPrixItem={fromPrixItem}/>
+            <Form
+              dataLists={dataLists}
+              setDataLists={setDataLists}
+              isMobile={isMobile}
+              fromPrixItem={fromPrixItem}
+            />
           </FormProvider>
         ) : activeStep === 1 ? (
           (() => {

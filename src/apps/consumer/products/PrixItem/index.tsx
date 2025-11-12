@@ -127,8 +127,6 @@ export default function PrixItem() {
     buildPredefinedItem();
   }, [activeSlide]);
 
-  console.log();
-
   const handleAddToCart = () => {
     if (isProductLoading || !item.price || item.price === 'Error') {
       showSnackBar('El producto se está cargando, por favor espera.');

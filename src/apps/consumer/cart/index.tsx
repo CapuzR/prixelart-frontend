@@ -1,5 +1,6 @@
 import { Alert } from "@mui/lab";
 import Grid2 from "@mui/material/Grid";
+import { useLocation } from 'react-router-dom';
 
 import CurrencySwitch from "components/CurrencySwitch";
 import Checkout from "apps/consumer/checkout";
@@ -15,7 +16,8 @@ const Cart = () => {
   const [checking, setChecking] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
+  const location = useLocation();
+  const fromPrixItem = location.state?.fromPrixItem;
   return (
     <Grid2 className={styles["main-container"]}>
       <div className={styles["alert-container"]}>
@@ -31,7 +33,7 @@ const Cart = () => {
       >
         {isMobile ? (
           <Grid2>
-            <Checkout checking={checking} setChecking={setChecking} />
+            <Checkout checking={checking} setChecking={setChecking} fromPrixItem={fromPrixItem} />
           </Grid2>
         ) : (
           <>

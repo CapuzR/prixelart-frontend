@@ -136,8 +136,7 @@ export default function PrixItem() {
 
     addOrUpdateItemInCart(item as Item, 1);
     showSnackBar("¡Producto agregado al carrito!");
-    navigate("/carrito");
-  };
+    navigate("/carrito", { state: { fromPrixItem: true } })  };
 
   const handleSlideClick = (index: number) => {
     setActiveSlide(index);

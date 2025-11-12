@@ -8,14 +8,13 @@ import React, {
   SyntheticEvent,
   useMemo,
   useRef,
-  forwardRef,
 } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import favicon from "../../../../../images/favicon.png";
 
 // Hooks, Types, Context, API
-import { useSnackBar, usePrixerCreator, useUser } from "context/GlobalContext"; // useLoading no se usa directamente aquí
+import { useSnackBar } from "context/GlobalContext";
 import {
   Address,
   BasicInfo,
@@ -42,7 +41,6 @@ import { fetchActiveProducts } from "@api/product.api";
 import {
   Product,
   Variant,
-  VariantAttribute,
 } from "../../../../../types/product.types";
 import { Art, PickedArt } from "../../../../../types/art.types";
 import { getArts } from "@api/art.api";
@@ -2364,8 +2362,13 @@ export default function UpdateOrder() {
               </Typography>
               {editableOrderLines.map((line, index) => {
                 const lineStatus = getLatestStatus(line.status);
-                const productImageUrl =
-                  line.selectedProduct?.fullProduct.sources?.images?.[0]?.url;
+                const fullArt = line.selectedArt?.fullArt;
+                const artImgUrl = (fullArt && '_id' in fullArt) 
+                  ? fullArt.largeThumbUrl 
+                  : favicon;
+                  
+                const productImageUrl = line.selectedProduct?.fullProduct.sources?.images?.[0]?.url;
+                
                 return (
                   <Card
                     key={line.tempId}
@@ -2388,8 +2391,20 @@ export default function UpdateOrder() {
                       <Grid2 container spacing={2} alignItems="flex-start">
                         <Grid2
                           size={{ xs: 12 }}
-                          sx={{ textAlign: "center", mb: { xs: 1, sm: 0 } }}
+                          sx={{ textAlign: "center", mb: { xs: 1, sm: 0 }, display: 'flex' }}
                         >
+                          <Avatar
+                            variant="rounded"
+                            src={artImgUrl}
+                            alt={line.selectedArt?.fullArt.title || "Arte"}
+                            sx={{
+                              width: { xs: 60, sm: 70 },
+                              height: { xs: 60, sm: 70 },
+                              m: "auto",
+                              borderRadius: 1.5,
+                              border: "1px solid #eee",
+                            }}
+                          />
                           <Avatar
                             variant="rounded"
                             src={productImageUrl}

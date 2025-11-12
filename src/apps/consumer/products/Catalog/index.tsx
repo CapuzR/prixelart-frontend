@@ -24,7 +24,6 @@ import { Product } from "../../../../types/product.types";
 import { fetchBestSellers, fetchActiveProducts } from "@api/product.api";
 import ScrollToTopButton from "@components/ScrollToTop";
 
-ReactGA.initialize("G-0RWP9B33D8");
 ReactGA.pageview("/productos");
 
 interface ProductsCatalogProps {

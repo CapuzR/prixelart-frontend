@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
-import ReactGA from "react-ga";
+import ReactGA from "react-ga4";
 import { useLoading, useUser } from "context/GlobalContext";
 import { getSelectedVariant } from "../services";
 import { splitDescription } from "../helpers";
@@ -22,8 +22,6 @@ import {
   fetchAllVariantPricesForProduct,
 } from "@api/product.api";
 import { formatNumberString } from "@utils/formats";
-
-ReactGA.initialize("G-0RWP9B33D8");
 
 interface DetailsProps {
   productId?: string;

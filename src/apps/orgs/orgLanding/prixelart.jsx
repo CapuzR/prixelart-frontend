@@ -15,8 +15,6 @@ import yellowArrowRight from './assets/yellowArrowRight.svg';
 import yellowArrowLeft from './assets/yellowArrowLeft.svg';
 import ReactGA from 'react-ga';
 
-ReactGA.initialize('G-0RWP9B33D8');
-
 const useStyles = makeStyles((theme) => ({
   typography: { fontFamily: 'Lastik' },
   paper: {

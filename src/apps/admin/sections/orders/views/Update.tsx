@@ -2368,7 +2368,7 @@ export default function UpdateOrder() {
                   : favicon;
                   
                 const productImageUrl = line.selectedProduct?.fullProduct.sources?.images?.[0]?.url;
-                
+
                 return (
                   <Card
                     key={line.tempId}
@@ -3167,7 +3167,10 @@ export default function UpdateOrder() {
               )}
               <Paper
                 elevation={1}
-                sx={{ p: { xs: 2, md: 2.5 }, mb: 2.5, borderRadius: 2 }}
+                sx={{ p: { xs: 2, md: 2.5 }, mb: 2.5, borderRadius: 2,
+                position: 'sticky',
+                top: 0,
+                zIndex: 10 }}
               >
                 <Typography
                   variant="h6"

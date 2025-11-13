@@ -318,10 +318,10 @@ export default function AdminLogin() {
                   </ButtonV2>
                   <ButtonV2 variant="iconPrimary" type="submit" className='mt-[16px]'>
                     <LogIn className='w-[18px] h-[18px]' />
-                  </ButtonV2>
-                  <ButtonV2 variant="iconSecondary" type="submit" className='mt-[16px] ml-[16px]'>
-                    <LogIn className='w-[18px] h-[18px]' />
-                  </ButtonV2> */}
+                  </ButtonV2>*/}
+                  {/* <ButtonV2 variant="card" type="submit" className='mt-[16px] ml-[16px]'>
+                    <LogIn />
+                  </ButtonV2>  */}
                 </Grid2>
                 <Grid2 size={{ xs: 12, sm: 10, md: 8, lg: 6 }} sx={{ textAlign: 'center' }}>
                   <Link href="#" onClick={forgotPassword} variant="body2">

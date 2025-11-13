@@ -45,7 +45,7 @@ const PrixerProfile: React.FC = () => {
 
   return (
     <Container component="main" maxWidth="xl" className={classes.paper}>
-      <CssBaseline />
+      {/* <CssBaseline /> */}
       <UserData prixerUsername={username || ""} setFeed={setFeed} />
       {/* {feed !== 'Settings' && (
         <PrixerOptions prixerUsername={username || ''} feed={feed} setFeed={setFeed} />

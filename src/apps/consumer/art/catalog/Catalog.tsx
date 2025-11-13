@@ -27,7 +27,7 @@ export default function Catalog() {
           py: 3,
         }}
       >
-        <CssBaseline />
+        {/* <CssBaseline /> */}
 
         <Grid2
           container

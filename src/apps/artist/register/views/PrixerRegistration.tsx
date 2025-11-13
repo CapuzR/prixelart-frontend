@@ -231,7 +231,7 @@ export default function PrixerRegistration() {
       maxWidth="xs"
       style={{ height: "calc(100vh - 128px)", marginTop: 100 }}
     >
-      <CssBaseline />
+      {/* <CssBaseline /> */}
       <div className={classes.paper}>
         <Typography
           component="h1"

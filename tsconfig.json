@@ -1,10 +1,32 @@
 {
   "compilerOptions": {
-    "baseUrl": "src",
-    "skipLibCheck": true,
+    "baseUrl": ".",
+    
     "paths": {
-      "@*": ["*"]
+      "@/*": ["./src/*"],
+
+      "@api/*": ["./src/api/*"],
+      "@apps/*": ["./src/apps/*"],
+      "apps/*": ["./src/apps/*"],
+      "context/*": ["./src/context/*"],
+      "@context/*": ["./src/context/*"],
+      "@assets/*": ["./src/assets/*"],
+      "@components/*": ["./src/components/*"],
+      "components/*": ["./src/components/*"],
+      "api/*": ["./src/api/*"],
+      "data/*": ["./src/data/*"],
+      "@data/*": ["./src/data/*"],
+      "lib/*": ["src/lib/*"],
+      "hooks/*": ["./src/hooks/*"],
+      "styles/*": ["./src/styles/*"],
+      "types/*": ["./src/types/*"],
+      "utils/*": ["./src/utils/*"],
+      "@utils/*": ["./src/utils/*"],
+      "images/*": ["./src/images/*"],
+      "assets/*": ["./src/assets/*"]
     },
+
+    "skipLibCheck": true,
     "jsx": "react-jsx",
     "allowJs": true,
     "checkJs": true,

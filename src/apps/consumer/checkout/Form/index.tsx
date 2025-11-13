@@ -1,20 +1,19 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 
-import { fetchConsumer } from "../api";
-import { calculateEstimatedDeliveryDate } from "../helpers";
-import FormSection from "@apps/consumer/checkout/Form/FormSection";
-import { getFormConfig } from "./formConfig";
-import { useFormContext } from "react-hook-form";
-import { DataLists, FormConfig } from "../../../../types/order.types";
-import {
-  readAllActivePaymentMethods,
-  fetchActiveShippingMethods,
-} from "@api/order.api";
-import { fetchSellers } from "@api/admin.api";
+import { fetchConsumer } from '../api';
+import { calculateEstimatedDeliveryDate } from '../helpers';
+import FormSection from '@apps/consumer/checkout/Form/FormSection';
+import { getFormConfig } from './formConfig';
+import { useFormContext } from 'react-hook-form';
+import { DataLists, FormConfig } from '../../../../types/order.types';
+import { readAllActivePaymentMethods, fetchActiveShippingMethods } from '@api/order.api';
+import { fetchSellers } from '@api/admin.api';
 
 interface FormProps {
   dataLists: DataLists;
   setDataLists: (dataLists: DataLists) => void;
+  fromPrixItem?: boolean;
+  isMobile: boolean;
 }
 
 interface Country {
@@ -22,41 +21,42 @@ interface Country {
   states: { name: string }[];
 }
 
-const computeStatesFromCountry = (
-  countries: Country[],
-  countryName: string,
-): string[] => {
+const computeStatesFromCountry = (countries: Country[], countryName: string): string[] => {
   const countryObj = countries.find((country) => country.name === countryName);
   return countryObj ? countryObj.states.map((state) => state.name) : [];
 };
 
-function Form({ dataLists, setDataLists }: FormProps) {
+function Form({ dataLists, setDataLists, isMobile, fromPrixItem }: FormProps) {
   const { setValue, getValues, watch } = useFormContext<FormConfig>();
-  const [formConfig, setFormConfig] = useState<FormConfig>(
-    getFormConfig(dataLists),
-  );
+  const [formConfig, setFormConfig] = useState<FormConfig>(getFormConfig(dataLists));
   const state = watch();
-  const [activeSection, setActiveSection] = useState<string | null>(null);
+
+  const getInitialActiveSections = () => {
+    const allSectionKeys = Object.keys(getFormConfig(dataLists));
+    if (isMobile && fromPrixItem) {
+      return allSectionKeys;
+    }
+    return [];
+  };
+
+  const [activeSections, setActiveSections] = useState<string[]>(getInitialActiveSections());
   const lines = state.order?.lines;
   const isFetched = useRef(false);
   const basicFields = watch([
-    "basic.name",
-    "basic.lastName",
-    "basic.id",
-    "basic.email",
-    "basic.phone",
+    'basic.name',
+    'basic.lastName',
+    'basic.id',
+    'basic.email',
+    'basic.phone',
   ]);
 
   // Actualizar estados dependiendo del país (para envío)
 
-  const shippingCountry = watch("shipping.country");
+  const shippingCountry = watch('shipping.country');
 
   useEffect(() => {
     if (shippingCountry) {
-      const newStates = computeStatesFromCountry(
-        dataLists.countries,
-        shippingCountry,
-      );
+      const newStates = computeStatesFromCountry(dataLists.countries, shippingCountry);
       setFormConfig((prevConfig) => ({
         ...prevConfig,
         shipping: {
@@ -71,29 +71,19 @@ function Form({ dataLists, setDataLists }: FormProps) {
         },
       }));
       if (newStates.length > 0) {
-        const stateValue =
-          shippingCountry === "Venezuela" ? "Miranda" : newStates[0];
-        setValue("shipping.state", stateValue);
+        const stateValue = shippingCountry === 'Venezuela' ? 'Miranda' : newStates[0];
+        setValue('shipping.state', stateValue);
       }
     }
-  }, [
-    shippingCountry,
-    dataLists.countries,
-    setFormConfig,
-    getValues,
-    setValue,
-  ]);
+  }, [shippingCountry, dataLists.countries, setFormConfig, getValues, setValue]);
 
   // Actualizar estados dependiendo del país (para facturación)
 
-  const billingCountry = watch("billing.country");
+  const billingCountry = watch('billing.country');
 
   useEffect(() => {
     if (billingCountry) {
-      const newStates = computeStatesFromCountry(
-        dataLists.countries,
-        billingCountry,
-      );
+      const newStates = computeStatesFromCountry(dataLists.countries, billingCountry);
       setFormConfig((prevConfig) => ({
         ...prevConfig,
         billing: {
@@ -108,16 +98,15 @@ function Form({ dataLists, setDataLists }: FormProps) {
         },
       }));
       if (newStates.length > 0) {
-        const stateValue =
-          shippingCountry === "Venezuela" ? "Miranda" : newStates[0];
-        setValue("billing.state", stateValue);
+        const stateValue = shippingCountry === 'Venezuela' ? 'Miranda' : newStates[0];
+        setValue('billing.state', stateValue);
       }
     }
   }, [billingCountry, dataLists, setFormConfig, setValue]);
 
   // Si se decide usar los mismos datos para envío o facturación
   useEffect(() => {
-    const sections = ["shipping", "billing"];
+    const sections = ['shipping', 'billing'];
     sections.map((section) => {
       if (state?.[section]?.[`${section}EqualsBasic`]) {
         setValue(section, {
@@ -134,16 +123,14 @@ function Form({ dataLists, setDataLists }: FormProps) {
 
   // Si se cambia entre Pickup y Delivery
 
-  const shippingMethod = watch("shipping.method");
+  const shippingMethod = watch('shipping.method');
 
   useEffect(() => {
     setFormConfig((prevConfig) => {
       const updatedShippingFields = { ...prevConfig.shipping.fields };
       Object.keys(updatedShippingFields).forEach((fieldKey) => {
         updatedShippingFields[fieldKey].isHidden =
-          shippingMethod === "Pickup" &&
-          fieldKey !== "method" &&
-          fieldKey !== "date";
+          shippingMethod === 'Pickup' && fieldKey !== 'method' && fieldKey !== 'date';
         // updatedShippingFields[fieldKey].required =
         //   !(shippingMethod === "Pickup" &&
         //     fieldKey !== "method" &&
@@ -166,12 +153,12 @@ function Form({ dataLists, setDataLists }: FormProps) {
 
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem('token');
 
         if (token) {
           const consumerDetails = await fetchConsumer(token);
           if (consumerDetails) {
-            setValue("order.consumerDetails", consumerDetails);
+            setValue('order.consumerDetails', consumerDetails);
           }
         }
 
@@ -200,34 +187,34 @@ function Form({ dataLists, setDataLists }: FormProps) {
           return newConfig;
         });
 
-        const estimatedDeliveryDate = getValues(
-          "order.shipping.estimatedDeliveryDate",
-        );
+        const estimatedDeliveryDate = getValues('order.shipping.estimatedDeliveryDate');
         if (!estimatedDeliveryDate) {
           const calculatedDate = calculateEstimatedDeliveryDate(lines);
           if (calculatedDate) {
-            setValue("order.shipping.estimatedDeliveryDate", calculatedDate);
+            setValue('order.shipping.estimatedDeliveryDate', calculatedDate);
           }
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error('Error fetching data:', error);
       }
     };
 
     fetchData();
     // Added dataLists to the dependency array to ensure fetchData runs if initial dataLists changes
-  }, [
-    lines,
-    setValue,
-    getValues,
-    dataLists,
-    setDataLists,
-    shippingCountry,
-    billingCountry,
-  ]);
+  }, [lines, setValue, getValues, dataLists, setDataLists, shippingCountry, billingCountry]);
 
   const handleSectionToggle = (sectionKey: string) => {
-    setActiveSection((prev) => (prev === sectionKey ? null : sectionKey));
+    if (isMobile && fromPrixItem) {
+      setActiveSections((prev) =>
+        prev.includes(sectionKey)
+          ? prev.filter((key) => key !== sectionKey)
+          : [...prev, sectionKey],
+      );
+    } else {
+      setActiveSections((prev) =>
+        prev.includes(sectionKey) ? [] : [sectionKey],
+      );
+    }
   };
 
   return (
@@ -238,7 +225,7 @@ function Form({ dataLists, setDataLists }: FormProps) {
           <FormSection
             sectionKey={sectionKey}
             sectionConfig={sectionConfig}
-            isExpanded={activeSection === sectionKey}
+            isExpanded={activeSections.includes(sectionKey)}
             onToggle={() => handleSectionToggle(sectionKey)}
           />
         );

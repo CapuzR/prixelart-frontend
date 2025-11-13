@@ -132,7 +132,7 @@ const ProductsCatalog: React.FC<ProductsCatalogProps> = ({
 
   return (
     <div className={styles["catalog"]}>
-      <CssBaseline />
+      {/* <CssBaseline /> */}
 
       <>
         <div className={styles["title"]}>

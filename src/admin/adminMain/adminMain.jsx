@@ -216,7 +216,6 @@ export default function AdminMain(props) {
     <div className={classes.root}>
       {JSON.parse(localStorage.getItem("adminToken")) ? (
         <>
-          <CssBaseline />
           <AppBar
             position="fixed"
             className={clsx(classes.appBar, open && classes.appBarShift)}

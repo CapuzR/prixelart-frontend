@@ -6,6 +6,8 @@ import theme from "./theme";
 import App from "./App";
 import axios from "axios";
 
+import "./styles/index.css";
+
 axios.defaults.withCredentials = true;
 
 const root = ReactDOM.createRoot(
@@ -14,7 +16,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <BrowserRouter>
     <ThemeProvider theme={theme}>
-      <CssBaseline />
+      {/* <CssBaseline /> */}
       <App />
     </ThemeProvider>
   </BrowserRouter>,

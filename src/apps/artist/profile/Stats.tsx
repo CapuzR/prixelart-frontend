@@ -283,7 +283,7 @@ export default function PrixerProfile() {
 
   return (
     <Container component="main" maxWidth="xl" className={classes.paper}>
-      <CssBaseline />
+      {/* <CssBaseline /> */}
       <Grid2 className={classes.paper2}>
         <Paper
           sx={{

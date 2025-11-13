@@ -14,6 +14,7 @@ import {
 import { getPermissions } from "@api/admin.api";
 import Sidebar, { SectionState } from "./SideBar";
 import { useSnackBar } from "@context/GlobalContext";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 const EXPANDED_DRAWER_WIDTH = 300; // The full width of the sidebar when open
 
@@ -36,6 +37,8 @@ const initialSectionState: SectionState = {
 
 const AdminLayout: React.FC = () => {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
   const { showSnackBar } = useSnackBar();
   const COLLAPSED_DRAWER_WIDTH = Number(theme.spacing(7).replace("px", "")); // Standard MUI icon size + padding
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -155,7 +158,7 @@ const AdminLayout: React.FC = () => {
 
   return (
     <Box sx={{ display: "flex" }}>
-      <CssBaseline />
+    {/* <CssBaseline /> */}
 
       <Sidebar
         permissions={permissions}
@@ -173,7 +176,7 @@ const AdminLayout: React.FC = () => {
         sx={{
           flexGrow: 1,
           bgcolor: "background.default",
-          p: 3,
+          p: isMobile ? 1 : 3,
           pt: 6,
           // --- Animate the width and margin to match the sidebar state ---
           width: `calc(100% - ${currentDrawerWidth}px)`,

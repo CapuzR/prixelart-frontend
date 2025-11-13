@@ -127,8 +127,6 @@ export default function PrixItem() {
     buildPredefinedItem();
   }, [activeSlide]);
 
-  console.log();
-
   const handleAddToCart = () => {
     if (isProductLoading || !item.price || item.price === 'Error') {
       showSnackBar('El producto se está cargando, por favor espera.');
@@ -156,9 +154,8 @@ export default function PrixItem() {
     });
 
     addOrUpdateItemInCart(item as Item, 1);
-    showSnackBar('¡Producto agregado al carrito!');
-    navigate('/carrito');
-  };
+    showSnackBar("¡Producto agregado al carrito!");
+    navigate("/carrito", { state: { fromPrixItem: true } })  };
 
   const handleSlideClick = (index: number) => {
     ReactGA.event("select_item", {

@@ -60,7 +60,6 @@ const strokeTokens = {
 
 const config: Config = {
   darkMode: "class",
-  prefix: 'tw-',
     content: [
     "./index.html",
     "./src/App.tsx",
@@ -80,7 +79,7 @@ const config: Config = {
         foreground: 'rgb(var(--foreground) / <alpha-value>)',
         
         primary: {
-          default: 'rgb(var(--primary) / <alpha-value>)',
+          DEFAULT: 'rgb(var(--primary) / <alpha-value>)',
           foreground: 'rgb(var(--primary-foreground) / <alpha-value>)',
           ...generateColorPalette('primary'),
         },

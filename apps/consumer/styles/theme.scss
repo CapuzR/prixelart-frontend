@@ -1,0 +1,205 @@
+@use "sass:color";
+@use "./_fonts/futura";
+@use "./_fonts/ubuntu";
+
+$primary-color: #d33f49;
+$secondary-color: #404e5c;
+$tertiary-color: #000000;
+$background-color: #ffffff;
+$background-dark-color: #333333;
+$text-color: #333;
+$text-light-color: #fff;
+$border-color: #dcdcdc;
+$hover-bg-color: #2980b9;
+$hover-text-color: #ecf0f1;
+$error-color: #e74c3c;
+$success-color: #27ae60;
+$warning-color: #f39c12;
+$info-color: #3498db;
+
+$font-family-sans: "Roboto", sans-serif;
+$font-family-serif: "Merriweather", serif;
+$font-family-futura: "Futura", sans-serif;
+$font-family-ubuntu: "Ubuntu", sans-serif;
+
+$font-size-base: 16px;
+$font-size-small: 1rem;
+$font-size-medium: 1.25rem;
+$font-size-large: 1.5rem;
+$font-size-extra-large: 2.5rem;
+$line-height-base: 1.6;
+$font-weight-light: 300;
+$font-weight-normal: 400;
+$font-weight-bold: 600;
+
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+$spacing-xxl: 48px;
+
+$border-radius-sm: 4px;
+$border-radius-md: 8px;
+$border-radius-lg: 12px;
+$border-radius-xl: 42px;
+$border-radius-pill: 9999px;
+$border-radius-button: 10px;
+
+$box-shadow-light: 0 1px 3px rgba(0, 0, 0, 0.1);
+$box-shadow-medium: 0 3px 6px rgba(0, 0, 0, 0.15);
+$box-shadow-heavy: 0 6px 12px rgba(0, 0, 0, 0.3);
+
+$button-padding: $spacing-sm $spacing-md;
+$button-border-radius: $border-radius-button;
+$button-font-size: $font-size-base;
+$button-primary-bg: $primary-color;
+$button-secondary-bg: $secondary-color;
+$button-disabled-bg: #d33f4970;
+$button-hover-shadow: $box-shadow-light;
+$button-hover-color: $hover-bg-color;
+$button-hover-text: $hover-text-color;
+
+$overlay-bg-color: rgba(0, 0, 0, 0.3);
+
+$breakpoint-xs: 480px;
+$breakpoint-sm: 576px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 992px;
+$breakpoint-xl: 1200px;
+$breakpoint-xxl: 1440px;
+
+$transition-fast: 0.2s ease-in-out;
+$transition-normal: 0.3s ease-in-out;
+$transition-slow: 0.5s ease-in-out;
+
+$z-index-dropdown: 1000;
+$z-index-modal: 1050;
+$z-index-tooltip: 1100;
+
+@mixin respond-above($breakpoint) {
+  @media (min-width: $breakpoint) {
+    @content;
+  }
+}
+
+@mixin respond-below($breakpoint) {
+  @media (max-width: $breakpoint) {
+    @content;
+  }
+}
+
+@mixin button(
+  $bg-color,
+  $text-color: $text-light-color,
+  $hover-bg-color: color.adjust($bg-color, $lightness: -10%),
+  $hover-text-color: $text-color
+) {
+  background-color: $bg-color;
+  color: $text-color;
+  padding: $button-padding;
+  border-radius: $button-border-radius;
+  font-size: $button-font-size;
+  border: none;
+  cursor: pointer;
+  transition:
+    background-color $transition-normal,
+    color $transition-normal,
+    box-shadow $transition-fast;
+
+  &:hover {
+    background-color: $hover-bg-color;
+    color: $hover-text-color;
+    box-shadow: $button-hover-shadow;
+  }
+
+  &:disabled {
+    background-color: $button-disabled-bg;
+    cursor: not-allowed;
+  }
+}
+
+@mixin margin($size) {
+  margin: $size;
+}
+
+@mixin padding($size) {
+  padding: $size;
+}
+
+@mixin text-heading(
+  $size: $font-size-large,
+  $weight: $font-weight-bold,
+  $line-height: 1.2
+) {
+  font-size: $size;
+  font-weight: $weight;
+  line-height: $line-height;
+}
+
+@mixin text-body(
+  $size: $font-size-base,
+  $weight: $font-weight-normal,
+  $line-height: $line-height-base
+) {
+  font-size: $size;
+  font-weight: $weight;
+  line-height: $line-height;
+}
+
+@mixin paper(
+  $bg-color: white,
+  $shadow: $box-shadow-medium,
+  $radius: $border-radius-lg,
+  $spacing: $spacing-md
+) {
+  background-color: $bg-color;
+  box-shadow: $shadow;
+  border-radius: $radius;
+  padding: $spacing;
+  overflow: hidden;
+}
+
+h1,
+h2,
+h3 {
+  @include text-heading();
+  color: $text-color;
+}
+
+p {
+  @include text-body();
+  color: $text-color;
+}
+
+.btn-primary {
+  @include button($primary-color);
+}
+
+.btn-secondary {
+  @include button($secondary-color);
+}
+
+.container {
+  padding: $spacing-md;
+
+  @include respond-above($breakpoint-lg) {
+    max-width: 1200px;
+  }
+
+  @include respond-below($breakpoint-md) {
+    max-width: 100%;
+  }
+}
+
+.original-price {
+  text-decoration: line-through;
+  opacity: 0.7;
+  margin-right: 0.4em;
+  font-size: 1.5rem;
+}
+
+.final-price {
+  font-weight: bold;
+  font-size: 1.5rem;
+}

@@ -1,0 +1,110 @@
+@use "@/styles/theme.scss" as theme;
+
+.item-playground {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  height: fit-content;
+  // margin: auto 0;
+}
+
+// @media screen and (max-width: 1600px) {
+//   .item-playground {
+//     max-width: 200px;
+//     min-height: 120px;
+//   }
+// }
+
+.pricing-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: theme.$spacing-md;
+
+  .quantity,
+  .subtotal,
+  .unit-price {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: theme.$spacing-md;
+    flex: 1;
+
+    small {
+      font-size: theme.$font-size-small;
+      color: theme.$text-color;
+      margin-bottom: theme.$spacing-xs;
+    }
+
+    p {
+      font-size: theme.$font-size-medium;
+      font-weight: theme.$font-weight-bold;
+      margin: 0;
+    }
+  }
+
+  .quantity-input {
+    width: 60px;
+    padding: theme.$spacing-xs;
+    font-size: theme.$font-size-medium;
+    text-align: center;
+    border: 1px solid theme.$border-color;
+    border-radius: theme.$border-radius-sm;
+    outline: none;
+
+    &:focus {
+      border-color: theme.$primary-color;
+    }
+  }
+}
+
+.unit-price {
+  min-width: 125px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+
+  span .final-price {
+    font-size: 0.875rem !important;
+  }
+}
+
+.item-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  // padding: theme.$spacing-md;
+  justify-content: center;
+}
+
+.card-root {
+  display: flex;
+  overflow: hidden;
+  align-content: space-between;
+  // width: 100%;
+  height: auto;
+  @include theme.paper(
+    undefined,
+    theme.$box-shadow-heavy,
+    theme.$border-radius-xl,
+    theme.$spacing-md
+  );
+  // padding: 0;
+}
+
+.card-content {
+  display: flex;
+  flex: 1;
+  padding: theme.$spacing-md;
+  justify-content: space-between;
+
+  &.row {
+    flex-direction: row;
+  }
+
+  &.column {
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,66 @@
+@use "../styles/theme.scss" as theme;
+.snackbar {
+  position: fixed;
+  bottom: theme.$spacing-lg;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: theme.$secondary-color;
+  color: theme.$text-light-color;
+  padding: theme.$spacing-sm theme.$spacing-md;
+  border-radius: theme.$border-radius-md;
+  box-shadow: theme.$box-shadow-medium;
+  z-index: theme.$z-index-modal;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 200px;
+  max-width: 600px;
+  width: auto;
+}
+
+.snackbar-content {
+  font-size: theme.$font-size-base;
+  font-family: theme.$font-family-sans;
+  text-align: center;
+}
+
+.snackbar-close {
+  background: none;
+  border: none;
+  color: theme.$text-light-color;
+  cursor: pointer;
+  font-size: theme.$font-size-large;
+  margin-left: theme.$spacing-sm;
+  padding: 0;
+  transition: color theme.$transition-normal;
+
+  &:hover {
+    color: theme.$hover-text-color;
+  }
+}
+
+.snackbar-enter {
+  opacity: 0;
+  transform: translateX(-50%) translateY(100%);
+}
+
+.snackbar-enter-active {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  transition:
+    opacity theme.$transition-normal,
+    transform theme.$transition-normal;
+}
+
+.snackbar-exit {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.snackbar-exit-active {
+  opacity: 0;
+  transform: translateX(-50%) translateY(100%);
+  transition:
+    opacity theme.$transition-normal,
+    transform theme.$transition-normal;
+}

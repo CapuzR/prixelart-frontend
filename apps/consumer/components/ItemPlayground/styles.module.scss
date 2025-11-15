@@ -1,0 +1,50 @@
+@use "../styles/theme.scss" as theme;
+
+.container {
+  display: inline-flex;
+  width: 100%;
+  height: auto;
+  position: relative;
+  padding: 0;
+}
+
+.sel-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  position: relative;
+  width: 100%;
+  height: auto;
+}
+
+.art-area,
+.product-area {
+  aspect-ratio: 1 / 1;
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 50%;
+  @include theme.paper(
+    undefined,
+    theme.$box-shadow-medium,
+    theme.$border-radius-lg,
+    theme.$spacing-md
+  );
+  padding: 0;
+  height: auto;
+  // min-height: 9rem;
+}
+
+@media screen and (max-width: 1600px) {
+  .sel-container {
+    flex-direction: row;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .sel-container .art-area,
+  .sel-container .product-area {
+    width: 100%;
+  }
+}

@@ -12,9 +12,9 @@
   },
   "iconLibrary": "lucide",
   "aliases": {
-    "components": "@/components",
-    "@/utils": "@/lib/utils",
-    "utils": "@/lib/utils",
+  "components": "@/components",
+  "@/utils": "@prixpon/utils",
+  "utils": "@prixpon/utils",
     "ui": "@/components/ui",
     "lib": "@/lib",
     "hooks": "@/hooks"

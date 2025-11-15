@@ -1,0 +1,217 @@
+@tailwind base;
+@tailwind components;
+@use url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+@use 'tailwindcss';
+
+@theme {
+  --font-roboto: 'Roboto', sans-serif;
+
+  /* Semantic colors */
+  --color-background: rgb(255 255 255);
+  --color-foreground: rgb(35 36 41);
+
+  --color-primary-50: rgb(254 243 242);
+  --color-primary-100: rgb(252 233 231);
+  --color-primary-200: rgb(249 211 210);
+  --color-primary-300: rgb(244 175 173);
+  --color-primary-400: rgb(237 128 127);
+  --color-primary-500: rgb(226 81 84);
+  --color-primary-600: rgb(210 63 73);
+  --color-primary-700: rgb(173 35 48);
+  --color-primary-800: rgb(145 32 46);
+  --color-primary-900: rgb(145 32 46);
+  --color-primary-950: rgb(69 12 19);
+  --color-primary: rgb(210 63 73);
+  --color-primary-foreground: rgb(254 243 242);
+
+  --color-secondary-50: rgb(245 246 246);
+  --color-secondary-100: rgb(228 230 233);
+  --color-secondary-200: rgb(204 208 213);
+  --color-secondary-300: rgb(169 175 183);
+  --color-secondary-400: rgb(127 135 145);
+  --color-secondary-500: rgb(99 107 119);
+  --color-secondary-600: rgb(86 92 102);
+  --color-secondary-700: rgb(73 77 85);
+  --color-secondary-800: rgb(65 68 73);
+  --color-secondary-900: rgb(57 59 64);
+  --color-secondary-950: rgb(35 36 41);
+  --color-secondary: rgb(86 92 102);
+  --color-secondary-foreground: rgb(245 246 246);
+
+  --color-brand-main: rgb(210 63 73);
+  --color-brand-light: rgb(237 128 127);
+  --color-brand-lighter: rgb(249 211 210);
+  --color-brand-dark: rgb(173 35 48);
+  --color-brand-darker: rgb(145 32 46);
+
+  --color-muted: rgb(204 208 213);
+  --color-muted-foreground: rgb(99 107 119);
+  --color-accent: rgb(204 208 213);
+  --color-accent-foreground: rgb(57 59 64);
+  --color-destructive: rgb(208 4 22);
+  --color-destructive-foreground: rgb(255 255 255);
+  --color-border: rgb(204 208 213);
+  --color-input: rgb(204 208 213);
+  --color-ring: rgb(237 128 127);
+  --color-card: rgb(255 255 255);
+  --color-card-foreground: rgb(35 36 41);
+  --color-popover: rgb(255 255 255);
+  --color-popover-foreground: rgb(35 36 41);
+
+  /* Spacing tokens */
+  --spacing-zero: 0px;
+  --spacing-xxs: 4px;
+  --spacing-xs: 8px;
+  --spacing-x: 14px;
+  --spacing-s: 16px;
+  --spacing-m: 24px;
+  --spacing-l: 32px;
+  --spacing-xl: 40px;
+  --spacing-xxl: 48px;
+  --spacing-xxxl: 56px;
+  --spacing-xxxxl: 64px;
+
+  /* Radius tokens */
+  --radius-m: 4px;
+  --radius-l: 8px;
+  --radius-xl: 16px;
+
+  /* Border sizes */
+  --border-size-s: 1px;
+  --border-size-m: 2px;
+  --border-size-l: 4px;
+  --border-size-xl: 6px;
+  --border-size-xxl: 8px;
+  --border-size-xxxl: 10px;
+  --border-size-xxxxl: 12px;
+}
+
+@layer base {
+  :root {
+    /* Paleta Primaria (RedPrix) */
+    --color-primary-50: 254 243 242;
+    --color-primary-100: 252 233 231;
+    --color-primary-200: 249 211 210;
+    --color-primary-300: 244 175 173;
+    --color-primary-400: 237 128 127;
+    --color-primary-500: 226 81 84;
+    --color-primary-600: 210 63 73; /* Main */
+    --color-primary-700: 173 35 48;
+    --color-primary-800: 145 32 46;
+    --color-primary-900: 145 32 46;
+    --color-primary-950: 69 12 19;
+
+    /* Paleta Secundaria (GreyPrix) */
+    --color-secondary-5050: 245, 246, 246, 0.5;
+    --color-secondary-50: 245 246 246;
+    --color-secondary-100: 228 230 233;
+    --color-secondary-200: 204 208 213;
+    --color-secondary-300: 169 175 183;
+    --color-secondary-400: 127 135 145;
+    --color-secondary-500: 99 107 119;
+    --color-secondary-600: 86 92 102; /* Main */
+    --color-secondary-700: 73 77 85;
+    --color-secondary-800: 65 68 73;
+    --color-secondary-900: 57 59 64;
+    --color-secondary-950: 35 36 41;
+
+    --color-error: 208 4 22;
+    --color-error-base: 251 55 72;
+    --color-warning: 255 219 67;
+    --color-success: 31 193 107;
+
+    --color-brand-main: var(--color-primary-600);
+    --color-brand-light: var(--color-primary-400);
+    --color-brand-lighter: var(--color-primary-200);
+    --color-brand-dark: var(--color-primary-700);
+    --color-brand-darker: var(--color-primary-800);
+
+    --background: 255 255 255;
+    --foreground: 35 36 41;
+
+    --card: 255 255 255;
+    --card-foreground: 35 36 41;
+
+    --popover: 255 255 255;
+    --popover-foreground: 35 36 41;
+
+    --primary: var(--color-primary-600);
+    --primary-foreground: 254 243 242;
+
+    --secondary: var(--color-secondary-600);
+    --secondary-foreground: 245 246 246;
+
+    --muted: var(--color-secondary-100);
+    --muted-foreground: var(--color-secondary-500);
+
+    --accent: var(--color-secondary-100);
+    --accent-foreground: var(--color-secondary-900);
+
+    --destructive: var(--color-error);
+    --destructive-foreground: 255 255 255;
+
+    --border: var(--color-secondary-200);
+    --input: var(--color-secondary-200);
+    --ring: var(--color-primary-400);
+
+    --rounded-m: 4px;
+    --rounded-l: 8px;
+    --rounded-xl: 16px;
+    --rounded: var(--rounded-l);
+
+    --spacing-zero: 0px;
+    --spacing-xxs: 4px;
+    --spacing-xs: 8px;
+    --spacing-x: 14px;
+    --spacing-s: 16px;
+    --spacing-m: 24px;
+    --spacing-l: 32px;
+    --spacing-xl: 40px;
+    --spacing-xxl: 48px;
+    --spacing-xxxl: 56px;
+    --spacing-xxxxl: 64px;
+
+    --stroke-s: 1px;
+    --stroke-m: 2px;
+    --stroke-l: 4px;
+    --stroke-xl: 6px;
+    --stroke-xxl: 8px;
+    --stroke-xxxl: 10px;
+    --stroke-xxxxl: 12px;
+
+    --disabled: backdrop-opacity-[0.3]
+  }
+
+  .dark {
+    --background: 35 36 41;
+    --foreground: 245 246 246;
+
+    --card: 57 59 64;
+    --card-foreground: 245 246 246;
+
+    --popover: 57 59 64;
+    --popover-foreground: 245 246 246;
+
+    --muted: var(--color-secondary-800);
+    --muted-foreground: var(--color-secondary-400);
+
+    --accent: var(--color-secondary-800);
+    --accent-foreground: var(--color-secondary-50);
+
+    --border: var(--color-secondary-700);
+    --input: var(--color-secondary-700);
+    --ring: var(--color-primary-400);
+  }
+}
+
+@tailwind utilities;
+
+@layer base {
+  * {
+    border-color: rgb(var(--border) / 1);
+  }
+  body {
+    background-color: rgb(var(--background) / 1);
+    color: rgb(var(--foreground) / 1);
+  }
+}

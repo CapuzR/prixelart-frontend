@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 
-import ConsumerRoutes from "apps/consumer/consumer.routes";
+import ConsumerRoutes from "@/consumer.routes";
 import AppBar from "@components/appBar";
-import ArtistRoutes from "@apps/artist/artist.routes";
+import ArtistRoutes from "@/artist/artist.routes";
 import { Toolbar } from "@mui/material";
 import {
   Outlet,
@@ -14,7 +14,7 @@ import AdminLayout from "@apps/admin/components/AdminLayout";
 import AdminLogin from "@apps/admin/login";
 import AdminNestedRoutes from "@apps/admin/admin.routes";
 import { isAuth } from "@api/utils.api";
-import { useUser } from "@context/GlobalContext";
+import { useUser } from "@prixpon/context/GlobalContext";
 import { User } from "types/user.types";
 import AnalyticsTracker from "@components/AnalyticsTracker";
 

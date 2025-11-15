@@ -1,0 +1,11 @@
+{
+  "name": "@prixpon/config",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./eslint": "./src/eslint.config.js",
+    "./prettier": "./src/prettier.config.cjs",
+    "./tsconfig": "./src/tsconfig.base.json"
+  }
+}

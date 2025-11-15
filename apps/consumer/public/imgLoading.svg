@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:d="https://loading.io/stock/"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="500"
+   height="500"
+   viewBox="0 0 132.29166 132.29167"
+   version="1.1"
+   id="svg8"
+   inkscape:version="1.0.2 (394de47547, 2021-03-26)"
+   sodipodi:docname="imgLoading.svg">
+  <defs
+     id="defs2">
+    <rect
+       x="45.781443"
+       y="90.13507"
+       width="74.511878"
+       height="12.944462"
+       id="rect1446" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.4"
+     inkscape:cx="277.81597"
+     inkscape:cy="297.19238"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     inkscape:document-rotation="0"
+     showgrid="false"
+     units="px"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:window-width="1920"
+     inkscape:window-height="1016"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1">
+    <sodipodi:guide
+       position="65.886897,169.75392"
+       orientation="1,0"
+       id="guide1440" />
+    <sodipodi:guide
+       position="-123.22023,66.523811"
+       orientation="0,-1"
+       id="guide1442" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       id="text1444"
+       style="font-style:normal;font-weight:normal;font-size:7.05556px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect1446);fill:#000000;fill-opacity:1;stroke:none;"
+       transform="matrix(0.47366355,0,0,0.47366355,36.405394,28.845941)"><tspan
+         x="45.78125"
+         y="96.377283"><tspan
+           style="font-size:7.05556px">Cargando</tspan></tspan></text>
+    <g
+       class="ldl-scale"
+       id="g1480"
+       transform="matrix(0.18711199,0,0,0.18711199,55.972235,54.008038)">
+      <circle
+         stroke-width="3.5"
+         fill="none"
+         stroke="#e0e0e0"
+         stroke-miterlimit="10"
+         r="33.625"
+         cy="50"
+         cx="50"
+         style="stroke:#e0e0e0"
+         id="circle1468" />
+      <path
+         stroke-miterlimit="10"
+         stroke="#e15b64"
+         fill="none"
+         stroke-width="12"
+         d="M 50,16.375 C 68.571,16.375 83.625,31.429 83.625,50 83.625,68.571 68.571,83.625 50,83.625 31.429,83.625 16.375,68.571 16.375,50 c 0,-9.235 3.723,-17.601 9.751,-23.678"
+         style="stroke:#e15b64"
+         id="path1470" />
+      <path
+         stroke-miterlimit="10"
+         stroke-width="3.5"
+         stroke="#333"
+         fill="none"
+         d="m 41.356,51.958 v 0 a 3.214,3.214 0 0 1 -3.214,-3.214 v -5.571 a 3.214,3.214 0 0 1 3.214,-3.214 v 0 a 3.214,3.214 0 0 1 3.214,3.214 v 5.571 a 3.213,3.213 0 0 1 -3.214,3.214 z"
+         style="stroke:#333333"
+         id="path1472" />
+      <path
+         stroke-miterlimit="10"
+         stroke-width="3.5"
+         stroke="#333"
+         fill="none"
+         d="m 58.644,60.021 v 0 a 3.214,3.214 0 0 0 3.214,-3.214 v -5.571 a 3.214,3.214 0 0 0 -3.214,-3.214 v 0 a 3.214,3.214 0 0 0 -3.214,3.214 v 5.571 a 3.213,3.213 0 0 0 3.214,3.214 z"
+         style="stroke:#333333"
+         id="path1474" />
+      <path
+         d="m 55.804,37.02 -12,25.96"
+         stroke-miterlimit="10"
+         stroke-width="3.5"
+         stroke="#333"
+         fill="none"
+         style="stroke:#333333"
+         id="path1476" />
+      <metadata
+         id="metadata1478">
+        <d:name
+           style="animation-play-state:paused">87%</d:name>
+        <d:tags
+           style="animation-play-state:paused">87,percentage,progress,loading,status,bar,curved,circular,downloading,process</d:tags>
+        <d:license
+           style="animation-play-state:paused">by</d:license>
+        <d:slug
+           style="animation-play-state:paused">92pgi3</d:slug>
+      </metadata>
+    </g>
+  </g>
+</svg>

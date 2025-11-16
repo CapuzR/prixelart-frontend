@@ -24,8 +24,8 @@ import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 
 import logo from "./Logotipo_Prixelart_H2.png";
-import anom from "../../assets/images/anom-user.png";
-import bag from "../../assets/images/shop-bag.png";
+import anom from "@assets/images/anom-user.png";
+import bag from "@assets/images/shop-bag.png";
 
 import { useCurrency, useUser } from "@prixpon/context/GlobalContext";
 import { useCart } from "@apps/consumer/context/CartContext";

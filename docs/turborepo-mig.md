@@ -12,7 +12,7 @@ prixelart-frontend/
 │  ├─ company-admin/
 │  └─ pinpon/
 ├─ packages/
-│  ├─ ui/
+│  ├─ design-system/
 │  ├─ tokens/
 │  ├─ types/
 │  ├─ utils/
@@ -45,7 +45,7 @@ prixelart-frontend/
      "compilerOptions": {
        "baseUrl": ".",
        "paths": {
-         "@prixpon/ui": ["packages/ui/src"],
+         "@prixpon/design-system": ["packages/design-system/src"],
          "@prixpon/types": ["packages/types/src"],
          "@prixpon/tokens": ["packages/tokens/src"],
          "@prixpon/config": ["packages/config/src"]
@@ -173,14 +173,14 @@ Repite para `artist-admin`, `company-admin` y `pinpon` ajustando la ruta relativ
 > - `src/context/api.ts` (helper de tasa de cambio) → muévelo junto a `GlobalContext` o a `packages/api`.
 > Así evitas rutas relativas y cada app importa desde `@prixel/*` lo que necesite.
 
-1. **`packages/ui`**
+1. **`packages/design-system`**
   ```bash
-  pnpm dlx shadcn@latest init --path packages/ui
+  pnpm dlx shadcn@latest init --path packages/design-system
   # o crea manualmente:
-  mkdir -p packages/ui/src
-  cat <<'EOF' > packages/ui/package.json
+  mkdir -p packages/design-system/src
+  cat <<'EOF' > packages/design-system/package.json
   {
-    "name": "@prixpon/ui",
+  "name": "@prixpon/design-system",
     "version": "0.1.0",
     "main": "./src/index.ts",
     "type": "module",
@@ -191,8 +191,8 @@ Repite para `artist-admin`, `company-admin` y `pinpon` ajustando la ruta relativ
   }
   EOF
   ```
-  - Copia componentes shadcn desde `src/components` a `packages/ui/src`.
-  - Exporta todo desde `packages/ui/src/index.ts`.
+  - Copia componentes shadcn desde `src/components` a `packages/design-system/src`.
+  - Exporta todo desde `packages/design-system/src/index.ts`.
   - Opcional: añade `tsup` para generar `dist` (`pnpm add -Dw tsup`).
 
 2. **`packages/tokens`**
@@ -245,7 +245,7 @@ Repite para `artist-admin`, `company-admin` y `pinpon` ajustando la ruta relativ
      ```ts
      resolve: {
        alias: {
-         '@prixpon/ui': path.resolve('../../packages/ui/src')
+         '@prixpon/design-system': path.resolve('../../packages/design-system/src')
        }
      }
      ```
@@ -307,7 +307,7 @@ Repite para `artist-admin`, `company-admin` y `pinpon` ajustando la ruta relativ
 ## Tips y trampas comunes
 - Evita versiones duplicadas de React; declara React en el root `package.json`.
 - Si Turborepo no reconoce un paquete, revisa `package.json#name` y `pnpm-workspace.yaml`.
-- Para Storybook o tests que requieren CSS globales desde `packages/ui`, exporta un `index.css` y consúmelo explícitamente: `import '@prixpon/ui/styles.css'`.
+- Para Storybook o tests que requieren CSS globales desde `packages/design-system`, exporta un `index.css` y consúmelo explícitamente: `import '@prixpon/design-system/styles.css'`.
 - Considera usar `changesets` si planeas publicar paquetes.
 - Usa `git mv` para conservar historial cuando muevas carpetas.
 

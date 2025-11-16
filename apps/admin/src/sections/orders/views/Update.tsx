@@ -36,14 +36,14 @@ import {
   getOrderById,
   readAllPaymentMethods,
   updateOrder,
-} from "@prixpon/api/order.api"; // Ajusta la ruta a tu API
-import { fetchActiveProducts } from "@prixpon/api/product.api";
+} from "@prixpon/api-client/order.api"; // Ajusta la ruta a tu API
+import { fetchActiveProducts } from "@prixpon/api-client/product.api";
 import {
   Product,
   Variant,
 } from "@prixpon/types/product.types";
 import { Art, PickedArt } from "@prixpon/types/art.types";
-import { getArts } from "@prixpon/api/art.api";
+import { getArts } from "@prixpon/api-client/art.api";
 
 // MUI Components
 import {
@@ -133,14 +133,14 @@ import ReactCrop, {
   PixelCrop,
 } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-import { BACKEND_URL } from "@prixpon/api/utils.api";
+import { BACKEND_URL } from "@prixpon/api-client/utils.api";
 import PhotoCameraBackIcon from "@mui/icons-material/PhotoCameraBack";
 import BrokenImageIcon from "@mui/icons-material/BrokenImage";
 
 import { getCurrentOrderStatus } from "@apps/consumer/trackOrder/utils";
 import EditableAddressForm from "./components/EditableAddressForm";
 
-import { fetchSellers, getPermissions } from "@prixpon/api/admin.api";
+import { fetchSellers, getPermissions } from "@prixpon/api-client/admin.api";
 import { PermissionsV2 } from "@prixpon/types/permissions.types";
 
 import dayjs, { Dayjs } from "dayjs";

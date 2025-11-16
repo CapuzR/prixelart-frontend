@@ -20,8 +20,8 @@ import {
   Entity,
 } from "@prixpon/types/surcharge.types";
 import { Product } from "@prixpon/types/product.types"; // Use detailed Product/Variant
-import { createSurcharge } from "@prixpon/api/surcharge.api";
-import { fetchProducts } from "@prixpon/api/product.api";
+import { createSurcharge } from "@prixpon/api-client/surcharge.api";
+import { fetchProducts } from "@prixpon/api-client/product.api";
 
 // MUI Components (Keep all imports from CreateDiscount)
 import {

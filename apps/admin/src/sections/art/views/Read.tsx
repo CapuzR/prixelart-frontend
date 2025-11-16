@@ -50,11 +50,11 @@ import CancelIcon from "@mui/icons-material/Cancel"; // Example for Rejected sta
 // Hooks, Types, Context, API
 import { useSnackBar } from "@prixpon/context/GlobalContext";
 import { Art } from "@prixpon/types/art.types";
-import { getArts, deleteArt } from "@prixpon/api/art.api";
+import { getArts, deleteArt } from "@prixpon/api-client/art.api";
 import Title from "@apps/admin/components/Title";
 import ConfirmationDialog from "@components/ConfirmationDialog/ConfirmationDialog";
 import { User } from "@prixpon/types/user.types";
-import { getUsersByIds } from "@prixpon/api/user.api";
+import { getUsersByIds } from "@prixpon/api-client/user.api";
 
 // --- Helper Functions for Sorting ---
 

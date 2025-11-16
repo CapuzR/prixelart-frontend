@@ -50,7 +50,7 @@ import {
   SelectionClass,
   // ArchiveArt, // Already imported if needed by OrderItem
 } from "@prixpon/types/orderArchive.types";
-import { getOrderArchiveById, updateOrderArchive } from "@prixpon/api/orderArchive.api"; // Added updateOrderArchive
+import { getOrderArchiveById, updateOrderArchive } from "@prixpon/api-client/orderArchive.api"; // Added updateOrderArchive
 
 // Import Helpers & Reusable Components
 import Title from "@apps/admin/components/Title";

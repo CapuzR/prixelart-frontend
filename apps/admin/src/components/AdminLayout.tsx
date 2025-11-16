@@ -11,7 +11,7 @@ import {
   Button,
   useTheme,
 } from "@mui/material";
-import { getPermissions } from "@prixpon/api/admin.api";
+import { getPermissions } from "@prixpon/api-client/admin.api";
 import Sidebar, { SectionState } from "./SideBar";
 import { useSnackBar } from "@prixpon/context/GlobalContext";
 import useMediaQuery from "@mui/material/useMediaQuery";

@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from "uuid";
 // Hooks, Types, Context, API
 import { useSnackBar } from "@prixpon/context/GlobalContext"; // Asegúrate que la ruta sea correcta
 import { Product, Variant, VariantAttribute } from "@prixpon/types/product.types"; // Asegúrate que la ruta sea correcta
-import { createProduct, fetchUniqueProductionLines } from "@prixpon/api/product.api"; // Asegúrate que la ruta sea correcta
+import { createProduct, fetchUniqueProductionLines } from "@prixpon/api-client/product.api"; // Asegúrate que la ruta sea correcta
 
 // MUI Components
 import {
@@ -58,7 +58,7 @@ import ReactCrop, {
   PixelCrop,
 } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-import { BACKEND_URL } from "@prixpon/api/utils.api"; // Asegúrate que la ruta sea correcta
+import { BACKEND_URL } from "@prixpon/api-client/utils.api"; // Asegúrate que la ruta sea correcta
 import PhotoCameraBackIcon from "@mui/icons-material/PhotoCameraBack";
 import BrokenImageIcon from "@mui/icons-material/BrokenImage"; // Icono estándar para imagen rota
 

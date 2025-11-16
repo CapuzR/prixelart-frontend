@@ -31,8 +31,8 @@ import {
 import Title from "@apps/admin/components/Title";
 import { User } from "@prixpon/types/user.types";
 import { Movement } from "@prixpon/types/movement.types";
-import { createMovement } from "@prixpon/api/movement.api";
-import { getUsers } from "@prixpon/api/user.api";
+import { createMovement } from "@prixpon/api-client/movement.api";
+import { getUsers } from "@prixpon/api-client/user.api";
 
 type MovementType = "Depósito" | "Retiro";
 

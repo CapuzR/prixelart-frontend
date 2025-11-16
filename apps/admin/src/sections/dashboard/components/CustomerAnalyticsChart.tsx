@@ -22,7 +22,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts"; // Added Cell
-import { CustomerAnalyticsData } from "@prixpon/api/order.api";
+import { CustomerAnalyticsData } from "@prixpon/api-client/order.api";
 import EmptyState from "./EmptyState";
 import PeopleIcon from "@mui/icons-material/People";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";

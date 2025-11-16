@@ -11,7 +11,7 @@ import React, {
 import { v4 as uuidv4 } from "uuid";
 import { useUser } from "@prixpon/context/GlobalContext";
 import { Variant, VariantAttribute } from "@prixpon/types/product.types";
-import { fetchVariantPrice } from "@prixpon/api/product.api";
+import { fetchVariantPrice } from "@prixpon/api-client/product.api";
 import { User } from "@prixpon/types/user.types";
 
 interface CartContextType {

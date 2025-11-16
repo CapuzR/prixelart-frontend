@@ -2,9 +2,9 @@ import styles from "./styles.module.scss";
 import ItemPlayground from "components/ItemPlayground";
 import ItemContent from "components/ItemContent";
 // import Typography from "components/Typography"
-import { formatNumberString, formatSinglePrice } from "utils/formats";
+import { formatNumberString, formatSinglePrice } from "@prixpon/utils/formats";
 import { useConversionRate, useCurrency } from "@prixpon/context/GlobalContext";
-import { CartLine } from "../../types/cart.types";
+import { CartLine } from "@prixpon/types/cart.types";
 import { Item } from "@prixpon/types/order.types";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";

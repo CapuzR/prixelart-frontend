@@ -7,23 +7,19 @@ import { fileURLToPath } from "node:url";
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const resolvePath = (...segments: string[]) => path.resolve(__dirname, ...segments);
 const rootDir = resolvePath("..", "..");
+const tsconfigProjects = [
+  resolvePath("tsconfig.json"),
+  resolvePath("..", "..", "tsconfig.json")
+];
 
 export default defineConfig({
   envDir: rootDir,
-  plugins: [react(), tsconfigPaths()],
+  plugins: [react(), tsconfigPaths({ projects: tsconfigProjects })],
   resolve: {
-    alias: [
-      { find: "@", replacement: resolvePath("src") },
-      { find: "@components", replacement: resolvePath("components") },
-      { find: "@styles", replacement: resolvePath("styles") },
-  { find: "@assets", replacement: resolvePath("assets") },
-      { find: "@public", replacement: resolvePath("public") },
-      { find: "@apps/consumer", replacement: resolvePath("src") },
-      { find: "@apps/artist", replacement: resolvePath("src/artist") },
-      { find: "context", replacement: resolvePath("src/context") },
-      { find: "@context", replacement: resolvePath("../../packages/context/src") },
-      { find: "@api", replacement: resolvePath("../../packages/api/src") }
-    ]
+    alias: {
+      "@styles": resolvePath("styles"),
+      "@components": resolvePath("components"),
+    },
   },
   css: {
     preprocessorOptions: {

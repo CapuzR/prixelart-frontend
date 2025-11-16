@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 // Hooks and Context
 import { useSnackBar } from "@prixpon/context/GlobalContext";
 import { Testimonial } from "@prixpon/types/testimonial.types";
-import { createTestimonial, readAllTestimonial } from "@prixpon/api/testimonial.api";
+import { createTestimonial, readAllTestimonial } from "@prixpon/api-client/testimonial.api";
 import Grid2 from "@mui/material/Grid";
 // MUI Components
 import {

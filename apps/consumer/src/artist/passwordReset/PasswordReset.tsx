@@ -3,7 +3,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 
-import { validatePasswordDetailed } from "utils/validations";
+import { validatePasswordDetailed } from "@prixpon/utils/validations";
 import Copyright from "components/Copyright/copyright";
 
 //material-ui

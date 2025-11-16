@@ -1,0 +1,31 @@
+FROM node:18.19-buster
+
+# 0) prep
+WORKDIR /home/node/backend
+RUN mkdir -p node_modules && chown -R node:node .
+
+# 1) deps
+COPY package*.json ./
+RUN npm install \
+ && npm uninstall bcryptjs \
+ && npm install bcryptjs \
+ && npm install --build-from-source=sharp
+
+# 2) copy code + tsconfig
+COPY tsconfig.json ./
+COPY . ./
+
+# 3) install pm2 + ts-node
+RUN npm install -g pm2 ts-node
+
+# generate a CJS PM2 config that only injects the loader
+RUN printf "module.exports={ apps:[{ \
+  name:'backend', \
+  script:'start.ts', \
+  interpreter:'node', \
+  interpreter_args:'--loader ts-node/esm' \
+}] };" \
+> ecosystem.config.cjs
+
+EXPOSE 8000
+CMD ["pm2-runtime","ecosystem.config.cjs"]

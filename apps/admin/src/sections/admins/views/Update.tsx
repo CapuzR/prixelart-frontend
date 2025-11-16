@@ -17,7 +17,7 @@ import {
   getRoles,
   getAdminByUsername,
   updateAdmin /*, checkUsernameExists, checkEmailExists */,
-} from "@prixpon/api/admin.api"; // Assuming updateAdmin takes identifier (username or id) and payload
+} from "@prixpon/api-client/admin.api"; // Assuming updateAdmin takes identifier (username or id) and payload
 
 // MUI Components
 import {

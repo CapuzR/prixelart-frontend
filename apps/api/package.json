@@ -1,0 +1,80 @@
+{
+  "name": "@prixpon/api",
+  "version": "3.0.0",
+  "description": "App that allows Prixers and Prixelart to manage arts and services, being able to showcasing, promote and sale.",
+  "main": "dist/start.js",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "tsx watch start.ts",
+  "build": "tsc --project tsconfig.json --noEmit && node -e \"require('fs').mkdirSync('dist',{recursive:true});\"",
+    "start": "tsx start.ts",
+    "lint": "eslint . --ext .ts",
+    "type-check": "tsc --project tsconfig.json --noEmit",
+    "migrate:permissions": "node --loader ts-node/esm src/scripts/migratePermissions.ts"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "coverageReporters": [
+      "html"
+    ],
+    "testEnvironment": "node",
+    "testTimeout": 90000
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CapuzR/prixelart-be.git"
+  },
+  "keywords": [
+    "prixer",
+    "prix",
+    "prixelart"
+  ],
+  "author": "Ricardo Jesús Capuz Lárez",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CapuzR/prixelart-be/issues"
+  },
+  "homepage": "https://github.com/CapuzR/prixelart-be#readme",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.808.0",
+    "@aws-sdk/s3-request-presigner": "^3.804.0",
+    "@sendgrid/mail": "^7.4.4",
+    "@tus/file-store": "2.0.0",
+    "@tus/s3-store": "2.0.1",
+    "@tus/server": "2.0.0",
+    "aws-sdk": "^2.1692.0",
+    "axios": "^1.8.4",
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.5",
+    "cookie-session": "^2.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
+    "express": "^4.17.1",
+    "helmet": "^7.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongodb": "^6.15.0",
+    "mongoose": "^8.18.0",
+    "ms": "^2.1.3",
+    "nanoid": "^3.3.6",
+    "remove-accents": "^0.5.0",
+    "resend": "^4.5.2",
+    "sharp": "^0.34.2",
+    "ts-prune": "^0.10.3"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/cookie-parser": "^1.4.9",
+    "@types/cookie-session": "^2.0.49",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/helmet": "^0.0.48",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^22.13.10",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.1",
+    "typescript": "^5.8.2"
+  }
+}

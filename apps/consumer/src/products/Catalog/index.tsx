@@ -21,7 +21,7 @@ import { useNavigate } from "react-router-dom";
 import { SelectChangeEvent } from "@mui/material";
 import SearchBar from "@components/searchBar/searchBar";
 import { Product } from "../../../../types/product.types";
-import { fetchBestSellers, fetchActiveProducts } from "@prixpon/api/product.api";
+import { fetchBestSellers, fetchActiveProducts } from "@prixpon/api-client/product.api";
 import ScrollToTopButton from "@components/ScrollToTop";
 
 ReactGA.pageview("/productos");

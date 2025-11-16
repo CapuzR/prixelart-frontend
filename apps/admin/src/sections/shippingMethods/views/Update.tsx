@@ -10,7 +10,7 @@ import { useParams, useNavigate } from "react-router-dom";
 // Hooks and Context
 import { useSnackBar } from "@prixpon/context/GlobalContext";
 import { ShippingMethod } from "@prixpon/types/order.types";
-import { getShippingMethodById, updateShippingMethod } from "@prixpon/api/order.api";
+import { getShippingMethodById, updateShippingMethod } from "@prixpon/api-client/order.api";
 
 // MUI Components
 import {

@@ -12,8 +12,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useSnackBar } from "@prixpon/context/GlobalContext";
 import { Art } from "@prixpon/types/art.types";
 import { User } from "@prixpon/types/user.types";
-import { fetchAllPrixers } from "@prixpon/api/prixer.api";
-import { fetchArtByObjectId, updateArt } from "@prixpon/api/art.api";
+import { fetchAllPrixers } from "@prixpon/api-client/prixer.api";
+import { fetchArtByObjectId, updateArt } from "@prixpon/api-client/art.api";
 
 // MUI Components
 import {

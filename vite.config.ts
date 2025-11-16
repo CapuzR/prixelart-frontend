@@ -33,7 +33,7 @@ export default defineConfig({
       { find: "@/assets", replacement: resolvePath("src/assets") },
       { find: "@/public", replacement: resolvePath("public") },
 
-      { find: "@prixpon/ui", replacement: resolvePath("packages/ui/src") },
+  { find: "@prixpon/design-system", replacement: resolvePath("packages/design-system/src") },
       { find: "@prixpon/types", replacement: resolvePath("packages/types/src") },
       { find: "@prixpon/tokens", replacement: resolvePath("packages/tokens/src") },
       { find: "@prixpon/config", replacement: resolvePath("packages/config/src") },

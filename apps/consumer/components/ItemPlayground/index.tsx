@@ -3,7 +3,7 @@ import { Image } from "components/Image";
 import AddImage from "components/AddImage";
 import OverlayWithIcon from "components/OverlayWithIcon";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
-import { CartLine } from "../../types/cart.types";
+import { CartLine } from "@prixpon/types/cart.types";
 import { Item } from "@prixpon/types/order.types";
 import Grid2 from "@mui/material/Grid";
 

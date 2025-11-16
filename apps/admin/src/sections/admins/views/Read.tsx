@@ -37,8 +37,8 @@ import { PermissionsV2 } from "@prixpon/types/permissions.types";
 import { useSnackBar } from "@prixpon/context/GlobalContext";
 import Title from "@apps/admin/components/Title";
 import ConfirmationDialog from "@components/ConfirmationDialog/ConfirmationDialog";
-import { deleteAdmin, getAdmins } from "@prixpon/api/admin.api";
-import { getRoles } from "@prixpon/api/admin.api";
+import { deleteAdmin, getAdmins } from "@prixpon/api-client/admin.api";
+import { getRoles } from "@prixpon/api-client/admin.api";
 
 // --- Helper Types & Constants ---
 interface DeletionTarget {

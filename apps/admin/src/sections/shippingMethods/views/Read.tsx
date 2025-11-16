@@ -45,7 +45,7 @@ import RefreshIcon from "@mui/icons-material/Refresh"; // Added
 // Hooks and Context
 import { useSnackBar } from "@prixpon/context/GlobalContext";
 import { ShippingMethod } from "@prixpon/types/order.types";
-import { fetchShippingMethods, deleteShippingMethod } from "@prixpon/api/order.api";
+import { fetchShippingMethods, deleteShippingMethod } from "@prixpon/api-client/order.api";
 
 import Title from "@apps/admin/components/Title";
 import ConfirmationDialog from "@components/ConfirmationDialog/ConfirmationDialog";

@@ -2,60 +2,76 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["apps/consumer/src/*", "src2/*"],
+      "@/*": [
+        "apps/admin/src/*",
+        "apps/consumer/src/*"
+      ],
       "@components/*": [
-        "apps/consumer/components/*",
         "apps/admin/src/components/*",
-        "src2/components/*"
+        "apps/consumer/src/components/*",
+        "apps/consumer/components/*"
       ],
       "components/*": [
-        "apps/consumer/components/*",
         "apps/admin/src/components/*",
-        "src2/components/*"
+        "apps/consumer/src/components/*",
+        "apps/consumer/components/*"
       ],
-      "@utils/*": ["packages/utils/src/*"],
-      "utils/*": ["packages/utils/src/*"],
-      "@apps/*": ["apps/*", "src2/apps/*"],
-      "apps/*": ["apps/*", "src2/apps/*"],
-      "@apps/admin/*": ["apps/admin/src/*", "apps/admin/*", "src2/apps/admin/*"],
-      "apps/admin/*": ["apps/admin/src/*", "apps/admin/*", "src2/apps/admin/*"],
-      "@apps/artist/*": [
-        "apps/consumer/src/artist/*",
-        "apps/artist/*",
-        "src2/apps/artist/*"
+      "@utils/*": [
+        "apps/admin/src/utils/*",
+        "apps/consumer/src/utils/*"
       ],
-      "apps/artist/*": [
-        "apps/consumer/src/artist/*",
-        "apps/artist/*",
-        "src2/apps/artist/*"
+      "utils/*": [
+        "apps/admin/src/utils/*",
+        "apps/consumer/src/utils/*"
       ],
-      "@apps/consumer/*": [
-        "apps/consumer/src/*",
-        "apps/consumer/*",
-        "src2/apps/consumer/*"
+      "@styles/*": [
+        "apps/admin/styles/*",
+        "apps/consumer/styles/*"
       ],
-      "apps/consumer/*": [
-        "apps/consumer/src/*",
-        "apps/consumer/*",
-        "src2/apps/consumer/*"
+      "styles/*": [
+        "apps/admin/styles/*",
+        "apps/consumer/styles/*"
       ],
-      "@apps/map/*": ["apps/map/*", "src2/apps/map/*"],
-      "@apps/orgs/*": ["apps/orgs/*", "src2/apps/orgs/*"],
-      "@data/*": ["apps/consumer/src/data/*", "src2/data/*"],
+      "@assets/*": [
+        "apps/admin/assets/*",
+        "apps/consumer/assets/*"
+      ],
+      "assets/*": [
+        "apps/admin/assets/*",
+        "apps/consumer/assets/*"
+      ],
+      "@public/*": [
+        "apps/admin/public/*",
+        "apps/consumer/public/*",
+        "public/*"
+      ],
+      "@apps/admin/*": ["apps/admin/src/*"],
+      "apps/admin/*": ["apps/admin/src/*"],
+      "@apps/artist/*": ["apps/consumer/src/artist/*", "apps/artist/src/*"],
+      "apps/artist/*": ["apps/consumer/src/artist/*", "apps/artist/src/*"],
+      "@apps/consumer/*": ["apps/consumer/src/*"],
+      "apps/consumer/*": ["apps/consumer/src/*"],
+      "@apps/map/*": ["apps/map/src/*"],
+      "@apps/orgs/*": ["apps/orgs/src/*"],
+      "@data/*": ["apps/consumer/src/data/*"],
       "@context/*": ["packages/context/src/*"],
       "context/*": ["apps/consumer/src/context/*", "packages/context/src/*"],
-      "@prixpon/ui": ["packages/ui/src"],
-      "@prixpon/ui/*": ["packages/ui/src/*"],
+      "@prixpon/design-system": ["packages/design-system/src"],
+      "@prixpon/design-system/*": ["packages/design-system/src/*"],
       "@prixpon/types": ["packages/types/src"],
       "@prixpon/types/*": ["packages/types/src/*"],
-      "@prixpon/api": ["packages/api/src"],
-      "@prixpon/api/*": ["packages/api/src/*"],
+      "@prixpon/api-client": ["packages/api-client/src"],
+      "@prixpon/api-client/*": ["packages/api-client/src/*"],
       "@prixpon/tokens": ["packages/tokens/src"],
+      "@prixpon/tokens/*": ["packages/tokens/src/*"],
       "@prixpon/config": ["packages/config/src"],
+      "@prixpon/config/*": ["packages/config/src/*"],
       "@prixpon/utils": ["packages/utils/src"],
       "@prixpon/utils/*": ["packages/utils/src/*"],
       "@prixpon/context": ["packages/context/src"],
-      "@prixpon/context/*": ["packages/context/src/*"]
+      "@prixpon/context/*": ["packages/context/src/*"],
+      "@prixpon/data": ["packages/data/src"],
+      "@prixpon/data/*": ["packages/data/src/*"]
     },
     "skipLibCheck": true,
     "jsx": "react-jsx",
@@ -70,10 +86,10 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "outDir": "./dist",
-    "typeRoots": ["./node_modules/@types", "src2/types"],
+    "typeRoots": ["./node_modules/@types"],
     "rootDir": ".",
     "types": ["node", "react"]
   },
-  "include": ["src2", "apps", "packages", "src2/types/global.d.ts"],
+  "include": ["apps", "packages"],
   "exclude": ["node_modules", "dist"]
 }

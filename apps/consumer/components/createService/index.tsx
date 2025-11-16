@@ -8,8 +8,8 @@ import React, {
 import axios from "axios";
 
 import { useSnackBar, usePrixerCreator, useUser } from "@prixpon/context/GlobalContext";
-import { Service } from "../../types/service.types";
-import { PrixResponse } from "../../types/prixResponse.types";
+import { Service } from "@prixpon/types/service.types";
+import { PrixResponse } from "@prixpon/types/prixResponse.types";
 
 import {
   Box,
@@ -61,7 +61,7 @@ import ReactCrop, {
   PixelCrop,
 } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-import { BACKEND_URL } from "@prixpon/api/utils.api";
+import { BACKEND_URL } from "@prixpon/api-client/utils.api";
 import PhotoCameraBackIcon from "@mui/icons-material/PhotoCameraBack";
 import BrokenImageIcon from "@mui/icons-material/BrokenImage";
 import InfoIcon from "@mui/icons-material/Info";

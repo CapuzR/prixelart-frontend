@@ -1,14 +1,6 @@
-   {
-     "extends": "./tsconfig.json",
-     "compilerOptions": {
-       "baseUrl": ".",
-       "paths": {
-         "@prixpon/ui": ["packages/ui/src"],
-         "@prixpon/types": ["packages/types/src"],
-         "@prixpon/tokens": ["packages/tokens/src"],
-         "@prixpon/config": ["packages/config/src"],
-         "@prixpon/utils": ["packages/utils/src"],
-         "@prixpon/context": ["packages/context/src"]
-       }
-     }
-   }
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "."
+  }
+}

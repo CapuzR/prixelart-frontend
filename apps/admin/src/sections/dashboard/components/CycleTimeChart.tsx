@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
-import { CycleTimeData } from "@prixpon/api/order.api";
+import { CycleTimeData } from "@prixpon/api-client/order.api";
 import EmptyState from "./EmptyState";
 import TimelapseIcon from "@mui/icons-material/Timelapse";
 import { getSpanishOrderStatus } from "@apps/admin/utils/translations";

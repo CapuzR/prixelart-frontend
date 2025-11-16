@@ -17,9 +17,9 @@ import {
   fetchShippingMethods,
   readAllPaymentMethods,
   createOrder,
-} from "@prixpon/api/order.api";
-import { fetchActiveProducts } from "@prixpon/api/product.api";
-import { getArts } from "@prixpon/api/art.api";
+} from "@prixpon/api-client/order.api";
+import { fetchActiveProducts } from "@prixpon/api-client/product.api";
+import { getArts } from "@prixpon/api-client/art.api";
 
 import {
   Alert,
@@ -85,7 +85,7 @@ import "dayjs/locale/es";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { getUsers } from "@prixpon/api/user.api";
+import { getUsers } from "@prixpon/api-client/user.api";
 // --- Helper Interfaces ---
 interface MethodOption {
   id: string;

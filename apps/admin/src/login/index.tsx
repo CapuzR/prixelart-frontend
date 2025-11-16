@@ -21,7 +21,7 @@ import { useTheme } from '@mui/material/styles'; // Added
 
 import { LockOutlined as LockOutlinedIcon, Visibility, VisibilityOff } from '@mui/icons-material';
 
-import { isAValidEmail, isAValidPassword } from 'utils/validations';
+import { isAValidEmail, isAValidPassword } from '@prixpon/utils/validations';
 
 import { Button as ButtonV2 } from '@/components/ui/button';
 import { LogIn } from 'lucide-react';
@@ -29,8 +29,8 @@ import { LogIn } from 'lucide-react';
 import Copyright from '@components/Copyright/copyright';
 import { Art } from '@prixpon/types/art.types'; // Ensure this Art type is compatible with findValidWebpUrl
 import { useSnackBar } from '@prixpon/context/GlobalContext';
-import { getRandomArt } from '@prixpon/api/art.api';
-import { adminLogin } from '@prixpon/api/utils.api';
+import { getRandomArt } from '@prixpon/api-client/art.api';
+import { adminLogin } from '@prixpon/api-client/utils.api';
 
 // Helper functions and const for background fetching
 const MAX_RETRIES = 3;

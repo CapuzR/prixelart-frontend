@@ -14,7 +14,7 @@ import {
   getTestimonialById,
   updateTestimonial,
   readAllTestimonial,
-} from "@prixpon/api/testimonial.api";
+} from "@prixpon/api-client/testimonial.api";
 
 // MUI Components
 import {

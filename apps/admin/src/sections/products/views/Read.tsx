@@ -60,8 +60,8 @@ import {
   fetchProducts,
   updateManyProduct,
   deleteProduct,
-} from "@prixpon/api/product.api";
-import { getPermissions } from "@prixpon/api/admin.api";
+} from "@prixpon/api-client/product.api";
+import { getPermissions } from "@prixpon/api-client/admin.api";
 
 import Title from "@apps/admin/components/Title";
 import ConfirmationDialog from "@components/ConfirmationDialog/ConfirmationDialog";

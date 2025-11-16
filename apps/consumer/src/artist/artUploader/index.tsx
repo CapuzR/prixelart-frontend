@@ -63,9 +63,9 @@ import ReactCrop, {
   PixelCrop,
 } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-import { BACKEND_URL } from "@prixpon/api/utils.api";
+import { BACKEND_URL } from "@prixpon/api-client/utils.api";
 import PhotoCameraBackIcon from "@mui/icons-material/PhotoCameraBack";
-import util from "@utils/utils";
+import util from "@prixpon/utils/utils";
 import { nanoid } from "nanoid";
 interface ImageUploadState {
   id: string;

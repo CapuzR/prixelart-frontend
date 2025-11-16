@@ -64,8 +64,8 @@ import {
   GlobalDashboardStatsData,
   CustomerAnalyticsData,
   CycleTimeData,
-} from "@prixpon/api/order.api";
-import { getPermissions } from "@prixpon/api/admin.api";
+} from "@prixpon/api-client/order.api";
+import { getPermissions } from "@prixpon/api-client/admin.api";
 import { PermissionsV2 } from "@prixpon/types/permissions.types";
 
 interface TabPanelProps {

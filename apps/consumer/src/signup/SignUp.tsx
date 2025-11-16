@@ -18,7 +18,7 @@ import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Grid2 from "@mui/material/Grid";
-import { getRandomArt } from "@prixpon/api/art.api";
+import { getRandomArt } from "@prixpon/api-client/art.api";
 // --- Placeholder/Example Imports (Replace with your actual implementations) ---
 
 // Assume validation functions exist

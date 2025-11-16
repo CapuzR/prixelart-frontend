@@ -11,7 +11,7 @@ import ArtThumbnail from "../ArtThumbnail";
 import { useLoading } from "@prixpon/context/GlobalContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Art } from "@prixpon/types/art.types";
-import { fetchGallery } from "@prixpon/api/art.api";
+import { fetchGallery } from "@prixpon/api-client/art.api";
 import {
   Typography,
   Box,

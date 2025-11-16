@@ -19,8 +19,8 @@ import {
   updateUser,
   getBalance,
   createWallet,
-} from "@prixpon/api/user.api";
-import { isAValidEmail } from "utils/validations";
+} from "@prixpon/api-client/user.api";
+import { isAValidEmail } from "@prixpon/utils/validations";
 import Grid2 from "@mui/material/Grid";
 import { AddCircleOutline } from "@mui/icons-material";
 import SaveIcon from "@mui/icons-material/Save";
@@ -75,7 +75,7 @@ import {
   createMovement,
   getMovements,
   reverseMovement,
-} from "@prixpon/api/movement.api";
+} from "@prixpon/api-client/movement.api";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 const AVAILABLE_GENDERS = [

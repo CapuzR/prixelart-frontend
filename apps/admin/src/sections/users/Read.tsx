@@ -47,7 +47,7 @@ import StorefrontIcon from "@mui/icons-material/Storefront"; // Example Prixer i
 // Hooks, Types, Context, API
 import { useSnackBar } from "@prixpon/context/GlobalContext";
 import { User } from "@prixpon/types/user.types"; // Keep Prixer nested within User type
-import { getUsers, deleteUser } from "@prixpon/api/user.api";
+import { getUsers, deleteUser } from "@prixpon/api-client/user.api";
 
 import Title from "@apps/admin/components/Title";
 import ConfirmationDialog from "@components/ConfirmationDialog/ConfirmationDialog";

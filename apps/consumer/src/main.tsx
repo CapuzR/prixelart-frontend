@@ -5,7 +5,7 @@ import { ThemeProvider, CssBaseline } from "@mui/material";
 import axios from "axios";
 
 import App from "./App";
-import theme from "@prixpon/ui/theme";
+import theme from "@prixpon/design-system/theme";
 
 import "../styles/index.css";
 

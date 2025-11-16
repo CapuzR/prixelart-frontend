@@ -46,9 +46,9 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useSnackBar } from "@prixpon/context/GlobalContext";
 import Title from "@apps/admin/components/Title";
 import { Movement } from "@prixpon/types/movement.types";
-import { getMovements, reverseMovement } from "@prixpon/api/movement.api";
+import { getMovements, reverseMovement } from "@prixpon/api-client/movement.api";
 import { User } from "@prixpon/types/user.types";
-import { getUsers } from "@prixpon/api/user.api";
+import { getUsers } from "@prixpon/api-client/user.api";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import {
   CalendarToday,
@@ -57,7 +57,7 @@ import {
   StorefrontOutlined,
 } from "@mui/icons-material";
 
-import { getOrderById } from "@prixpon/api/order.api";
+import { getOrderById } from "@prixpon/api-client/order.api";
 
 import {
   Order,

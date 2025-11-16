@@ -47,7 +47,7 @@ import {
   getOrderStatusIcon,
   getOrderStatusLabel,
 } from "./utils";
-import { getOrderById } from "@prixpon/api/order.api";
+import { getOrderById } from "@prixpon/api-client/order.api";
 import {
   Timeline,
   TimelineConnector,

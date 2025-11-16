@@ -57,7 +57,7 @@ import {
   readAllTestimonial,
   deleteTestimonial,
   updateTestimonialOrder,
-} from "@prixpon/api/testimonial.api";
+} from "@prixpon/api-client/testimonial.api";
 
 import Title from "@apps/admin/components/Title";
 import ConfirmationDialog from "@components/ConfirmationDialog/ConfirmationDialog";

@@ -16,7 +16,7 @@ import Grid2 from "@mui/material/Grid";
 import { useNavigate } from "react-router-dom";
 import utils from "@prixpon/utils/utils";
 import { User } from "@prixpon/types/user.types";
-import { fetchAllPrixersActive } from "@prixpon/api/prixer.api";
+import { fetchAllPrixersActive } from "@prixpon/api-client/prixer.api";
 
 import ExploreIcon from "@mui/icons-material/Explore";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";

@@ -18,7 +18,7 @@ import { esES } from "@mui/x-data-grid/locales";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
 import { Link as RouterLink } from "react-router-dom";
-import { getMainSiteBaseUrl } from "@prixpon/api/utils.api";
+import { getMainSiteBaseUrl } from "@prixpon/api-client/utils.api";
 
 // The data structure passed to this component for a product/art
 // needs to include the necessary image sources.

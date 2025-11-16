@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 // Hooks and Context
 import { useSnackBar } from "@prixpon/context/GlobalContext";
 import { ShippingMethod } from "@prixpon/types/order.types";
-import { createShippingMethod } from "@prixpon/api/order.api";
+import { createShippingMethod } from "@prixpon/api-client/order.api";
 
 // MUI Components
 import {

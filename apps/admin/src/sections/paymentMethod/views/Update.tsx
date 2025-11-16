@@ -11,7 +11,7 @@ import Grid2 from "@mui/material/Grid";
 // Hooks, Types, Context, API
 import { useSnackBar } from "@prixpon/context/GlobalContext";
 import { PaymentMethod } from "@prixpon/types/order.types";
-import { getPaymentMethodById, updatePaymentMethod } from "@prixpon/api/order.api";
+import { getPaymentMethodById, updatePaymentMethod } from "@prixpon/api-client/order.api";
 
 // MUI Components
 import {

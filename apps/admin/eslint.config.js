@@ -1,3 +1,3 @@
-import config from "@prixpon/config/src/eslint.config";
+import config from "@prixpon/config/eslint.config";
 
 export default config;

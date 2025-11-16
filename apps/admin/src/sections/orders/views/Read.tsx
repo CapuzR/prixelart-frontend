@@ -63,12 +63,12 @@ import {
 } from "@prixpon/types/order.types";
 import Title from "@apps/admin/components/Title";
 import ConfirmationDialog from "@components/ConfirmationDialog/ConfirmationDialog";
-import { deleteOrder, getOrders, updateOrder } from "@prixpon/api/order.api";
+import { deleteOrder, getOrders, updateOrder } from "@prixpon/api-client/order.api";
 import excelJS from "exceljs";
 import "moment/locale/es";
 import { format, parseISO, isValid } from "date-fns";
 import { PermissionsV2 } from "@prixpon/types/permissions.types";
-import { getPermissions } from "@prixpon/api/admin.api";
+import { getPermissions } from "@prixpon/api-client/admin.api";
 import dayjs from "dayjs";
 
 interface OrderSummary {

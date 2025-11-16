@@ -43,7 +43,7 @@ import { visuallyHidden } from "@mui/utils"; // For sorting accessibility
 // Hooks, Types, Context, API
 import { useSnackBar } from "@prixpon/context/GlobalContext";
 import { PaymentMethod } from "@prixpon/types/order.types";
-import { readAllPaymentMethods, deletePaymentMethod } from "@prixpon/api/order.api";
+import { readAllPaymentMethods, deletePaymentMethod } from "@prixpon/api-client/order.api";
 
 import Title from "@apps/admin/components/Title";
 import ConfirmationDialog from "@components/ConfirmationDialog/ConfirmationDialog";

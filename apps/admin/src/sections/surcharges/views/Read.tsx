@@ -54,7 +54,7 @@ import {
   AdjustmentMethod,
   ApplicableEntity,
 } from "@prixpon/types/surcharge.types"; // Use Surcharge type & related types
-import { getSurcharges, deleteSurcharge } from "@prixpon/api/surcharge.api"; // Use Surcharge API functions
+import { getSurcharges, deleteSurcharge } from "@prixpon/api-client/surcharge.api"; // Use Surcharge API functions
 import Title from "@apps/admin/components/Title";
 import ConfirmationDialog from "@components/ConfirmationDialog/ConfirmationDialog";
 import { ObjectId } from "bson"; // Assuming BSON ObjectId is used

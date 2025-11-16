@@ -1,7 +1,7 @@
 import React from "react";
 import Button from "components/Button";
 import { Share as ShareIcon } from "@mui/icons-material";
-import { generateWaProductMessage } from "utils/utils";
+import { generateWaProductMessage } from "@prixpon/utils/utils";
 import styles from "./Portrait.module.scss";
 import { Art } from "../../../../types/art.types";
 import { Product } from "../../../../types/product.types";

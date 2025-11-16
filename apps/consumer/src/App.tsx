@@ -12,7 +12,7 @@ import Utility from "@components/Utility";
 import ConsumerRoutes from "./consumer.routes";
 import { GlobalProvider, useTheme, useUser } from "@prixpon/context/GlobalContext";
 import { CartProvider } from "@apps/consumer/context/CartContext";
-import { isAuth } from "@prixpon/api/utils.api";
+import { isAuth } from "@prixpon/api-client/utils.api";
 import { User } from "@prixpon/types/user.types";
 
 const MainLayout = () => {

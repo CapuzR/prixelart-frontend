@@ -15,7 +15,7 @@ import { PermissionsV2 } from "@prixpon/types/permissions.types"; // To get Role
 import {
   getRoles,
   createAdmin /*, checkUsernameExists, checkEmailExists */,
-} from "@prixpon/api/admin.api"; // Adjust API functions
+} from "@prixpon/api-client/admin.api"; // Adjust API functions
 import Grid2 from "@mui/material/Grid";
 // MUI Components
 import {

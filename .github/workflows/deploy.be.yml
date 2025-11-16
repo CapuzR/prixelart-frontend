@@ -1,0 +1,73 @@
+name: build
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Use Node.js 18.19.0
+        uses: actions/setup-node@v1
+        with:
+          node-version: "18.19.0"
+      - name: Install npm
+        run: |
+          npm uninstall bcryptjs
+          npm install bcryptjs
+          npm install
+        env:
+          CI: true
+      - name: create env file
+        run: |
+          touch .env
+          echo "FRONT_END_URL=${{ secrets.FRONT_END_URL }}" >> .env
+          echo "SESSION_SECRET=${{ secrets.SESSION_SECRET }}" >> .env
+          echo "VIEW_ENGINE=${{ secrets.VIEW_ENGINE }}" >> .env
+          echo "SALT_ROUNDS=${{ secrets.SALT_ROUNDS }}" >> .env
+          echo "MONGO_URI=${{ secrets.MONGO_URI }}" >> .env
+          echo "NODE_ENV=${{ secrets.NODE_ENV }}" >> .env
+          echo "CLOUD_NAME=${{ secrets.CLOUD_NAME }}" >> .env
+          echo "CLD_API_KEY=${{ secrets.CLD_API_KEY }}" >> .env
+          echo "CLD_API_SECRET=${{ secrets.CLD_API_SECRET }}" >> .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+          echo "TOKEN_EXPIRE_TIME=${{ secrets.TOKEN_EXPIRE_TIME }}" >> .env
+          echo "DO_ACCESS_KEY=${{ secrets.DO_ACCESS_KEY }}" >> .env
+          echo "DO_ACCESS_SECRET=${{ secrets.DO_ACCESS_SECRET }}" >> .env
+          echo "PUBLIC_BUCKET_NAME=${{ secrets.PUBLIC_BUCKET_NAME }}" >> .env
+          echo "PRIVATE_BUCKET_NAME=${{ secrets.PRIVATE_BUCKET_NAME }}" >> .env
+          echo "PRIVATE_BUCKET_URL=${{ secrets.PRIVATE_BUCKET_URL }}" >> .env
+          echo "PUBLIC_BUCKET_URL=${{ secrets.PUBLIC_BUCKET_URL }}" >> .env
+          echo "ASSET_BUCKET_NAME=${{ secrets.ASSET_BUCKET_NAME }}" >> .env
+          echo "ASSET_BUCKET_URL=${{ secrets.ASSET_BUCKET_URL }}" >> .env
+          echo "RESET_PASSWORD_KEY=${{ secrets.RESET_PASSWORD_KEY }}" >> .env
+          echo "SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }}" >> .env
+          echo "ADMIN_TOKEN_EXPIRE_TIME=${{ secrets.ADMIN_TOKEN_EXPIRE_TIME }}" >> .env
+          echo "ADMIN_JWT_SECRET=${{ secrets.ADMIN_JWT_SECRET }}" >> .env
+      - name: Publish to Github Packages Registry
+        uses: elgohr/Publish-Docker-Github-Action@v4
+        with:
+          name: capuzR/prixelart-backend/backend
+          registry: docker.pkg.github.com
+          username: ${{ secrets.GIT_USERNAME }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          dockerfile: dockerfile.prod
+          tags: latest
+      - name: Deploy package to digitalocean
+        uses: appleboy/ssh-action@master
+        env:
+          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          host: ${{ secrets.DIGITAL_OCEAN_IP }}
+          username: ${{ secrets.DIGITAL_OCEAN_USERNAME }}
+          password: ${{ secrets.DIGITAL_OCEAN_PASSWORD }}
+          envs: GIT_USERNAME, GITHUB_TOKEN
+          script: |
+            docker stop $(docker ps -a -q)
+            docker login docker.pkg.github.com -u $GIT_USERNAME -p $GITHUB_TOKEN
+            docker pull docker.pkg.github.com/capuzr/prixelart-backend/backend:latest
+            docker run -itd -p 80:8000 docker.pkg.github.com/capuzr/prixelart-backend/backend:latest

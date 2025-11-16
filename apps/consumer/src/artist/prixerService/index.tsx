@@ -34,7 +34,7 @@ import CreateService from "@components/createService";
 import { makeStyles } from "tss-react/mui";
 import { useLoading, useSnackBar } from "@prixpon/context/GlobalContext";
 import { getServicesByPrixer } from "./api";
-import { getPermissions } from "@prixpon/api/admin.api";
+import { getPermissions } from "@prixpon/api-client/admin.api";
 
 const IOSSwitch = withStyles((theme) => ({
   root: {

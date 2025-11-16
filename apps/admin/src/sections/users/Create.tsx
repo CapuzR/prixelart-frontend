@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 // Hooks, Types, Context, API
 import { useSnackBar } from "@prixpon/context/GlobalContext";
 import { User, USER_ROLE_OPTIONS } from "@prixpon/types/user.types"; // Assuming Prixer is also in user.types or imported separately
-import { createUser } from "@prixpon/api/user.api";
-import { isAValidUsername } from "utils/validations";
+import { createUser } from "@prixpon/api-client/user.api";
+import { isAValidUsername } from "@prixpon/utils/validations";
 import Grid2 from "@mui/material/Grid";
 // MUI Components
 import {

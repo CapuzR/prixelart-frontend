@@ -12,7 +12,7 @@ import { Product } from "@prixpon/types/product.types";
 import { queryCreator } from "@/flow/helpers";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { fetchVariantPrice } from "@prixpon/api/product.api";
+import { fetchVariantPrice } from "@prixpon/api-client/product.api";
 import { useUser } from "@prixpon/context/GlobalContext";
 import MDEditor from "@uiw/react-md-editor";
 

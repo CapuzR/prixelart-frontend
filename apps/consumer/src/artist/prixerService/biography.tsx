@@ -19,7 +19,7 @@ import "react-quill/dist/quill.snow.css";
 import Tooltip from "@mui/material/Tooltip";
 import { Slider } from "@mui/material";
 import { useStyles } from "./biography.styles";
-import { getUrlParams } from "@utils/utils";
+import { getUrlParams } from "@prixpon/utils/utils";
 
 interface BiographyProps {
   prixerUsername: string;

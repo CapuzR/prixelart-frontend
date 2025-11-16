@@ -10,7 +10,7 @@ import { useParams, useNavigate } from "react-router-dom";
 // Hooks and Context
 import { useSnackBar } from "@prixpon/context/GlobalContext";
 import { PermissionsV2 } from "@prixpon/types/permissions.types";
-import { createRole, getRoleById, updateRole } from "@prixpon/api/admin.api";
+import { createRole, getRoleById, updateRole } from "@prixpon/api-client/admin.api";
 
 // MUI Components
 import {

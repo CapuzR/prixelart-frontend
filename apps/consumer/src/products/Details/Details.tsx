@@ -20,7 +20,7 @@ import {
   fetchActiveProductDetails,
   fetchVariantPrice,
   fetchAllVariantPricesForProduct,
-} from "@prixpon/api/product.api";
+} from "@prixpon/api-client/product.api";
 import { formatNumberString } from "@prixpon/utils/formats";
 
 interface DetailsProps {

@@ -9,7 +9,7 @@ import {
   isAValidEmail,
   isAValidPassword,
   isAValidUsername,
-} from "utils/validations";
+} from "@prixpon/utils/validations";
 import Copyright from "components/Copyright/copyright";
 
 //material-ui

@@ -49,7 +49,7 @@ import Grid2 from "@mui/material/Grid";
 // Hooks and Context
 import { useSnackBar } from "@prixpon/context/GlobalContext";
 import { PermissionsV2 } from "@prixpon/types/permissions.types";
-import { getRoles, deleteRole } from "@prixpon/api/admin.api";
+import { getRoles, deleteRole } from "@prixpon/api-client/admin.api";
 
 import Title from "@apps/admin/components/Title";
 import ConfirmationDialog from "@components/ConfirmationDialog/ConfirmationDialog";

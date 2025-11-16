@@ -7,8 +7,8 @@ import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import Copyright from '@components/Copyright/copyright';
-import { fetchActiveProductDetails } from '@prixpon/api/product.api';
-import { fetchArt } from '@prixpon/api/art.api';
+import { fetchActiveProductDetails } from '@prixpon/api-client/product.api';
+import { fetchArt } from '@prixpon/api-client/art.api';
 import { useCart } from 'context/CartContext';
 import { useSnackBar } from '@prixpon/context/GlobalContext';
 

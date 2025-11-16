@@ -2,8 +2,8 @@ import React, { useMemo } from "react";
 
 import MDEditor from "@uiw/react-md-editor";
 import Button from "components/Button";
-import { formatRange, formatSinglePrice } from "utils/formats";
-import { generateWaProductMessage } from "utils/utils";
+import { formatRange, formatSinglePrice } from "@prixpon/utils/formats";
+import { generateWaProductMessage } from "@prixpon/utils/utils";
 import styles from "./Portrait.module.scss";
 import {
   Typography,

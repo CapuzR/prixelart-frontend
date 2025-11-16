@@ -8,7 +8,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
 import { useTheme, Theme } from "@mui/material/styles"; // Added Theme type for better type safety
 
-import { readAllTestimonial } from "@prixpon/api/testimonial.api"; // Ensure this path is correct
+import { readAllTestimonial } from "@prixpon/api-client/testimonial.api"; // Ensure this path is correct
 import { Testimonial } from "@prixpon/types/testimonial.types"; // Ensure this path is correct
 
 // Define styles as objects to be used in sx prop

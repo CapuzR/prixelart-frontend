@@ -12,7 +12,7 @@ import Paper from "@mui/material/Paper";
 import { Container, CssBaseline } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import useStyles from "./orgGrid.styles";
-import { fetchAllOrgs } from "@prixpon/api/organization.api";
+import { fetchAllOrgs } from "@prixpon/api-client/organization.api";
 
 interface Organization {
   _id: string;

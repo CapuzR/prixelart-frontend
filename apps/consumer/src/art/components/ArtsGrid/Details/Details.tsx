@@ -33,7 +33,7 @@ import { useLoading, useSnackBar, useUser } from "@prixpon/context/GlobalContext
 
 import utils from "@prixpon/utils";
 import { Art } from "@prixpon/types/art.types";
-import { fetchArt, updateArt } from "@prixpon/api/art.api";
+import { fetchArt, updateArt } from "@prixpon/api-client/art.api";
 
 const ArtDetail: React.FC = () => {
   console.log("Componente ArtDetail se montó. ¡La ruta /arte/:artId funciona!");

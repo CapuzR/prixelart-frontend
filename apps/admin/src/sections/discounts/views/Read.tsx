@@ -46,7 +46,7 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined"; // For override
 // Hooks, Types, Context, API
 import { useSnackBar } from "@prixpon/context/GlobalContext";
 import { Discount, AdjustmentMethod } from "@prixpon/types/discount.types";
-import { getDiscounts, deleteDiscount } from "@prixpon/api/discount.api";
+import { getDiscounts, deleteDiscount } from "@prixpon/api-client/discount.api";
 import Title from "@apps/admin/components/Title";
 import ConfirmationDialog from "@components/ConfirmationDialog/ConfirmationDialog";
 

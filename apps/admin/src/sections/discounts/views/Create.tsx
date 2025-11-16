@@ -19,8 +19,8 @@ import {
   Entity,
 } from "@prixpon/types/discount.types";
 import { Product, Variant } from "@prixpon/types/product.types";
-import { createDiscount } from "@prixpon/api/discount.api";
-import { fetchProducts } from "@prixpon/api/product.api";
+import { createDiscount } from "@prixpon/api-client/discount.api";
+import { fetchProducts } from "@prixpon/api-client/product.api";
 
 // MUI Components
 import {

@@ -6,8 +6,8 @@ import FormSection from '@/checkout/Form/FormSection';
 import { getFormConfig } from './formConfig';
 import { useFormContext } from 'react-hook-form';
 import { DataLists, FormConfig } from '@prixpon/types/order.types';
-import { readAllActivePaymentMethods, fetchActiveShippingMethods } from '@prixpon/api/order.api';
-import { fetchSellers } from '@prixpon/api/admin.api';
+import { readAllActivePaymentMethods, fetchActiveShippingMethods } from '@prixpon/api-client/order.api';
+import { fetchSellers } from '@prixpon/api-client/admin.api';
 
 interface FormProps {
   dataLists: DataLists;

@@ -18,7 +18,7 @@ import { Theme } from "@mui/material";
 import { makeStyles } from "tss-react/mui";
 
 import { useSnackBar } from "@prixpon/context/GlobalContext";
-import { isAValidEmail } from "@utils/validations";
+import { isAValidEmail } from "@prixpon/utils/validations";
 
 const useStyles = makeStyles()((theme: Theme) => {
   return {

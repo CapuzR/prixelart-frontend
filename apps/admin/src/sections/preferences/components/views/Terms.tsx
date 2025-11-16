@@ -22,7 +22,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import Title from "@apps/admin/components/Title";
-import { getTerms, updateTerms } from "@prixpon/api/preferences.api";
+import { getTerms, updateTerms } from "@prixpon/api-client/preferences.api";
 
 const ReadAndUpdateTerms: React.FC = () => {
   // --- Hooks ---

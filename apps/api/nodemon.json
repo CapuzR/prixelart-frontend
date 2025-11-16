@@ -1,0 +1,6 @@
+{
+  "watch": ["."],
+  "ext": "ts,json",
+  "ignore": ["node_modules/", "dist/", "tus_uploads_temp/"],
+  "exec": "node --loader ts-node/esm start.ts"
+}

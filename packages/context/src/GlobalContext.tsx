@@ -8,7 +8,7 @@ import React, {
   Dispatch,
   SetStateAction,
 } from "react";
-import { fetchConversionRateFromAPI } from "@prixpon/api/conversion.api";
+import { fetchConversionRateFromAPI } from "@prixpon/api-client/conversion.api";
 import { User } from "@prixpon/types/user.types";
 
 // Define the shape of the context

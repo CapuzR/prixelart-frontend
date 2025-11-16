@@ -18,8 +18,8 @@ import {
   VariantAttribute,
 } from "@prixpon/types/product.types";
 import { Art } from "@prixpon/types/art.types";
-import { fetchArt } from "@prixpon/api/art.api";
-import { fetchActiveProductDetails, fetchVariantPrice } from "@prixpon/api/product.api";
+import { fetchArt } from "@prixpon/api-client/art.api";
+import { fetchActiveProductDetails, fetchVariantPrice } from "@prixpon/api-client/product.api";
 import { Item } from "@prixpon/types/order.types";
 import { useTheme } from "@mui/material";
 import { useMediaQuery } from "@mui/material";

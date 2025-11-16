@@ -18,8 +18,8 @@ import {
 
 import Button from "components/Button";
 
-import { generateWaProductMessage } from "utils/utils";
-import { formatRange, formatSinglePrice } from "utils/formats";
+import { generateWaProductMessage } from "@prixpon/utils/utils";
+import { formatRange, formatSinglePrice } from "@prixpon/utils/formats";
 import { useConversionRate } from "@prixpon/context/GlobalContext";
 
 import styles from "./Landscape.module.scss";

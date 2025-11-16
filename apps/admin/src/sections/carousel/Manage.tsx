@@ -61,7 +61,7 @@ import {
   updateCarouselOrder,
   deleteCarouselItem,
   createCarouselItem,
-} from "@prixpon/api/preferences.api"; // Asegúrate que la ruta sea correcta
+} from "@prixpon/api-client/preferences.api"; // Asegúrate que la ruta sea correcta
 
 import ReactCrop, {
   centerCrop,
@@ -72,7 +72,7 @@ import ReactCrop, {
 import "react-image-crop/dist/ReactCrop.css";
 import Title from "@apps/admin/components/Title"; // Asegúrate que la ruta sea correcta
 import ConfirmationDialog from "@components/ConfirmationDialog/ConfirmationDialog"; // Asegúrate que la ruta sea correcta
-import { BACKEND_URL } from "@prixpon/api/utils.api"; // Asegúrate que la ruta sea correcta
+import { BACKEND_URL } from "@prixpon/api-client/utils.api"; // Asegúrate que la ruta sea correcta
 
 // --- Sortable Item UI Component (Modificado) ---
 // Esta es la parte visual del item del carrusel.

@@ -4,7 +4,7 @@ import { Slider } from "components/Slider";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 
-import bg from "../../assets/images/brands-carousel-bg.jpg";
+import bg from "@assets/images/brands-carousel-bg.jpg";
 import cocacola from "@assets/images/brands/cocacola.png";
 import iskia from "@assets/images/brands/iskia.png";
 import modusistema from "@assets/images/brands/modusistema.png";

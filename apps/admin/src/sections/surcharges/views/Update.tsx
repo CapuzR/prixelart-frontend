@@ -17,8 +17,8 @@ import {
   Entity,
 } from "@prixpon/types/surcharge.types";
 import { Product } from "@prixpon/types/product.types";
-import { fetchSurchargeById, updateSurcharge } from "@prixpon/api/surcharge.api";
-import { fetchProducts } from "@prixpon/api/product.api";
+import { fetchSurchargeById, updateSurcharge } from "@prixpon/api-client/surcharge.api";
+import { fetchProducts } from "@prixpon/api-client/product.api";
 
 // MUI Components (Copied from CreateDiscount/Refactored CreateSurcharge)
 import {

@@ -7,9 +7,9 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import ProductElement from "components/ProductElement";
 import BrandsCarousel from "components/brandsCarousel/brandsCarousel";
 
-import { fetchCarouselImages } from "@prixpon/api/preferences.api";
-import { fetchBestSellers } from "@prixpon/api/product.api";
-import { fetchBestArts, fetchLatestArts } from "@prixpon/api/art.api";
+import { fetchCarouselImages } from "@prixpon/api-client/preferences.api";
+import { fetchBestSellers } from "@prixpon/api-client/product.api";
+import { fetchBestArts, fetchLatestArts } from "@prixpon/api-client/art.api";
 
 import backG from "@assets/images/Rectangle108.png";
 import { CarouselItem } from "@prixpon/types/preference.types";

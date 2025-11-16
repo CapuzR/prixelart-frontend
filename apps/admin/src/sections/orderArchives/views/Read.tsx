@@ -53,7 +53,7 @@ import {
   SelectionClass,
   AttributeName,
 } from "@prixpon/types/orderArchive.types";
-import { getOrderArchives, updateOrderArchive } from "@prixpon/api/orderArchive.api";
+import { getOrderArchives, updateOrderArchive } from "@prixpon/api-client/orderArchive.api";
 import {
   formatCurrency,
   formatDate,
@@ -69,7 +69,7 @@ import {
 } from "@mui/x-date-pickers";
 import Grid2 from "@mui/material/Grid";
 import excelJS from "exceljs";
-import { getPermissions } from "@prixpon/api/admin.api";
+import { getPermissions } from "@prixpon/api-client/admin.api";
 import { PermissionsV2 } from "@prixpon/types/permissions.types";
 
 const ALL_STATUSES: OrderStatus[] = [

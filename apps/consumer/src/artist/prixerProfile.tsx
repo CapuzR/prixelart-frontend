@@ -6,7 +6,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { useTheme } from "@mui/styles";
 import Biography from "./prixerService/biography";
 import useStyles from "./prixerProfile.styles";
-import { getUrlParams } from "@utils/util";
+import { getUrlParams } from "@utils/utils";
 import ArtsGrid from "@apps/consumer/src/art/components/ArtsGrid/ArtsGrid";
 
 const PrixerProfile: React.FC = () => {

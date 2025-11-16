@@ -1,6 +1,6 @@
-import { PrixResponse } from "types/prixResponse.types";
+import { PrixResponse } from "@prixpon/types/prixResponse.types";
 import axios from "axios";
-import { Surcharge } from "types/surcharge.types";
+import { Surcharge } from "@prixpon/types/surcharge.types";
 import { BACKEND_URL } from "./utils.api";
 
 export const createSurcharge = async (

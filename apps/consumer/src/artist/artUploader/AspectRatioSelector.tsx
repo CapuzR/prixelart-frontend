@@ -13,7 +13,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import { Theme, Typography } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
-import getCroppedImg from "../../../../../src/utils/cropImage";
+import getCroppedImg from "../../../../../src2/utils/cropImage";
 import CropIcon from "@mui/icons-material/Crop";
 
 interface ARprops {

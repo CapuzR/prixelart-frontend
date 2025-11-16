@@ -1,7 +1,7 @@
-import { PrixResponse } from "types/prixResponse.types";
+import { PrixResponse } from "@prixpon/types/prixResponse.types";
 import axios from "axios";
-import { User } from "types/user.types";
-import { Prixer } from "types/prixer.types";
+import { User } from "@prixpon/types/user.types";
+import { Prixer } from "@prixpon/types/prixer.types";
 
 export const fetchAllPrixers = async (): Promise<User[]> => {
   const URI = `${import.meta.env.VITE_BACKEND_URL}/prixer/read-all`;

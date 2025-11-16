@@ -1,0 +1,40 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "include": ["src", "vite.config.ts"],
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": ["*"],
+      "@apps/admin/*": ["*"],
+      "@apps/consumer/*": ["../../consumer/src/*"],
+      "@public/*": ["../public/*"],
+      "@components/*": ["components/*"],
+      "@styles/*": ["../styles/*"],
+      "context/*": ["../../../packages/context/src/*"],
+      "@context/*": ["../../../packages/context/src/*"],
+      "@api/*": ["../../../packages/api/src/*"],
+      "@prixpon/context/*": ["../../../packages/context/src/*"],
+      "@prixpon/context": ["../../../packages/context/src"],
+      "@prixpon/api/*": ["../../../packages/api/src/*"],
+      "@prixpon/api": ["../../../packages/api/src"],
+      "@prixpon/types/*": ["../../../packages/types/src/*"],
+      "@prixpon/types": ["../../../packages/types/src"],
+      "@prixpon/ui/*": ["../../../packages/ui/src/*"],
+      "@prixpon/ui": ["../../../packages/ui/src"],
+      "@prixpon/utils/*": ["../../../packages/utils/src/*"],
+      "@prixpon/utils": ["../../../packages/utils/src"],
+      "@prixpon/tokens/*": ["../../../packages/tokens/src/*"],
+      "@prixpon/tokens": ["../../../packages/tokens/src"],
+      "@prixpon/config/*": ["../../../packages/config/src/*"],
+      "@prixpon/config": ["../../../packages/config/src"],
+      "@prixpon/data/*": ["../../../packages/data/src/*"],
+      "@prixpon/data": ["../../../packages/data/src"],
+      "types/*": ["../../../packages/types/src/*"],
+      "utils/*": ["../../../packages/utils/src/*"],
+      "@utils/*": ["../../../packages/utils/src/*"],
+      "@data/*": ["../../../packages/data/src/*"],
+      "data/*": ["../../../packages/data/src/*"]
+    }
+  }
+}

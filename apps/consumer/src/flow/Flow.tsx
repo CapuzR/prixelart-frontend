@@ -10,7 +10,7 @@ import { getSelectedVariant } from "@/products/services";
 import Landscape from "@/flow/views/Landscape";
 import Portrait from "@/flow/views/Portrait";
 import { queryCreator } from "./helpers";
-import { useCart } from "context/CartContext";
+import { useCart } from "@apps/consumer/context/CartContext";
 import { getUrlParams } from "@prixpon/utils";
 import {
   PickedProduct,

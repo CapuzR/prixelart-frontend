@@ -1,6 +1,6 @@
-import { Order, PaymentMethod, ShippingMethod } from "types/order.types";
+import { Order, PaymentMethod, ShippingMethod } from "@prixpon/types/order.types";
 import axios from "axios";
-import { PrixResponse } from "types/prixResponse.types";
+import { PrixResponse } from "@prixpon/types/prixResponse.types";
 
 const SHIPPING_METHODS_BASE_URL = `${import.meta.env.VITE_BACKEND_URL}/shipping-method`;
 const PAYMENT_METHODS_BASE_URL = `${import.meta.env.VITE_BACKEND_URL}/payment-method`;

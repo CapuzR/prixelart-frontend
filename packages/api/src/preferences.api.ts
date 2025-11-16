@@ -1,6 +1,6 @@
-import { CarouselItem, TermsAndConditions } from "types/preference.types";
+import { CarouselItem, TermsAndConditions } from "@prixpon/types/preference.types";
 import { BACKEND_URL } from "./utils.api";
-import { PrixResponse } from "types/prixResponse.types";
+import { PrixResponse } from "@prixpon/types/prixResponse.types";
 import axios from "axios";
 
 export const fetchCarouselImages = async (): Promise<CarouselItem[]> => {

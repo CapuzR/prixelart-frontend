@@ -63,22 +63,22 @@ import {
   Edit as EditIcon,
   CloudUpload as CloudUploadIcon,
 } from "@mui/icons-material";
-import { Prixer } from "types/prixer.types";
+import { Prixer } from "@prixpon/types/prixer.types";
 import { useParams, useNavigate } from "react-router-dom";
-import { getPrixerByUsername, updatePrixerProfile } from "@api/prixer.api";
-import { User } from "types/user.types";
-import { getArtsByPrixer, PaginatedArtsResult } from "@api/art.api";
-import { Art } from "types/art.types";
-import { Service } from "types/service.types";
-import { fetchServicesByUser } from "@api/service.api";
-import { useLoading, useSnackBar, useUser } from "@context/GlobalContext";
+import { getPrixerByUsername, updatePrixerProfile } from "@prixpon/api/prixer.api";
+import { User } from "@prixpon/types/user.types";
+import { getArtsByPrixer, PaginatedArtsResult } from "@prixpon/api/art.api";
+import { Art } from "@prixpon/types/art.types";
+import { Service } from "@prixpon/types/service.types";
+import { fetchServicesByUser } from "@prixpon/api/service.api";
+import { useLoading, useSnackBar, useUser } from "@prixpon/context/GlobalContext";
 import ReactCrop, {
   centerCrop,
   Crop,
   makeAspectCrop,
   PixelCrop,
 } from "react-image-crop";
-import { BACKEND_URL } from "@api/utils.api";
+import { BACKEND_URL } from "@prixpon/api/utils.api";
 import * as tus from "tus-js-client";
 import ScrollToTopButton from "@components/ScrollToTop";
 

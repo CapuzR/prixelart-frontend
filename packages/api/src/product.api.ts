@@ -1,6 +1,6 @@
-import { Product } from "types/product.types";
+import { Product } from "@prixpon/types/product.types";
 import { BACKEND_URL } from "./utils.api";
-import { PrixResponse } from "types/prixResponse.types";
+import { PrixResponse } from "@prixpon/types/prixResponse.types";
 import axios from "axios";
 
 export interface AllVariantPricesResult {

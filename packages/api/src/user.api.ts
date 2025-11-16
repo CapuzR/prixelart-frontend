@@ -1,5 +1,5 @@
-import { PrixResponse } from "types/prixResponse.types";
-import { User } from "types/user.types";
+import { PrixResponse } from "@prixpon/types/prixResponse.types";
+import { User } from "@prixpon/types/user.types";
 import axios from "axios";
 
 export const createUser = async (data: User): Promise<PrixResponse> => {

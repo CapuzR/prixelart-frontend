@@ -13,13 +13,13 @@ import { useCart } from 'context/CartContext';
 import { useSnackBar } from '@prixpon/context/GlobalContext';
 
 import ReactGA from 'react-ga4';
-import banner1 from '@public/images/prix-item-bg1.webp';
-import banner2 from '@public/images/prix-item-bg2.webp';
-import banner3 from '@public/images/prix-item-bg3.webp';
+import banner1 from '@assets/images/prix-item-bg1.webp';
+import banner2 from '@assets/images/prix-item-bg2.webp';
+import banner3 from '@assets/images/prix-item-bg3.webp';
 
-import item1 from '@public/images/prix-item1.png';
-import item2 from '@public/images/prix-item2.png';
-import item3 from '@public/images/prix-item3.png';
+import item1 from '@assets/images/prix-item1.png';
+import item2 from '@assets/images/prix-item2.png';
+import item3 from '@assets/images/prix-item3.png';
 
 const items = [
   {

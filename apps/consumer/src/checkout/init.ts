@@ -1,4 +1,4 @@
-import countries from "@data/countries.json";
+import countries from "@prixpon/data/countries";
 
 import { Cart } from "@prixpon/types/cart.types";
 import {

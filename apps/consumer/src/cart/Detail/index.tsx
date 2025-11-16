@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import styles from "./styles.module.scss";
-import { useCart } from "context/CartContext";
+import { useCart } from "@apps/consumer/context/CartContext";
 import ActionBar from "./components/ActionBar";
 import Typography from "components/Typography";
 import ItemCard from "components/ItemCard";

@@ -14,7 +14,7 @@ import { ObjectId } from "mongodb";
 import { Order } from "@prixpon/types/order.types";
 import { useUser } from "@prixpon/context/GlobalContext";
 
-import favicon from "@public/images/favicon.png";
+import favicon from "@assets/images/favicon.png";
 
 const useStyles = makeStyles()((theme: Theme) => {
   return {

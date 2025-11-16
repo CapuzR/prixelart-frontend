@@ -3,7 +3,7 @@ import Container from "@mui/material/Container";
 import CssBaseline from "@mui/material/CssBaseline";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import PrixersGrid from "@/components/prixerGrid/prixerGrid";
+import PrixersGrid from "@components/prixerGrid/prixerGrid";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import ScrollToTopButton from "@components/ScrollToTop";

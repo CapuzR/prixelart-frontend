@@ -1,6 +1,6 @@
 import React from "react";
 import { SelectChangeEvent } from "@mui/material";
-import { Art } from "../../../../../types/art.types";
+import { Art } from "@prixpon/types/art.types";
 
 export type AllowedEvent =
   | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>

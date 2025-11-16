@@ -22,7 +22,7 @@ import { getRandomArt } from "@prixpon/api/art.api";
 import { login } from "@prixpon/api/utils.api";
 import { useSnackBar, useUser } from "@prixpon/context/GlobalContext";
 import Copyright from "@components/Copyright/copyright";
-import { Button as ShadButton } from "@/components/ui/button";
+import { Button as ShadButton } from "@components/ui/button";
 import { Art } from "@prixpon/types/art.types";
 import { User } from "@prixpon/types/user.types";
 import { jwtDecode } from "jwt-decode";

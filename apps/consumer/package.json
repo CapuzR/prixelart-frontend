@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "@prixpon/consumer",
   "version": "3.0.0",
   "private": true,
   "packageManager": "pnpm@9.12.0",
@@ -76,12 +76,11 @@
     "xlsx": "^0.18.5"
   },
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "serve": "vite preview",
-    "prepare": "husky install",
-    "format": "prettier --config config/.prettierrc --ignore-path config/.prettierignore --write .",
-    "lint": "eslint -c config/eslint.config.js --ignore-pattern config/.eslintignore .",
+    "dev": "vite --config vite.config.ts",
+    "build": "vite build --config vite.config.ts",
+    "preview": "vite preview --config vite.config.ts",
+    "format": "prettier --write .",
+    "lint": "eslint .",
     "type-check": "tsc --noEmit"
   },
   "browserslist": {
@@ -95,18 +94,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npx lint-staged --ignore-pattern \"**/*.test.{js,jsx,ts,tsx}\""
-    }
-  },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx,json,css,scss,md}": [
-      "prettier --config config/.prettierrc --write",
-      "eslint -c config/.eslintrc --fix"
-    ],
-    "*.test.{js,jsx,ts,tsx}": []
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.17",

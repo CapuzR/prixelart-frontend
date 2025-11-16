@@ -11,9 +11,9 @@ import Copyright from "@components/Copyright/copyright";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 
-import footerBg from "@public/images/footer-bg-desk.jpg";
-import prixBox from "@public/images/prix-box.png";
-import tiktok from "@public/images/tiktok.svg";
+import footerBg from "@assets/images/footer-bg-desk.jpg";
+import prixBox from "@assets/images/prix-box.png";
+import tiktok from "@assets/images/tiktok.svg";
 
 export default function FooterSection() {
   const navigate = useNavigate();

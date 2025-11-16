@@ -1,7 +1,7 @@
-import { PrixResponse } from "types/prixResponse.types";
-import { PermissionsV2 } from "types/permissions.types";
+import { PrixResponse } from "@prixpon/types/prixResponse.types";
+import { PermissionsV2 } from "@prixpon/types/permissions.types";
 import axios from "axios";
-import { Admin } from "types/admin.types";
+import { Admin } from "@prixpon/types/admin.types";
 
 export const getPermissions = async (): Promise<PermissionsV2> => {
   try {

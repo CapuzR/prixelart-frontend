@@ -24,7 +24,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { Theme } from "@mui/material";
 import { makeStyles } from "tss-react/mui";
-import { useSnackBar, useBackdrop } from "context/GlobalContext";
+import { useSnackBar, useBackdrop } from "@prixpon/context/GlobalContext";
 import FormHelperText from "@mui/material/FormHelperText";
 
 const useStyles = makeStyles()((theme: Theme) => {

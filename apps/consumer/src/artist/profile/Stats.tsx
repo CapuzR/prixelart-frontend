@@ -16,9 +16,9 @@ import Modal from "@mui/material/Modal";
 
 import { Theme, useTheme } from "@mui/material";
 import { makeStyles } from "tss-react/mui";
-import { useSnackBar, useUser } from "@context/GlobalContext";
-import { Movement } from "types/movement.types";
-import { Order, OrderStatus } from "types/order.types";
+import { useSnackBar, useUser } from "@prixpon/context/GlobalContext";
+import { Movement } from "@prixpon/types/movement.types";
+import { Order, OrderStatus } from "@prixpon/types/order.types";
 import { ObjectId } from "mongodb";
 import CountUp from "react-countup";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";

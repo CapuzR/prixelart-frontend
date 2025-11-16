@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Organization } from "types/organization.types";
+import { Organization } from "@prixpon/types/organization.types";
 
 export const fetchAllOrgs = async (): Promise<Organization[]> => {
   const URI = `${import.meta.env.VITE_BACKEND_URL}/organization/read-all`;

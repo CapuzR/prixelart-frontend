@@ -1,6 +1,6 @@
 import axios from "axios";
-import { OrderArchive, PayStatus, Status } from "types/orderArchive.types";
-import { PrixResponse } from "types/prixResponse.types";
+import { OrderArchive, PayStatus, Status } from "@prixpon/types/orderArchive.types";
+import { PrixResponse } from "@prixpon/types/prixResponse.types";
 import { BACKEND_URL } from "./utils.api";
 
 export interface GetOrdersOptions {

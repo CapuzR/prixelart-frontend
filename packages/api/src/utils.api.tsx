@@ -1,4 +1,4 @@
-import { PrixResponse } from "types/prixResponse.types";
+import { PrixResponse } from "@prixpon/types/prixResponse.types";
 
 export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 

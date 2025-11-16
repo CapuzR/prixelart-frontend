@@ -9,7 +9,7 @@ import React, {
   SetStateAction,
 } from "react";
 
-import { useSnackBar, usePrixerCreator, useUser } from "context/GlobalContext";
+import { useSnackBar, usePrixerCreator, useUser } from "@prixpon/context/GlobalContext";
 import { Art } from "../../../types/art.types";
 
 import {
@@ -53,7 +53,7 @@ import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 
 import axios from "axios";
-import { PrixResponse } from "types/prixResponse.types";
+import { PrixResponse } from "@prixpon/types/prixResponse.types";
 
 import * as tus from "tus-js-client";
 import ReactCrop, {
@@ -63,7 +63,7 @@ import ReactCrop, {
   PixelCrop,
 } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-import { BACKEND_URL } from "@api/utils.api";
+import { BACKEND_URL } from "@prixpon/api/utils.api";
 import PhotoCameraBackIcon from "@mui/icons-material/PhotoCameraBack";
 import util from "@utils/utils";
 import { nanoid } from "nanoid";

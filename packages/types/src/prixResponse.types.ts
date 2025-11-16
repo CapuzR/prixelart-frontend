@@ -1,4 +1,4 @@
-import { GlobalDashboardStatsData } from "@api/order.api";
+import { GlobalDashboardStatsData } from "@prixpon/api/order.api";
 import { Account } from "./account.types";
 import { Admin } from "./admin.types";
 import { Art } from "./art.types";

@@ -1,5 +1,5 @@
 import React from "react";
-import { useCart } from "context/CartContext";
+import { useCart } from "@apps/consumer/context/CartContext";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Typography from "components/Typography";
 import styles from "./styles.module.scss";

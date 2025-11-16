@@ -1,6 +1,6 @@
-import { Testimonial } from "types/testimonial.types";
+import { Testimonial } from "@prixpon/types/testimonial.types";
 import { BACKEND_URL } from "./utils.api";
-import { PrixResponse } from "types/prixResponse.types";
+import { PrixResponse } from "@prixpon/types/prixResponse.types";
 import axios from "axios";
 
 const TESTIMONIALS_BASE_URL = `${import.meta.env.VITE_BACKEND_URL}/testimonial`;

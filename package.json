@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "prixpon",
   "version": "3.0.0",
   "private": true,
   "packageManager": "pnpm@9.12.0",
@@ -76,13 +76,18 @@
     "xlsx": "^0.18.5"
   },
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "serve": "vite preview",
+    "dev": "turbo run dev --parallel",
+    "dev:consumer": "pnpm --filter @prixpon/consumer dev",
+    "dev:admin": "pnpm --filter @prixpon/admin dev",
+    "build": "turbo run build",
+    "build:consumer": "pnpm --filter @prixpon/consumer build",
+    "build:admin": "pnpm --filter @prixpon/admin build",
+    "preview:consumer": "pnpm --filter @prixpon/consumer preview",
+    "preview:admin": "pnpm --filter @prixpon/admin preview",
     "prepare": "husky install",
     "format": "prettier --config config/.prettierrc --ignore-path config/.prettierignore --write .",
-    "lint": "eslint -c config/eslint.config.js --ignore-pattern config/.eslintignore .",
-    "type-check": "tsc --noEmit"
+    "lint": "turbo run lint",
+    "type-check": "turbo run type-check"
   },
   "browserslist": {
     "production": [
@@ -129,6 +134,7 @@
     "postcss": "^8.5.6",
     "prettier": "^3.3.3",
     "tailwindcss": "^4.1.16",
+    "turbo": "^2.1.3",
     "typescript": "^5.7.3",
     "vite-tsconfig-paths": "^5.1.4"
   }

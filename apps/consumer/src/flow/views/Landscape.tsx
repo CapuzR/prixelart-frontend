@@ -19,7 +19,7 @@ import styles from "../Flow.module.scss";
 
 import ItemCard from "components/ItemCard";
 import ProductsCatalog from "@/products/Catalog";
-import { useCart } from "context/CartContext";
+import { useCart } from "@apps/consumer/context/CartContext";
 import CurrencySwitch from "components/CurrencySwitch";
 import ArtsGrid from "@/art/components/ArtsGrid/ArtsGrid";
 import Details from "@/products/Details/Details";

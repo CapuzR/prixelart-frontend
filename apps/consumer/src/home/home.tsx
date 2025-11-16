@@ -11,7 +11,7 @@ import { fetchCarouselImages } from "@prixpon/api/preferences.api";
 import { fetchBestSellers } from "@prixpon/api/product.api";
 import { fetchBestArts, fetchLatestArts } from "@prixpon/api/art.api";
 
-import backG from "images/Rectangle108.png";
+import backG from "@assets/images/Rectangle108.png";
 import { CarouselItem } from "@prixpon/types/preference.types";
 import { Product } from "@prixpon/types/product.types";
 import { Art } from "@prixpon/types/art.types";

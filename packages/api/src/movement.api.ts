@@ -1,8 +1,8 @@
-import { PrixResponse } from "types/prixResponse.types";
+import { PrixResponse } from "@prixpon/types/prixResponse.types";
 import axios from "axios";
-import { Movement } from "types/movement.types";
+import { Movement } from "@prixpon/types/movement.types";
 import { BACKEND_URL } from "./utils.api";
-import { Account } from "types/account.types";
+import { Account } from "@prixpon/types/account.types";
 
 export interface CreateMovementApiResponse {
   createResult: PrixResponse & { result?: Movement };

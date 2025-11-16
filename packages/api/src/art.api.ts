@@ -1,8 +1,8 @@
-import { Art } from "types/art.types";
-import { Gallery, PrixResponse } from "types/prixResponse.types";
+import { Art } from "@prixpon/types/art.types";
+import { Gallery, PrixResponse } from "@prixpon/types/prixResponse.types";
 import axios from "axios";
 import { BACKEND_URL } from "./utils.api";
-import { getImageSize } from "@utils/util";
+import { getImageSize } from "@utils/utils";
 
 export const getRandomArt = async (): Promise<Art> => {
   try {

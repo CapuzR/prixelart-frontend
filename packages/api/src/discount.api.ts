@@ -1,6 +1,6 @@
-import { PrixResponse } from "types/prixResponse.types";
+import { PrixResponse } from "@prixpon/types/prixResponse.types";
 import axios from "axios";
-import { Discount } from "types/discount.types";
+import { Discount } from "@prixpon/types/discount.types";
 import { BACKEND_URL } from "./utils.api";
 
 export const createDiscount = async (

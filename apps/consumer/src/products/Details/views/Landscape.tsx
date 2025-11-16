@@ -30,7 +30,7 @@ import { useCurrency } from "@prixpon/context/GlobalContext";
 import { Slider } from "components/Slider";
 import { Image } from "components/Image";
 import CurrencySwitch from "components/CurrencySwitch";
-import { Product, Variant } from "../../../../../types/product.types";
+import { Product, Variant } from "@prixpon/types/product.types";
 import { DisplayPriceInfo } from "../Details";
 import MDEditor from "@uiw/react-md-editor";
 import ReactQuill from "react-quill-new";

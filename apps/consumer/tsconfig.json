@@ -1,14 +1,45 @@
 {
   "extends": "../../tsconfig.base.json",
-  "include": ["src", "vite.config.ts"],
+  "include": ["src", "vite.config.ts", "components/prixerGrid", "components/orgGrid"],
   "compilerOptions": {
     "jsx": "react-jsx",
     "baseUrl": "./src",
     "paths": {
       "@/*": ["*"],
-      "@public/*": ["../public/*"],
+      "@apps/consumer/*": ["*"],
+      "@apps/artist/*": ["artist/*"],
+      "@public/*": ["./public/*"],
       "@components/*": ["../components/*"],
-      "@styles/*": ["../styles/*"]
+      "components/*": ["../components/*"],
+      "@styles/*": ["../styles/*"],
+      "styles/*": ["../styles/*"],
+      "context/*": ["context/*"],
+      "@context/*": ["../../../packages/context/src/*"],
+      "@api/*": ["../../../packages/api/src/*"],
+      "@prixpon/context/*": ["../../../packages/context/src/*"],
+      "@prixpon/context": ["../../../packages/context/src"],
+      "@prixpon/api/*": ["../../../packages/api/src/*"],
+      "@prixpon/api": ["../../../packages/api/src"],
+      "@prixpon/types/*": ["../../../packages/types/src/*"],
+      "@prixpon/types": ["../../../packages/types/src"],
+  "@prixpon/ui/*": ["../../../packages/ui/src/*"],
+  "@prixpon/ui": ["../../../packages/ui/src"],
+  "@prixpon/utils/*": ["../../../packages/utils/src/*"],
+  "@prixpon/utils": ["../../../packages/utils/src"],
+  "@prixpon/tokens/*": ["../../../packages/tokens/src/*"],
+  "@prixpon/tokens": ["../../../packages/tokens/src"],
+  "@prixpon/config/*": ["../../../packages/config/src/*"],
+  "@prixpon/config": ["../../../packages/config/src"],
+  "@prixpon/data/*": ["../../../packages/data/src/*"],
+  "@prixpon/data": ["../../../packages/data/src"],
+      "types/*": ["../../../packages/types/src/*"],
+      "@types/*": ["../../../packages/types/src/*"],
+      "utils/*": ["../../../packages/utils/src/*"],
+      "@utils/*": ["../../../packages/utils/src/*"],
+      "data/*": ["../../../packages/data/src/*"],
+      "@data/*": ["../../../packages/data/src/*"],
+      "@assets/*": ["../assets/*"],
+      "assets/*": ["../assets/*"]
     }
   }
 }

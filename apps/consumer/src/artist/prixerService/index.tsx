@@ -24,7 +24,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import HighlightOffOutlinedIcon from "@mui/icons-material/HighlightOffOutlined";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { generateServiceMessage } from "../../../../../src/utils/utils";
+import { generateServiceMessage } from "../../../../../src2/utils/utils";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import ServiceSearchBar from "components/searchBar/serviceSearchBar";
@@ -32,9 +32,9 @@ import FloatingAddButton from "@components/floatingAddButton";
 import ArtUploader from "@/artist/artUploader";
 import CreateService from "@components/createService";
 import { makeStyles } from "tss-react/mui";
-import { useLoading, useSnackBar } from "@context/GlobalContext";
+import { useLoading, useSnackBar } from "@prixpon/context/GlobalContext";
 import { getServicesByPrixer } from "./api";
-import { getPermissions } from "@api/admin.api";
+import { getPermissions } from "@prixpon/api/admin.api";
 
 const IOSSwitch = withStyles((theme) => ({
   root: {

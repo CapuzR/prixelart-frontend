@@ -7,7 +7,7 @@ import { Art } from "../../../../types/art.types";
 import { Product } from "../../../../types/product.types";
 import { MenuItem, FormControl, Select, InputLabel } from "@mui/material";
 import ArtsGrid from "@/art/components/ArtsGrid/ArtsGrid";
-import { useCart } from "@prixpon/context/CartContext";
+import { useCart } from "@apps/consumer/context/CartContext";
 import ProductsCatalog from "@/products/Catalog";
 import ItemCard from "@components/ItemCard";
 import CurrencySwitch from "@components/CurrencySwitch";

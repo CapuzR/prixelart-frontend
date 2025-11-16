@@ -17,7 +17,7 @@ import Grid2 from "@mui/material/Grid";
 import { Theme } from "@mui/material";
 import { makeStyles } from "tss-react/mui";
 
-import { useSnackBar } from "context/GlobalContext";
+import { useSnackBar } from "@prixpon/context/GlobalContext";
 import { isAValidEmail } from "@utils/validations";
 
 const useStyles = makeStyles()((theme: Theme) => {

@@ -50,7 +50,7 @@ export default defineConfig({
       preprocessorOptions: {
         scss: {
           api: "modern",
-          additionalData: `@use "@/styles/theme.scss" as *;`,
+          additionalData: `@use "@styles/theme.scss" as *;`,
         },
       },
     },

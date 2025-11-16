@@ -1,7 +1,7 @@
 import axios from "axios";
 import { BACKEND_URL } from "./utils.api";
-import { PrixResponse } from "types/prixResponse.types";
-import { Service } from "types/service.types";
+import { PrixResponse } from "@prixpon/types/prixResponse.types";
+import { Service } from "@prixpon/types/service.types";
 import { ObjectId } from "mongodb";
 
 // — Public —

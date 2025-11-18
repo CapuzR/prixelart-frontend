@@ -15,24 +15,25 @@ import {
   useMediaQuery,
   Paper,
   Box,
-  CircularProgress, // Added
+  CircularProgress,
 } from '@mui/material';
-import { useTheme } from '@mui/material/styles'; // Added
+import { useTheme } from '@mui/material/styles';
+import favicon from '../../../images/favicon.png';
 
 import { LockOutlined as LockOutlinedIcon, Visibility, VisibilityOff } from '@mui/icons-material';
 
 import { isAValidEmail, isAValidPassword } from 'utils/validations';
 
 import { Button as ButtonV2 } from '@/components/ui/button';
+import {Avatar as AvatarV2} from '@/components/ui/avatar';
 import { LogIn } from 'lucide-react';
 
 import Copyright from '@components/Copyright/copyright';
-import { Art } from '../../../types/art.types'; // Ensure this Art type is compatible with findValidWebpUrl
+import { Art } from '../../../types/art.types';
 import { useSnackBar } from 'context/GlobalContext';
 import { getRandomArt } from '@api/art.api';
 import { adminLogin } from '@api/utils.api';
 
-// Helper functions and const for background fetching
 const MAX_RETRIES = 3;
 
 const ensureHttps = (url: string): string => {
@@ -46,7 +47,6 @@ const ensureHttps = (url: string): string => {
 const findValidWebpUrl = (art?: Art): string | null => {
   if (!art) return null;
 
-  // These keys are expected in your Art type from ../../../types/art.types
   const props: (keyof Art)[] = [
     'largeThumbUrl',
     'mediumThumbUrl',
@@ -71,7 +71,7 @@ export default function AdminLogin() {
   const { showSnackBar } = useSnackBar();
   const isMobile = useMediaQuery('(max-width:480px)');
   const isTab = useMediaQuery('(max-width: 900px)');
-  const theme = useTheme(); // Initialize theme
+  const theme = useTheme();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
@@ -98,7 +98,6 @@ export default function AdminLogin() {
     }
   };
 
-  // useEffect for background image fetching
   useEffect(() => {
     let mounted = true;
 
@@ -156,7 +155,7 @@ export default function AdminLogin() {
     return () => {
       mounted = false;
     };
-  }, [retryCount, showSnackBar]); // Dependencies ensure effect re-runs on retryCount change or if showSnackBar changes
+  }, [retryCount, showSnackBar]);
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -192,8 +191,6 @@ export default function AdminLogin() {
       }}
     >
       <Grid2
-        // Assuming Grid2's `size` prop API is as used in your original component.
-        // For standard MUI Unstable_ this would typically be xs={12} lg={7} directly on Grid2.
         size={{
           xs: 12,
           lg: 7,
@@ -319,9 +316,6 @@ export default function AdminLogin() {
                   <ButtonV2 variant="iconPrimary" type="submit" className='mt-[16px]'>
                     <LogIn className='w-[18px] h-[18px]' />
                   </ButtonV2>*/}
-                  {/* <ButtonV2 variant="card" type="submit" className='mt-[16px] ml-[16px]'>
-                    <LogIn />
-                  </ButtonV2>  */}
                 </Grid2>
                 <Grid2 size={{ xs: 12, sm: 10, md: 8, lg: 6 }} sx={{ textAlign: 'center' }}>
                   <Link href="#" onClick={forgotPassword} variant="body2">

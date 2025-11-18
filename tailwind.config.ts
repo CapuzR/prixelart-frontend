@@ -8,7 +8,7 @@ function generateColorPalette(name: string): { [key: string]: string } {
   const palette: { [key: string]: string } = {};
   // Pasos de color definidos en tus tokens
   const steps = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
-  
+
   for (const step of steps) {
     palette[step.toString()] = `rgb(var(--color-${name}-${step}) / <alpha-value>)`;
   }
@@ -19,7 +19,10 @@ function generateColorPalette(name: string): { [key: string]: string } {
  * Función auxiliar para mapear un objeto de tokens a CSS Variables.
  * Ej: { XXS: '--spacing-xxs', XS: '--spacing-xs' } -> { xxs: 'var(--spacing-xxs)', xs: 'var(--spacing-xs)' }
  */
-function mapTokensToCSSVars(tokens: { [key: string]: string }, prefix: string): { [key: string]: string } {
+function mapTokensToCSSVars(
+  tokens: { [key: string]: string },
+  prefix: string
+): { [key: string]: string } {
   const mapped: { [key: string]: string } = {};
   for (const key in tokens) {
     mapped[key.toLowerCase()] = `var(--${prefix}-${key.toLowerCase()})`;
@@ -57,18 +60,17 @@ const strokeTokens = {
   xxxxl: '--stroke-xxxxl',
 };
 
-
 const config: Config = {
-  darkMode: "class",
-  prefix: 'tw-',
-    content: [
-    "./index.html",
-    "./src/App.tsx",
-    "./src/main.tsx",
-    "./src/**/*.{js,ts,jsx,tsx}",
-    "./src/pages/*.{js,ts,jsx,tsx}",
-    "./src/components/**/*.{js,ts,jsx,tsx}",
-    "./src/lib/*.{js,ts,jsx,tsx}"
+  darkMode: 'class',
+  prefix: '',
+  content: [
+    './index.html',
+    './src/App.tsx',
+    './src/main.tsx',
+    './src/**/*.{js,ts,jsx,tsx}',
+    './src/pages/*.{js,ts,jsx,tsx}',
+    './src/components/**/*.{js,ts,jsx,tsx}',
+    './src/lib/*.{js,ts,jsx,tsx}',
   ],
   theme: {
     extend: {
@@ -78,7 +80,7 @@ const config: Config = {
         ring: 'rgb(var(--ring) / <alpha-value>)',
         background: 'rgb(var(--background) / <alpha-value>)',
         foreground: 'rgb(var(--foreground) / <alpha-value>)',
-        
+
         primary: {
           default: 'rgb(var(--primary) / <alpha-value>)',
           foreground: 'rgb(var(--primary-foreground) / <alpha-value>)',
@@ -109,31 +111,31 @@ const config: Config = {
           DEFAULT: 'rgb(var(--card) / <alpha-value>)',
           foreground: 'rgb(var(--card-foreground) / <alpha-value>)',
         },
-        
+
         error: 'rgb(var(--color-error) / <alpha-value>)',
         success: 'rgb(var(--color-success) / <alpha-value>)',
         warning: 'rgb(var(--color-warning) / <alpha-value>)',
-        
+
         brand: {
           main: 'rgb(var(--color-brand-main) / <alpha-value>)',
           light: 'rgb(var(--color-brand-light) / <alpha-value>)',
           lighter: 'rgb(var(--color-brand-lighter) / <alpha-value>)',
           dark: 'rgb(var(--color-brand-dark) / <alpha-value>)',
           darker: 'rgb(var(--color-brand-darker) / <alpha-value>)',
-        }
+        },
       },
-      
+
       borderRadius: {
         ...mapTokensToCSSVars(radiiTokens, 'radius'),
         lg: 'var(--radius-xl)',
         md: 'var(--radius-l)',
         sm: 'var(--radius-m)',
       },
-      
+
       spacing: {
         ...mapTokensToCSSVars(spacingTokens, 'spacing'),
       },
-      
+
       borderWidth: {
         ...mapTokensToCSSVars(strokeTokens, 'stroke'),
       },
@@ -142,24 +144,24 @@ const config: Config = {
         sans: "var(--font-sans, 'Roboto', 'Helvetica', 'Arial', sans-serif)",
         mono: "var(--font-mono, 'Roboto Mono', 'Courier New', monospace)",
       },
-      
+
       keyframes: {
-        "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" },
+        'accordion-down': {
+          from: { height: '0' },
+          to: { height: 'var(--radix-accordion-content-height)' },
         },
-        "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
+        'accordion-up': {
+          from: { height: 'var(--radix-accordion-content-height)' },
+          to: { height: '0' },
         },
       },
       animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
+        'accordion-down': 'accordion-down 0.2s ease-out',
+        'accordion-up': 'accordion-up 0.2s ease-out',
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require('tailwindcss-animate')],
 };
 
 export default config;

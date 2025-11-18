@@ -1,7 +1,7 @@
 @tailwind base;
 @tailwind components;
-@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
-@import 'tailwindcss';
+@use url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+@use 'tailwindcss';
 
 @theme {
   --font-roboto: 'Roboto', sans-serif;
@@ -100,7 +100,10 @@
     --stroke-xxxl: 10px;
     --stroke-xxxxl: 12px;
 
-    --disabled: backdrop-opacity-[0.3]
+    --disabled: backdrop-opacity-[0.3];
+
+    --subtle: 0px 2px 3px 0px rgba(0, 0, 0, 0.15);
+    --lifted: 0px 7px 22px 4px rgba(0, 0, 0, 0.15);
   }
 
   .dark {

@@ -105,7 +105,7 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
 
     ReactGA.event({
       category: 'Checkout',
-      action: 'step_view',
+      action: 'post_data',
       label: `step_${activeStep}_${stepLabel.replace(/\s+/g, '_').toLowerCase()}`,
     });
   }, [activeStep, steps]);
@@ -118,7 +118,7 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
 
       ReactGA.event({
         category: 'Checkout',
-        action: 'step_complete',
+        action: 'post_oc',
         label: `step_${activeStep}_${stepName}`,
       });
 
@@ -157,7 +157,7 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
 
     ReactGA.event({
       category: 'Checkout',
-      action: 'attempt_purchase',
+      action: 'compra',
       label: `step_${activeStep}_confirmacion`,
     });
     try {
@@ -166,7 +166,7 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
       if (response.success === true) {
         ReactGA.event({
           category: 'Checkout',
-          action: 'purchase_success',
+          action: 'compra_exitosa',
           label: 'orden_completada',
           value: parseFloat(checkoutData.order.total) || 0,
         });

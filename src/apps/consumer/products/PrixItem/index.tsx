@@ -132,7 +132,7 @@ export default function PrixItem() {
       showSnackBar('El producto se está cargando, por favor espera.');
       return;
     }
-    
+
     ReactGA.event('add_to_cart', {
       currency: 'USD',
       value: Number(item.price) * (item.quantity || 1),
@@ -154,17 +154,18 @@ export default function PrixItem() {
     });
 
     addOrUpdateItemInCart(item as Item, 1);
-    showSnackBar("¡Producto agregado al carrito!");
-    navigate("/carrito", { state: { fromPrixItem: true } })  };
+    showSnackBar('¡Producto agregado al carrito!');
+    navigate('/carrito', { state: { fromPrixItem: true } });
+  };
 
   const handleSlideClick = (index: number) => {
-    ReactGA.event("select_item", {
-      item_list_name: "Slider de Previsualización de Item Prix",
+    ReactGA.event('select_item', {
+      item_list_name: 'Slider de Previsualización de Item Prix',
       items: [
         {
           item_name: item.art.title,
-        }
-      ]
+        },
+      ],
     });
     setActiveSlide(index);
   };
@@ -272,8 +273,21 @@ export default function PrixItem() {
               textTransform: 'none',
             }}
           >
-            {isProductLoading ? 'Cargando producto...' : 'Comprar Ahora'}
+            {isProductLoading ? 'Cargando producto...' : 'Comprar Ahora por 72 USD'}
           </Button>
+          <Typography
+            variant="body1"
+            sx={{
+              fontFamily: 'Roboto, sans-serif',
+              fontWeight: 700,
+              fontSize: '8.52px',
+              lineHeight: '100%',
+              color: '#FFF',
+              margin: ' 6px 0 0',
+            }}
+          >
+            Pago en Bs. Tasa BCV{' '}
+          </Typography>
         </Grid2>
       </Grid2>
 

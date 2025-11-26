@@ -100,27 +100,35 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
   };
   const [activeStep, setActiveStep] = useState(getInitialStep());
 
-  useEffect(() => {
-    const stepLabel = steps[activeStep];
-
-    ReactGA.event({
-      category: 'Checkout',
-      action: 'post_data',
-      label: `step_${activeStep}_${stepLabel.replace(/\s+/g, '_').toLowerCase()}`,
-    });
-  }, [activeStep, steps]);
-
   const handleNext = async () => {
     const isValid = await methods.trigger();
     if (isValid) {
       const stepLabel = steps[activeStep];
-      const stepName = stepLabel.replace(/\s+/g, '_').toLowerCase();
 
-      ReactGA.event({
-        category: 'Checkout',
-        action: 'post_oc',
-        label: `step_${activeStep}_${stepName}`,
-      });
+      // Caso 1: Estamos en "Tus datos" y vamos a avanzar -> Disparar 'post_data'
+      if (stepLabel === 'Tus datos') {
+        ReactGA.event({
+          category: 'Checkout',
+          action: 'post_data',
+          label: 'datos_completados_exitosamente',
+        });
+      }
+      // Caso 2: Estamos en "Orden de compra" y vamos a avanzar -> Disparar 'post_oc'
+      else if (stepLabel === 'Orden de compra') {
+        ReactGA.event({
+          category: 'Checkout',
+          action: 'post_oc',
+          label: 'revision_orden_aprobada',
+        });
+      }
+      // Caso 3 (Opcional): Si tienes un paso "Carrito" en mobile
+      else if (stepLabel === 'Carrito') {
+        ReactGA.event({
+          category: 'Checkout',
+          action: 'inicio_checkout',
+          label: 'paso_carrito_mobile',
+        });
+      }
 
       setActiveStep((prev) => prev + 1);
     } else {

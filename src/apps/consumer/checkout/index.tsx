@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Stepper, Step, StepLabel, Button, Typography, Box, Container } from '@mui/material';
 import Grid2 from '@mui/material/Grid';
 
@@ -54,12 +54,21 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  console.groupCollapsed('💼 CartContext state:');
-  console.log('cart.lines:', cart.lines);
-  console.log('cart.subTotal:', cart.subTotal);
-  console.log('cart.totalUnits:', cart.totalUnits);
-  console.log('cart.totalDiscount:', cart.totalDiscount);
-  console.groupEnd();
+  const eventsSent = useRef<Set<string>>(new Set());
+  const trackEvent = (eventName: string, params: any) => {
+    // console.group(`📊 GA Event Triggered: [${eventName}]`);
+    // console.log('Params:', params);
+    // console.log('Timestamp:', new Date().toISOString());
+    // console.groupEnd();
+
+    ReactGA.event(params);
+  };
+  // console.groupCollapsed('💼 CartContext state:');
+  // console.log('cart.lines:', cart.lines);
+  // console.log('cart.subTotal:', cart.subTotal);
+  // console.log('cart.totalUnits:', cart.totalUnits);
+  // console.log('cart.totalDiscount:', cart.totalDiscount);
+  // console.groupEnd();
 
   const navigate = useNavigate();
   const { showSnackBar } = useSnackBar();
@@ -69,6 +78,14 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
     mode: 'onChange',
     shouldUnregister: false,
   });
+
+  useEffect(() => {
+    const subscription = methods.watch((value, { name, type }) => {
+      // Descomentar si quieres ver cada tecla presionada
+      // console.log('Form updated:', name, type);
+    });
+    return () => subscription.unsubscribe();
+  }, [methods.watch]);
 
   useEffect(() => {
     const subscription = methods.watch((currentValues) => {});
@@ -101,6 +118,7 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
   const [activeStep, setActiveStep] = useState(getInitialStep());
 
   const handleNext = async () => {
+    // console.log(`➡️ Intento avanzar desde paso índice: ${activeStep} (${steps[activeStep]})`);
     const isValid = await methods.trigger();
     if (isValid) {
       const stepLabel = steps[activeStep];
@@ -112,23 +130,38 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
           action: 'post_data',
           label: 'datos_completados_exitosamente',
         });
+        if (!eventsSent.current.has('post_data')) {
+          trackEvent('post_data', {
+            category: 'Checkout',
+            action: 'post_data',
+            label: 'datos_completados_exitosamente',
+          });
+
+          eventsSent.current.add('post_data');
+        } else {
+          console.log('Evento post_data ya fue enviado en esta sesión, omitiendo.');
+        }
       }
       // Caso 2: Estamos en "Orden de compra" y vamos a avanzar -> Disparar 'post_oc'
       else if (stepLabel === 'Orden de compra') {
-        ReactGA.event({
-          category: 'Checkout',
-          action: 'post_oc',
-          label: 'revision_orden_aprobada',
-        });
+        if (!eventsSent.current.has('post_oc')) {
+          trackEvent('post_oc', {
+            category: 'Checkout',
+            action: 'post_oc',
+            label: 'revision_orden_aprobada',
+          });
+
+          eventsSent.current.add('post_oc');
+        }
       }
       // Caso 3 (Opcional): Si tienes un paso "Carrito" en mobile
-      else if (stepLabel === 'Carrito') {
-        ReactGA.event({
-          category: 'Checkout',
-          action: 'inicio_checkout',
-          label: 'paso_carrito_mobile',
-        });
-      }
+      // else if (stepLabel === 'Carrito') {
+      //   ReactGA.event({
+      //     category: 'Checkout',
+      //     action: 'inicio_checkout',
+      //     label: 'paso_carrito_mobile',
+      //   });
+      // }
 
       setActiveStep((prev) => prev + 1);
     } else {
@@ -150,6 +183,7 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
   };
 
   const handleBack = () => {
+    // console.log('⬅️ Regresando paso anterior');
     if (activeStep === 1) {
       setChecking(false);
     }
@@ -157,8 +191,7 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
   };
 
   const handleSubmit = async () => {
-    console.log('Submitting form data...', methods.getValues());
-
+    // console.log('🚀 Iniciando Submit final de orden...');
     const checkoutData = methods.getValues();
 
     const parsedData = parseOrder(checkoutData);
@@ -245,7 +278,9 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
           </FormProvider>
         ) : isMobile && activeStep === 2 ? (
           (() => {
-            setChecking(true);
+            if (!checking) {
+              setTimeout(() => setChecking(true), 0);
+            }
             const checkoutState = methods.getValues();
 
             // Map cart lines to order lines
@@ -301,7 +336,9 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
           </FormProvider>
         ) : activeStep === 1 ? (
           (() => {
-            setChecking(true);
+            if (!checking) {
+              setTimeout(() => setChecking(true), 0);
+            }
             const checkoutState = methods.getValues();
 
             // Map cart lines to order lines

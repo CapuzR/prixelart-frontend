@@ -24,6 +24,7 @@ import item3 from '@assets/images/prix-item3.png';
 const items = [
   {
     productId: '649ec9521d692e001182512d',
+    variantId: 'vUvuAe',
     artId: 'DynYqTt',
     price: '72',
     title: 'X-Lona X Ávila y Esfera de Soto',
@@ -31,6 +32,7 @@ const items = [
 
   {
     productId: '649ec9521d692e001182512d',
+    variantId: 'vUvuAe',
     artId: 'NQZSJpd',
     price: '72',
     title: 'X-Lona X Ávila desde Chuao',
@@ -38,6 +40,7 @@ const items = [
 
   {
     productId: '649ec9521d692e001182512d',
+    variantId: 'vUvuAe',
     artId: 'bwBVDIK',
     price: '72',
     title: 'X-Lona X Ávila en Colores fondo negro ',
@@ -106,14 +109,26 @@ export default function PrixItem() {
           return;
         }
 
+        const selectedVariant = productResponse.variants?.find(
+          (v: any) => v._id === currentItemData.variantId
+        );
+
+        if (!selectedVariant) {
+          console.error(
+            `Variante con ID ${currentItemData.variantId} no encontrada en el producto.`
+          );
+          setItem({ price: 'No disponible' });
+          return;
+        }
+
         const completeItem: Partial<Item> = {
           sku: productResponse._id?.toString(),
           art: artResponse,
           product: {
             ...productResponse,
-            selection: [{ name: 'Medida', value: '150x50cm' }],
+            selection: selectedVariant.attributes,
           },
-          price: currentItemData.price,
+          price: selectedVariant.publicPrice,
         };
         setItem(completeItem);
       } catch (error) {
@@ -273,7 +288,11 @@ export default function PrixItem() {
               textTransform: 'none',
             }}
           >
-            {isProductLoading ? 'Cargando producto...' : 'Comprar Ahora por 72 USD'}
+            {isProductLoading
+              ? 'Cargando producto...'
+              : item.price === 'Error' || item.price === 'No disponible'
+                ? 'No disponible'
+                : `Comprar Ahora por ${item.price} USD`}
           </Button>
           <Typography
             variant="body1"
@@ -286,7 +305,7 @@ export default function PrixItem() {
               margin: ' 6px 0 0',
             }}
           >
-            Pago en Bs. Tasa BCV{' '}
+            Pago en Bs. Tasa BCV
           </Typography>
         </Grid2>
       </Grid2>

@@ -25,6 +25,7 @@
   flex-direction: column;
   align-items: stretch;
   width: 50%;
+  min-height: 100px;
   @include theme.paper(
     undefined,
     theme.$box-shadow-medium,

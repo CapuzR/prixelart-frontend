@@ -96,7 +96,7 @@ export default function LineCard({
             container
             sx={{
               display: "flex",
-              flexDirection: "column",
+              flexDirection: isMobile ? "row" : "column",
               gap: "1rem",
               alignItems: "center",
               justifyContent: "center",
@@ -113,13 +113,14 @@ export default function LineCard({
                 className={styles["quantity-input"]}
                 min="1" // HTML5 validation attribute
                 disabled={checking}
+                style={{ fontSize: isMobile ? '12px' : '18px' }}
               />
             </Grid2>
 
             <Grid2 size={{ sm: 6, md: 12 }} className={styles["subtotal"]}>
               <Typography level="h6">Subtotal</Typography>
-              {/* Render the formatted HTML subtotal in a span */}
               <span
+               style={{ fontSize: isMobile ? '14px' : '18px', fontWeight: 'bold', color: '#d33f49', fontFamily: 'arial' }}
                 dangerouslySetInnerHTML={{
                   __html: getFormattedSubtotal() || "",
                 }}

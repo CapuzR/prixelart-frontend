@@ -100,18 +100,20 @@ export default function ItemCard({
                   display: "flex",
                   flexDirection: "row !important",
                   gap: "0.5rem",
-                  padding: "1rem 0 !important",
+                  padding: "1rem 0 0 !important",
                   justifyContent: "left",
                 }}
               >
                 <Typography
                   sx={{ fontWeight: "bold" }}
                   variant={isMobile ? "subtitle2" : "h5"}
+                  style={{ fontSize: isMobile ? '12px' : '24px'}}
                 >
                   Unitario:
                 </Typography>
                 <Typography
                   variant={isMobile ? "subtitle2" : "h5"}
+                  style={{ fontSize: isMobile ? '12px' : '24px'}}
                   dangerouslySetInnerHTML={{ __html: formattedPriceHtml }}
                 />
               </Grid2>

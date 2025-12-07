@@ -142,6 +142,15 @@ export default function PrixItem() {
     buildPredefinedItem();
   }, [activeSlide]);
 
+  const AltAddToCart = () => {
+    navigate(`/crear-prix?producto=${items[0].productId}&Medida=1P-150x50cm`);
+    ReactGA.event({
+      category: 'crear-prix',
+      action: 'expore_other_designs',
+      label: 'Explorar otros diseños desde Item Prix',
+    });
+  };
+
   const handleAddToCart = () => {
     if (isProductLoading || !item.price || item.price === 'Error') {
       showSnackBar('El producto se está cargando, por favor espera.');
@@ -431,6 +440,42 @@ export default function PrixItem() {
           ))}
         </Box>
 
+        <Grid2
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            // marginTop: '10px',
+            gap: '10px',
+          }}
+        >
+          <Typography
+            variant="body1"
+            sx={{
+              fontFamily: 'Inter, sans-serif',
+              fontWeight: 400,
+              fontSize: '13px',
+              lineHeight: '100%',
+              color: '#fff',
+            }}
+          >
+            ¿Quieres ver más diseños exclusivos?
+          </Typography>
+          <Button
+            variant="contained"
+            onClick={AltAddToCart}
+            sx={{
+              color: '#FFF',
+              textTransform: 'none',
+              fontFamily: 'Roboto, sans-serif',
+              fontWeight: '400',
+              fontSize: '13px',
+              lineHeight: '100%',
+            }}
+          >
+            Ver más
+          </Button>
+        </Grid2>
         <Copyright sx={{ color: 'white', margin: 2 }} align="center" />
       </Grid2>
     </Grid2>

@@ -135,7 +135,7 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
         container
         className={styles["main-content"]}
         spacing={4}
-        padding={isMobile ? 2 : 6}
+        padding={isMobile ? "16px 0" : 6}
       >
         <Grid2
           size={{ sm: 12, md: 6 }}

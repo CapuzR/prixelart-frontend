@@ -22,7 +22,7 @@ export default function ItemContent({
       .slice(0, 3)
       .filter((attr) => attr.value !== "")
       .map((attr, index) => (
-        <Typography key={index} variant={isMobile ? "subtitle2" : "h5"}>
+        <Typography key={index} variant={isMobile ? "subtitle2" : "h5"} style={{ fontSize: isMobile ? '12px' : '24px'}}>
           <strong>{attr.name}</strong>: {attr.value}
         </Typography>
       ));
@@ -31,29 +31,29 @@ export default function ItemContent({
   return (
     <Grid2
       container
-      className={`${styles["content-section"]} ${styles[direction]}`}
+      className={`${styles["content-section"]}`}
       spacing={5}
-      sx={{ flexDirection: isMobile ? "column" : "row", gap: "1rem" }}
+      sx={{ flexDirection: "row", gap: "1rem" }}
     >
       <Grid2
-        size={{ xs: 12 }}
+        size={{ xs: 6, sm:12 }}
         className={`${styles["product-section"]} ${direction === "row" && styles["paper"]}`}
       >
-        <Typography variant={isMobile ? "subtitle2" : "h5"} color="inherit">
+        <Typography variant={isMobile ? "subtitle2" : "h5"} style={{ fontSize: isMobile ? '12px' : '24px'}} color="inherit">
           <strong>Producto:</strong> {item.product?.name || "Elígelo"}
         </Typography>
         {getSelectedAttributes()}
       </Grid2>
 
       <Grid2
-        size={{ xs: 12 }}
+        size={{ xs: 6, sm: 12 }}
         className={`${styles["art-section"]} ${direction === "row" && styles["paper"]}`}
       >
-        <Typography variant={isMobile ? "subtitle2" : "h5"} color="inherit">
+        <Typography variant={isMobile ? "subtitle2" : "h5"} style={{ fontSize: isMobile ? '12px' : '24px'}} color="inherit">
           <strong>Arte:</strong> {item.art?.title || "Selecciónalo"}
         </Typography>
         {item.art?.title && item.art?.prixerUsername && (
-          <Typography variant={isMobile ? "subtitle2" : "h5"}>
+          <Typography variant={isMobile ? "subtitle2" : "h5"} style={{ fontSize: isMobile ? '12px' : '24px'}}>
             <strong>Prixer:</strong> {item.art?.prixerUsername}
           </Typography>
         )}

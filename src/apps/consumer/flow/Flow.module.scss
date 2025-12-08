@@ -153,10 +153,13 @@
 
 .art-selection-container {
   padding: theme.$spacing-md;
+  @include theme.respond-below(theme.$breakpoint-md) {
+padding: 0;
+  }
   margin: theme.$spacing-sm;
   background-color: theme.$background-color;
-  box-shadow: theme.$box-shadow-medium;
-  border-radius: theme.$border-radius-xl;
+  // box-shadow: theme.$box-shadow-medium;
+  // border-radius: theme.$border-radius-xl;
   text-align: center;
   overflow: auto;
 }

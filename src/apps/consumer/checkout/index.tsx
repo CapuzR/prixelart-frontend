@@ -396,6 +396,7 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
         <Button
           variant="contained"
           color="primary"
+          disabled={cart.lines.length === 0}
           onClick={activeStep === steps.length - 1 ? handleSubmit : handleNext}
         >
           {activeStep === steps.length - 1 ? 'Ordenar' : 'Siguiente'}

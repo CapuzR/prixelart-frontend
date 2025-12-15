@@ -143,10 +143,10 @@ export default function PrixItem() {
   }, [activeSlide]);
 
   const AltAddToCart = () => {
-    navigate(`/crear-prix?producto=${items[0].productId}&Medida=1P-150x50cm`);
+    navigate(`/crear-prix?producto=${items[0].productId}&Medida=1P-150x50cm`, { state: { fromPrixItem: true } });
     ReactGA.event({
       category: 'crear-prix',
-      action: 'expore_other_designs',
+      action: 'explore_other_designs',
       label: 'Explorar otros diseños desde Item Prix',
     });
   };

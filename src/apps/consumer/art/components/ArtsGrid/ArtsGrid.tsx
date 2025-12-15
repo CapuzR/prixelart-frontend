@@ -1,27 +1,16 @@
-import React, {
-  useState,
-  useEffect,
-  MouseEvent,
-  useRef,
-  useCallback,
-} from "react";
-import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
-import SearchBar from "components/searchBar/searchBar";
-import ArtThumbnail from "../ArtThumbnail";
-import { useLoading } from "context/GlobalContext";
-import { useNavigate, useLocation } from "react-router-dom";
-import { Art } from "../../../../../types/art.types";
-import { fetchGallery } from "@api/art.api";
-import {
-  Typography,
-  Box,
-  CircularProgress,
-  Button,
-  useTheme,
-  Theme,
-} from "@mui/material";
-import SkeletonArtCard from "@apps/admin/components/SkeletonArtCard/SkeletonArtCard";
-import { debounce } from "@utils/utils";
+import React, { useState, useEffect, MouseEvent, useRef, useCallback } from 'react';
+import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
+import SearchBar from 'components/searchBar/searchBar';
+import ArtThumbnail from '../ArtThumbnail';
+import { useLoading } from 'context/GlobalContext';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Art } from '../../../../../types/art.types';
+import { fetchGallery } from '@api/art.api';
+import { Typography, Box, CircularProgress, Button, useTheme, Theme } from '@mui/material';
+import SkeletonArtCard from '@apps/admin/components/SkeletonArtCard/SkeletonArtCard';
+import { debounce } from '@utils/utils';
+
+import ReactGA from 'react-ga';
 
 interface GalleryFilters {
   text?: string | null;
@@ -32,7 +21,7 @@ interface GalleryFilters {
 }
 
 interface ArtsGridProps {
-  onArtSelect?: (art: Art) => void;
+  onArtSelect?: (art: Art, autoAdd?: boolean) => void;
 }
 
 const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
@@ -41,17 +30,11 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
   const location = useLocation();
   const theme = useTheme<Theme>();
 
-  const getParams = useCallback(
-    () => new URLSearchParams(location.search),
-    [location.search],
-  );
+  const getParams = useCallback(() => new URLSearchParams(location.search), [location.search]);
+  const isFromPrixItem = location.state?.fromPrixItem;
 
-  const [searchValue, setSearchValue] = useState<string>(
-    getParams().get("name") || "",
-  );
-  const [categoryValue, setCategoryValue] = useState<string>(
-    getParams().get("category") || "",
-  );
+  const [searchValue, setSearchValue] = useState<string>(getParams().get('name') || '');
+  const [categoryValue, setCategoryValue] = useState<string>(getParams().get('category') || '');
 
   const [tiles, setTiles] = useState<Art[]>([]);
   const [pageNumber, setPageNumber] = useState<number>(1);
@@ -62,15 +45,15 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
   const performSearch = (query: string, category: string) => {
     const newParams = new URLSearchParams(location.search);
     if (query) {
-      newParams.set("name", query);
+      newParams.set('name', query);
     } else {
-      newParams.delete("name");
+      newParams.delete('name');
     }
 
     if (category) {
-      newParams.set("category", category);
+      newParams.set('category', category);
     } else {
-      newParams.delete("category");
+      newParams.delete('category');
     }
 
     navigate({ search: newParams.toString() }, { replace: true });
@@ -106,8 +89,8 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
     const fetchData = async () => {
       try {
         const params = getParams();
-        const currentSearch = params.get("name") || "";
-        const currentCategory = params.get("category") || "";
+        const currentSearch = params.get('name') || '';
+        const currentCategory = params.get('category') || '';
 
         const filters: GalleryFilters = {
           initialPoint: (pageNumber - 1) * itemsPerPage,
@@ -122,26 +105,20 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
             return response.arts;
           } else {
             const existingArtIds = new Set(prevTiles.map((art) => art.artId));
-            const uniqueNewArts = response.arts.filter(
-              (art) => !existingArtIds.has(art.artId),
-            );
+            const uniqueNewArts = response.arts.filter((art) => !existingArtIds.has(art.artId));
             return [...prevTiles, ...uniqueNewArts];
           }
         });
 
         setHasMore(response.hasMore);
       } catch (error: any) {
-        console.error("Error fetching arts:", error);
+        console.error('Error fetching arts:', error);
         if (tiles.length > 0 && pageNumber > 1) {
-          setFetchMoreError(
-            error.message || "Ocurrió un error al cargar más arte.",
-          );
+          setFetchMoreError(error.message || 'Ocurrió un error al cargar más arte.');
         } else {
           setHasMore(false);
           if (pageNumber === 1) {
-            setFetchMoreError(
-              error.message || "Ocurrió un error al cargar el arte.",
-            );
+            setFetchMoreError(error.message || 'Ocurrió un error al cargar el arte.');
           }
         }
       } finally {
@@ -167,11 +144,11 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
 
       if (node) observer.current.observe(node);
     },
-    [loading, hasMore, fetchMoreError],
+    [loading, hasMore, fetchMoreError]
   );
 
   const handleFullImageClickEvent = (e: MouseEvent<HTMLElement>, tile: Art) => {
-    navigate("/arte/" + tile.artId);
+    navigate('/arte/' + tile.artId);
   };
 
   const handleRetryFetchMore = () => {
@@ -196,15 +173,13 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
             350: 1,
             750: 2,
             900: 3,
-            1080: window.location.search.includes("producto=") ? 3 : 4,
+            1080: window.location.search.includes('producto=') ? 3 : 4,
           }}
         >
-          <Masonry style={{ columnGap: "7px" }}>
-            {Array.from({ length: Math.max(1, skeletonCount) }).map(
-              (_, index) => (
-                <SkeletonArtCard key={`skeleton-${index}`} />
-              ),
-            )}
+          <Masonry style={{ columnGap: '7px' }}>
+            {Array.from({ length: Math.max(1, skeletonCount) }).map((_, index) => (
+              <SkeletonArtCard key={`skeleton-${index}`} />
+            ))}
           </Masonry>
         </ResponsiveMasonry>
       );
@@ -278,22 +253,22 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
   };
 
   return (
-    <div style={{ width: "100%" }}>
+    <div style={{ width: '100%' }}>
       <Box
         sx={{
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "space-around",
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'space-around',
           backgroundColor: theme.palette.background.paper,
-          marginBottom: "15px",
+          marginBottom: '15px',
         }}
       >
         <div
           style={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "center",
-            marginBottom: "16px",
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            marginBottom: '16px',
             padding: 0,
           }}
         >
@@ -305,56 +280,56 @@ const ArtsGrid: React.FC<ArtsGridProps> = ({ onArtSelect }) => {
             onSearchSubmit={() => performSearch(searchValue, categoryValue)}
             placeholderText="Busca tu arte favorito"
             categoriesList={[
-              "Abstracto",
-              "Animales",
-              "Arquitectura",
-              "Atardecer",
-              "Cacao",
-              "Café",
-              "Carros",
-              "Ciudades",
-              "Comida",
-              "Edificios",
-              "Fauna",
-              "Flora",
-              "Lanchas, barcos o yates",
-              "Montañas",
-              "Naturaleza",
-              "Navidad",
-              "Playas",
-              "Puentes",
-              "Surrealista",
-              "Transportes",
-              "Vehículos",
+              'Abstracto',
+              'Animales',
+              'Arquitectura',
+              'Atardecer',
+              'Cacao',
+              'Café',
+              'Carros',
+              'Ciudades',
+              'Comida',
+              'Edificios',
+              'Fauna',
+              'Flora',
+              'Lanchas, barcos o yates',
+              'Montañas',
+              'Naturaleza',
+              'Navidad',
+              'Playas',
+              'Puentes',
+              'Surrealista',
+              'Transportes',
+              'Vehículos',
             ]}
           />
         </div>
       </Box>
-      <Box
-        style={{ paddingBottom: "20px" }}
-        aria-live="polite"
-        aria-relevant="additions text"
-      >
+      <Box style={{ paddingBottom: '20px' }} aria-live="polite" aria-relevant="additions text">
         {tiles.length > 0 && (
           <ResponsiveMasonry
             columnsCountBreakPoints={{
               350: 1,
               750: 2,
               900: 3,
-              1080: window.location.search.includes("producto=") ? 3 : 4,
+              1080: window.location.search.includes('producto=') ? 3 : 4,
             }}
           >
-            <Masonry style={{ columnGap: "7px" }}>
+            <Masonry style={{ columnGap: '7px' }}>
               {tiles.map((tile, i) => (
-                <div
-                  key={tile.artId}
-                  ref={i === tiles.length - 1 ? lastArtElementRef : null}
-                >
+                <div key={tile.artId} ref={i === tiles.length - 1 ? lastArtElementRef : null}>
                   <ArtThumbnail
                     tile={tile}
                     handleFullImageClick={(e: MouseEvent<HTMLElement>) => {
                       if (onArtSelect) {
-                        onArtSelect(tile);
+                        onArtSelect(tile, true);
+                        ReactGA.event({
+                          category: 'select_art',
+                          action: isFromPrixItem
+                            ? 'picked_art_from_prix_item'
+                            : 'picked_art_organic',
+                          label: tile.title,
+                        });
                       } else {
                         handleFullImageClickEvent(e, tile);
                       }

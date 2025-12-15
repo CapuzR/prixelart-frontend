@@ -3,10 +3,6 @@ import React from "react";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import {
-  MenuItem,
-  FormControl,
-  Select,
-  InputLabel,
   Typography,
 } from "@mui/material";
 import { Share as ShareIcon } from "@mui/icons-material";
@@ -44,7 +40,7 @@ interface LandscapeProps {
     e: React.ChangeEvent<{ name: string; value: number }>,
   ) => void;
   isItemReady: boolean;
-  onArtSelect: (selectedArt: Art) => void;
+  onArtSelect: (selectedArt: Art, autoAdd?: boolean) => void;
   onProductSelect: (selectedProduct: Product) => void;
   selectedProductId?: string | null;
   isProductAttributesComplete: boolean;
@@ -158,20 +154,6 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
             sx={{ height: isMobile ? "fit-content" : "80vh" }}
           >
             <Grid2 className={styles["right-side-bottom"]}>
-              {/* <h2>
-                {props.selectedProductId
-                  ? "Detalles del producto:"
-                  : productExists && !artExists
-                    ? "Elige el arte:"
-                    : !productExists && artExists
-                      ? "Elige el producto:"
-                      : productExists &&
-                          artExists &&
-                          !props.isProductAttributesComplete &&
-                          attributeNames.length > 0
-                        ? "Selecciona las opciones:" // Title when attribute selectors are shown
-                        : ""}
-              </h2> */}
               <Grid2 className={styles["art-selection-container"]}>
                 <Grid2 className={styles["art-grid-wrapper"]}>
                   {props.selectedProductId &&

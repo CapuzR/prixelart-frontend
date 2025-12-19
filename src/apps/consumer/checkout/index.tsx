@@ -49,6 +49,28 @@ const getErrorMessages = (errors: object): string[] => {
   return messages;
 };
 
+const getFirstErrorDetails = (errors: any, prefix = ''): { field: string; message: string } | null => {
+  const keys = Object.keys(errors);
+  if (keys.length === 0) return null;
+
+  const firstKey = keys[0];
+  const value = errors[firstKey];
+  const currentPath = prefix ? `${prefix}.${firstKey}` : firstKey;
+
+  if (value && typeof value === 'object' && 'message' in value && typeof value.message === 'string') {
+    return {
+      field: currentPath,
+      message: value.message
+    };
+  }
+
+  if (value && typeof value === 'object') {
+    return getFirstErrorDetails(value, currentPath);
+  }
+
+  return null;
+};
+
 const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem }) => {
   const { cart, emptyCart } = useCart();
   const theme = useTheme();
@@ -120,6 +142,7 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
   const handleNext = async () => {
     // console.log(`➡️ Intento avanzar desde paso índice: ${activeStep} (${steps[activeStep]})`);
     const isValid = await methods.trigger();
+    
     if (isValid) {
       const stepLabel = steps[activeStep];
 
@@ -165,21 +188,24 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
 
       setActiveStep((prev) => prev + 1);
     } else {
-      const stepLabel = steps[activeStep];
-      const stepName = stepLabel.replace(/\s+/g, '_').toLowerCase();
+      const currentStepName = steps[activeStep]; 
+      const normalizedStep = currentStepName.replace(/\s+/g, '_').toLowerCase();
+      const formErrors = methods.formState.errors;
 
-      const errorMessages = getErrorMessages(methods.formState.errors);
+      const errorDetails = getFirstErrorDetails(formErrors);
+      const primaryErrorField = errorDetails?.field || 'unknown_field'; 
+      const primaryErrorMessage = errorDetails?.message || 'unknown_error';
 
-      const errorString = errorMessages.join(' | ');
+      const errorFields = Object.keys(formErrors);
 
-      ReactGA.event({
-        category: 'Checkout',
-        action: 'validation_error',
-        label: `step_${activeStep}_${stepName} | errors: ${errorString || 'unknown_errors'}`,
+      ReactGA.event("form_error", {
+        event_category: "checkout_validation",
+        step_name: normalizedStep,
+        error_field: primaryErrorField,
+        error_message: primaryErrorMessage,
+        total_errors: Object.keys(formErrors).length
       });
-
-      console.warn('GA Event: Validation Error', `Step: ${stepName}`, `Errors: ${errorString}`);
-    }
+      console.warn(`GA Error Tracked: [${normalizedStep}] Field: ${primaryErrorField}`);    }
   };
 
   const handleBack = () => {

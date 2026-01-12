@@ -49,7 +49,10 @@ const getErrorMessages = (errors: object): string[] => {
   return messages;
 };
 
-const getFirstErrorDetails = (errors: any, prefix = ''): { field: string; message: string } | null => {
+const getFirstErrorDetails = (
+  errors: any,
+  prefix = ''
+): { field: string; message: string } | null => {
   const keys = Object.keys(errors);
   if (keys.length === 0) return null;
 
@@ -57,10 +60,15 @@ const getFirstErrorDetails = (errors: any, prefix = ''): { field: string; messag
   const value = errors[firstKey];
   const currentPath = prefix ? `${prefix}.${firstKey}` : firstKey;
 
-  if (value && typeof value === 'object' && 'message' in value && typeof value.message === 'string') {
+  if (
+    value &&
+    typeof value === 'object' &&
+    'message' in value &&
+    typeof value.message === 'string'
+  ) {
     return {
       field: currentPath,
-      message: value.message
+      message: value.message,
     };
   }
 
@@ -85,6 +93,13 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
 
     ReactGA.event(params);
   };
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.clarity && fromPrixItem) {
+      window.clarity('set', 'Funnel_Source', 'PrixItem');
+    }
+  }, [fromPrixItem]);
+
   // console.groupCollapsed('💼 CartContext state:');
   // console.log('cart.lines:', cart.lines);
   // console.log('cart.subTotal:', cart.subTotal);
@@ -142,7 +157,7 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
   const handleNext = async () => {
     // console.log(`➡️ Intento avanzar desde paso índice: ${activeStep} (${steps[activeStep]})`);
     const isValid = await methods.trigger();
-    
+
     if (isValid) {
       const stepLabel = steps[activeStep];
 
@@ -177,6 +192,14 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
           eventsSent.current.add('post_oc');
         }
       }
+
+      if (typeof window !== 'undefined' && window.clarity) {
+        if (stepLabel === 'Tus datos') {
+          window.clarity('event', 'Checkout_Datos_Completed');
+        } else if (stepLabel === 'Orden de compra') {
+          window.clarity('event', 'Checkout_Review_Approved');
+        }
+      }
       // Caso 3 (Opcional): Si tienes un paso "Carrito" en mobile
       // else if (stepLabel === 'Carrito') {
       //   ReactGA.event({
@@ -188,24 +211,29 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
 
       setActiveStep((prev) => prev + 1);
     } else {
-      const currentStepName = steps[activeStep]; 
+      const currentStepName = steps[activeStep];
       const normalizedStep = currentStepName.replace(/\s+/g, '_').toLowerCase();
       const formErrors = methods.formState.errors;
 
       const errorDetails = getFirstErrorDetails(formErrors);
-      const primaryErrorField = errorDetails?.field || 'unknown_field'; 
+      const primaryErrorField = errorDetails?.field || 'unknown_field';
       const primaryErrorMessage = errorDetails?.message || 'unknown_error';
 
       const errorFields = Object.keys(formErrors);
 
-      ReactGA.event("form_error", {
-        event_category: "checkout_validation",
+      if (typeof window !== 'undefined' && window.clarity) {
+        window.clarity('event', 'Checkout_Validation_Error');
+      }
+
+      ReactGA.event('form_error', {
+        event_category: 'checkout_validation',
         step_name: normalizedStep,
         error_field: primaryErrorField,
         error_message: primaryErrorMessage,
-        total_errors: Object.keys(formErrors).length
+        total_errors: Object.keys(formErrors).length,
       });
-      console.warn(`GA Error Tracked: [${normalizedStep}] Field: ${primaryErrorField}`);    }
+      console.warn(`GA Error Tracked: [${normalizedStep}] Field: ${primaryErrorField}`);
+    }
   };
 
   const handleBack = () => {
@@ -237,7 +265,10 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
           label: 'orden_completada',
           value: parseFloat(checkoutData.order.total) || 0,
         });
-
+        if (typeof window !== 'undefined' && window.clarity) {
+          window.clarity('event', 'Purchase_Success');
+          // window.clarity('set', 'Purchase_Value', checkoutData.order.total?.toString());
+        }
         emptyCart();
         showSnackBar(
           'Orden realizada exitosamente! Pronto serás contactado por un miembro del equipo de Prixelart para coordinar la entrega.'
@@ -249,6 +280,10 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
           action: 'purchase_failure',
           label: response.info || 'api_error_desconocido',
         });
+
+        if (typeof window !== 'undefined' && window.clarity) {
+          window.clarity('event', 'Purchase_Api_Failure');
+      }
       }
     } catch (error) {
       ReactGA.event({
@@ -256,6 +291,9 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
         action: 'purchase_failure',
         label: 'network_or_exception_error',
       });
+      if (typeof window !== 'undefined' && window.clarity) {
+        window.clarity('event', 'Purchase_Network_Error');
+    }
       console.error('Error creating order:', error);
       showSnackBar('Hubo un error inesperado al procesar tu orden.');
     }

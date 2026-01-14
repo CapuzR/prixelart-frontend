@@ -30,6 +30,7 @@ import LegacyOrProfileRoute from "./LegacyArtLink.routes";
 import PrixItem from "./products/PrixItem/index";
 
 import { usePrixerCreator } from "@context/GlobalContext";
+import Wallpapers from "./landing/Wallpapers";
 
 const ConsumerRoutes: React.FC = () => {
   const { uploadArt, setArtModal } = usePrixerCreator();
@@ -62,6 +63,7 @@ const ConsumerRoutes: React.FC = () => {
         <Route path="/crear-prix" element={<Flow />} />
         <Route path="/producto/:id" element={<ProductDetails />} />
         <Route path="/prix-item" element={<PrixItem />} />
+        <Route path="/prix-wallpaper" element={<Wallpapers />} />
 
         <Route path="/" element={<Home />} />
         <Route

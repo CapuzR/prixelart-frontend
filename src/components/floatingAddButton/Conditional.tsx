@@ -7,7 +7,7 @@ const ConditionalFB = () => {
   const location = useLocation();
   const { pathname } = location;
   const { user } = useUser();
-  const isCreator = user?.prixer?.status;
+  const isCreator = user?.prixer;
 
   const routes = [
     "/productos",

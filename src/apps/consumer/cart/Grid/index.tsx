@@ -74,10 +74,10 @@ const CartReview: React.FC<CartReviewProps> = ({ checking }) => {
               ))}
               <Grid2 className={styles["cart-add-more"]}>
                 <Button
-                  variant="contained"
+                  variant="outlined"
                   color="primary"
                   style={{
-                    color: "white",
+                    // color: "white",
                     borderRadius: "8px",
                     padding: "10px 20px",
                     width: "80%",
@@ -118,27 +118,6 @@ const CartReview: React.FC<CartReviewProps> = ({ checking }) => {
               </Grid2>
             </Grid2>
           )}
-          {/* <Grid2
-            className={styles["cart-add-more"]}
-          >
-            <Button
-              variant="contained"
-              color="primary"
-              style={{
-                color: "white",
-                borderRadius: "8px",
-                padding: "10px 20px",
-                width: "80%",
-                marginLeft: "10%",
-                marginTop: "33px",
-              }}
-              onClick={() => navigate("/productos")}
-            >
-              {cart.lines.length > 0
-                ? "Añadir Más Productos"
-                : "Añadir Productos"}
-            </Button>
-          </Grid2> */}
         </>
       )}
     </Grid2>

@@ -152,7 +152,7 @@ const Details: React.FC<DetailsProps> = ({ productId }) => {
       }
     };
     fetchProduct();
-  }, [id, setLoading]);
+  }, [id]);
 
   useEffect(() => {
     if (!product?._id || !product.variants || product.variants.length === 0) {
@@ -266,7 +266,7 @@ const Details: React.FC<DetailsProps> = ({ productId }) => {
       product.variants,
     );
     setSelectedVariant(foundVariant || undefined);
-  }, [product?.variants, searchParams]);
+  }, [product?.variants, searchParams.toString()]);
 
   useEffect(() => {
     setSelectedVariantPriceInfo({

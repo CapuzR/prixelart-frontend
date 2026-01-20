@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ReactGA from 'react-ga4';
+import { clarity } from 'react-microsoft-clarity';
 
 import Grid2 from '@mui/material/Grid';
 import { Typography, Box, Button } from '@mui/material';
@@ -12,7 +14,6 @@ import { fetchArt } from '../../../../api/art.api';
 import { useCart } from 'context/CartContext';
 import { useSnackBar } from 'context/GlobalContext';
 
-import ReactGA from 'react-ga4';
 import banner1 from '@assets/images/prix-item-bg1.webp';
 import banner2 from '@assets/images/prix-item-bg2.webp';
 import banner3 from '@assets/images/prix-item-bg3.webp';
@@ -76,6 +77,21 @@ type Item = {
   product: any;
   price: string;
   quantity: number;
+};
+
+declare global {
+  interface Window {
+    clarity: (command: string, ...args: any[]) => void;
+  }
+}
+
+const safeClarityEvent = (action: string, label?: string) => {
+  if (typeof window !== 'undefined' && window.clarity) {
+    window.clarity('event', action);
+    if (label) {
+      window.clarity('set', action, label);
+    }
+  }
 };
 
 export default function PrixItem() {
@@ -143,6 +159,7 @@ export default function PrixItem() {
   }, [activeSlide]);
 
   const AltAddToCart = () => {
+    safeClarityEvent('click_explorar_otros_artes');
     navigate(`/crear-prix?producto=${items[0].productId}&Medida=1P-150x50cm`, { state: { fromPrixItem: true } });
     ReactGA.event({
       category: 'crear-prix',
@@ -154,9 +171,15 @@ export default function PrixItem() {
   const handleAddToCart = () => {
     if (isProductLoading || !item.price || item.price === 'Error') {
       showSnackBar('El producto se está cargando, por favor espera.');
+      safeClarityEvent('click_durante_carga');
       return;
     }
 
+    safeClarityEvent('Click_Comprar_PrixItem'); 
+    
+    if (window.clarity) {
+        window.clarity('set', 'Intencion_Compra_Arte', item.art?.title || 'Desconocido');
+    }
     ReactGA.event('add_to_cart', {
       currency: 'USD',
       value: Number(item.price) * (item.quantity || 1),
@@ -183,6 +206,7 @@ export default function PrixItem() {
   };
 
   const handleSlideClick = (index: number) => {
+    safeClarityEvent('select_item', `arte_seleccionado ${SLIDER_ITEMS[index].title}`);
     ReactGA.event('select_item', {
       item_list_name: 'Slider de Previsualización de Item Prix',
       items: [

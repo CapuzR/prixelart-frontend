@@ -1,526 +1,344 @@
-import React, { useState, FormEvent } from "react";
-
-import Avatar from "@mui/material/Avatar";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Grid2 from "@mui/material/Grid";
+import {
+  Box,
+  Paper,
+  Typography,
+  TextField,
+  Button,
+  Link,
+  CircularProgress,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+  Checkbox,
+  FormControlLabel,
+  Modal,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
+import Grid2 from '@mui/material/Grid';
 import AddIcon from "@mui/icons-material/AddRounded";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import MenuItem from "@mui/material/MenuItem";
-import InputLabel from "@mui/material/InputLabel";
-import Select from "@mui/material/Select";
-import FormControl from "@mui/material/FormControl";
-import Input from "@mui/material/Input";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import Modal from "@mui/material/Modal";
-
-import { Theme, useTheme } from "@mui/material/styles";
-import { makeStyles } from "tss-react/mui";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 
-import { useSnackBar, useLoading } from "@context/GlobalContext";
-import Copyright from "@components/Copyright/copyright";
-import { createPrixer } from "../api";
+import { useSnackBar, useLoading, useUser } from "@context/GlobalContext";
+import { getRandomArt } from "@api/art.api";
+import { createPrixer } from "../api"; 
+import { isAuth } from "@api/utils.api";
+import { User } from "types/user.types";
 
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import InitialTerms from "@apps/artist/components/Terms/index";
+import Copyright from "@components/Copyright/copyright";
+import ProfileImageUpload from "@components/ProfileImageAvatar";
+import { count } from "console";
 
-const useStyles = makeStyles()((theme: Theme) => {
-  return {
-    paper: {
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      height: "100%",
-    },
-    avatar: {
-      display: "flex",
-      "& > *": {
-        margin: "8px",
-      },
-      borderStyle: "solid",
-      borderWidth: 1,
-      borderColor: "#000",
-      backgroundColor: "#fff",
-      width: "160px",
-      height: "160px",
-    },
-    form: {
-      width: "100%",
-    },
-    submit: {
-      marginTop: "24px",
-      marginRight: "0px",
-      marginBottom: "16px",
-      marginLeft: "0px",
-      fontWeight: "bold",
-      textTransform: "none",
-    },
-    formControl: {
-      margin: "8px",
-      minWidth: 120,
-      maxWidth: 300,
-    },
-    modal: {
-      position: "absolute",
-      display: "flex",
-      flexDirection: "column",
-      width: "80%",
-      maxHeight: "70vh",
-      overflowY: "auto",
-      backgroundColor: "white",
-      padding: 40,
-      top: "50%",
-      left: "50%",
-      transform: "translate(-50%, -50%)",
-      textAlign: "justify",
-      borderRadius: 16,
-    },
-    button: {
-      textAlign: "center",
-    },
-    root: {
-      height: 300,
-      flexGrow: 1,
-      minWidth: 300,
-    },
-  };
-});
-
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
+const ensureHttps = (url: string): string => {
+  if (!url) return "";
+  let fullUrl = url.trim();
+  if (!/^https?:\/\//i.test(fullUrl) && !fullUrl.startsWith("/")) {
+    fullUrl = `https://${fullUrl}`;
+  }
+  return fullUrl;
 };
-function getStyles(specialty, theme) {
-  return {
-    fontWeight:
-      specialty.indexOf(specialty) === -1
-        ? theme.typography.fontWeightRegular
-        : theme.typography.fontWeightMedium,
-  };
-}
+
+const findValidWebpUrl = (art: any): string | null => {
+  if (!art) return null;
+  const props = ["largeThumbUrl", "mediumThumbUrl", "thumbnailUrl"];
+  for (const key of props) {
+    const value = art[key];
+    if (typeof value === "string" && value.toLowerCase().endsWith(".webp")) {
+      return ensureHttps(value);
+    }
+  }
+  return null;
+};
+
+const SPECIALTIES = ["Fotografía", "Diseño", "Artes plásticas"];
 
 export default function PrixerRegistration() {
-  const { classes } = useStyles();
-  const navigate = useNavigate();
   const theme = useTheme();
-
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const navigate = useNavigate();
   const { showSnackBar } = useSnackBar();
-  const { setLoading } = useLoading();
+  const { loading, setLoading } = useLoading();
 
-  const [instagram, setInstagram] = useState("");
-  const [facebook, setFacebook] = useState("");
-  const [twitter, setTwitter] = useState("");
-  const [dateOfBirth, setDateOfBirth] = useState<Dayjs | null>(
-    dayjs("2022-04-17"),
-  );
-  const [phone, setPhone] = useState("");
-  const [country, setCountry] = useState("");
-  const [city, setCity] = useState("");
-  const [description, setDescription] = useState("");
-  const [avatarObj, setAvatarObj] = useState("");
-  const [avatarPic, setAvatarPic] = useState("");
-  const [buttonState, setButtonState] = useState(true);
-  const [isChecked, setIsChecked] = useState(false);
+  const { user, setUser } = useUser(); 
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
+  const [formData, setFormData] = useState({
+    instagram: "",
+    facebook: "",
+    twitter: "",
+    phone: "",
+    country: "",
+    city: "",
+    description: "",
+  });
   const [specialty, setSpecialty] = useState<string[]>([]);
-  const [modal, setModal] = useState(false);
+  const [dateOfBirth, setDateOfBirth] = useState<Dayjs | null>(dayjs().subtract(18, "year"));
 
-  const specialties = ["Fotografía", "Diseño", "Artes plásticas"];
-  // const isDesktop = useMediaQuery(theme.breakpoints.up("sm"));
-  const status = true;
+  const [avatarUrl, setAvatarUrl] = useState<string>("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
-  const handleOnChange = () => {
-    setIsChecked(!isChecked);
-  };
+  const [bgUrl, setBgUrl] = useState<string | null>(null);
+  const [loadingBg, setLoadingBg] = useState(true);
 
-  const openModal = () => {
-    setModal(!modal);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (
-      !specialty ||
-      !instagram ||
-      !dateOfBirth ||
-      !specialty ||
-      !phone ||
-      !country ||
-      !city ||
-      !isChecked
-    ) {
-      showSnackBar("Por favor completa todos los campos requeridos.");
-      setIsChecked(true);
-    } else {
-      setLoading(true);
-      setButtonState(true);
-
-      const formData = new FormData();
-      formData.append("specialtyArt", specialty.join());
-      formData.append("instagram", instagram);
-      formData.append("facebook", facebook);
-      formData.append("twitter", twitter);
-      formData.append("dateOfBirth", dateOfBirth.format("DD-MM-YYYY"));
-      formData.append("phone", phone);
-      formData.append("country", country);
-      formData.append("city", city);
-      formData.append("description", description);
-      formData.append("termsAgree", isChecked.toString());
-      formData.append("status", status.toString());
-      formData.append("avatar", avatarPic);
-      formData.append(
-        "username",
-        JSON.parse(localStorage.getItem("token")).username,
-      );
+  useEffect(() => {
+    const fetchArt = async () => {
       try {
-        const response = await createPrixer(formData);
-        if (response.data.success === false) {
-          setButtonState(false);
-          showSnackBar(response.data.message);
-        } else {
-          // const data = {
-          //   balance: 0,
-          //   email: JSON.parse(localStorage.getItem("token")).email,
-          // }
-          // const base_url =
-          //   import.meta.env.VITE_BACKEND_URL + "/account/create"
-          // axios.post(base_url, data, {
-          //   "Content-Type": "multipart/form-data",
-          // })
-          // showSnackBar("Registro de Prixer exitoso.")
-          const token = JSON.parse(localStorage.getItem("token"));
-          token.prixerId = token.id;
-          localStorage.setItem("token", JSON.stringify(token));
-          navigate({
-            pathname: "/prixer=" + response.data.prixerData.username,
-          });
-        }
-      } catch (error) {
-        setButtonState(false);
-        console.log(error.response);
+        const art = await getRandomArt();
+        const url = findValidWebpUrl(art);
+        if (url) setBgUrl(url);
+      } catch (err) {
+        console.error("Error bg:", err);
+      } finally {
+        setLoadingBg(false);
       }
+    };
+    fetchArt();
+  }, []);
+
+  useEffect(() => {
+    const verifyUserStatus = async () => {
+      try {
+        const auth = await isAuth(); 
+
+        if (!auth.success) {
+          showSnackBar("Para crear un perfil de artista, primero debes registrarte o iniciar sesión.");
+          navigate("/registrar");
+          return;
+        }
+
+        const currentUser = auth.result as User;
+
+        if (currentUser.prixer) {
+          showSnackBar("Ya tienes un perfil de Prixer creado.");
+          navigate(`/prixer/${currentUser.username}`);
+          return;
+        }
+        setUser(currentUser); 
+        setCheckingAuth(false);
+      } catch (error) {
+        navigate("/registrar");
+      }
+    };
+
+    verifyUserStatus();
+  }, []);
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // const onImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   if (e.target.files && e.target.files[0]) {
+  //     setAvatar({
+  //       file: e.target.files[0],
+  //       preview: URL.createObjectURL(e.target.files[0]),
+  //     });
+  //   }
+  // };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.phone || !formData.country || specialty.length === 0 || !termsAccepted) {
+      showSnackBar("Por favor completa los campos obligatorios y acepta los términos.");
+      return;
+    }
+
+    setLoading(true);
+
+    if (!user) {
+      showSnackBar("Error de sesión. Por favor inicia sesión de nuevo.");
+      navigate("/login");
+      return;
+    }
+
+    const data = {
+      specialty: specialty.join(", "),
+      dateOfBirth: dateOfBirth?.format("DD-MM-YYYY") || "",
+      termsAgree: termsAccepted,
+      username: user.username,
+      avatar: avatarUrl,
+      instagram: formData.instagram,
+      twitter: formData.twitter,
+      facebook: formData.facebook,
+      phone: formData.phone,
+      country: formData.country,
+      city: formData.city,
+      description: formData.description
+    }
+
+    try {
+      const response = await createPrixer(data);
+      if (response.data.success) {
+        setUser(response.data.result); 
+        showSnackBar("¡Perfil de Prixer creado con éxito!");
+        navigate(`/prixer/${response.data.result.username}`);
+      } else {
+        showSnackBar(response.data.message || "Error al crear el perfil.");
+      }
+    } catch (error) {
+      console.error(error);
+      showSnackBar("Error de conexión con el servidor.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleChange = (event) => {
-    setSpecialty(event.target.value);
-  };
-
-  const onImageChange = async (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setAvatarObj(URL.createObjectURL(e.target.files[0]));
-      setAvatarPic(e.target.files[0]);
-    }
-  };
+  if (checkingAuth) {
+    return (
+      <Box sx={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 2 }}>
+        <CircularProgress />
+        <Typography>Verificando estado de registro...</Typography>
+      </Box>
+    );
+  }
 
   return (
-    <Container
-      component="main"
-      maxWidth="xs"
-      style={{ height: "calc(100vh - 128px)", marginTop: 100 }}
-    >
-      {/* <CssBaseline /> */}
-      <div className={classes.paper}>
-        <Typography
-          component="h1"
-          variant="h5"
-          color="secondary"
-          style={{ textAlign: "center" }}
-        >
-          Comparte con tus futuros clientes
-        </Typography>
-        <form
-          onSubmit={handleSubmit}
-          className={classes.form}
-          style={{ marginTop: "32px" }}
-          noValidate
-        >
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <Grid2 container component="main" sx={{ minHeight: "100vh" }}>
+        {/* Background Section (Consistencia con SignUp) */}
+        {!isSmallScreen && (
           <Grid2
-            container
-            spacing={3}
-            style={{ display: "flex", justifyContent: "center" }}
-          >
-            <Grid2
-              size={{ xs: 8 }}
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                marginBottom: 20,
-              }}
-            >
-              {avatarObj ? (
-                <Avatar
-                  sx={{
-                    display: "flex",
-                    "& > *": {
-                      margin: "8px",
-                    },
-                    borderStyle: "solid",
-                    borderWidth: 1,
-                    borderColor: "#000",
-                    backgroundColor: "#fff",
-                    width: "160px",
-                    height: "160px",
-                    cursor: "pointer",
-                  }}
-                >
-                  <label htmlFor="file-input">
-                    <img
-                      src={avatarObj}
-                      alt="Prixer profile avatar"
-                      style={{
-                        cursor: "pointer",
-                        maxHeight: 160,
-                        maxWidth: 160,
-                        objectFit: "cover",
-                      }}
-                    />
-                  </label>
-                  <input
-                    style={{ display: "none" }}
-                    accept="image/*"
-                    id="file-input"
-                    type="file"
-                    onChange={onImageChange}
-                    required
-                  />
-                </Avatar>
-              ) : (
-                <Avatar
-                  sx={{
-                    display: "flex",
-                    "& > *": {
-                      margin: "8px",
-                    },
-                    cursor: "pointer",
-                    borderStyle: "dashed",
-                    borderWidth: 2,
-                    borderColor: "#404e5c",
-                    backgroundColor: "#FFF",
-                    width: "160px",
-                    height: "160px",
-                  }}
-                >
-                  <label htmlFor="file-input">
-                    <AddIcon
-                      style={{ width: 60, height: 60, color: "#d33f49" }}
-                    />
-                  </label>
-                  <input
-                    style={{ display: "none" }}
-                    accept="image/*"
-                    id="file-input"
-                    type="file"
-                    onChange={onImageChange}
-                  />
-                </Avatar>
-              )}
-            </Grid2>
-            <Grid2 size={{ xs: 6 }}>
-              <FormControl
-                className={classes.formControl}
-                style={{ width: "100%" }}
-              >
-                <InputLabel id="demo-mutiple-name-label">
-                  Especialidad
-                </InputLabel>
-                <Select
-                  labelId="demo-mutiple-name-label"
-                  id="demo-mutiple-name"
-                  multiple
-                  value={specialty}
-                  onChange={handleChange}
-                  input={<Input />}
-                  MenuProps={MenuProps}
-                >
-                  {specialties.map((specialty) => (
-                    <MenuItem
-                      key={specialty}
-                      value={specialty}
-                      style={getStyles(specialty, theme)}
-                    >
-                      {specialty}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid2>
-            <Grid2
-              size={{ xs: 6 }}
-              style={{ display: "flex", alignItems: "center" }}
-            >
-              <DatePicker
-                label="Fecha de Nacimiento"
-                value={dateOfBirth}
-                onChange={(newValue) => setDateOfBirth(newValue)}
-              />
-            </Grid2>
-            <Grid2 size={{ xs: 6 }}>
-              <TextField
-                autoComplete="fname"
-                name="instagram"
-                variant="outlined"
-                required
-                fullWidth
-                value={instagram}
-                id="instagram"
-                label="Instagram"
-                autoFocus
-                onChange={(e) => {
-                  setInstagram(e.target.value);
-                }}
-              />
-            </Grid2>
-            <Grid2 size={{ xs: 6 }}>
-              <TextField
-                autoComplete="fname"
-                name="facebook"
-                variant="outlined"
-                fullWidth
-                value={facebook}
-                id="facebook"
-                label="Facebook"
-                autoFocus
-                onChange={(e) => {
-                  setFacebook(e.target.value);
-                }}
-              />
-            </Grid2>
-            <Grid2 size={{ xs: 6 }}>
-              <TextField
-                autoComplete="fname"
-                name="twitter"
-                variant="outlined"
-                fullWidth
-                value={twitter}
-                id="twitter"
-                label="Twitter"
-                autoFocus
-                onChange={(e) => {
-                  setTwitter(e.target.value);
-                }}
-              />
-            </Grid2>
-
-            <Grid2 size={{ xs: 6 }}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="phone"
-                label="Teléfono"
-                value={phone}
-                onChange={(e) => {
-                  setPhone(e.target.value);
-                }}
-              />
-            </Grid2>
-            <Grid2 size={{ xs: 6 }}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                name="country"
-                label="País"
-                value={country}
-                type="country"
-                id="country"
-                onChange={(e) => {
-                  setCountry(e.target.value);
-                }}
-              />
-            </Grid2>
-            <Grid2 size={{ xs: 6 }}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                name="city"
-                label="Ciudad"
-                value={city}
-                type="city"
-                id="city"
-                onChange={(e) => {
-                  setCity(e.target.value);
-                }}
-              />
-            </Grid2>
-            <TextField
-              variant="outlined"
-              fullWidth
-              multiline
-              minRows={3}
-              name="description"
-              label="Descripción"
-              value={description}
-              type="description"
-              id="description"
-              onChange={(e) => {
-                setDescription(e.target.value);
-              }}
-            />
-          </Grid2>
-          <Grid2
-            style={{
-              display: "flex",
-              paddingTop: "24px",
-              justifyContent: "center",
-              alignItems: "center",
+            size={{ md: 7 }}
+            sx={{
+              backgroundImage: bgUrl ? `url(${bgUrl})` : "none",
+              backgroundColor: theme.palette.grey[200],
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              position: "relative",
+              transition: "background-image 0.5s ease-in-out",
             }}
           >
-            <FormControlLabel
-              style={{ margin: 0, paddingRight: 8 }}
-              control={
-                <Checkbox
-                  color="primary"
-                  value={isChecked}
-                  checked={isChecked}
-                />
-              }
-              label="Acepto los"
-              onChange={handleOnChange}
-            />
-            <a
-              style={{
-                textTransform: "lowercase",
-                fontSize: "1rem",
-                textDecoration: "underline",
-                cursor: "pointer",
-              }}
-              onClick={openModal}
-            >
-              Términos y condiciones
-            </a>
-            <Modal open={modal} onClose={openModal}>
-              <InitialTerms setIsChecked={setIsChecked} setModal={setModal} />
-            </Modal>
+            {loadingBg && (
+              <Box sx={{ display: "flex", height: "100%", alignItems: "center", justifyContent: "center", position: "absolute", width: "100%" }}>
+                <CircularProgress />
+              </Box>
+            )}
           </Grid2>
-          <Button
-            // type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-            disabled={!isChecked}
-            onClick={(e) => handleSubmit(e)}
-          >
-            Guardar e ir a mi perfil
-          </Button>
-        </form>
-      </div>
-      <Copyright />
-    </Container>
+        )}
+
+        {/* Form Section */}
+        <Grid2 size={{ xs: 12, md: 5 }} component={Paper} elevation={6} square sx={{ overflowY: "auto" }}>
+          <Box sx={{ my: 4, mx: 4, display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <Typography component="h1" variant="h4" color="primary" sx={{ fontWeight: "bold", mb: 1, textAlign: "center" }}>
+              Crea tu perfil de Prixer
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+              Comparte tu talento con el mundo
+            </Typography>
+
+            <Box component="form" onSubmit={handleSubmit} noValidate sx={{ width: "100%" }}>
+              <Grid2 container spacing={2}>
+                {/* Avatar Upload */}
+                <Grid2 size={{ xs: 12 }} sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+                  <ProfileImageUpload
+                    currentImageUrl={avatarUrl}
+                    onImageUploadSuccess={(url) => setAvatarUrl(url)}
+                  />
+                </Grid2>
+
+                {/* Fields */}
+                <Grid2 size={{ xs: 12 }}>
+                  <FormControl fullWidth>
+                    <InputLabel>Especialidades</InputLabel>
+                    <Select
+                      multiple
+                      value={specialty}
+                      label="Especialidades"
+                      onChange={(e) => setSpecialty(typeof e.target.value === "string" ? e.target.value.split(",") : e.target.value)}
+                    >
+                      {SPECIALTIES.map((s) => (
+                        <MenuItem key={s} value={s}>{s}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid2>
+
+                <Grid2 size={{ xs: 12 }}>
+                  <DatePicker
+                    label="Fecha de Nacimiento"
+                    value={dateOfBirth}
+                    onChange={(val) => setDateOfBirth(val)}
+                    slotProps={{ textField: { fullWidth: true } }}
+                  />
+                </Grid2>
+
+                <Grid2 size={{ xs: 6 }}>
+                  <TextField fullWidth name="instagram" label="Instagram" value={formData.instagram} onChange={handleInputChange} />
+                </Grid2>
+                <Grid2 size={{ xs: 6 }}>
+                  <TextField fullWidth name="phone" label="Teléfono *" value={formData.phone} onChange={handleInputChange} />
+                </Grid2>
+
+                <Grid2 size={{ xs: 6 }}>
+                  <TextField fullWidth name="country" label="País *" value={formData.country} onChange={handleInputChange} />
+                </Grid2>
+                <Grid2 size={{ xs: 6 }}>
+                  <TextField fullWidth name="city" label="Ciudad" value={formData.city} onChange={handleInputChange} />
+                </Grid2>
+
+                <Grid2 size={{ xs: 12 }}>
+                  <TextField
+                    fullWidth
+                    multiline
+                    rows={3}
+                    name="description"
+                    label="Cuéntanos sobre tu arte"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                  />
+                </Grid2>
+
+                <Grid2 size={{ xs: 12 }}>
+                  <FormControlLabel
+                    control={<Checkbox checked={termsAccepted} onChange={(e) => setTermsAccepted(e.target.checked)} color="primary" />}
+                    label={
+                      <Typography variant="body2">
+                        Acepto los{" "}
+                        <Link component="button" type="button" onClick={() => setModalOpen(true)} sx={{ verticalAlign: "baseline" }}>
+                          términos y condiciones
+                        </Link>
+                      </Typography>
+                    }
+                  />
+                </Grid2>
+              </Grid2>
+
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                size="large"
+                disabled={loading || !termsAccepted}
+                sx={{ mt: 3, mb: 2, py: 1.5, fontWeight: "bold" }}
+              >
+                {loading ? <CircularProgress size={24} /> : "Finalizar Registro"}
+              </Button>
+
+              <Copyright sx={{ mt: 2 }} />
+            </Box>
+          </Box>
+        </Grid2>
+
+        {/* Modal de Términos */}
+        <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+          <Box sx={{
+            position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+            width: isSmallScreen ? '90%' : 600, bgcolor: 'background.paper', borderRadius: 2, boxShadow: 24, p: 4,
+            maxHeight: '80vh', overflowY: 'auto'
+          }}>
+            <InitialTerms setIsChecked={setTermsAccepted} setModal={setModalOpen} />
+          </Box>
+        </Modal>
+      </Grid2>
+    </LocalizationProvider>
   );
 }

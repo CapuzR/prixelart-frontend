@@ -19,7 +19,7 @@ export const fetchTermsContent = async (): Promise<string> => {
   return res.data.terms.termsAndConditions;
 };
 
-export const fetchPriserTermsAgree = async (
+export const fetchPrixerTermsAgree = async (
   username: string,
 ): Promise<boolean> => {
   const res = await axios.get<{ termsAgree: boolean }>(

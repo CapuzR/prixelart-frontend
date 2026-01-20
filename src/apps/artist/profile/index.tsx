@@ -1024,14 +1024,14 @@ export default function PrixerProfileCard() {
                           onClick={handleSave}
                           disabled={isSaving}
                           sx={{
-                            bgcolor: "success.main",
+                            bgcolor: "main",
                             "&:hover": { bgcolor: "success.dark" },
                           }}
                         >
                           {isSaving ? (
                             <CircularProgress size={24} color="inherit" />
                           ) : (
-                            "Save"
+                            "Guardar"
                           )}
                         </Button>
                         <Button

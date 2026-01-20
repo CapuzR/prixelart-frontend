@@ -26,6 +26,7 @@ import Copyright from "@components/Copyright/copyright";
 import { Art } from "types/art.types";
 import { User } from "types/user.types";
 import { jwtDecode } from "jwt-decode";
+
 const ensureHttps = (url: string): string => {
   let fullUrl = url.trim();
   if (!/^https?:\/\//i.test(fullUrl) && !fullUrl.startsWith("/")) {
@@ -65,7 +66,7 @@ const findValidWebpUrl = (art?: Art): string | null => {
 
 const MAX_RETRIES = 3;
 
-const AdminLogin: React.FC = () => {
+const ConsumerLogin: React.FC = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const navigate = useNavigate();
@@ -263,4 +264,4 @@ const AdminLogin: React.FC = () => {
   );
 };
 
-export default AdminLogin;
+export default ConsumerLogin;

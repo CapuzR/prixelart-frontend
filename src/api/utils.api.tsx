@@ -1,5 +1,5 @@
 import { PrixResponse } from "types/prixResponse.types";
-
+import axios from "axios";
 export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 /**
@@ -70,6 +70,23 @@ export const isAuth = async (): Promise<PrixResponse> => {
     return {
       success: false,
       message: "No se pudo verificar la autenticación",
+    };
+  }
+};
+
+export const register = async (userData: any) => {
+  try {
+    const response = await axios.post(`${BACKEND_URL}/register`, userData);
+    
+    return {
+      success: true,
+      result: response.data.result,
+      message: "Registro exitoso"
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.response?.data?.message || "Error al registrar el usuario"
     };
   }
 };

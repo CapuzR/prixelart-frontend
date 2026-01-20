@@ -23,7 +23,8 @@
       "utils/*": ["./src/utils/*"],
       "@utils/*": ["./src/utils/*"],
       "images/*": ["./src/images/*"],
-      "assets/*": ["./src/assets/*"]
+      "assets/*": ["./src/assets/*"],
+      "@hooks/*": ["./src/hooks/*"],
     },
 
     "skipLibCheck": true,

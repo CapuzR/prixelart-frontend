@@ -256,8 +256,10 @@ export const createArt = async (data: Partial<Art>): Promise<Art> => {
 export const updateArt = async (
   id: string,
   artData: Partial<Art>,
+  isPrixerUpdate: boolean = true,
 ): Promise<PrixResponse> => {
-  const base_url = `${import.meta.env.VITE_BACKEND_URL}/art/update/${id}`;
+  const url = isPrixerUpdate ? 'updateAsPrixer' : 'update';
+  const base_url = `${import.meta.env.VITE_BACKEND_URL}/art/${url}/${id}`;
   try {
     const response = await axios.put<PrixResponse>(base_url, artData, {
       withCredentials: true,

@@ -88,7 +88,7 @@ const ArtDetail: React.FC = () => {
     if (!formData || !formData._id) return;
     setLoading(true);
     try {
-      const updatedArt = await updateArt(formData._id.toString(), formData);
+      const updatedArt = await updateArt(formData._id.toString(), formData, true);
       if (updatedArt.success) {
         // setArt(updatedArt?.result!)
         loadArt();

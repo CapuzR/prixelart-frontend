@@ -343,7 +343,7 @@ const UpdateArt: React.FC = () => {
 
     try {
       console.log("Updating Art Data:", id, payload);
-      const response = await updateArt(id, payload);
+      const response = await updateArt(id, payload, false);
       if (response) {
         showSnackBar(`Arte "${formData.title}" actualizado exitosamente.`);
         navigate("/admin/art/read");

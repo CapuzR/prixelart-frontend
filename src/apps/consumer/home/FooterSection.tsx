@@ -14,6 +14,7 @@ import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import footerBg from "../../../assets/images/footer-bg-desk.jpg";
 import prixBox from "../../../assets/images/prix-box.png";
 import tiktok from "../../../assets/images/tiktok.svg";
+import {generateWaMessage} from "utils/utils";
 
 export default function FooterSection() {
   const navigate = useNavigate();
@@ -271,7 +272,7 @@ export default function FooterSection() {
               ¡Síguenos para más!
             </Typography>
             <Grid2>
-              <IconButton
+            {/*    <IconButton
                 href="https://instagram.com/prixelart"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -280,7 +281,7 @@ export default function FooterSection() {
                   src={tiktok}
                   style={{ color: "#fff", height: "2.5rem", width: "2.5rem" }}
                 />
-              </IconButton>
+              </IconButton> */}
               <IconButton
                 href="https://instagram.com/prixelart"
                 target="_blank"
@@ -291,9 +292,9 @@ export default function FooterSection() {
                 />
               </IconButton>
               <IconButton
-                href="https://instagram.com/prixelart"
-                target="_blank"
-                rel="noopener noreferrer"
+                onClick={() => {
+                  window.open(generateWaMessage(), "_blank",);
+                }}
               >
                 <WhatsAppIcon
                   sx={{ color: "white", height: "2.5rem", width: "2.5rem" }}

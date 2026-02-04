@@ -111,18 +111,17 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import InfoIcon from "@mui/icons-material/Info";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
+  CheckCircleOutline,
   CalendarToday,
   PersonOutline,
   LocalShippingOutlined,
   ReceiptOutlined,
   StorefrontOutlined,
-  PaletteOutlined,
-  CollectionsOutlined,
   InfoOutlined,
   AddCircleOutline,
   PauseCircleFilled,
 } from "@mui/icons-material";
-import { Theme, useTheme } from "@mui/material";
+import { Theme } from "@mui/material";
 import { makeStyles } from "tss-react/mui";
 
 import * as tus from "tus-js-client";
@@ -340,8 +339,9 @@ const formatDate = (
   if (includeTime) {
     options.hour = "2-digit";
     options.minute = "2-digit";
+    options.hour12 = true;
   }
-  return new Date(date).toLocaleDateString("es-ES", options);
+  return new Date(date).toLocaleString("es-ES", options);
 };
 
 async function canvasPreview(
@@ -424,6 +424,66 @@ function CustomTabPanel(props: TabPanelProps) {
     </div>
   );
 }
+
+const PriceInput = ({ 
+  value, 
+  onChange, 
+  onKeyDown, 
+  ...props 
+}: { 
+  value: number; 
+  onChange: (val: number) => void;
+  onKeyDown: (e: any) => void;
+  label?: string;
+  size?: 'small' | 'medium';
+  variant?: 'outlined';
+  fullWidth?: boolean;
+}) => {
+  const [displayValue, setDisplayValue] = useState((value || 0).toFixed(2));
+
+  useEffect(() => {
+    if (value !== parseFloat(displayValue)) {
+        setDisplayValue((value || 0).toFixed(2));
+    }
+  }, [value]); 
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setDisplayValue(val);
+
+    const numberVal = parseFloat(val);
+    if (!isNaN(numberVal)) {
+      onChange(numberVal);
+    }
+  };
+
+  const handleBlur = () => {
+    const numberVal = parseFloat(displayValue);
+    if (!isNaN(numberVal)) {
+      setDisplayValue(numberVal.toFixed(2));
+    } else {
+      setDisplayValue("0.00");
+    }
+  };
+
+  return (
+    <TextField
+      {...props}
+      value={displayValue}
+      onChange={handleChange}
+      onBlur={handleBlur}
+      onKeyDown={onKeyDown}
+      sx={{
+        "& .MuiInputBase-input": { textAlign: "right" },
+      }}
+      slotProps={{
+        input: {
+          startAdornment: <InputAdornment position="start">$</InputAdornment>,
+        },
+      }}
+    />
+  );
+};
 
 export default function UpdateOrder() {
   const { id } = useParams<{ id: string }>();
@@ -513,6 +573,33 @@ export default function UpdateOrder() {
     return methodName.includes("pickup") || methodName.includes("recoger");
   }, [selectedShippingMethod]);
 
+  const sortedHistory = useMemo(() => {
+    if (!order?.status) return [];
+    return [...order.status].sort((a, b) => new Date(a[1]).getTime() - new Date(b[1]).getTime());
+  }, [order?.status]);
+
+  const workStartedDate = useMemo(() => {
+    const entry = sortedHistory.find(([status]) => {
+      return (
+        status !== OrderStatus.Pending && 
+        status !== OrderStatus.Paused && 
+        status !== OrderStatus.Canceled
+      );
+    });
+    return entry ? entry[1] : null;
+  }, [sortedHistory]);
+
+  const productionCompletedDate = useMemo(() => {
+    const entry = sortedHistory.find(([status]) => {
+      return (
+        status === OrderStatus.ReadyToShip || 
+        status === OrderStatus.Delivered || 
+        status === OrderStatus.Finished
+      );
+    });
+    return entry ? entry[1] : null;
+  }, [sortedHistory]);
+  
   const initialOrderLineFormStateForUpdate: Omit<
     OrderLineFormState,
     "id" | "status" | "item" | "tempId"
@@ -1635,6 +1722,7 @@ export default function UpdateOrder() {
           variants: lineState.selectedProduct.fullProduct.variants,
           selection: lineState.selectedVariant?.fullVariant.attributes || [],
           mockUp: lineState.selectedProduct.fullProduct.mockUp,
+          cost: lineState.item?.product.cost || "0",
         },
         price: pricePerUnit.toString(),
       };
@@ -2089,15 +2177,7 @@ export default function UpdateOrder() {
               >
                 Orden #{order.number || order._id?.toString().slice(-6)}
               </Typography>
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                sx={{ display: "flex", alignItems: "center", mt: 0.5 }}
-              >
-                <CalendarToday fontSize="small" sx={{ mr: 0.5 }} /> Creada el:{" "}
-                {formatDate(order.createdOn)}
-                {order.seller && " por " + order.seller}
-              </Typography>
+             
             </Box>
             <Button
               type="submit"
@@ -2140,7 +2220,39 @@ export default function UpdateOrder() {
                 </strong>
               </Alert>
             )}
+             <div style={{ display: "flex", flexDirection: "column", padding: "8px 16px", borderRadius: 8, gap:8, border: 'solid gainsboro 1px', marginTop: 16 }}>
+                <Typography
+                  variant="body2"
+                  color="textSecondary"
+                  sx={{ display: "flex", alignItems: "center" }}
+                >
+                  <CalendarToday fontSize="small" sx={{ mr: 0.5 }} /> Creada el:{" "}
+                  {formatDate(order.createdOn)}
+                  {order.seller && " por " + order.seller}
+                </Typography>
+                {workStartedDate && (
+                  <Typography
+                    variant="body2"
+                    color="textSecondary"
+                    sx={{ display: "flex", alignItems: "center" }}
+                  >
+                    <CheckCircleIcon fontSize="small" sx={{ mr: 0.5, color: '#0088ff' }} /> 
+                    En producción desde el: {formatDate(workStartedDate)}
+                  </Typography>
+                )}
+                {productionCompletedDate && (
+                  <Typography
+                    variant="body2"
+                    color="textSecondary"
+                    sx={{ display: "flex", alignItems: "center" }}
+                  >
+                    <CheckCircleOutline fontSize="small" sx={{ mr: 0.5, color: 'rgba(210, 63, 73, 1)' }} /> 
+                    Por entregar desde el: {formatDate(productionCompletedDate)}
+                  </Typography>
+                )}
+              </div> 
         </Paper>
+        
         <Tabs
           centered
           value={activeStep}
@@ -2570,7 +2682,7 @@ export default function UpdateOrder() {
                                 />
                               </Grid2>
                             )}
-                            <Grid2 size={{ xs: 6, md: 3 }}>
+                            <Grid2 size={{ xs: 6, md: 2 }}>
                               {permissions?.orders.updateItem ? (
                                 <TextField
                                   label="Cant."
@@ -2589,70 +2701,66 @@ export default function UpdateOrder() {
                                 <Typography variant="h6">{`Producto: ${line.quantity}`}</Typography>
                               )}
                             </Grid2>
-                            <Grid2
-                              size={{ xs: 6, md: 3 }}
-                              sx={{ textAlign: "right" }}
-                            >
-                              {permissions?.area === "Master" ? (
-                                <TextField
+                            <Grid2 size={{ xs: 6, md: 2 }} sx={{ textAlign: "right" }}>
+                            {permissions?.orders.updateItemPrice ? (
+                                <PriceInput
                                   fullWidth
                                   variant="outlined"
                                   size="small"
-                                  type="text"
-                                  label="Precio unitario"
-                                  // defaultValue={(line.pricePerUnit || 0).toFixed(2)}
-                                  value={(line.pricePerUnit || 0).toFixed(2)}
-                                  onChange={(e) =>
-                                    handlePricePerUnitChange(e, line)
-                                  }
+                                  label="Costo"
+                                  value={Number(line.item?.product?.cost) || 0}
+                                  onChange={(newCost) => {
+                                    const updatedItem = {
+                                      ...line.item,
+                                      product: {
+                                        ...line.item?.product,
+                                        cost: newCost,
+                                      }
+                                    };
+                                    updateLine(line.tempId, {
+                                        item: updatedItem as any
+                                    });
+                                    updateEditableLine(line.tempId, {
+                                      item: updatedItem as any
+                                  });
+                                  }}
                                   onKeyDown={allowNumericWithDecimal}
-                                  sx={{
-                                    mb: 1,
-                                    "& .MuiInputBase-input": {
-                                      textAlign: "right",
-                                    },
-                                  }}
-                                  slotProps={{
-                                    input: {
-                                      startAdornment: (
-                                        <InputAdornment position="start">
-                                          $
-                                        </InputAdornment>
-                                      ),
-                                    },
-                                  }}
                                 />
                               ) : (
-                                permissions?.area !== "Master" &&
                                 permissions?.orders.readPayDetails && (
-                                  <Typography
-                                    variant="body2"
-                                    sx={{ fontWeight: "medium" }}
-                                  >
-                                    $
-                                    {(line?.item?.price
-                                      ? Number(line?.item?.price)
-                                      : 0
-                                    ).toFixed(2)}{" "}
-                                    c/u
+                                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                                    Costo: ${(Number(line.item?.product?.cost) || 0).toFixed(2)}
                                   </Typography>
                                 )
                               )}
-                              {permissions?.area !== "Master" &&
-                                permissions?.orders.readPayDetails && (
-                                  <Typography
-                                    variant="subtitle2"
-                                    color="primary.main"
-                                  >
-                                    $
-                                    {(
-                                      (line.quantity || 0) *
-                                      (line?.pricePerUnit
-                                        ? Number(line?.pricePerUnit)
-                                        : 0)
-                                    ).toFixed(2)}
+                            </Grid2>
+                            <Grid2 size={{ xs: 6, md: 2 }} sx={{ textAlign: "right" }}>
+                              {permissions?.orders.updateItemPrice ? (
+                                <PriceInput
+                                  fullWidth
+                                  variant="outlined"
+                                  size="small"
+                                  label="Precio unitario"
+                                  value={line.pricePerUnit || 0}
+                                  onChange={(newPrice) => {
+                                    const newSubtotal = (line.quantity || 1) * newPrice - (line.discount || 0);
+                                    updateLine(line.tempId, {
+                                      pricePerUnit: newPrice,
+                                      subtotal: newSubtotal,
+                                    });
+                                    updateEditableLine(line.tempId, {
+                                      pricePerUnit: newPrice,
+                                    });
+                                  }}
+                                  onKeyDown={allowNumericWithDecimal}
+                                />
+                              ) : (
+                                 permissions?.orders.readPayDetails && (
+                                  <Typography variant="body2" sx={{ fontWeight: "medium" }}>
+                                    ${(line?.item?.price ? Number(line?.item?.price) : 0).toFixed(2)} c/u
                                   </Typography>
-                                )}
+                                )
+                              )}
                             </Grid2>
                           </Grid2>
                         </Grid2>

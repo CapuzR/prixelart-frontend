@@ -42,6 +42,7 @@ interface PortraitProps {
   selectedVariant?: Variant; // Add selected variant prop (copied from Landscape)
   currentSelectionParams: { [key: string]: string }; // Add current selection params prop
   priceInfo: DisplayPriceInfo;
+  isFetchingVariantPrice: boolean;
 }
 
 const Portrait: React.FC<PortraitProps> = (props) => {
@@ -68,16 +69,30 @@ const Portrait: React.FC<PortraitProps> = (props) => {
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [props.product?.variants]);
 
-  const allAttributesSelected = useMemo(() => {
-    if (uniqueAttributes.length === 0) {
-      return true;
-    }
-    return uniqueAttributes.every(
-      (attribute) =>
-        props.currentSelectionParams[attribute.name]?.trim() !== "",
-    );
-  }, [uniqueAttributes, props.currentSelectionParams]);
+  const isSelectionComplete = useMemo(() => {
+    if (!props.product) return false;
 
+    if (uniqueAttributes.length > 0) {
+      const attributesAreFilled = uniqueAttributes.every(
+        (attribute) =>
+          props.currentSelectionParams[attribute.name]?.trim() !== "" &&
+          props.currentSelectionParams[attribute.name] !== undefined
+      );
+      if (!attributesAreFilled) return false;
+    }
+
+    if (!props.selectedVariant) return false;
+
+    if (props.priceInfo.type === 'error') return false;
+
+    return true;
+  }, [
+    props.product,
+    uniqueAttributes,
+    props.currentSelectionParams,
+    props.selectedVariant, // Dependencia clave agregada
+    props.priceInfo.type
+  ]);
   const renderPriceDisplay = () => {
     const { priceInfo } = props;
 
@@ -259,9 +274,10 @@ const Portrait: React.FC<PortraitProps> = (props) => {
       <div className={styles["buttons-container"]}>
         <Button
           color="primary"
-          // Update disabled logic to use priceInfo.type
           disabled={
-            !allAttributesSelected || props.priceInfo.type === "loading"
+            !isSelectionComplete || 
+            props.isFetchingVariantPrice || 
+            props.priceInfo.type === "loading"
           }
           onClick={props.handleArtSelection}
         >

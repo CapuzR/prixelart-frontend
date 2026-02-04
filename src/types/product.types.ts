@@ -10,6 +10,7 @@ export interface PickedProduct
     | "variants"
     | "mockUp"
     | "sources"
+    | "cost"
   > {
   selection?: VariantAttribute[];
 }

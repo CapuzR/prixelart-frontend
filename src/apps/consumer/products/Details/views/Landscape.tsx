@@ -80,13 +80,30 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [props.product?.variants]);
 
-  const allAttributesSelected = useMemo(() => {
-    if (uniqueAttributes.length === 0) return true;
-    return uniqueAttributes.every(
-      (attribute) =>
-        props.currentSelectionParams[attribute.name]?.trim() !== "",
-    );
-  }, [uniqueAttributes, props.currentSelectionParams]);
+  const isSelectionComplete = useMemo(() => {
+    if (!props.product) return false;
+
+    if (uniqueAttributes.length > 0) {
+      const attributesAreFilled = uniqueAttributes.every(
+        (attribute) =>
+          props.currentSelectionParams[attribute.name]?.trim() !== "" &&
+          props.currentSelectionParams[attribute.name] !== undefined
+      );
+      if (!attributesAreFilled) return false;
+    }
+
+    if (!props.selectedVariant) return false;
+
+    if (props.priceInfo.type === 'error') return false;
+
+    return true;
+  }, [
+    props.product,
+    uniqueAttributes,
+    props.currentSelectionParams,
+    props.selectedVariant, // Dependencia clave agregada
+    props.priceInfo.type
+  ]);
 
   const renderPriceDisplay = () => {
     const { priceInfo } = props;
@@ -325,9 +342,10 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
         <div className={styles["buttons-container"]}>
           <Button
             color="primary"
-            // Disable if not all attributes selected OR if price is loading (check specific loading state )
             disabled={
-              !allAttributesSelected || props.priceInfo.type === "loading"
+              !isSelectionComplete || 
+              props.isFetchingVariantPrice || 
+              props.priceInfo.type === "loading"
             }
             onClick={props.handleArtSelection}
           >

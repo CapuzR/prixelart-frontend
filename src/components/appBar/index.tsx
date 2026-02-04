@@ -116,8 +116,7 @@ const MenuAppBar: React.FC = () => {
         const base_url = `${import.meta.env.VITE_BACKEND_URL}/prixer/get/${user.username}`;
         try {
           const response = await axios.get(base_url);
-          console.log("Avatar response:", response.data);
-          setAvatar(response.data.result.prixer.avatar);
+          setAvatar(response?.data?.result?.prixer?.avatar);
         } catch (error) {
           console.error("Failed to fetch avatar:", error);
           setAvatar("");

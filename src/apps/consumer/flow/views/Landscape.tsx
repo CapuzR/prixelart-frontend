@@ -56,18 +56,12 @@ const Landscape: React.FC<LandscapeProps> = (props) => {
   const lineId = searchParams.get("lineId");
 
   const handleCart = () => {
-    if (!props.item.sku) {
-      console.error("Item SKU is missing");
-      return;
-    }
     props.handleCart(props.item as Item);
   };
 
   const productExists = Boolean(props.item?.product);
   const artExists = Boolean(props.item?.art);
   const showRightSide = !props.isItemReady;
-
-  const attributeNames = props.allAttributeNames;
 
   return (
     <Grid2 className={styles["prix-product-container"]}>

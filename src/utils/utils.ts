@@ -2,6 +2,8 @@ import { CustomImage } from "../types/order.types";
 import { PickedArt } from "../types/art.types";
 import { PickedProduct } from "../types/product.types";
 
+const waNumber = "584126377748";
+
 export function debounce<F extends (...args: any[]) => any>(
   func: F,
   waitFor: number,
@@ -20,14 +22,13 @@ export function debounce<F extends (...args: any[]) => any>(
 }
 
 export const generateWaMessage = (tile?: any) => {
-  // const waNumber = "584126377748";
   const welcomeMessage =
     "Holaa, cuéntame más. Quiero asesoría y conocer sus productos.";
-  const message = tile !== "" ? generateArtMessage(tile, "wa") : welcomeMessage;
+  const message = (tile && tile !== "") ? generateArtMessage(tile, "wa") : welcomeMessage;
 
   const url =
     "https://wa.me/" +
-    //  waNumber +
+     waNumber +
     "?text=" +
     message;
 
@@ -38,7 +39,6 @@ export const generateWaProductMessage = (
   tile: PickedProduct | PickedArt | CustomImage,
   url: string,
 ) => {
-  const waNumber = "584126377748";
   const welcomeMessage =
     "Holaa, cuéntame más. Quiero asesoría y conocer sus productos.";
 
@@ -71,7 +71,6 @@ const generateServiceMessage = (tile: any, phone: string) => {
 
 const generateLikeServiceMessage = (tile: any) => {
   let lineBreak = "\n";
-  const waNumber = "584126377748";
 
   const artMainMessage =
     "Holaa, este es uno de los servicios que me interesan:";

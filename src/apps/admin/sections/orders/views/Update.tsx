@@ -111,18 +111,17 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import InfoIcon from "@mui/icons-material/Info";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
+  CheckCircleOutline,
   CalendarToday,
   PersonOutline,
   LocalShippingOutlined,
   ReceiptOutlined,
   StorefrontOutlined,
-  PaletteOutlined,
-  CollectionsOutlined,
   InfoOutlined,
   AddCircleOutline,
   PauseCircleFilled,
 } from "@mui/icons-material";
-import { Theme, useTheme } from "@mui/material";
+import { Theme } from "@mui/material";
 import { makeStyles } from "tss-react/mui";
 
 import * as tus from "tus-js-client";
@@ -340,8 +339,9 @@ const formatDate = (
   if (includeTime) {
     options.hour = "2-digit";
     options.minute = "2-digit";
+    options.hour12 = true;
   }
-  return new Date(date).toLocaleDateString("es-ES", options);
+  return new Date(date).toLocaleString("es-ES", options);
 };
 
 async function canvasPreview(
@@ -513,6 +513,33 @@ export default function UpdateOrder() {
     return methodName.includes("pickup") || methodName.includes("recoger");
   }, [selectedShippingMethod]);
 
+  const sortedHistory = useMemo(() => {
+    if (!order?.status) return [];
+    return [...order.status].sort((a, b) => new Date(a[1]).getTime() - new Date(b[1]).getTime());
+  }, [order?.status]);
+
+  const workStartedDate = useMemo(() => {
+    const entry = sortedHistory.find(([status]) => {
+      return (
+        status !== OrderStatus.Pending && 
+        status !== OrderStatus.Paused && 
+        status !== OrderStatus.Canceled
+      );
+    });
+    return entry ? entry[1] : null;
+  }, [sortedHistory]);
+
+  const productionCompletedDate = useMemo(() => {
+    const entry = sortedHistory.find(([status]) => {
+      return (
+        status === OrderStatus.ReadyToShip || 
+        status === OrderStatus.Delivered || 
+        status === OrderStatus.Finished
+      );
+    });
+    return entry ? entry[1] : null;
+  }, [sortedHistory]);
+  
   const initialOrderLineFormStateForUpdate: Omit<
     OrderLineFormState,
     "id" | "status" | "item" | "tempId"
@@ -2089,15 +2116,7 @@ export default function UpdateOrder() {
               >
                 Orden #{order.number || order._id?.toString().slice(-6)}
               </Typography>
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                sx={{ display: "flex", alignItems: "center", mt: 0.5 }}
-              >
-                <CalendarToday fontSize="small" sx={{ mr: 0.5 }} /> Creada el:{" "}
-                {formatDate(order.createdOn)}
-                {order.seller && " por " + order.seller}
-              </Typography>
+             
             </Box>
             <Button
               type="submit"
@@ -2140,7 +2159,39 @@ export default function UpdateOrder() {
                 </strong>
               </Alert>
             )}
+             <div style={{ display: "flex", flexDirection: "column", padding: "8px 16px", borderRadius: 8, gap:8, border: 'solid gainsboro 1px', marginTop: 16 }}>
+                <Typography
+                  variant="body2"
+                  color="textSecondary"
+                  sx={{ display: "flex", alignItems: "center" }}
+                >
+                  <CalendarToday fontSize="small" sx={{ mr: 0.5 }} /> Creada el:{" "}
+                  {formatDate(order.createdOn)}
+                  {order.seller && " por " + order.seller}
+                </Typography>
+                {workStartedDate && (
+                  <Typography
+                    variant="body2"
+                    color="textSecondary"
+                    sx={{ display: "flex", alignItems: "center" }}
+                  >
+                    <CheckCircleIcon fontSize="small" sx={{ mr: 0.5, color: '#0088ff' }} /> 
+                    En producción desde el: {formatDate(workStartedDate)}
+                  </Typography>
+                )}
+                {productionCompletedDate && (
+                  <Typography
+                    variant="body2"
+                    color="textSecondary"
+                    sx={{ display: "flex", alignItems: "center" }}
+                  >
+                    <CheckCircleOutline fontSize="small" sx={{ mr: 0.5, color: 'rgba(210, 63, 73, 1)' }} /> 
+                    Por entregar desde el: {formatDate(productionCompletedDate)}
+                  </Typography>
+                )}
+              </div> 
         </Paper>
+        
         <Tabs
           centered
           value={activeStep}

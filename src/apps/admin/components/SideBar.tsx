@@ -141,7 +141,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const canViewPreferencesSection = permissions.preferences.readAllBanners;
   const canViewDiscounts = permissions.discounts.readAllDiscounts;
   const canViewSurcharges = permissions.surcharges?.readAllSurcharges;
-
+console.log(permissions.area)
   return (
     <Box
       onMouseEnter={onOpen}
@@ -162,9 +162,9 @@ const Sidebar: React.FC<SidebarProps> = ({
     >
       <List component="nav" aria-labelledby="admin-sidebar-nav">
         {/* Dashboard */}
-        {permissions.area === "Master" ||
+        {(permissions.area === "Master" ||
           permissions.area === "Ventas" ||
-          (permissions.area === "Administración" && (
+          permissions.area === "Administración") && (
             <>
               <ListItemButton
                 component={RouterLink}
@@ -178,7 +178,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               </ListItemButton>
               <Divider sx={{ my: 1 }} />
             </>
-          ))}
+          )}
         {/* Admins Section */}
         {canViewAdmins && (
           <>

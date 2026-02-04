@@ -52,6 +52,7 @@ export default function Portrait(props: PortraitProps) {
       console.error("Item not ready or SKU is missing");
       return;
     }
+    
     props.handleCart(props.item as Item);
   };
 

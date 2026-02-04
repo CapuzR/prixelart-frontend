@@ -359,78 +359,79 @@ const Details: React.FC<DetailsProps> = ({ productId }) => {
         },
         {} as { [key: string]: string },
       );
-    let art: string | undefined;
-    if (productId) {
-      const params = new URLSearchParams(window.location.search);
-      art = params.get("arte") || undefined;
-    }
-    const queryString = queryCreator(
-      undefined,
-      id,
-      art,
-      variantAttributesObject,
-    );
-    navigate(`/crear-prix?${queryString}`);
-  }
 
-  const handleChange =
-    (panel: string) =>
-    (event: React.ChangeEvent<object>, isExpanded: boolean) => {
-      setExpanded(isExpanded ? panel : false);
+
+      const params = new URLSearchParams(window.location.search);
+      const art = params.get("arte") || undefined;
+      const currentLineId = params.get("lineId") || undefined;
+
+      const queryString = queryCreator(
+        currentLineId,
+        id,
+        art,
+        variantAttributesObject,
+      );
+      navigate(`/crear-prix?${queryString}`);
+    }
+
+    const handleChange =
+      (panel: string) =>
+      (event: React.ChangeEvent<object>, isExpanded: boolean) => {
+        setExpanded(isExpanded ? panel : false);
     };
 
-  const displayPriceInfo = useMemo((): DisplayPriceInfo => {
-    // Priority 1: Show loading/error for the specific selected variant if applicable
-    if (selectedVariant && selectedVariantPriceInfo.isLoading) {
-      return { type: "loading" };
-    }
-    if (selectedVariant && selectedVariantPriceInfo.error) {
-      return { type: "error", errorMessage: selectedVariantPriceInfo.error };
-    }
-    // Priority 2: Show the successfully fetched price for the selected variant
-    if (selectedVariant && selectedVariantPriceInfo.final !== null) {
-      return {
-        type: "single",
-        finalPrice: selectedVariantPriceInfo.final,
-        // Include original only if it's different
-        originalPrice:
-          selectedVariantPriceInfo.original !== null &&
-          selectedVariantPriceInfo.original !== selectedVariantPriceInfo.final
-            ? selectedVariantPriceInfo.original
-            : undefined,
-      };
-    }
-
-    // --- If no variant is selected or its price fetch failed ---
-
-    // Priority 3: Show loading/error for the overall range calculation
-    if (calculatedRangeInfo.isLoading) {
-      return { type: "loading" };
-    }
-    if (calculatedRangeInfo.error) {
-      // Don't show range calculation errors if a variant *is* selected but its *own* price fetch failed (handled above)
-      if (!selectedVariant) {
-        return { type: "error", errorMessage: calculatedRangeInfo.error };
+    const displayPriceInfo = useMemo((): DisplayPriceInfo => {
+      // Priority 1: Show loading/error for the specific selected variant if applicable
+      if (selectedVariant && selectedVariantPriceInfo.isLoading) {
+        return { type: "loading" };
       }
-      // If a variant is selected but its price failed, fall back to 'none' or prompt
-      return { type: "none" }; // Or a specific message like "Selecciona otra opción"
-    }
-    // Priority 4: Show the calculated price range
-    if (calculatedRangeInfo.finalMin !== null) {
-      return {
-        type: "range",
-        baseMin: calculatedRangeInfo.baseMin,
-        baseMax: calculatedRangeInfo.baseMax,
-        finalMin: calculatedRangeInfo.finalMin,
-        finalMax: calculatedRangeInfo.finalMax,
-      };
-    }
+      if (selectedVariant && selectedVariantPriceInfo.error) {
+        return { type: "error", errorMessage: selectedVariantPriceInfo.error };
+      }
+      // Priority 2: Show the successfully fetched price for the selected variant
+      if (selectedVariant && selectedVariantPriceInfo.final !== null) {
+        return {
+          type: "single",
+          finalPrice: selectedVariantPriceInfo.final,
+          // Include original only if it's different
+          originalPrice:
+            selectedVariantPriceInfo.original !== null &&
+            selectedVariantPriceInfo.original !== selectedVariantPriceInfo.final
+              ? selectedVariantPriceInfo.original
+              : undefined,
+        };
+      }
 
-    // Fallback: No price info available
-    return { type: "none" };
-  }, [selectedVariant, selectedVariantPriceInfo, calculatedRangeInfo]);
+      // --- If no variant is selected or its price fetch failed ---
 
-  const ViewComponent = isPortrait || productId ? Portrait : Landscape;
+      // Priority 3: Show loading/error for the overall range calculation
+      if (calculatedRangeInfo.isLoading) {
+        return { type: "loading" };
+      }
+      if (calculatedRangeInfo.error) {
+        // Don't show range calculation errors if a variant *is* selected but its *own* price fetch failed (handled above)
+        if (!selectedVariant) {
+          return { type: "error", errorMessage: calculatedRangeInfo.error };
+        }
+        // If a variant is selected but its price failed, fall back to 'none' or prompt
+        return { type: "none" }; // Or a specific message like "Selecciona otra opción"
+      }
+      // Priority 4: Show the calculated price range
+      if (calculatedRangeInfo.finalMin !== null) {
+        return {
+          type: "range",
+          baseMin: calculatedRangeInfo.baseMin,
+          baseMax: calculatedRangeInfo.baseMax,
+          finalMin: calculatedRangeInfo.finalMin,
+          finalMax: calculatedRangeInfo.finalMax,
+        };
+      }
+
+      // Fallback: No price info available
+      return { type: "none" };
+    }, [selectedVariant, selectedVariantPriceInfo, calculatedRangeInfo]);
+
+    const ViewComponent = isPortrait || productId ? Portrait : Landscape;
 
   return (
     <div

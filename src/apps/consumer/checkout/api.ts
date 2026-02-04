@@ -45,7 +45,7 @@ export const createOrderByUser = async (
 
     const result = await response.json();
 
-    console.log("respuesta?", result);
+    // console.log("respuesta?", result);
     return result;
   } catch (error) {
     console.error("Error submitting order:", error);

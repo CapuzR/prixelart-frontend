@@ -33,20 +33,36 @@ export default function ItemCard({
   const { currency } = useCurrency();
   const { conversionRate } = useConversionRate();
   let finalPriceStrToFormat: string | null | undefined = item.price;
+
+  if (!finalPriceStrToFormat && item.product?.variants && item.product?.selection) {
+    const matchedVariant = item.product.variants.find((v) =>
+      v.attributes.every((vAttr) =>
+        item.product?.selection?.some(
+          (sel) => sel.name === vAttr.name && sel.value === vAttr.value
+        )
+      )
+    );
+    if (matchedVariant) {
+      finalPriceStrToFormat = matchedVariant.publicPrice;
+    }
+  }
+
   let originalPriceStrToFormat: string | null | undefined = undefined;
+
   if (
     item.discount &&
     item.discount > 0 &&
-    item.price &&
-    item.price !== "Error"
+    finalPriceStrToFormat && 
+    finalPriceStrToFormat !== "Error"
   ) {
-    const originalPriceNum = formatNumberString(item.price);
+    const originalPriceNum = formatNumberString(finalPriceStrToFormat);
 
     if (!isNaN(originalPriceNum)) {
       const discountMultiplier = 1 - item.discount / 100;
       const finalPriceNum = originalPriceNum * discountMultiplier;
+      
+      originalPriceStrToFormat = finalPriceStrToFormat;
       finalPriceStrToFormat = finalPriceNum.toString();
-      originalPriceStrToFormat = item.price;
     } else {
       finalPriceStrToFormat = "Error";
       originalPriceStrToFormat = undefined;
@@ -59,6 +75,8 @@ export default function ItemCard({
     conversionRate,
     originalPriceStrToFormat,
   );
+  const hasValidPriceToDisplay = formattedPriceHtml && formattedPriceHtml !== "";
+  // console.log(item)
 
   return (
     <Grid2
@@ -88,7 +106,7 @@ export default function ItemCard({
           item={item}
           direction={direction === "row" ? "column" : "row"}
         />
-        {item.product && (
+        {item.product && item.art && hasValidPriceToDisplay && (
           <Grid2
             className={`${styles["pricing-info"]} ${direction === "column" && styles["extra-padding"]}`}
             sx={{ marginTop: isMobile ? 0 : "1rem" }}

@@ -117,6 +117,18 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
   });
 
   useEffect(() => {
+    if (cart.lines.length > 0) {
+      const freshState = initializeCheckoutState(cart);
+      const currentData = methods.getValues();
+      
+      methods.reset({
+        ...freshState,
+        basic: currentData.basic.email ? currentData.basic : freshState.basic,
+      });
+    }
+  }, [cart.lines.length, methods]);
+
+  useEffect(() => {
     const subscription = methods.watch((value, { name, type }) => {
       // Descomentar si quieres ver cada tecla presionada
       // console.log('Form updated:', name, type);
@@ -153,6 +165,8 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
     return 0;
   };
   const [activeStep, setActiveStep] = useState(getInitialStep());
+
+  const hasInvalidItems = cart.lines.some((line) => !line.item?.art || !line.item?.product);
 
   const handleNext = async () => {
     // console.log(`➡️ Intento avanzar desde paso índice: ${activeStep} (${steps[activeStep]})`);
@@ -246,8 +260,7 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
 
   const handleSubmit = async () => {
     // console.log('🚀 Iniciando Submit final de orden...');
-    const checkoutData = methods.getValues();
-
+    const checkoutData = getPreparedCheckoutState(); 
     const parsedData = parseOrder(checkoutData);
 
     ReactGA.event({
@@ -283,7 +296,7 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
 
         if (typeof window !== 'undefined' && window.clarity) {
           window.clarity('event', 'Purchase_Api_Failure');
-      }
+        }
       }
     } catch (error) {
       ReactGA.event({
@@ -293,10 +306,39 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
       });
       if (typeof window !== 'undefined' && window.clarity) {
         window.clarity('event', 'Purchase_Network_Error');
-    }
+      }
       console.error('Error creating order:', error);
       showSnackBar('Hubo un error inesperado al procesar tu orden.');
     }
+  };
+
+  const getPreparedCheckoutState = () => {
+    const currentState = methods.getValues();
+    
+    currentState.order.lines = cart.lines.map((line: CartLine) => ({
+      ...line,
+      pricePerUnit: Number(line.item.price),
+    }));
+  
+    const subtotal = cart.lines.reduce((total: number, line: CartLine) => {
+      return total + Number(line.item.price) * line.quantity;
+    }, 0);
+    currentState.order.subTotal = subtotal;
+  
+    if (currentState.shipping && dataLists.shippingMethods) {
+      const selectedMethod = dataLists.shippingMethods.find((m) => m.name === currentState.shipping.name);
+      if (selectedMethod) currentState.order.shippingCost = parseFloat(selectedMethod.price);
+    }
+  
+    const taxes: Tax[] = [];
+    const ivaAmount = subtotal * 0.16;
+    taxes.push({ id: 'iva', name: 'IVA:', value: 16, amount: ivaAmount });
+    currentState.order.tax = taxes;
+  
+    const totalTaxes = taxes.reduce((sum, tax) => sum + tax.amount, 0);
+    currentState.order.total = parseFloat((subtotal + totalTaxes + (currentState.order.shippingCost || 0)).toFixed(2));
+  
+    return currentState;
   };
 
   return (
@@ -345,49 +387,8 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
             if (!checking) {
               setTimeout(() => setChecking(true), 0);
             }
-            const checkoutState = methods.getValues();
-
-            // Map cart lines to order lines
-            checkoutState.order.lines = cart.lines.map((line: CartLine) => ({
-              ...line,
-              pricePerUnit: Number(line.item.price),
-            }));
-
-            // Calculate subtotal from the cart
-            const subtotal = cart.lines.reduce((total: number, line: CartLine) => {
-              return total + Number(line.item.price) * line.quantity;
-            }, 0);
-
-            // Perform tax calculations before sending data to the Order component
-            checkoutState.order.subTotal = subtotal;
-
-            if (checkoutState.shipping && dataLists.shippingMethods) {
-              const selectedMethod = dataLists.shippingMethods.find((method) => {
-                return method.name === checkoutState.shipping.name;
-              });
-              if (selectedMethod) {
-                checkoutState.order.shippingCost = parseFloat(selectedMethod.price);
-              }
-            }
-
-            const taxes: Tax[] = [];
-
-            // IVA (16%)
-            const ivaValue = 16;
-            const ivaAmount = subtotal * (ivaValue / 100);
-            taxes.push({
-              id: 'iva',
-              name: 'IVA:',
-              value: ivaValue,
-              amount: ivaAmount,
-            });
-
-            checkoutState.order.tax = taxes;
-            const totalTaxes = taxes.reduce((sum, tax) => sum + tax.amount, 0);
-            checkoutState.order.total = parseFloat((subtotal + totalTaxes).toFixed(2));
-
-            // Now pass the updated checkoutState and subtotal to the Order component
-            return <Order checkoutState={checkoutState} />;
+            const preparedState = getPreparedCheckoutState();
+            return <Order checkoutState={preparedState} />;
           })()
         ) : activeStep === 0 ? (
           <FormProvider {...methods}>
@@ -452,6 +453,14 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
         )}
       </Box>
 
+      {hasInvalidItems && (
+        <Box sx={{ mb: 2, p: 2, bgcolor: '#fff4f4', borderRadius: 1, border: '1px solid #ffcdd2' }}>
+          <Typography color="error" variant="body2" align="center">
+            ⚠️ Uno o más artículos en tu carrito no tienen la configuración completa (falta Arte o
+            Producto). Por favor completa tu pedido para continuar.
+          </Typography>
+        </Box>
+      )}
       {/* Buttons */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4, pb: 4 }}>
         <Button disabled={activeStep === 0} onClick={handleBack} variant="outlined">
@@ -460,7 +469,7 @@ const Checkout: React.FC<CheckoutProps> = ({ setChecking, checking, fromPrixItem
         <Button
           variant="contained"
           color="primary"
-          disabled={cart.lines.length === 0}
+          disabled={cart.lines.length === 0 || hasInvalidItems}
           onClick={activeStep === steps.length - 1 ? handleSubmit : handleNext}
         >
           {activeStep === steps.length - 1 ? 'Ordenar' : 'Siguiente'}

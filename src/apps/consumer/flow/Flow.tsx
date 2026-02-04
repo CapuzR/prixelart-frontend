@@ -59,7 +59,7 @@ const Flow = () => {
       return urlParams[attributeName] && urlParams[attributeName].trim() !== '';
     });
   }, [item.product, allAttributeNames, urlParams]);
-
+  // console.log(item)
   // 3. Check if the core requirements (product, art, attributes) are met
   const isItemReady = Boolean(urlParams.producto && urlParams.arte && isProductAttributesComplete);
 
@@ -107,7 +107,7 @@ const Flow = () => {
         // Update item state
         setItem((prevItem) => ({
           ...prevItem,
-          sku: urlParams.producto || prevItem.sku, // Keep existing SKU if product param disappears temp.
+          sku: urlParams.lineId || urlParams.itemId || undefined,
           product: selectedProduct
             ? ({
                 ...selectedProduct,
@@ -146,8 +146,7 @@ const Flow = () => {
       if (
         !item.product?.variants ||
         !item.product.selection ||
-        !isProductAttributesComplete ||
-        !item.sku
+        !isProductAttributesComplete
       ) {
         // Clear price and discount if selection is incomplete or product/variants/sku missing
         if (item.price !== undefined || item.discount !== undefined) {
@@ -168,7 +167,7 @@ const Flow = () => {
 
           const priceResult = await fetchVariantPrice(
             selectedVariant._id,
-            item.sku,
+            item.sku || 'cotizacion_temp',
             artId?.toString()
           );
           const originalPriceStr = priceResult[1].toString(); // Assuming result format is [?, priceString]
@@ -273,41 +272,53 @@ const Flow = () => {
       showSnackBar('Por favor completa la selección antes de añadir al carrito.');
       return;
     }
+    const uniqueSku =
+      urlParams.lineId ||
+      itemToAdd.sku ||
+      `new_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
 
-    addOrUpdateItemInCart(itemToAdd, 1, urlParams.lineId);
+      const itemReadyForCart = {
+        ...itemToAdd,
+        sku: uniqueSku,
+      };
+
+    addOrUpdateItemInCart(itemReadyForCart, 1, uniqueSku);
     showSnackBar('Item agregado al carrito');
     navigate('/carrito');
   };
 
   const handleChangeElement = (type: 'producto' | 'arte', currentItem: Item, lineId?: string) => {
-    let newProductId: string | undefined = currentItem.sku;
-    let newArtId: string | undefined = currentItem.art?.artId;
+    const targetLineId = lineId || urlParams.lineId;
+    let newProductId: string | undefined;
+    let newArtId: string | undefined;
     let selectionAsObject: Record<string, string> = {};
 
     if (type === 'arte') {
       newArtId = undefined;
-      selectionAsObject = (currentItem.product?.selection || []).reduce(
-        (acc, sel) => {
-          acc[sel.name] = sel.value;
-          return acc;
-        },
-        {} as Record<string, string>
-      );
-      setItem((prev) => ({ ...prev, art: undefined, price: undefined }));
+      if (currentItem.product?.selection) {
+        selectionAsObject = currentItem.product.selection.reduce(
+          (acc, sel) => {
+            acc[sel.name] = sel.value;
+            return acc;
+          },
+          {} as Record<string, string>
+        );
+      }
+      // setItem((prev) => ({ ...prev, art: undefined, price: undefined }));
     } else if (type === 'producto') {
       newProductId = undefined;
       selectionAsObject = {};
-      setItem((prev) => ({
-        ...prev,
-        product: undefined,
-        sku: undefined,
-        price: undefined,
-        selection: undefined,
-      }));
+      // setItem((prev) => ({
+      //   ...prev,
+      //   product: undefined,
+      //   sku: undefined,
+      //   price: undefined,
+      //   selection: undefined,
+      // }));
     }
 
     const queryString = queryCreator(
-      lineId ? lineId : urlParams.lineId,
+      targetLineId,
       newProductId,
       newArtId,
       selectionAsObject
@@ -317,23 +328,20 @@ const Flow = () => {
   };
 
   const handleSelection = (e: React.ChangeEvent<{ name: string; value: number }>) => {
-    // Now value is a number
     const { name, value } = e.target;
 
     const currentSelection = item.product?.selection || [];
     const selectionAsObject = currentSelection.reduce(
       (acc, sel) => {
-        if (sel.name !== name) {
-          acc[sel.name] = sel.value;
-        }
-        return acc;
+        acc[sel.name] = sel.name === name ? (value.toString() as string) : sel.value;
+      return acc;
       },
       {} as Record<string, string>
     );
 
     const queryString = queryCreator(
       urlParams.lineId,
-      item.sku,
+      item.product?._id?.toString(),
       item.art?.artId?.toString(),
       selectionAsObject
     );

@@ -425,6 +425,66 @@ function CustomTabPanel(props: TabPanelProps) {
   );
 }
 
+const PriceInput = ({ 
+  value, 
+  onChange, 
+  onKeyDown, 
+  ...props 
+}: { 
+  value: number; 
+  onChange: (val: number) => void;
+  onKeyDown: (e: any) => void;
+  label?: string;
+  size?: 'small' | 'medium';
+  variant?: 'outlined';
+  fullWidth?: boolean;
+}) => {
+  const [displayValue, setDisplayValue] = useState((value || 0).toFixed(2));
+
+  useEffect(() => {
+    if (value !== parseFloat(displayValue)) {
+        setDisplayValue((value || 0).toFixed(2));
+    }
+  }, [value]); 
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setDisplayValue(val);
+
+    const numberVal = parseFloat(val);
+    if (!isNaN(numberVal)) {
+      onChange(numberVal);
+    }
+  };
+
+  const handleBlur = () => {
+    const numberVal = parseFloat(displayValue);
+    if (!isNaN(numberVal)) {
+      setDisplayValue(numberVal.toFixed(2));
+    } else {
+      setDisplayValue("0.00");
+    }
+  };
+
+  return (
+    <TextField
+      {...props}
+      value={displayValue}
+      onChange={handleChange}
+      onBlur={handleBlur}
+      onKeyDown={onKeyDown}
+      sx={{
+        "& .MuiInputBase-input": { textAlign: "right" },
+      }}
+      slotProps={{
+        input: {
+          startAdornment: <InputAdornment position="start">$</InputAdornment>,
+        },
+      }}
+    />
+  );
+};
+
 export default function UpdateOrder() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -1662,6 +1722,7 @@ export default function UpdateOrder() {
           variants: lineState.selectedProduct.fullProduct.variants,
           selection: lineState.selectedVariant?.fullVariant.attributes || [],
           mockUp: lineState.selectedProduct.fullProduct.mockUp,
+          cost: lineState.item?.product.cost || "0",
         },
         price: pricePerUnit.toString(),
       };
@@ -2621,7 +2682,7 @@ export default function UpdateOrder() {
                                 />
                               </Grid2>
                             )}
-                            <Grid2 size={{ xs: 6, md: 3 }}>
+                            <Grid2 size={{ xs: 6, md: 2 }}>
                               {permissions?.orders.updateItem ? (
                                 <TextField
                                   label="Cant."
@@ -2640,70 +2701,66 @@ export default function UpdateOrder() {
                                 <Typography variant="h6">{`Producto: ${line.quantity}`}</Typography>
                               )}
                             </Grid2>
-                            <Grid2
-                              size={{ xs: 6, md: 3 }}
-                              sx={{ textAlign: "right" }}
-                            >
-                              {permissions?.area === "Master" ? (
-                                <TextField
+                            <Grid2 size={{ xs: 6, md: 2 }} sx={{ textAlign: "right" }}>
+                            {permissions?.orders.updateItemPrice ? (
+                                <PriceInput
                                   fullWidth
                                   variant="outlined"
                                   size="small"
-                                  type="text"
-                                  label="Precio unitario"
-                                  // defaultValue={(line.pricePerUnit || 0).toFixed(2)}
-                                  value={(line.pricePerUnit || 0).toFixed(2)}
-                                  onChange={(e) =>
-                                    handlePricePerUnitChange(e, line)
-                                  }
+                                  label="Costo"
+                                  value={Number(line.item?.product?.cost) || 0}
+                                  onChange={(newCost) => {
+                                    const updatedItem = {
+                                      ...line.item,
+                                      product: {
+                                        ...line.item?.product,
+                                        cost: newCost,
+                                      }
+                                    };
+                                    updateLine(line.tempId, {
+                                        item: updatedItem as any
+                                    });
+                                    updateEditableLine(line.tempId, {
+                                      item: updatedItem as any
+                                  });
+                                  }}
                                   onKeyDown={allowNumericWithDecimal}
-                                  sx={{
-                                    mb: 1,
-                                    "& .MuiInputBase-input": {
-                                      textAlign: "right",
-                                    },
-                                  }}
-                                  slotProps={{
-                                    input: {
-                                      startAdornment: (
-                                        <InputAdornment position="start">
-                                          $
-                                        </InputAdornment>
-                                      ),
-                                    },
-                                  }}
                                 />
                               ) : (
-                                permissions?.area !== "Master" &&
                                 permissions?.orders.readPayDetails && (
-                                  <Typography
-                                    variant="body2"
-                                    sx={{ fontWeight: "medium" }}
-                                  >
-                                    $
-                                    {(line?.item?.price
-                                      ? Number(line?.item?.price)
-                                      : 0
-                                    ).toFixed(2)}{" "}
-                                    c/u
+                                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                                    Costo: ${(Number(line.item?.product?.cost) || 0).toFixed(2)}
                                   </Typography>
                                 )
                               )}
-                              {permissions?.area !== "Master" &&
-                                permissions?.orders.readPayDetails && (
-                                  <Typography
-                                    variant="subtitle2"
-                                    color="primary.main"
-                                  >
-                                    $
-                                    {(
-                                      (line.quantity || 0) *
-                                      (line?.pricePerUnit
-                                        ? Number(line?.pricePerUnit)
-                                        : 0)
-                                    ).toFixed(2)}
+                            </Grid2>
+                            <Grid2 size={{ xs: 6, md: 2 }} sx={{ textAlign: "right" }}>
+                              {permissions?.orders.updateItemPrice ? (
+                                <PriceInput
+                                  fullWidth
+                                  variant="outlined"
+                                  size="small"
+                                  label="Precio unitario"
+                                  value={line.pricePerUnit || 0}
+                                  onChange={(newPrice) => {
+                                    const newSubtotal = (line.quantity || 1) * newPrice - (line.discount || 0);
+                                    updateLine(line.tempId, {
+                                      pricePerUnit: newPrice,
+                                      subtotal: newSubtotal,
+                                    });
+                                    updateEditableLine(line.tempId, {
+                                      pricePerUnit: newPrice,
+                                    });
+                                  }}
+                                  onKeyDown={allowNumericWithDecimal}
+                                />
+                              ) : (
+                                 permissions?.orders.readPayDetails && (
+                                  <Typography variant="body2" sx={{ fontWeight: "medium" }}>
+                                    ${(line?.item?.price ? Number(line?.item?.price) : 0).toFixed(2)} c/u
                                   </Typography>
-                                )}
+                                )
+                              )}
                             </Grid2>
                           </Grid2>
                         </Grid2>

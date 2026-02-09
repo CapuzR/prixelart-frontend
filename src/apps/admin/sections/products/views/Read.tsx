@@ -428,7 +428,7 @@ const ReadProducts: React.FC = () => {
   }, [processedProducts, page, rowsPerPage]);
 
   const handleDownloadExcel = async () => {
-    if (permissions?.area !== "Master") {
+    if (!permissions?.products.downloadData) {
       showSnackBar(
         "No tienes permiso para realizar una actualización masiva de productos.",
       );
@@ -820,9 +820,8 @@ const ReadProducts: React.FC = () => {
               style={{ display: "none" }}
               id="excel-upload-input"
             />
-            {permissions?.area === "Master" && (
+            {permissions?.products.downloadData && (
               <>
-                {" "}
                 <Tooltip
                   title="Subir excel para edición masiva"
                   sx={{ marginRight: "8px" }}
